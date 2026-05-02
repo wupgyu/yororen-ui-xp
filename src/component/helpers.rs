@@ -3,7 +3,7 @@
 //! This module provides common utility functions used across multiple components
 //! to reduce code duplication.
 
-use gpui::{App, Bounds, ElementId, Entity, Pixels, Window};
+use gpui::{App, Bounds, ElementId, Entity, Pixels, Window, px};
 
 use crate::i18n::TextDirection;
 use crate::theme::{ActionVariantKind, Theme};
@@ -40,9 +40,12 @@ pub fn desired_menu_left(
         }
     };
 
-    let window_bounds = window.bounds();
-    let min_left = window_bounds.left();
-    let max_left = (window_bounds.right() - menu_width).max(min_left);
+    // Use viewport size to compute content-area bounds so that clamping
+    // is consistent with trigger_bounds, which is expressed in window-content
+    // coordinates rather than screen coordinates.
+    let viewport_size = window.viewport_size();
+    let min_left = px(0.);
+    let max_left = (viewport_size.width - menu_width).max(min_left);
     desired_left.clamp(min_left, max_left)
 }
 

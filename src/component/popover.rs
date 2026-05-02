@@ -1,32 +1,15 @@
 use gpui::prelude::FluentBuilder;
 use gpui::AppContext;
 use gpui::{
-    Animation, AnimationExt, ClickEvent, ElementId, Hsla, InteractiveElement, IntoElement,
-    Bounds, ParentElement, Pixels, RenderOnce, Styled, div, px,
+    Animation, AnimationExt, Bounds, ClickEvent, ElementId, Hsla, InteractiveElement, IntoElement,
+    ParentElement, Pixels, RenderOnce, Styled, div, px,
 };
 
 use crate::{animation::constants::duration, theme::ActiveTheme};
 use crate::i18n::{I18n, TextDirection};
-use crate::component::BoundsTrackerElement;
+use crate::component::{BoundsTrackerElement, desired_menu_left};
 
 use crate::animation::ease_out_quint_clamped;
-
-fn desired_menu_left(
-    trigger_bounds: Bounds<Pixels>,
-    menu_width: Pixels,
-    direction: TextDirection,
-    window: &gpui::Window,
-) -> Pixels {
-    let desired_left = match direction {
-        TextDirection::Ltr => trigger_bounds.left(),
-        TextDirection::Rtl => trigger_bounds.right() - menu_width,
-    };
-
-    let window_bounds = window.bounds();
-    let min_left = window_bounds.left();
-    let max_left = (window_bounds.right() - menu_width).max(min_left);
-    desired_left.clamp(min_left, max_left)
-}
 
 /// Defines the placement position of a popover relative to its trigger element.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -223,18 +206,15 @@ impl RenderOnce for Popover {
                 // Resolve menu width for clamping.
                 let menu_width_px = width.unwrap_or(px(260.));
                 let trigger_bounds = *trigger_bounds_state.read(cx);
-                let menu_left = desired_menu_left(trigger_bounds, menu_width_px, direction, _window);
+                let align_end = placement == PopoverPlacement::BottomEnd;
+                let menu_left = desired_menu_left(trigger_bounds, menu_width_px, direction, align_end, _window);
                 let relative_left = menu_left - trigger_bounds.left();
 
                 let menu = div()
                     .id((id.clone(), "ui:popover:menu"))
                     .absolute()
-                    .when(placement == PopoverPlacement::BottomStart, |this| {
-                        this.top_full().left_0()
-                    })
-                    .when(placement == PopoverPlacement::BottomEnd, |this| {
-                        this.top_full().left_0()
-                    })
+                    .top_full()
+                    .left_0()
                     .when(relative_left != Pixels::ZERO, |this| this.left(relative_left))
                     .mt(px(10.))
                     .rounded_md()
