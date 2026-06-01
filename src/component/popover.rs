@@ -1,5 +1,4 @@
 use gpui::prelude::FluentBuilder;
-use gpui::AppContext;
 use gpui::{
     Animation, AnimationExt, Bounds, ClickEvent, ElementId, Hsla, InteractiveElement, IntoElement,
     ParentElement, Pixels, RenderOnce, Styled, div, px,
@@ -169,12 +168,19 @@ impl Styled for Popover {
 }
 
 impl RenderOnce for Popover {
-    fn render(self, _window: &mut gpui::Window, cx: &mut gpui::App) -> impl IntoElement {
+    fn render(self, window: &mut gpui::Window, cx: &mut gpui::App) -> impl IntoElement {
         let element_id = self.element_id;
         let id = element_id.clone();
 
-        // Track trigger bounds for overflow protection.
-        let trigger_bounds_state = cx.new(|_| Bounds::<Pixels>::default());
+        // Track trigger bounds for overflow protection. Must use keyed state so the entity
+        // persists across renders — `BoundsTrackerElement` writes the bounds in `prepaint`
+        // (which happens *after* render), so the same `Entity<Bounds<...>>` must be read in
+        // render to see the previous frame's layout result.
+        let trigger_bounds_state = window.use_keyed_state(
+            (id.clone(), "ui:popover:trigger-bounds"),
+            cx,
+            |_, _| Bounds::<Pixels>::default(),
+        );
 
         let theme = cx.theme();
         let bg = self.bg.unwrap_or(theme.surface.raised);
@@ -207,7 +213,7 @@ impl RenderOnce for Popover {
                 let menu_width_px = width.unwrap_or(px(260.));
                 let trigger_bounds = *trigger_bounds_state.read(cx);
                 let align_end = placement == PopoverPlacement::BottomEnd;
-                let menu_left = desired_menu_left(trigger_bounds, menu_width_px, direction, align_end, _window);
+                let menu_left = desired_menu_left(trigger_bounds, menu_width_px, direction, align_end, window);
                 let relative_left = menu_left - trigger_bounds.left();
 
                 let menu = div()
