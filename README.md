@@ -14,6 +14,8 @@
   <strong>Yororen UI</strong> is a reusable UI Components + Widgets library built on top of <a href="https://github.com/zed-industries/zed"><code>gpui</code></a> (Zed).
 </p>
 
+> ⚠️ **v0.3 is a breaking release.** If you are upgrading from v0.2, see [`MIGRATION.md`](./MIGRATION.md) for the required changes (new workspace layout, removed business icons, deprecated `DefaultPlaceholders`).
+
 <p align="center">
   It is designed to be consumed by a <code>gpui</code> application crate, while keeping the UI layer self-contained (theme, components, widgets, and embedded icon assets).
 </p>

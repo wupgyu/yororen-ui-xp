@@ -12,6 +12,8 @@
 
 <p align="center">
   <strong>Yororen UI</strong> 是一个基于 <a href="https://github.com/zed-industries/zed"><code>gpui</code></a>（Zed）构建的可复用 UI 组件和小部件库。
+
+> ⚠️ **v0.3 是 breaking release。** 从 v0.2 升级请阅读 [`MIGRATION.md`](./MIGRATION.md)（新增 workspace 结构、删除 5 个业务图标、`DefaultPlaceholders` 弃用）。
 </p>
 
 <p align="center">
