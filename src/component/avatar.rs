@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use gpui::{
     Div, ElementId, Hsla, Image, InteractiveElement, IntoElement, ObjectFit, ParentElement,
-    RenderOnce, Styled, StyledImage, div, img, prelude::FluentBuilder, px,
+    RenderOnce, Styled, StyledImage, div, img, prelude::FluentBuilder,
 };
 
 use crate::theme::ActiveTheme;
@@ -108,16 +108,21 @@ impl RenderOnce for Avatar {
         let direction = cx.theme().text_direction;
 
         base.when_some(self.status, |this, color| {
+            let avatar_tokens = &cx.theme().tokens.control.avatar;
             this.child(
                 div()
                     .absolute()
-                    .when(direction.is_rtl(), |this| this.left(px(2.)))
-                    .when(!direction.is_rtl(), |this| this.right(px(2.)))
-                    .bottom(px(2.))
-                    .size_3()
+                    .when(direction.is_rtl(), |this| {
+                        this.left(avatar_tokens.status_inset)
+                    })
+                    .when(!direction.is_rtl(), |this| {
+                        this.right(avatar_tokens.status_inset)
+                    })
+                    .bottom(avatar_tokens.status_inset)
+                    .size(avatar_tokens.status_dot_size)
                     .rounded_full()
                     .bg(color)
-                    .border_2()
+                    .border(avatar_tokens.border_w)
                     .border_color(cx.theme().surface.base),
             )
         })

@@ -1,5 +1,5 @@
 use gpui::{
-    Div, ElementId, InteractiveElement, IntoElement, ParentElement, RenderOnce, Styled, div, px,
+    Div, ElementId, InteractiveElement, IntoElement, ParentElement, RenderOnce, Styled, div,
 };
 
 use crate::theme::ActiveTheme;
@@ -66,9 +66,13 @@ impl RenderOnce for Divider {
         let base = self.base.id(element_id);
 
         if self.vertical {
-            base.w(px(1.)).h_full().bg(cx.theme().border.divider)
+            base.w(cx.theme().tokens.control.divider.thickness)
+                .h_full()
+                .bg(cx.theme().border.divider)
         } else {
-            base.h(px(1.)).w_full().bg(cx.theme().border.divider)
+            base.h(cx.theme().tokens.control.divider.thickness)
+                .w_full()
+                .bg(cx.theme().border.divider)
         }
     }
 }

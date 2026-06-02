@@ -1,6 +1,6 @@
 use gpui::{
     Animation, AnimationExt, Div, ElementId, Hsla, IntoElement, ParentElement, Pixels, RenderOnce,
-    Styled, div, px,
+    Styled, div,
 };
 
 use gpui::InteractiveElement;
@@ -36,7 +36,7 @@ impl SkeletonLine {
             element_id: "ui:skeleton-line".into(),
             base: div(),
             width: None,
-            height: px(12.),
+            height: gpui::px(0.),
             tone: None,
         }
     }
@@ -83,11 +83,22 @@ impl RenderOnce for SkeletonLine {
     fn render(self, _window: &mut gpui::Window, cx: &mut gpui::App) -> impl IntoElement {
         let id = self.element_id.clone();
         let theme = cx.theme();
+        let height = {
+            let h: f32 = self.height.into();
+            if h > 0.0 {
+                self.height
+            } else {
+                theme.tokens.control.skeleton.line_h
+            }
+        };
+        let motion = &theme.tokens.motion;
+        let pulse_min = motion.pulse_min_opacity;
+        let pulse_max = motion.pulse_max_opacity;
 
         let base = self
             .base
             .id(self.element_id)
-            .h(self.height)
+            .h(height)
             .rounded_full()
             .bg(self.tone.unwrap_or(theme.surface.hover))
             .when_some(self.width, |this, w| this.w(w))
@@ -99,8 +110,7 @@ impl RenderOnce for SkeletonLine {
                 .repeat()
                 .with_easing(ease_in_out_clamped),
             move |this, delta| {
-                // Animate opacity between 0.55..0.95.
-                let t = 0.55 + 0.40 * delta;
+                let t = pulse_min + (pulse_max - pulse_min) * delta;
                 this.opacity(t)
             },
         )
@@ -134,7 +144,7 @@ impl SkeletonBlock {
             element_id: "ui:skeleton-block".into(),
             base: div(),
             width: None,
-            height: px(80.),
+            height: gpui::px(0.),
             rounded: true,
             tone: None,
         }
@@ -187,11 +197,21 @@ impl RenderOnce for SkeletonBlock {
     fn render(self, _window: &mut gpui::Window, cx: &mut gpui::App) -> impl IntoElement {
         let id = self.element_id.clone();
         let theme = cx.theme();
+        let height = {
+            let h: f32 = self.height.into();
+            if h > 0.0 {
+                self.height
+            } else {
+                theme.tokens.control.skeleton.block_min_h
+            }
+        };
+        let pulse_min = theme.tokens.motion.pulse_min_opacity;
+        let pulse_max = theme.tokens.motion.pulse_max_opacity;
 
         let base = self
             .base
             .id(self.element_id)
-            .h(self.height)
+            .h(height)
             .when(self.rounded, |this| this.rounded_md())
             .when(!self.rounded, |this| this.rounded_none())
             .bg(self.tone.unwrap_or(theme.surface.hover))
@@ -204,7 +224,7 @@ impl RenderOnce for SkeletonBlock {
                 .repeat()
                 .with_easing(ease_in_out_clamped),
             move |this, delta| {
-                let t = 0.55 + 0.40 * delta;
+                let t = pulse_min + (pulse_max - pulse_min) * delta;
                 this.opacity(t)
             },
         )

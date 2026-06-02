@@ -1,6 +1,6 @@
 use gpui::{
     Animation, AnimationExt, Div, ElementId, Hsla, IntoElement, ParentElement, Pixels, RenderOnce,
-    Styled, div, prelude::FluentBuilder, px, relative,
+    Styled, div, prelude::FluentBuilder, relative,
 };
 
 use gpui::InteractiveElement;
@@ -22,19 +22,21 @@ pub enum SpinnerSize {
 }
 
 impl SpinnerSize {
-    fn pixels(self) -> Pixels {
+    fn pixels(self, theme: &crate::theme::Theme) -> Pixels {
+        let tokens = &theme.tokens.control.progress;
         match self {
-            Self::Sm => px(12.),
-            Self::Md => px(16.),
-            Self::Lg => px(20.),
+            Self::Sm => tokens.spinner_size_sm,
+            Self::Md => tokens.spinner_size_md,
+            Self::Lg => tokens.spinner_size_lg,
         }
     }
 
-    fn stroke(self) -> Pixels {
+    fn stroke(self, theme: &crate::theme::Theme) -> Pixels {
+        let tokens = &theme.tokens.control.progress;
         match self {
-            Self::Sm => px(1.5),
-            Self::Md => px(2.0),
-            Self::Lg => px(2.5),
+            Self::Sm => tokens.bar_h_sm,
+            Self::Md => tokens.bar_h_md,
+            Self::Lg => tokens.bar_h_lg,
         }
     }
 }
@@ -124,13 +126,18 @@ impl Styled for Spinner {
 impl RenderOnce for Spinner {
     fn render(self, _window: &mut gpui::Window, cx: &mut gpui::App) -> impl IntoElement {
         let id = self.element_id.clone();
-        let diameter = self.diameter.unwrap_or_else(|| self.size.pixels());
-        let stroke = self
-            .stroke
-            .unwrap_or_else(|| self.size.stroke())
-            .max(px(1.));
-
         let theme = cx.theme();
+        let stroke_default = self.size.stroke(theme);
+        let diameter = self.diameter.unwrap_or_else(|| self.size.pixels(theme));
+        let min_stroke: f32 = 1.0;
+        let raw_stroke = self.stroke.unwrap_or(stroke_default);
+        let raw_stroke_value: f32 = raw_stroke.into();
+        let stroke = if raw_stroke_value < min_stroke {
+            gpui::px(1.)
+        } else {
+            raw_stroke
+        };
+
         let track = theme.border.muted;
         let mut indicator = self.color.unwrap_or(theme.action.primary.bg);
         indicator.a = indicator.a.min(0.9);
@@ -151,7 +158,7 @@ impl RenderOnce for Spinner {
                         bounds.origin.y + (bounds.size.height / 2.0),
                     );
                     let radius = (bounds.size.width.min(bounds.size.height) / 2.0) - (stroke / 2.0);
-                    if radius <= px(0.5) {
+                    if radius <= gpui::px(0.5) {
                         return;
                     }
 
@@ -247,7 +254,7 @@ impl ProgressBar {
             base: div().w_full(),
             value: 0.0,
             indeterminate: false,
-            height: px(10.),
+            height: gpui::px(0.),
             track_color: None,
             fill_color: None,
         }
@@ -312,7 +319,14 @@ impl RenderOnce for ProgressBar {
         let track = self.track_color.unwrap_or(theme.surface.hover);
         let fill = self.fill_color.unwrap_or(theme.action.primary.bg);
 
-        let height = self.height;
+        let height = {
+            let h: f32 = self.height.into();
+            if h > 0.0 {
+                self.height
+            } else {
+                theme.tokens.control.progress.bar_default_h
+            }
+        };
         let t = self.value.clamp(0.0, 1.0);
         let indeterminate = self.indeterminate;
 
@@ -391,19 +405,20 @@ pub enum ProgressCircleSize {
 }
 
 impl ProgressCircleSize {
-    fn pixels(self) -> Pixels {
+    fn pixels(self, theme: &crate::theme::Theme) -> Pixels {
+        let tokens = &theme.tokens.control.progress;
         match self {
-            Self::Sm => px(16.),
-            Self::Md => px(24.),
-            Self::Lg => px(32.),
+            Self::Sm => tokens.circle_size_sm,
+            Self::Md => tokens.circle_size_md,
+            Self::Lg => tokens.circle_size_lg,
         }
     }
 
     fn stroke(self) -> Pixels {
         match self {
-            Self::Sm => px(2.),
-            Self::Md => px(3.),
-            Self::Lg => px(4.),
+            Self::Sm => gpui::px(2.),
+            Self::Md => gpui::px(3.),
+            Self::Lg => gpui::px(4.),
         }
     }
 }
@@ -508,11 +523,14 @@ impl RenderOnce for ProgressCircle {
         let track = self.track_color.unwrap_or(theme.border.muted);
         let indicator = self.indicator_color.unwrap_or(theme.action.primary.bg);
 
-        let diameter = self.diameter.unwrap_or_else(|| self.size.pixels());
-        let stroke = self
-            .stroke
-            .unwrap_or_else(|| self.size.stroke())
-            .max(px(1.));
+        let diameter = self.diameter.unwrap_or_else(|| self.size.pixels(theme));
+        let raw_stroke = self.stroke.unwrap_or_else(|| self.size.stroke());
+        let raw_stroke_value: f32 = raw_stroke.into();
+        let stroke = if raw_stroke_value < 1.0_f32 {
+            gpui::px(1.)
+        } else {
+            raw_stroke
+        };
         let t = self.value.clamp(0.0, 1.0);
 
         self.base
@@ -533,7 +551,7 @@ impl RenderOnce for ProgressCircle {
                         );
                         let radius =
                             (bounds.size.width.min(bounds.size.height) / 2.0) - (stroke / 2.0);
-                        if radius <= px(0.5) {
+                        if radius <= gpui::px(0.5) {
                             return;
                         }
 

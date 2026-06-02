@@ -1,6 +1,6 @@
 use gpui::{
-    Div, ElementId, FontWeight, InteractiveElement, IntoElement, ParentElement, RenderOnce,
-    SharedString, Styled, div, prelude::FluentBuilder, px,
+    Div, ElementId, InteractiveElement, IntoElement, ParentElement, RenderOnce,
+    SharedString, Styled, div, prelude::FluentBuilder,
 };
 
 use crate::rtl;
@@ -66,10 +66,17 @@ impl Styled for Heading {
 impl RenderOnce for Heading {
     fn render(self, _window: &mut gpui::Window, cx: &mut gpui::App) -> impl IntoElement {
         let direction = cx.theme().text_direction;
+        let tokens = &cx.theme().tokens;
         let (size, weight) = match self.level {
-            HeadingLevel::H1 => (32., FontWeight::BOLD),
-            HeadingLevel::H2 => (24., FontWeight::SEMIBOLD),
-            HeadingLevel::H3 => (18., FontWeight::SEMIBOLD),
+            HeadingLevel::H1 => (tokens.typography.font_size_2xl, tokens.typography.weight_bold),
+            HeadingLevel::H2 => (
+                tokens.typography.font_size_xl,
+                tokens.typography.weight_semibold,
+            ),
+            HeadingLevel::H3 => (
+                tokens.typography.font_size_lg,
+                tokens.typography.weight_semibold,
+            ),
         };
 
         let mut temp = self.base;
@@ -77,12 +84,12 @@ impl RenderOnce for Heading {
             .style()
             .text
             .as_ref()
-            .map_or(false, |t| t.text_align.is_some());
+            .is_some_and(|t| t.text_align.is_some());
         temp.id(self.element_id)
             .when(!has_custom_align, |this| {
                 this.text_align(rtl::text_align_start(direction))
             })
-            .text_size(px(size))
+            .text_size(size)
             .font_weight(weight)
             .text_color(cx.theme().content.primary)
             .child(self.text)

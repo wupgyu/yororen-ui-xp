@@ -303,9 +303,12 @@ fn call_on_change(
 }
 
 impl RenderOnce for Select {
+    #[allow(clippy::let_and_return)]
     fn render(self, window: &mut gpui::Window, cx: &mut gpui::App) -> impl IntoElement {
         let disabled = self.disabled;
-        let height = self.height.unwrap_or_else(|| px(36.).into());
+        let height = self
+            .height
+            .unwrap_or_else(|| cx.theme().tokens.control.button.min_height.into());
         let menu_width = self.menu_width;
         let options = self.options;
         let localized = self.localized;
@@ -367,6 +370,8 @@ impl RenderOnce for Select {
             .and_then(|opt| opt.label.clone());
 
         let theme = cx.theme().clone();
+        let popover_offset: f32 = theme.tokens.control.popover.offset.into();
+        let popover_slide: f32 = theme.tokens.motion.slide_distance;
 
         let input_style = compute_input_style(
             &theme,
@@ -433,7 +438,7 @@ impl RenderOnce for Select {
             )
             .child(
                 icon(IconName::Arrow(ArrowDirection::Down))
-                    .size(px(14.))
+                    .size(cx.theme().tokens.sizes.icon_md)
                     .color(hint),
             )
             .when(is_open, move |this| {
@@ -450,7 +455,7 @@ impl RenderOnce for Select {
                     .unwrap_or(TextDirection::Ltr);
 
                 let trigger_bounds = *trigger_bounds_state_for_menu.read(cx);
-                let menu_width_px = menu_width.unwrap_or_else(|| trigger_bounds.size.width);
+                let menu_width_px = menu_width.unwrap_or(trigger_bounds.size.width);
                 let menu_left = desired_menu_left(trigger_bounds, menu_width_px, direction, false, window);
                 let relative_left = menu_left - trigger_bounds.left();
 
@@ -460,7 +465,7 @@ impl RenderOnce for Select {
                     .top_full()
                     .left_0()
                     .when(relative_left != Pixels::ZERO, |this| this.left(relative_left))
-                    .mt(px(10.))
+                    .mt(theme.tokens.control.popover.offset)
                     .rounded_md()
                     .border_1()
                     .border_color(theme.border.default)
@@ -511,7 +516,7 @@ impl RenderOnce for Select {
                             .when(is_selected, |this| {
                                 this.child(
                                     icon(IconName::Check)
-                                        .size(px(12.))
+                                        .size(cx.theme().tokens.sizes.icon_sm)
                                         .color(theme.action.primary.bg),
                                 )
                             })
@@ -543,7 +548,10 @@ impl RenderOnce for Select {
                 let animated_menu = menu.with_animation(
                     format!("select-menu-{}", is_open),
                     Animation::new(duration::MENU_OPEN).with_easing(ease_out_quint_clamped),
-                    |this, value| this.opacity(value).mt(px(10.0 - 6.0 * value)),
+                    move |this, value| {
+                        this.opacity(value)
+                            .mt(gpui::px(popover_offset - popover_slide * value))
+                    },
                 );
 
                 this.child(gpui::deferred(animated_menu).with_priority(100))

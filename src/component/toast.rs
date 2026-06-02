@@ -221,7 +221,11 @@ impl RenderOnce for Toast {
             })
             .when(self.icon, |this| {
                 // Explicit color to avoid relying on inherited SVG behavior.
-                this.child(Icon::new(icon).size(px(14.)).color(fg))
+                this.child(
+                    Icon::new(icon)
+                        .size(theme.tokens.control.toast.close_icon_size)
+                        .color(fg),
+                )
             })
             .when_some(content, |this, content| {
                 this.child(

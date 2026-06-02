@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use gpui::prelude::FluentBuilder;
 use gpui::{
-    ClickEvent, ElementId, IntoElement, ParentElement, RenderOnce, SharedString, Styled, div, px,
+    ClickEvent, ElementId, IntoElement, ParentElement, RenderOnce, SharedString, Styled, div,
 };
 
 use crate::{
@@ -85,7 +85,7 @@ impl DropdownMenu {
             label: "Menu".into(),
             items: Vec::new(),
             open: false,
-            width: Some(px(220.)),
+            width: None,
             placement: PopoverPlacement::BottomStart,
             on_select: None,
         }
@@ -247,7 +247,10 @@ impl RenderOnce for DropdownMenu {
                             window.refresh();
                         })
                         .child(self.label)
-                        .child(icon(IconName::Arrow(ArrowDirection::Down)).size(px(12.)))
+                        .child(
+                            icon(IconName::Arrow(ArrowDirection::Down))
+                                .size(cx.theme().tokens.sizes.icon_sm),
+                        )
                 }
             )
             .content(menu)

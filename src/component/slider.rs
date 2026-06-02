@@ -3,7 +3,7 @@ use std::sync::Arc;
 use gpui::{
     AppContext, Bounds, Div, Element, ElementId, Empty, GlobalElementId, Hsla, InspectorElementId,
     InteractiveElement, IntoElement, LayoutId, MouseButton, MouseDownEvent, ParentElement,
-    RenderOnce, StatefulInteractiveElement, Styled, px, relative,
+    RenderOnce, StatefulInteractiveElement, Styled, relative,
 };
 
 use gpui::prelude::FluentBuilder;
@@ -250,7 +250,8 @@ impl RenderOnce for Slider {
 
         let disabled = self.disabled;
         let theme = cx.theme().clone();
-        let height = self.height.unwrap_or_else(|| px(36.).into());
+        let default_height: gpui::AbsoluteLength = gpui::px(36.).into();
+        let height = self.height.unwrap_or(default_height);
 
         // Slider has no outer container background; `bg_color` controls the track color instead.
         let track_bg = if disabled {
@@ -302,8 +303,9 @@ impl RenderOnce for Slider {
             clamp((value - min) / (max - min), 0.0, 1.0)
         };
 
-        let knob_diameter = 16.0;
-        let track_height = 6.0;
+        let knob_diameter: f32 = theme.tokens.control.slider.thumb_size.into();
+        let track_height: f32 = theme.tokens.control.slider.track_h.into();
+        let slider_min_w: f32 = 1.0;
 
         let track_bounds_state =
             window.use_keyed_state((id.clone(), "ui:slider:track-bounds"), cx, |_, _| {
@@ -320,7 +322,7 @@ impl RenderOnce for Slider {
                   bounds: Bounds<gpui::Pixels>,
                   window: &mut gpui::Window,
                   cx: &mut gpui::App| {
-                if bounds.size.width <= px(1.) {
+                if bounds.size.width <= gpui::px(1.) {
                     return;
                 }
                 let left: f32 = bounds.left().into();
@@ -337,8 +339,6 @@ impl RenderOnce for Slider {
                 }
                 new_value = clamp(new_value, min.min(max), max.max(min));
 
-                // Only update internal state in uncontrolled mode
-                // In controlled mode, external value controls the display
                 if !is_controlled {
                     internal_value.update(cx, |state, cx| {
                         *state = new_value;
@@ -366,8 +366,8 @@ impl RenderOnce for Slider {
             base.cursor_pointer()
         };
 
-        // Make the interaction hitbox more lenient: clicking or dragging anywhere in the slider's
-        // container adjusts the value based on the track's bounds.
+        let min_w_px: gpui::Pixels = slider_min_w.into();
+
         base = base
             .on_drag((), move |_v: &(), _pos, _window, cx| cx.new(|_| Empty))
             .on_mouse_down(MouseButton::Left, {
@@ -379,7 +379,7 @@ impl RenderOnce for Slider {
                     }
 
                     let bounds = *track_bounds_state.read(cx);
-                    if bounds.size.width > px(1.) {
+                    if bounds.size.width > min_w_px {
                         let x: f32 = ev.position.x.into();
                         set_from_mouse_x(x, bounds, window, cx);
                     }
@@ -396,12 +396,16 @@ impl RenderOnce for Slider {
                     }
 
                     let bounds = *track_bounds_state.read(cx);
-                    if bounds.size.width > px(1.) {
+                    if bounds.size.width > min_w_px {
                         let x: f32 = ev.event.position.x.into();
                         set_from_mouse_x(x, bounds, window, cx);
                     }
                 }
             });
+
+        let track_h_px: gpui::Pixels = track_height.into();
+        let knob_px: gpui::Pixels = knob_diameter.into();
+        let knob_top_px: gpui::Pixels = (-(knob_diameter - track_height) / 2.0).into();
 
         base.child(TrackBoundsElement {
             bounds_state: track_bounds_state.clone(),
@@ -409,7 +413,7 @@ impl RenderOnce for Slider {
                 .id((id.clone(), "ui:slider:track"))
                 .relative()
                 .w_full()
-                .h(px(track_height))
+                .h(track_h_px)
                 .rounded_full()
                 .bg(track_bg)
                 .when(!disabled, |this| this.cursor_pointer())
@@ -423,7 +427,7 @@ impl RenderOnce for Slider {
                         }
 
                         let bounds = *track_bounds_state.read(cx);
-                        if bounds.size.width > px(1.) {
+                        if bounds.size.width > min_w_px {
                             let x: f32 = ev.position.x.into();
                             set_from_mouse_x(x, bounds, window, cx);
                         }
@@ -447,7 +451,7 @@ impl RenderOnce for Slider {
                         .top_0()
                         .when(is_rtl, |this| this.right_0())
                         .when(!is_rtl, |this| this.left_0())
-                        .h(px(track_height))
+                        .h(track_h_px)
                         .rounded_full()
                         .bg(fill)
                         .w(gpui::relative(t)),
@@ -455,9 +459,7 @@ impl RenderOnce for Slider {
                 .child(
                     gpui::div()
                         .absolute()
-                        .top(px(-(knob_diameter - track_height) / 2.0))
-                        // Use left/right with percentage to position knob correctly
-                        // This ensures knob is visible even when t=0
+                        .top(knob_top_px)
                         .when(t > 0.0, |this| {
                             if is_rtl {
                                 this.right(relative(t))
@@ -472,12 +474,12 @@ impl RenderOnce for Slider {
                                 this.left_0()
                             }
                         })
-                        .h(px(knob_diameter))
-                        .w(px(knob_diameter))
+                        .h(knob_px)
+                        .w(knob_px)
                         .child(
                             gpui::div()
-                                .w(px(knob_diameter))
-                                .h(px(knob_diameter))
+                                .w(knob_px)
+                                .h(knob_px)
                                 .rounded_full()
                                 .bg(theme.action.primary.bg)
                                 .hover(|this| this.bg(theme.action.primary.hover_bg))

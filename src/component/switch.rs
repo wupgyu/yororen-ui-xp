@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use gpui::{
     Animation, AnimationExt, ClickEvent, Div, ElementId, Hsla, InteractiveElement, IntoElement,
-    ParentElement, RenderOnce, StatefulInteractiveElement, Styled, div, px,
+    ParentElement, RenderOnce, StatefulInteractiveElement, Styled, div,
 };
 
 use crate::{
@@ -54,7 +54,7 @@ impl Switch {
     pub fn new() -> Self {
         Self {
             element_id: "ui:switch".into(),
-            base: div().w(px(34.)).h(px(18.)),
+            base: div(),
             checked: false,
             disabled: false,
             on_toggle: None,
@@ -152,16 +152,25 @@ impl RenderOnce for Switch {
             theme.content.primary
         };
 
+        let switch_tokens = &theme.tokens.control.switch;
+        let track_w: f32 = switch_tokens.track_w.into();
+        let track_h: f32 = switch_tokens.track_h.into();
+        let knob_size: f32 = switch_tokens.knob_size.into();
+        let padding: f32 = switch_tokens.padding.into();
+        let travel = track_w - 2.0 * padding - knob_size;
+        let knob_top = (track_h - knob_size) / 2.0;
+
         let mut base = self
             .base
             .id(id.clone())
+            .w(switch_tokens.track_w)
+            .h(switch_tokens.track_h)
             .rounded_full()
             .border_1()
             .border_color(toggle_style.border)
             .bg(toggle_style.bg)
-            .p(px(2.))
+            .p(switch_tokens.padding)
             .relative() // Enable relative positioning for knob animation
-            .h(px(18.)) // Ensure consistent height
             .focusable()
             .focus_visible(|style| style.border_2().border_color(theme.border.focus));
 
@@ -181,25 +190,23 @@ impl RenderOnce for Switch {
         // Create animated knob with position transition
         // Initial position: left at 2px (padding), vertically centered
         let knob = div()
-            .w(px(14.))
-            .h(px(14.))
+            .w(switch_tokens.knob_size)
+            .h(switch_tokens.knob_size)
             .rounded_full()
             .bg(knob_bg)
             .absolute()
-            .top(px(2.)); // Vertically centered (18 - 14) / 2 = 2px
+            .top(gpui::px(knob_top));
 
         let animated_knob = knob.with_animation(
             format!("ui:switch:knob:{}", checked),
             Animation::new(animation::duration::FAST).with_easing(ease_in_out_clamped),
             move |this, value| {
-                // Interpolate between left (2px) and right (18px - 14px - 2px = 2px offset)
-                // Total travel distance: 34 - 2 - 14 - 2 = 16px
                 let position = if checked { value } else { 1.0 - value };
                 if is_rtl {
-                    // RTL: off = right (逻辑 start), on = left (逻辑 end)
-                    this.left(px(18.0 - position * 16.0))
+                    // RTL: off = right (logical start), on = left (logical end)
+                    this.left(gpui::px(padding + travel - position * travel))
                 } else {
-                    this.left(px(2.0 + position * 16.0))
+                    this.left(gpui::px(padding + position * travel))
                 }
             },
         );

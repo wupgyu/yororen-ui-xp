@@ -4,6 +4,12 @@ use gpui::{App, Global, Hsla, WindowAppearance, hsla, rgb};
 
 use crate::i18n::TextDirection;
 
+pub mod tokens;
+pub mod validate;
+
+pub use tokens::{DesignTokens, EasingFn, MotionTokens, RadiiTokens, SizeTokens, SpacingTokens, TypographyTokens};
+pub use validate::{validate, Issue, IssueKind};
+
 #[derive(Clone, Debug)]
 pub struct Theme {
     pub surface: SurfaceTheme,
@@ -14,6 +20,10 @@ pub struct Theme {
     pub shadow: ShadowTheme,
     /// Text direction (LTR or RTL)
     pub text_direction: TextDirection,
+    /// Design tokens — single source of truth for component geometry, typography,
+    /// spacing, radii, and motion. Themes override these to reshape the UI
+    /// without touching component logic.
+    pub tokens: DesignTokens,
 }
 
 #[derive(Clone, Debug)]
@@ -162,6 +172,7 @@ impl Theme {
                 elevation_2: hsla(0.0, 0.0, 0.0, 0.45),
             },
             text_direction: TextDirection::Ltr,
+            tokens: DesignTokens::default(),
         }
     }
 
@@ -239,6 +250,7 @@ impl Theme {
                 elevation_2: hsla(0.0, 0.0, 0.0, 0.3),
             },
             text_direction: TextDirection::Ltr,
+            tokens: DesignTokens::default(),
         }
     }
 
