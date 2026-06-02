@@ -1,5 +1,5 @@
 use gpui::{
-    Div, ElementId, FontWeight, InteractiveElement, IntoElement, ParentElement, RenderOnce,
+    Div, ElementId, InteractiveElement, IntoElement, ParentElement, RenderOnce,
     SharedString, Styled, div, prelude::FluentBuilder,
 };
 
@@ -133,8 +133,12 @@ impl RenderOnce for Label {
             .when(!has_custom_align, |this| {
                 this.text_align(rtl::text_align_start(direction))
             })
-            .when(self.strong, |this| this.font_weight(FontWeight::SEMIBOLD))
-            .when(self.mono, |this| this.font_family("monospace"))
+            .when(self.strong, |this| {
+                this.font_weight(cx.theme().tokens.typography.weight_semibold)
+            })
+            .when(self.mono, |this| {
+                this.font_family(cx.theme().tokens.typography.family_mono.clone())
+            })
             .when(self.ellipsis, |this| this.truncate())
             // If wrap is enabled and ellipsis is not, allow text to wrap naturally
             .when(self.wrap && !self.ellipsis, |this| {

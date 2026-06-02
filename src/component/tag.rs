@@ -1,6 +1,6 @@
 use gpui::{
     ClickEvent, Div, FontWeight, Hsla, InteractiveElement, IntoElement, ParentElement, RenderOnce,
-    StatefulInteractiveElement, Styled, div, prelude::FluentBuilder, px,
+    StatefulInteractiveElement, Styled, div, prelude::FluentBuilder,
 };
 
 use crate::{
@@ -84,8 +84,8 @@ impl RenderOnce for Tag {
 
         let mut base = self
             .base
-            .h(px(26.))
-            .px_2()
+            .h(cx.theme().tokens.control.tag.min_height)
+            .px(cx.theme().tokens.spacing.inset_sm)
             .rounded_full()
             .bg(if self.selected {
                 cx.theme().action.primary.bg
@@ -119,7 +119,11 @@ impl RenderOnce for Tag {
                     .justify_center()
                     .hover(|this| this.bg(cx.theme().action.neutral.hover_bg))
                     .cursor_pointer()
-                    .child(icon(IconName::Close).size(px(10.)).color(tone_fg))
+                    .child(
+                        icon(IconName::Close)
+                            .size(cx.theme().tokens.sizes.icon_xs)
+                            .color(tone_fg),
+                    )
                     .on_click(move |ev, window, cx| {
                         if let Some(handler) = &on_close {
                             handler(ev, window, cx);
