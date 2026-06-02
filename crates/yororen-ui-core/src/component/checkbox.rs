@@ -8,9 +8,10 @@ use gpui::{
 use crate::{
     animation,
     component::{
-        IconName, ToggleCallback, compute_toggle_style, create_internal_state, icon,
-        resolve_state_value_simple, use_internal_state_simple,
+        IconName, ToggleCallback, create_internal_state, icon, resolve_state_value_simple,
+        use_internal_state_simple,
     },
+    renderer::CheckboxRenderState,
     theme::ActiveTheme,
 };
 
@@ -141,39 +142,46 @@ impl RenderOnce for Checkbox {
             resolve_state_value_simple(explicit_checked, &internal_checked, cx, use_internal);
 
         let theme = cx.theme();
-        let toggle_style = compute_toggle_style(theme, checked, disabled, tone);
+        let r = &theme.renderers.checkbox;
+        let state = CheckboxRenderState {
+            checked,
+            disabled,
+            has_custom_tone: tone.is_some(),
+        };
+        let box_size = r.box_size(&state, theme);
+        let check_size = r.check_size(&state, theme);
+        let box_bg = r.box_bg(&state, theme);
+        let box_border = r.box_border(&state, theme);
+        let box_hover_bg = r.box_hover_bg(&state, theme);
+        let check_fg = r.check_fg(&state, theme);
+        let focus_color = r.focus_color(&state, theme);
+        let disabled_opacity = r.disabled_opacity(&state, theme);
 
         let mut base = self
             .base
             .id(id.clone())
-            .w(theme.tokens.control.checkbox.box_size)
-            .h(theme.tokens.control.checkbox.box_size)
+            .w(box_size)
+            .h(box_size)
             .rounded_sm()
             .border_1()
-            .border_color(toggle_style.border)
-            .bg(toggle_style.bg)
+            .border_color(box_border)
+            .bg(box_bg)
             .flex()
             .items_center()
             .justify_center()
             .focusable()
-            .focus_visible(|style| style.border_2().border_color(theme.border.focus));
+            .focus_visible(move |style| style.border_2().border_color(focus_color));
 
         if disabled {
-            base = base
-                .opacity(toggle_style.disabled_opacity)
-                .cursor_not_allowed();
+            base = base.opacity(disabled_opacity).cursor_not_allowed();
         } else {
             base = base
                 .cursor_pointer()
-                .hover(move |this| this.bg(toggle_style.hover_bg));
+                .hover(move |this| this.bg(box_hover_bg));
         }
 
         // Animate check icon with opacity effect (wrap in div for animation support)
-        let check_wrapper = div().child(
-            icon(IconName::Check)
-                .size(theme.tokens.control.checkbox.check_size)
-                .color(toggle_style.fg),
-        );
+        let check_wrapper = div().child(icon(IconName::Check).size(check_size).color(check_fg));
         let animated_check = check_wrapper.with_animation(
             format!("ui:checkbox:check:{}", checked),
             Animation::new(animation::duration::FAST).with_easing(ease_in_out_clamped),

@@ -2,15 +2,16 @@ use std::sync::Arc;
 
 use gpui::{
     Animation, AnimationExt, ClickEvent, Div, ElementId, Hsla, InteractiveElement, IntoElement,
-    ParentElement, RenderOnce, StatefulInteractiveElement, Styled, div,
+    ParentElement, Pixels, RenderOnce, StatefulInteractiveElement, Styled, div,
 };
 
 use crate::{
     animation,
     component::{
-        ToggleCallback, compute_toggle_style, create_internal_state, resolve_state_value_simple,
+        ToggleCallback, create_internal_state, resolve_state_value_simple,
         use_internal_state_simple,
     },
+    renderer::SwitchRenderState,
     theme::ActiveTheme,
 };
 
@@ -141,47 +142,46 @@ impl RenderOnce for Switch {
             resolve_state_value_simple(explicit_checked, &internal_checked, cx, use_internal);
 
         let theme = cx.theme();
-        let toggle_style = compute_toggle_style(theme, checked, disabled, tone);
-
-        // Switch has a more complex structure with track and knob
-        let knob_bg = if disabled {
-            theme.content.disabled
-        } else if checked {
-            theme.action.primary.fg
-        } else {
-            theme.content.primary
+        let r = &theme.renderers.switch;
+        let state = SwitchRenderState {
+            checked,
+            disabled,
+            has_custom_tone: tone.is_some(),
         };
+        let track_bg = r.track_bg(&state, theme);
+        let track_border = r.track_border(&state, theme);
+        let track_hover_bg = r.track_hover_bg(&state, theme);
+        let knob_bg = r.knob_bg(&state, theme);
+        let focus_color = r.focus_color(&state, theme);
+        let disabled_opacity = r.disabled_opacity(&state, theme);
 
-        let switch_tokens = &theme.tokens.control.switch;
-        let track_w: f32 = switch_tokens.track_w.into();
-        let track_h: f32 = switch_tokens.track_h.into();
-        let knob_size: f32 = switch_tokens.knob_size.into();
-        let padding: f32 = switch_tokens.padding.into();
+        let track_w: f32 = r.track_w(&state, theme).into();
+        let track_h: f32 = r.track_h(&state, theme).into();
+        let knob_size: f32 = r.knob_size(&state, theme).into();
+        let padding: f32 = r.padding(&state, theme).into();
         let travel = track_w - 2.0 * padding - knob_size;
         let knob_top = (track_h - knob_size) / 2.0;
 
         let mut base = self
             .base
             .id(id.clone())
-            .w(switch_tokens.track_w)
-            .h(switch_tokens.track_h)
+            .w(r.track_w(&state, theme))
+            .h(r.track_h(&state, theme))
             .rounded_full()
             .border_1()
-            .border_color(toggle_style.border)
-            .bg(toggle_style.bg)
-            .p(switch_tokens.padding)
-            .relative() // Enable relative positioning for knob animation
+            .border_color(track_border)
+            .bg(track_bg)
+            .p(r.padding(&state, theme))
+            .relative()
             .focusable()
-            .focus_visible(|style| style.border_2().border_color(theme.border.focus));
+            .focus_visible(move |style| style.border_2().border_color(focus_color));
 
         if disabled {
-            base = base
-                .opacity(toggle_style.disabled_opacity)
-                .cursor_not_allowed();
+            base = base.opacity(disabled_opacity).cursor_not_allowed();
         } else {
             base = base
                 .cursor_pointer()
-                .hover(move |this| this.bg(toggle_style.hover_bg));
+                .hover(move |this| this.bg(track_hover_bg));
         }
 
         let direction = cx.theme().text_direction;
@@ -189,9 +189,10 @@ impl RenderOnce for Switch {
 
         // Create animated knob with position transition
         // Initial position: left at 2px (padding), vertically centered
+        let knob_size_px: Pixels = r.knob_size(&state, theme);
         let knob = div()
-            .w(switch_tokens.knob_size)
-            .h(switch_tokens.knob_size)
+            .w(knob_size_px)
+            .h(knob_size_px)
             .rounded_full()
             .bg(knob_bg)
             .absolute()

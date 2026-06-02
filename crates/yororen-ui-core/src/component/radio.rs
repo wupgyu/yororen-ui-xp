@@ -8,9 +8,10 @@ use gpui::{
 use crate::{
     animation,
     component::{
-        ToggleCallback, compute_toggle_style, create_internal_state, resolve_state_value_simple,
+        ToggleCallback, create_internal_state, resolve_state_value_simple,
         use_internal_state_simple,
     },
+    renderer::RadioRenderState,
     theme::ActiveTheme,
 };
 
@@ -141,39 +142,50 @@ impl RenderOnce for Radio {
             resolve_state_value_simple(explicit_checked, &internal_checked, cx, use_internal);
 
         let theme = cx.theme();
-        let toggle_style = compute_toggle_style(theme, checked, disabled, tone);
+        let r = &theme.renderers.radio;
+        let state = RadioRenderState {
+            checked,
+            disabled,
+            has_custom_tone: tone.is_some(),
+        };
+        let ring_size = r.ring_size(&state, theme);
+        let dot_size = r.dot_size(&state, theme);
+        let ring_bg = r.ring_bg(&state, theme);
+        let ring_border = r.ring_border(&state, theme);
+        let ring_hover_bg = r.ring_hover_bg(&state, theme);
+        let dot_fg = r.dot_fg(&state, theme);
+        let focus_color = r.focus_color(&state, theme);
+        let disabled_opacity = r.disabled_opacity(&state, theme);
 
         let mut base = self
             .base
             .id(id.clone())
-            .w(theme.tokens.control.radio.ring_size)
-            .h(theme.tokens.control.radio.ring_size)
+            .w(ring_size)
+            .h(ring_size)
             .rounded_full()
             .border_1()
-            .border_color(toggle_style.border)
-            .bg(toggle_style.bg)
+            .border_color(ring_border)
+            .bg(ring_bg)
             .flex()
             .items_center()
             .justify_center()
             .focusable()
-            .focus_visible(|style| style.border_2().border_color(theme.border.focus));
+            .focus_visible(move |style| style.border_2().border_color(focus_color));
 
         if disabled {
-            base = base
-                .opacity(toggle_style.disabled_opacity)
-                .cursor_not_allowed();
+            base = base.opacity(disabled_opacity).cursor_not_allowed();
         } else {
             base = base
                 .cursor_pointer()
-                .hover(move |this| this.bg(toggle_style.hover_bg));
+                .hover(move |this| this.bg(ring_hover_bg));
         }
 
         // Add animated inner dot for checked state
         let inner_dot = div()
-            .w(theme.tokens.control.radio.dot_size)
-            .h(theme.tokens.control.radio.dot_size)
+            .w(dot_size)
+            .h(dot_size)
             .rounded_full()
-            .bg(toggle_style.fg);
+            .bg(dot_fg);
 
         let animated_dot = inner_dot.with_animation(
             format!("ui:radio:dot:{}", checked),
@@ -181,9 +193,9 @@ impl RenderOnce for Radio {
             move |this, value| this.opacity(if checked { value } else { 1.0 - value }),
         );
 
-        base = base.when(checked, |this| {
-            this.border_color(toggle_style.border)
-                .text_color(toggle_style.fg)
+        base = base.when(checked, move |this| {
+            this.border_color(ring_border)
+                .text_color(dot_fg)
                 .child(animated_dot)
         });
 

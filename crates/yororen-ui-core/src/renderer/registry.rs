@@ -7,12 +7,15 @@ use std::sync::Arc;
 use super::avatar::{AvatarRenderer, TokenAvatarRenderer};
 use super::badge::{BadgeRenderer, TokenBadgeRenderer};
 use super::button::{ButtonRenderer, TokenButtonRenderer};
+use super::checkbox::{CheckboxRenderer, TokenCheckboxRenderer};
 use super::divider::{DividerRenderer, TokenDividerRenderer};
 use super::focus_ring::{FocusRingRenderer, TokenFocusRingRenderer};
 use super::heading::{HeadingRenderer, TokenHeadingRenderer};
 use super::label::{LabelRenderer, TokenLabelRenderer};
 use super::progress::{ProgressBarRenderer, TokenProgressBarRenderer};
+use super::radio::{RadioRenderer, TokenRadioRenderer};
 use super::skeleton::{SkeletonRenderer, TokenSkeletonRenderer};
+use super::switch::{SwitchRenderer, TokenSwitchRenderer};
 use super::tag::{TagRenderer, TokenTagRenderer};
 use super::tooltip::{TooltipRenderer, TokenTooltipRenderer};
 
@@ -29,6 +32,9 @@ pub struct RendererRegistry {
     pub skeleton: Arc<dyn SkeletonRenderer>,
     pub tooltip: Arc<dyn TooltipRenderer>,
     pub avatar: Arc<dyn AvatarRenderer>,
+    pub switch: Arc<dyn SwitchRenderer>,
+    pub checkbox: Arc<dyn CheckboxRenderer>,
+    pub radio: Arc<dyn RadioRenderer>,
 }
 
 impl std::fmt::Debug for RendererRegistry {
@@ -59,6 +65,9 @@ impl RendererRegistry {
             skeleton: Arc::new(TokenSkeletonRenderer),
             tooltip: Arc::new(TokenTooltipRenderer),
             avatar: Arc::new(TokenAvatarRenderer),
+            switch: Arc::new(TokenSwitchRenderer),
+            checkbox: Arc::new(TokenCheckboxRenderer),
+            radio: Arc::new(TokenRadioRenderer),
         }
     }
 
@@ -104,6 +113,18 @@ impl RendererRegistry {
     }
     pub fn with_avatar(mut self, r: Arc<dyn AvatarRenderer>) -> Self {
         self.avatar = r;
+        self
+    }
+    pub fn with_switch(mut self, r: Arc<dyn SwitchRenderer>) -> Self {
+        self.switch = r;
+        self
+    }
+    pub fn with_checkbox(mut self, r: Arc<dyn CheckboxRenderer>) -> Self {
+        self.checkbox = r;
+        self
+    }
+    pub fn with_radio(mut self, r: Arc<dyn RadioRenderer>) -> Self {
+        self.radio = r;
         self
     }
 }
