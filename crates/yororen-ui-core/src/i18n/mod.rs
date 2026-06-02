@@ -55,6 +55,7 @@ pub mod defaults;
 pub mod format;
 pub mod loader;
 pub mod locale;
+pub mod placeholder;
 pub mod runtime;
 pub mod translate;
 
@@ -66,6 +67,10 @@ pub use loader::{
     EmbeddedLoader, FallbackLoader, FileLoader, LoadError, LocaleFiles, TranslationLoader,
 };
 pub use locale::{Locale, SupportedLocale, TextDirection};
+pub use placeholder::{
+    GlobalPlaceholderResolver, NoopPlaceholderResolver, PlaceholderContext, PlaceholderKey,
+    PlaceholderResolver,
+};
 pub use runtime::{I18n, I18nContext, Translate, TranslationMap};
 pub use translate::{PluralCategory, TranslatedString, Translator};
 
