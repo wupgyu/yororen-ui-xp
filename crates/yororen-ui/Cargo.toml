@@ -4,7 +4,7 @@ version.workspace = true
 edition.workspace = true
 license.workspace = true
 description = "Reusable UI components and widgets built on top of gpui. Meta-crate that re-exports core + system theme + 13 universal icons."
-readme = "../README.md"
+readme = "../../README.md"
 repository.workspace = true
 
 [dependencies]
