@@ -562,7 +562,7 @@ impl Default for ComboBoxTokens {
 
 #[derive(Clone, Debug)]
 pub struct SliderTokens {
-    pub track_h: Pixels,    // 4
+    pub track_h: Pixels,    // 6
     pub thumb_size: Pixels, // 16
     pub hit_padding: Pixels, // 8
     pub focus_ring: Pixels, // 2
@@ -571,7 +571,7 @@ pub struct SliderTokens {
 impl Default for SliderTokens {
     fn default() -> Self {
         Self {
-            track_h: px(4.),
+            track_h: px(6.),
             thumb_size: px(16.),
             hit_padding: px(8.),
             focus_ring: px(2.),
@@ -741,12 +741,13 @@ pub struct ProgressTokens {
     pub bar_h_sm: Pixels,     // 1.5
     pub bar_h_md: Pixels,     // 2
     pub bar_h_lg: Pixels,     // 2.5
-    pub spinner_size_sm: Pixels, // 14
+    pub bar_default_h: Pixels, // 10
+    pub spinner_size_sm: Pixels, // 12
     pub spinner_size_md: Pixels, // 16
     pub spinner_size_lg: Pixels, // 20
-    pub circle_size_sm: Pixels,  // 20
-    pub circle_size_md: Pixels,  // 32
-    pub circle_size_lg: Pixels,  // 40
+    pub circle_size_sm: Pixels,  // 16
+    pub circle_size_md: Pixels,  // 24
+    pub circle_size_lg: Pixels,  // 32
     pub track_radius: Pixels,    // 9999 (pill)
     pub steps_gap: Pixels,       // 2
 }
@@ -757,12 +758,13 @@ impl Default for ProgressTokens {
             bar_h_sm: px(1.5),
             bar_h_md: px(2.),
             bar_h_lg: px(2.5),
-            spinner_size_sm: px(14.),
+            bar_default_h: px(10.),
+            spinner_size_sm: px(12.),
             spinner_size_md: px(16.),
             spinner_size_lg: px(20.),
-            circle_size_sm: px(20.),
-            circle_size_md: px(32.),
-            circle_size_lg: px(40.),
+            circle_size_sm: px(16.),
+            circle_size_md: px(24.),
+            circle_size_lg: px(32.),
             track_radius: px(9999.),
             steps_gap: px(2.),
         }

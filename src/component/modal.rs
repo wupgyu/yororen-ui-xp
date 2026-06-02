@@ -1,7 +1,7 @@
 use gpui::prelude::FluentBuilder;
 use gpui::{
     ElementId, Hsla, InteractiveElement, IntoElement, ParentElement, RenderOnce, SharedString,
-    Styled, div, px,
+    Styled, div,
 };
 
 use crate::{
@@ -67,7 +67,7 @@ impl Modal {
             title: None,
             content: None,
             actions: None,
-            width: px(520.),
+            width: gpui::px(0.),
             bg: None,
             border: None,
             closable: false,
@@ -164,6 +164,15 @@ impl RenderOnce for Modal {
         let theme = cx.theme();
         let bg = self.bg.unwrap_or(theme.surface.raised);
         let border = self.border.unwrap_or(theme.border.default);
+        let width = {
+            let w: f32 = self.width.into();
+            if w > 0.0 {
+                self.width
+            } else {
+                theme.tokens.control.modal.max_width
+            }
+        };
+        let divider_thickness = theme.tokens.control.divider.thickness;
 
         // Get child component IDs before moving other fields
         let close_button_id = self.child_id("close-button");
@@ -202,7 +211,7 @@ impl RenderOnce for Modal {
 
         self.base
             .id(element_id_for_base)
-            .w(self.width)
+            .w(width)
             .rounded_lg()
             .border_1()
             .border_color(border)
@@ -220,10 +229,10 @@ impl RenderOnce for Modal {
                     .gap_2()
                     .children(header_children),
             )
-            .child(div().h(px(1.)).w_full().bg(theme.border.divider))
+            .child(div().h(divider_thickness).w_full().bg(theme.border.divider))
             .child(div().px_4().py_4().child(content))
             .when_some(actions, |this, actions| {
-                this.child(div().h(px(1.)).w_full().bg(theme.border.divider))
+                this.child(div().h(divider_thickness).w_full().bg(theme.border.divider))
                     .child(
                         div()
                             .px_4()

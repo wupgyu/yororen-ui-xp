@@ -1,7 +1,7 @@
 use gpui::prelude::FluentBuilder;
 use gpui::{
     Animation, AnimationExt, Bounds, ClickEvent, ElementId, Hsla, InteractiveElement, IntoElement,
-    ParentElement, Pixels, RenderOnce, Styled, div, px,
+    ParentElement, Pixels, RenderOnce, Styled, div,
 };
 
 use crate::{animation::constants::duration, theme::ActiveTheme};
@@ -191,6 +191,15 @@ impl RenderOnce for Popover {
         let width = self.width;
         let on_close = self.on_close;
 
+        // Snapshot token values up-front so the closure doesn't borrow `theme`
+        // (which keeps a reference to `cx`) while `cx` itself is moved in.
+        let menu_width_default = {
+            theme.tokens.control.popover.min_width
+                + theme.tokens.control.popover.max_width / 2.0
+        };
+        let popover_offset: f32 = theme.tokens.control.popover.offset.into();
+        let popover_slide: f32 = theme.tokens.motion.slide_distance;
+
         let trigger = self.trigger.unwrap_or_else(|| div().into_any_element());
         let content = self.content.unwrap_or_else(|| div().into_any_element());
 
@@ -210,7 +219,7 @@ impl RenderOnce for Popover {
                     .unwrap_or(TextDirection::Ltr);
 
                 // Resolve menu width for clamping.
-                let menu_width_px = width.unwrap_or(px(260.));
+                let menu_width_px = width.unwrap_or(menu_width_default);
                 let trigger_bounds = *trigger_bounds_state.read(cx);
                 let align_end = placement == PopoverPlacement::BottomEnd;
                 let menu_left = desired_menu_left(trigger_bounds, menu_width_px, direction, align_end, window);
@@ -222,7 +231,7 @@ impl RenderOnce for Popover {
                     .top_full()
                     .left_0()
                     .when(relative_left != Pixels::ZERO, |this| this.left(relative_left))
-                    .mt(px(10.))
+                    .mt(gpui::px(popover_offset))
                     .rounded_md()
                     .overflow_hidden()
                     .border_1()
@@ -242,7 +251,10 @@ impl RenderOnce for Popover {
                 let animated = menu.with_animation(
                     format!("ui:popover:menu:{}", is_open),
                     Animation::new(duration::MENU_OPEN).with_easing(ease_out_quint_clamped),
-                    |this, value| this.opacity(value).mt(px(10.0 - 6.0 * value)),
+                    move |this, value| {
+                        this.opacity(value)
+                            .mt(gpui::px(popover_offset - popover_slide * value))
+                    },
                 );
 
                 this.child(gpui::deferred(animated).with_priority(100))
