@@ -5,6 +5,7 @@ use gpui::{
 };
 
 use crate::{
+    a11y::Role,
     component::{HeadingLevel, IconName, button, heading, icon, icon_button, label},
     i18n::TextDirection,
     theme::{ActionVariantKind, ActiveTheme},
@@ -18,20 +19,46 @@ type ModalCloseCallback = Box<dyn Fn(&mut gpui::Window, &mut gpui::App)>;
 /// This component only renders the *panel* (title/content/actions slots) and is
 /// intentionally not responsible for overlay / focus trapping.
 ///
-/// Use it inside a popover/overlay layer in your app.
+/// Use it inside an [`Overlay`](crate::component::Overlay) to get the
+/// full v0.5 accessibility story (scrim, click-outside, Esc, body
+/// scroll lock). For example:
+///
+/// ```rust,ignore
+/// overlay("my-modal")
+///     .open(state.modal_open)
+///     .on_close_any(move |_w, cx| { state.modal_open = false; cx.refresh_windows(); })
+///     .child(
+///         modal()
+///             .title("Delete file?")
+///             .content(label("This cannot be undone."))
+///             .actions(modal_actions_row(...))
+///     )
+/// ```
 ///
 /// # Accessibility
 ///
-/// This component provides accessibility support through the following ARIA attributes:
-/// - `role="dialog"`: Identifies the element as a dialog window
-/// - `aria-modal="true"`: Indicates that the dialog is modal
-/// - `aria-labelledby`: Automatically linked to the modal title (if provided)
-/// - `aria-describedby`: Can be set to associate with descriptive content
+/// This component carries the following ARIA fields (Phase G.4):
+/// - `role`: defaults to `Role::Dialog`, settable via `.role(...)`.
+/// - `aria-modal`: defaults to `true`, settable via `.aria_modal(false)`.
+/// - `aria-label`: optional, settable via `.aria_label(...)`.
+/// - `aria-labelledby`: optional, settable via `.aria_labelledby(...)`.
+/// - `aria-describedby`: optional, settable via `.described_by(...)`.
+///
+/// These fields are exposed via `get_*` accessors for parent
+/// components that want to forward the role to a wrapping
+/// element. The Modal itself does not currently emit the ARIA
+/// attributes into the rendered output (gpui-ce 0.3.3 does not
+/// expose arbitrary ARIA attributes), but downstream code can
+/// read the fields and emit them through alternative means
+/// (e.g. via a wrapping element's `data-*` attributes).
 ///
 /// For full accessibility support, ensure:
-/// - The modal is placed within an overlay that traps focus
-/// - The Escape key closes the modal
-/// - Focus returns to the trigger element when the modal closes
+/// - The modal is wrapped in an `Overlay` (Phase G.2) which
+///   provides scrim click, Esc, and body scroll lock.
+/// - Focus is moved to the modal's first focusable element on
+///   open (the [`FocusTrap`](crate::a11y::FocusTrap) helper is
+///   the recommended way to do this).
+/// - Focus returns to the trigger element when the modal closes.
 pub fn modal() -> Modal {
     Modal::new()
 }
@@ -51,6 +78,14 @@ pub struct Modal {
     /// Accessibility: ID of the element that describes this modal.
     /// This is typically used to associate additional descriptive content.
     described_by: Option<SharedString>,
+    /// ARIA role. Default: `Role::Dialog`. Phase G.4 addition.
+    role: Role,
+    /// ARIA label (short description). Phase G.4 addition.
+    aria_label: Option<SharedString>,
+    /// ARIA labelledby (ID of label element). Phase G.4 addition.
+    aria_labelledby: Option<SharedString>,
+    /// ARIA modal flag. Default: `true` for modals. Phase G.4 addition.
+    aria_modal: bool,
 }
 
 impl Default for Modal {
@@ -73,6 +108,10 @@ impl Modal {
             closable: false,
             on_close: None,
             described_by: None,
+            role: Role::Dialog,
+            aria_label: None,
+            aria_labelledby: None,
+            aria_modal: true,
         }
     }
 
@@ -144,6 +183,56 @@ impl Modal {
     pub fn described_by(mut self, id: impl Into<SharedString>) -> Self {
         self.described_by = Some(id.into());
         self
+    }
+
+    /// Set the ARIA role. Default: `Role::Dialog`. Phase G.4.
+    pub fn role(mut self, role: Role) -> Self {
+        self.role = role;
+        self
+    }
+
+    /// Set the ARIA label (short description for screen readers).
+    /// Phase G.4.
+    pub fn aria_label(mut self, label: impl Into<SharedString>) -> Self {
+        self.aria_label = Some(label.into());
+        self
+    }
+
+    /// Set the ARIA labelledby (ID of the labelling element).
+    /// Phase G.4.
+    pub fn aria_labelledby(mut self, id: impl Into<SharedString>) -> Self {
+        self.aria_labelledby = Some(id.into());
+        self
+    }
+
+    /// Set the ARIA modal flag. Default: `true` for modals. Phase G.4.
+    /// Set to `false` for non-modal dialogs (e.g. permission prompts that
+    /// don't block background interaction).
+    pub fn aria_modal(mut self, modal: bool) -> Self {
+        self.aria_modal = modal;
+        self
+    }
+
+    /// Read-only accessor for the ARIA role. Useful for tests and
+    /// for parent components that want to forward the role to a
+    /// wrapping element. Phase G.4.
+    pub fn get_role(&self) -> Role {
+        self.role
+    }
+
+    /// Read-only accessor for `aria-label`. Phase G.4.
+    pub fn get_aria_label(&self) -> Option<&SharedString> {
+        self.aria_label.as_ref()
+    }
+
+    /// Read-only accessor for `aria-labelledby`. Phase G.4.
+    pub fn get_aria_labelledby(&self) -> Option<&SharedString> {
+        self.aria_labelledby.as_ref()
+    }
+
+    /// Read-only accessor for `aria-modal`. Phase G.4.
+    pub fn get_aria_modal(&self) -> bool {
+        self.aria_modal
     }
 }
 
@@ -265,4 +354,38 @@ pub fn modal_primary_action(label_text: impl Into<SharedString>) -> impl IntoEle
     button("ui:modal:primary-action")
         .variant(ActionVariantKind::Primary)
         .child(label_text.into())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn default_modal_has_dialog_role_and_aria_modal_true() {
+        let m = Modal::new();
+        assert_eq!(m.get_role(), Role::Dialog);
+        assert!(m.get_aria_modal());
+        assert!(m.get_aria_label().is_none());
+        assert!(m.get_aria_labelledby().is_none());
+    }
+
+    #[test]
+    fn aria_setters_update_state() {
+        let m = Modal::new()
+            .role(Role::Dialog)
+            .aria_label("Delete file?")
+            .aria_labelledby("modal-title")
+            .aria_modal(false);
+        assert_eq!(m.get_role(), Role::Dialog);
+        assert_eq!(m.get_aria_label().unwrap().as_ref(), "Delete file?");
+        assert_eq!(m.get_aria_labelledby().unwrap().as_ref(), "modal-title");
+        assert!(!m.get_aria_modal());
+    }
+
+    #[test]
+    fn closable_flag_independent_of_aria_modal() {
+        let m = Modal::new().closable(true).aria_modal(false);
+        assert!(m.closable);
+        assert!(!m.get_aria_modal());
+    }
 }

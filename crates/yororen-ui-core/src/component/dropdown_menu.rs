@@ -70,6 +70,9 @@ pub struct DropdownMenu {
     width: Option<gpui::Pixels>,
     placement: PopoverPlacement,
     on_select: Option<SelectFn>,
+    /// Whether the Escape key dismisses the menu. Default: true
+    /// (Phase G.3).
+    dismiss_on_escape: bool,
 }
 
 impl Default for DropdownMenu {
@@ -88,6 +91,7 @@ impl DropdownMenu {
             width: None,
             placement: PopoverPlacement::BottomStart,
             on_select: None,
+            dismiss_on_escape: true,
         }
     }
 
@@ -150,6 +154,13 @@ impl DropdownMenu {
         F: 'static + Fn(String, &ClickEvent, &mut gpui::Window, &mut gpui::App),
     {
         self.on_select = Some(Arc::new(f));
+        self
+    }
+
+    /// Set whether the Escape key dismisses the menu. Default:
+    /// `true` (Phase G.3).
+    pub fn dismiss_on_escape(mut self, dismiss: bool) -> Self {
+        self.dismiss_on_escape = dismiss;
         self
     }
 }
@@ -228,6 +239,7 @@ impl RenderOnce for DropdownMenu {
             .open(is_open)
             .placement(self.placement)
             .when_some(self.width, |this, width| this.width(width))
+            .dismiss_on_escape(self.dismiss_on_escape)
             .on_close(move |window, cx| {
                 open_for_close.update(cx, |open, _| *open = false);
                 window.refresh();

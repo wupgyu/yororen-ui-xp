@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use gpui::prelude::FluentBuilder;
 use gpui::{
     Animation, AnimationExt, Bounds, ClickEvent, ElementId, Hsla, InteractiveElement, IntoElement,
@@ -38,7 +40,7 @@ pub fn popover(id: impl Into<ElementId>) -> Popover {
     Popover::new(id)
 }
 
-type CloseFn = Box<dyn Fn(&mut gpui::Window, &mut gpui::App)>;
+type CloseFn = Arc<dyn Fn(&mut gpui::Window, &mut gpui::App)>;
 
 #[derive(IntoElement)]
 pub struct Popover {
@@ -55,6 +57,10 @@ pub struct Popover {
     bg: Option<Hsla>,
     border: Option<Hsla>,
     on_close: Option<CloseFn>,
+    /// Whether the Escape key dismisses the popover. Default: true
+    /// (Phase G.3). Set to false for non-dismissable popovers
+    /// (e.g. persistent notification stacks).
+    dismiss_on_escape: bool,
 }
 
 impl Default for Popover {
@@ -79,6 +85,7 @@ impl Popover {
             bg: None,
             border: None,
             on_close: None,
+            dismiss_on_escape: true,
         }
     }
 
@@ -150,7 +157,15 @@ impl Popover {
     where
         F: 'static + Fn(&mut gpui::Window, &mut gpui::App),
     {
-        self.on_close = Some(Box::new(f));
+        self.on_close = Some(Arc::new(f));
+        self
+    }
+
+    /// Set whether the Escape key dismisses the popover. Default:
+    /// `true` (Phase G.3). Set to `false` for non-dismissable
+    /// popovers (e.g. persistent notification stacks).
+    pub fn dismiss_on_escape(mut self, dismiss: bool) -> Self {
+        self.dismiss_on_escape = dismiss;
         self
     }
 }
@@ -190,6 +205,7 @@ impl RenderOnce for Popover {
         let placement = self.placement;
         let width = self.width;
         let on_close = self.on_close;
+        let dismiss_on_escape = self.dismiss_on_escape;
 
         // Snapshot token values up-front so the closure doesn't borrow `theme`
         // (which keeps a reference to `cx`) while `cx` itself is moved in.
@@ -244,10 +260,26 @@ impl RenderOnce for Popover {
                     .py_1()
                     .w(menu_width_px)
                     .occlude()
-                    .on_mouse_down_out(move |_ev, window, cx| {
-                        if let Some(on_close) = &on_close {
-                            on_close(window, cx);
+                    .on_mouse_down_out({
+                        let on_close = on_close.clone();
+                        move |_ev, window, cx| {
+                            if let Some(on_close) = &on_close {
+                                on_close(window, cx);
+                            }
                         }
+                    })
+                    .when(dismiss_on_escape, |this| {
+                        this.capture_key_down({
+                            let on_close = on_close.clone();
+                            move |event: &gpui::KeyDownEvent, window, cx| {
+                                if event.keystroke.key.eq_ignore_ascii_case("escape") {
+                                    cx.stop_propagation();
+                                    if let Some(on_close) = &on_close {
+                                        on_close(window, cx);
+                                    }
+                                }
+                            }
+                        })
                     })
                     .child(content);
 
