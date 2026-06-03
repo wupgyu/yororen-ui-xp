@@ -113,6 +113,9 @@ pub struct Select {
     on_change: Option<ChangeCallback<String>>,
     on_change_simple: Option<Arc<dyn Fn(String)>>,
     on_change_with_event: Option<ChangeWithEventCallback<String>>,
+    /// Whether the Escape key dismisses the open menu. Default:
+    /// true. Set to false for non-dismissable dropdowns.
+    dismiss_on_escape: bool,
 }
 
 impl Default for Select {
@@ -139,6 +142,7 @@ impl Select {
             on_change: None,
             on_change_simple: None,
             on_change_with_event: None,
+            dismiss_on_escape: true,
         }
     }
 
@@ -245,6 +249,13 @@ impl Select {
         self.menu_width = Some(width);
         self
     }
+
+    /// Set whether the Escape key dismisses the open menu.
+    /// Default: `true`. Set to `false` for non-dismissable dropdowns.
+    pub fn dismiss_on_escape(mut self, dismiss: bool) -> Self {
+        self.dismiss_on_escape = dismiss;
+        self
+    }
 }
 
 impl ParentElement for Select {
@@ -307,6 +318,7 @@ impl RenderOnce for Select {
         let on_change = self.on_change;
         let on_change_simple = self.on_change_simple;
         let on_change_with_event = self.on_change_with_event;
+        let dismiss_on_escape = self.dismiss_on_escape;
 
         // Select requires an element ID for keyed state management.
         // Use `.id()` to provide a stable ID, or a unique ID will be generated automatically.
@@ -465,8 +477,22 @@ impl RenderOnce for Select {
                     .occlude()
                     // Align menu content: start in LTR, end in RTL.
                     .text_align(rtl::text_align_start(direction))
-                    .on_mouse_down_out(move |_ev, _window, cx| {
-                        menu_open_for_outside.update(cx, |open, _cx| *open = false);
+                    .on_mouse_down_out({
+                        let menu_open_for_outside_outer = menu_open_for_outside.clone();
+                        move |_ev, _window, cx| {
+                            menu_open_for_outside_outer.update(cx, |open, _cx| *open = false);
+                        }
+                    })
+                    .when(dismiss_on_escape, |this| {
+                        this.capture_key_down({
+                            let menu_open_for_esc = menu_open_for_outside.clone();
+                            move |event: &gpui::KeyDownEvent, _window, cx| {
+                                if event.keystroke.key.eq_ignore_ascii_case("escape") {
+                                    cx.stop_propagation();
+                                    menu_open_for_esc.update(cx, |open, _cx| *open = false);
+                                }
+                            }
+                        })
                     })
                     .children(options.into_iter().map(move |opt| {
                         let is_selected = opt.value.as_ref() == Some(&value);
@@ -552,5 +578,20 @@ impl RenderOnce for Select {
         };
 
         trigger
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn default_dismiss_on_escape_is_true() {
+        let s = Select::new();
+        assert!(s.dismiss_on_escape);
+    }
+    #[test]
+    fn dismiss_on_escape_setter_updates() {
+        let s = Select::new().dismiss_on_escape(false);
+        assert!(!s.dismiss_on_escape);
     }
 }

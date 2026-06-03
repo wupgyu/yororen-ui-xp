@@ -5,6 +5,7 @@ members = [
     "crates/yororen-ui-core",
     "crates/yororen-ui-theme-system",
     "crates/yororen-ui-theme-mini",
+    "crates/yororen-ui-theme-catppuccin",
     "crates/yororen-ui-locale-en",
     "crates/yororen-ui-locale-zh-CN",
     "crates/yororen-ui-locale-ar",
@@ -17,6 +18,8 @@ members = [
     "crates/yororen-ui-demos/i18n_showcase",
     "crates/yororen-ui-demos/theme_compare",
     "crates/yororen-ui-demos/variant_showcase",
+    "crates/yororen-ui-demos/theme_showcase",
+    "crates/yororen-ui-demos/modal_a11y",
 ]
 exclude = [
     "crates/yororen-ui-demos/*/target",

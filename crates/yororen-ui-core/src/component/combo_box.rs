@@ -90,6 +90,8 @@ pub struct ComboBox {
     max_results: usize,
     on_change: Option<ChangeFn>,
     on_change_simple: Option<SimpleChangeFn>,
+    /// Whether the Escape key dismisses the open menu. Default: true.
+    dismiss_on_escape: bool,
 }
 
 impl Default for ComboBox {
@@ -117,6 +119,7 @@ impl ComboBox {
             max_results: 12,
             on_change: None,
             on_change_simple: None,
+            dismiss_on_escape: true,
         }
     }
 
@@ -189,6 +192,13 @@ impl ComboBox {
         F: 'static + Fn(String),
     {
         self.on_change_simple = Some(Arc::new(handler));
+        self
+    }
+
+    /// Set whether the Escape key dismisses the open menu.
+    /// Default: `true`. Set to `false` for non-dismissable menus.
+    pub fn dismiss_on_escape(mut self, dismiss: bool) -> Self {
+        self.dismiss_on_escape = dismiss;
         self
     }
 
@@ -284,6 +294,7 @@ impl RenderOnce for ComboBox {
         let on_change = self.on_change;
         let on_change_simple = self.on_change_simple;
         let max_results = self.max_results;
+        let dismiss_on_escape = self.dismiss_on_escape;
 
         // ComboBox requires an element ID for keyed state management.
         // Use `.id()` to provide a stable ID, or a unique ID will be generated automatically.
@@ -476,10 +487,22 @@ impl RenderOnce for ComboBox {
                 .text_align(rtl::text_align_start(direction))
                 .on_mouse_down_out({
                     let needs_content_init = needs_content_init.clone();
+                    let menu_open_for_outside_outer = menu_open_for_outside.clone();
                     move |_ev, _window, cx| {
-                        menu_open_for_outside.update(cx, |open, _cx| *open = false);
+                        menu_open_for_outside_outer.update(cx, |open, _cx| *open = false);
                         needs_content_init.update(cx, |v, _| *v = true);
                     }
+                })
+                .when(dismiss_on_escape, |this| {
+                    this.capture_key_down({
+                        let menu_open_for_esc = menu_open_for_outside.clone();
+                        move |event: &gpui::KeyDownEvent, _window, cx| {
+                            if event.keystroke.key.eq_ignore_ascii_case("escape") {
+                                cx.stop_propagation();
+                                menu_open_for_esc.update(cx, |open, _cx| *open = false);
+                            }
+                        }
+                    })
                 })
                 .child(
                     div().px_2().pb_2().child(
@@ -579,5 +602,20 @@ impl RenderOnce for ComboBox {
             bounds_state: trigger_bounds_state,
             inner: trigger.into_any_element(),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn default_dismiss_on_escape_is_true() {
+        let s = ComboBox::new();
+        assert!(s.dismiss_on_escape);
+    }
+    #[test]
+    fn dismiss_on_escape_setter_updates() {
+        let s = ComboBox::new().dismiss_on_escape(false);
+        assert!(!s.dismiss_on_escape);
     }
 }
