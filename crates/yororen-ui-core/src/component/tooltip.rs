@@ -49,6 +49,11 @@ pub struct Tooltip {
     placement: TooltipPlacement,
     bg: Option<Hsla>,
     text_color: Option<Hsla>,
+    /// Whether to honour an Escape keypress by closing any parent
+    /// overlay / popover that hosts this tooltip. The tooltip
+    /// itself is a passive element; this flag is consumed by
+    /// the surrounding `.with_tooltip()` host. Default: `true`.
+    dismiss_on_escape: bool,
 }
 
 struct TooltipView {
@@ -66,6 +71,7 @@ impl Tooltip {
             placement: TooltipPlacement::Auto,
             bg: None,
             text_color: None,
+            dismiss_on_escape: true,
         }
     }
 
@@ -91,6 +97,13 @@ impl Tooltip {
 
     pub fn text_color(mut self, color: impl Into<Hsla>) -> Self {
         self.text_color = Some(color.into());
+        self
+    }
+
+    /// Set whether to honour an Escape keypress. Default: `true`.
+    /// See [`Tooltip::dismiss_on_escape`] for details.
+    pub fn dismiss_on_escape(mut self, dismiss: bool) -> Self {
+        self.dismiss_on_escape = dismiss;
         self
     }
 
@@ -147,3 +160,19 @@ impl RenderOnce for Tooltip {
         div().id(self.element_id).child(self.content)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn default_dismiss_on_escape_is_true() {
+        let t = Tooltip::text("hi");
+        assert!(t.dismiss_on_escape);
+    }
+    #[test]
+    fn dismiss_on_escape_setter_updates() {
+        let t = Tooltip::text("hi").dismiss_on_escape(false);
+        assert!(!t.dismiss_on_escape);
+    }
+}
+
