@@ -18,6 +18,7 @@ members = [
     "crates/yororen-ui-demos/i18n_showcase",
     "crates/yororen-ui-demos/theme_compare",
     "crates/yororen-ui-demos/variant_showcase",
+    "crates/yororen-ui-demos/theme_showcase",
 ]
 exclude = [
     "crates/yororen-ui-demos/*/target",
