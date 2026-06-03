@@ -29,8 +29,6 @@ use yororen_ui_core::renderer::{
 };
 use yororen_ui_core::theme::{ActionVariantKind, Theme};
 
-use crate::palette;
-
 /// Catppuccin's signature border radius. Bigger than the v0.5 system
 /// default of 6 px; gives the UI a softer, chunkier feel.
 pub const CATPPUCCIN_RADIUS: f32 = 12.0;

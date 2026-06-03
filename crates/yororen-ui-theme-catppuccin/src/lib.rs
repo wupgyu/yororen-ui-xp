@@ -70,7 +70,9 @@ pub mod variant;
 
 mod factories;
 
-// Public factory functions.
+// Public factory functions. `themeset_all_four` is re-exported for
+// back-compat but emits a `#[deprecated]` warning.
+#[allow(deprecated)]
 pub use factories::{
     FrappeTheme, LatteTheme, MacchiatoTheme, MochaTheme, dark, frappe, frappe_theme, latte_theme,
     light, macchiato, macchiato_theme, mocha, mocha_theme, themeset, themeset_all_four,
@@ -81,7 +83,85 @@ use std::sync::Arc;
 use gpui::App;
 use gpui::WindowAppearance;
 
-use yororen_ui_core::theme::{GlobalTheme, Theme};
+use yororen_ui_core::theme::{GlobalTheme, Theme, ThemeSet};
+
+/// Catppuccin flavor identifier.
+///
+/// Use this enum to explicitly select a flavor independent of
+/// `WindowAppearance`. The four flavors differ in their
+/// light/dark-ness:
+///
+/// - `Latte`: light.
+/// - `Frappé`: medium-dark.
+/// - `Macchiato`: darker than Frappé.
+/// - `Mocha`: darkest (most popular).
+///
+/// `install_flavor` selects a flavor explicitly; `install` picks
+/// Latte vs Mocha based on the OS appearance.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
+pub enum CatppuccinFlavor {
+    /// Light flavor. Default.
+    #[default]
+    Latte,
+    /// Medium-dark flavor.
+    Frappe,
+    /// Darker than Frappé.
+    Macchiato,
+    /// Darkest flavor. Most popular.
+    Mocha,
+}
+
+impl CatppuccinFlavor {
+    /// Returns the canonical lowercase name (matches the
+    /// `VariantKey` strings used in [`variant::key_mocha`] etc.).
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Latte => "latte",
+            Self::Frappe => "frappe",
+            Self::Macchiato => "macchiato",
+            Self::Mocha => "mocha",
+        }
+    }
+
+    /// All four flavors, in canonical order.
+    pub const ALL: [CatppuccinFlavor; 4] = [
+        Self::Latte,
+        Self::Frappe,
+        Self::Macchiato,
+        Self::Mocha,
+    ];
+
+    /// Build a `Theme` for this flavor. Thin wrapper around the
+    /// factory functions in [`factories`].
+    pub fn theme(self) -> Theme {
+        match self {
+            Self::Latte => light(),
+            Self::Frappe => frappe(),
+            Self::Macchiato => macchiato(),
+            Self::Mocha => mocha(),
+        }
+    }
+}
+
+impl std::fmt::Display for CatppuccinFlavor {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+/// Resolve a `CatppuccinFlavor` from a `WindowAppearance`. Uses
+/// `VibrantLight` → Frappé, `VibrantDark` → Macchiato, `Light` →
+/// Latte, `Dark` → Mocha. This lets apps that want
+/// "medium-bright" pick a flavor via the OS appearance (only
+/// `Vibrant*` triggers the medium flavors).
+pub fn flavor_from_appearance(appearance: WindowAppearance) -> CatppuccinFlavor {
+    match appearance {
+        WindowAppearance::Light => CatppuccinFlavor::Latte,
+        WindowAppearance::VibrantLight => CatppuccinFlavor::Frappe,
+        WindowAppearance::VibrantDark => CatppuccinFlavor::Macchiato,
+        WindowAppearance::Dark => CatppuccinFlavor::Mocha,
+    }
+}
 
 /// Convenience: a default `Arc<Theme>` (Mocha dark).
 pub fn dark_arc() -> Arc<Theme> {
@@ -109,15 +189,23 @@ pub fn install(cx: &mut App, appearance: WindowAppearance) {
     cx.set_global(GlobalTheme::new_with_themes(appearance, themeset()));
 }
 
-/// Install the Catppuccin theme with the full 4-flavor `ThemeSet`
-/// (Latte / Frappé / Macchiato / Mocha). The OS appearance selects
-/// the closest one: light = Latte, dark = Mocha. (Frappé and Macchiato
-/// are not directly OS-mapped; they are intended for explicit
-/// per-app selection via [`themeset_all_four`].)
-pub fn install_with_all_flavors(cx: &mut App, appearance: WindowAppearance) {
+/// Install the Catppuccin theme with a specific flavor, ignoring
+/// `WindowAppearance`. Useful when the user explicitly picks
+/// "use Frappé" via an in-app setting, or when the app is
+/// running headless without an OS appearance.
+///
+/// ```rust,ignore
+/// catppuccin::install_flavor(cx, CatppuccinFlavor::Frappe, cx.window_appearance());
+/// ```
+pub fn install_flavor(
+    cx: &mut App,
+    flavor: CatppuccinFlavor,
+    appearance: WindowAppearance,
+) {
+    let theme = flavor.theme();
     cx.set_global(GlobalTheme::new_with_themes(
         appearance,
-        themeset_all_four(),
+        ThemeSet::new(theme),
     ));
 }
 
@@ -145,6 +233,67 @@ mod tests {
         let latte = light();
         let mocha = dark();
         assert_ne!(latte.surface.base, mocha.surface.base);
+    }
+
+    #[test]
+    fn flavor_default_is_latte() {
+        assert_eq!(CatppuccinFlavor::default(), CatppuccinFlavor::Latte);
+    }
+
+    #[test]
+    fn flavor_as_str() {
+        assert_eq!(CatppuccinFlavor::Latte.as_str(), "latte");
+        assert_eq!(CatppuccinFlavor::Frappe.as_str(), "frappe");
+        assert_eq!(CatppuccinFlavor::Macchiato.as_str(), "macchiato");
+        assert_eq!(CatppuccinFlavor::Mocha.as_str(), "mocha");
+    }
+
+    #[test]
+    fn flavor_all_has_four_variants() {
+        assert_eq!(CatppuccinFlavor::ALL.len(), 4);
+        let names: Vec<&str> = CatppuccinFlavor::ALL.iter().map(|f| f.as_str()).collect();
+        assert_eq!(names, vec!["latte", "frappe", "macchiato", "mocha"]);
+    }
+
+    #[test]
+    fn flavor_theme_distinct() {
+        let latte = CatppuccinFlavor::Latte.theme();
+        let frappe = CatppuccinFlavor::Frappe.theme();
+        let macchiato = CatppuccinFlavor::Macchiato.theme();
+        let mocha = CatppuccinFlavor::Mocha.theme();
+        // Each flavor has a distinct surface.base.
+        assert_ne!(latte.surface.base, frappe.surface.base);
+        assert_ne!(frappe.surface.base, macchiato.surface.base);
+        assert_ne!(macchiato.surface.base, mocha.surface.base);
+        assert_ne!(latte.surface.base, mocha.surface.base);
+    }
+
+    #[test]
+    fn flavor_display_matches_as_str() {
+        for f in CatppuccinFlavor::ALL {
+            assert_eq!(format!("{}", f), f.as_str());
+        }
+    }
+
+    #[test]
+    fn flavor_from_appearance_maps_correctly() {
+        use gpui::WindowAppearance::*;
+        assert_eq!(
+            flavor_from_appearance(Light),
+            CatppuccinFlavor::Latte
+        );
+        assert_eq!(
+            flavor_from_appearance(VibrantLight),
+            CatppuccinFlavor::Frappe
+        );
+        assert_eq!(
+            flavor_from_appearance(VibrantDark),
+            CatppuccinFlavor::Macchiato
+        );
+        assert_eq!(
+            flavor_from_appearance(Dark),
+            CatppuccinFlavor::Mocha
+        );
     }
 
     #[test]

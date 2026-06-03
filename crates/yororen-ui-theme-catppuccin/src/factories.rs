@@ -280,12 +280,17 @@ pub fn themeset() -> ThemeSet {
     ThemeSet::new(light()).dark(dark())
 }
 
-/// `ThemeSet` containing all four flavors. The 2-flavor
-/// `resolve(appearance)` selection picks Latte (light) or Mocha
-/// (dark); for Frappé / Macchiato use the per-flavor factory
-/// functions and install the theme manually.
+/// **Deprecated** in v0.5.0 — `ThemeSet` only has 2 slots
+/// (light / dark), so this function is equivalent to
+/// [`themeset`]. For explicit 4-flavor selection use
+/// [`CatppuccinFlavor`](crate::CatppuccinFlavor) and
+/// [`install_flavor`](crate::install_flavor) instead.
+#[deprecated(
+    since = "0.5.0",
+    note = "ThemeSet is 2-slot; use CatppuccinFlavor + install_flavor instead"
+)]
 pub fn themeset_all_four() -> ThemeSet {
-    ThemeSet::new(light()).dark(dark())
+    themeset()
 }
 
 /// Alias for [`light`] returning a strongly-typed `LatteTheme` for
