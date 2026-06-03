@@ -66,6 +66,7 @@
 
 pub mod palette;
 pub mod renderer;
+pub mod snapshot;
 pub mod variant;
 
 mod factories;

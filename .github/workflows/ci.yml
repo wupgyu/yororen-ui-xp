@@ -77,3 +77,30 @@ jobs:
             echo "=== $crate ==="
             cargo publish --dry-run --allow-dirty -p $(basename $crate | tr '-' '_') || exit 1
           done
+
+  visual-regression:
+    # Phase F-δ: visual-regression test for the Catppuccin theme.
+    # Currently uses a "theme-snapshot" test (every renderer's
+    # output captured for both Latte and Mocha; regression test
+    # asserts light/dark differ) rather than pixel-level
+    # screenshots, because gpui-ce 0.3.3 has no public API to
+    # render to an offscreen surface. The pixel-level screenshot
+    # job is reserved for when gpui-ce gains offscreen support
+    # (likely gpui-ce 0.4+).
+    name: theme visual regression
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Cache cargo registry & build
+        uses: Swatinem/rust-cache@v2
+      - name: Run theme snapshot test
+        # This test exercises every Catppuccin renderer for
+        # every (light, dark) pair and asserts the output
+        # differs. It's the F-α regression test (catches
+        # hardcoded `palette::mocha::*`).
+        run: cargo test -p yororen_ui_theme_catppuccin --lib snapshot
+      - name: Run theme-showcase coverage test
+        # Verifies the demo's catppuccin_renderer_only() covers
+        # all 37 renderers (F-γ hard requirement).
+        run: cargo test -p theme-showcase-demo --lib catppuccin_renderer_only_covers_all_renderers
