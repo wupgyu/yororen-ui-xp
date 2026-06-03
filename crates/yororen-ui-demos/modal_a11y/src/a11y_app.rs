@@ -193,6 +193,7 @@ fn build_standard_modal(title: &str, body: &str) -> gpui::AnyElement {
 mod tests {
     use super::*;
     use crate::state::ModalVisibility;
+    use yororen_ui::component::modal_dialog;
 
     #[test]
     fn build_standard_modal_returns_any_element() {
@@ -205,5 +206,22 @@ mod tests {
         assert!(!v.standard);
         assert!(!v.required);
         assert!(!v.no_scroll_lock);
+    }
+
+    /// G-γ: `modal_dialog(id)` is the one-line API. The
+    /// resulting `ModalShell` is `IntoElement` so the caller can
+    /// embed it in a parent layout directly. We exercise both
+    /// paths: raw construction, and `.into_any_element()` for
+    /// embedding in an existing element tree.
+    #[test]
+    fn modal_dialog_one_line_returns_any_element() {
+        let shell = modal_dialog("one-line-modal")
+            .open(true)
+            .title("Hello")
+            .content(label("Body"))
+            .on_close(|_reason, _w, _cx| {});
+        // The shell is IntoElement, so we can convert it for
+        // embedding in a parent layout.
+        let _any: gpui::AnyElement = shell.into_any_element();
     }
 }
