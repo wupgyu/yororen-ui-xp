@@ -277,6 +277,95 @@ The default `theme-system` and `theme-catppuccin` Themes both pass with zero
 issues. If your custom theme triggers a `ContrastTooLow` or `TokenOutOfRange`,
 fix the source data before shipping.
 
+## 8.5. Critical: **never hardcode `palette::*` colors inside a renderer**
+
+This is the single most common mistake a first-time theme author makes.
+Once you have a `Theme` in scope, every renderer method **must** read from
+`theme.surface.*` / `theme.content.*` / `theme.border.*` / `theme.action.*` /
+`theme.status.*` / `theme.tokens.*`. Hardcoding a color from your palette
+module inside the renderer body will silently break light / dark switching
+and break per-flavor themes.
+
+### ❌ Wrong
+
+```rust,ignore
+// BROKEN: this card stays the same color in every flavor
+impl CardRenderer for BrandCardRenderer {
+    fn bg(&self, _state: &CardRenderState, _theme: &Theme) -> Hsla {
+        palette::mocha::mantle()   // ❌ ignore the `theme` arg
+    }
+}
+```
+
+If the user calls `theme.install(light_palette)` to get a Latte (light)
+flavor, the factory correctly populates `theme.surface.raised` with the
+Latte equivalent (a near-white tone). But the renderer above reads
+`palette::mocha::mantle()` regardless of the active theme, producing a
+**dark card on a light surface** — a visual mismatch.
+
+### ✅ Right
+
+```rust,ignore
+impl CardRenderer for BrandCardRenderer {
+    fn bg(&self, _state: &CardRenderState, theme: &Theme) -> Hsla {
+        theme.surface.raised   // ✅ follows whatever palette the
+                               //    factory populated
+    }
+}
+```
+
+### Why this matters in practice
+
+- **Light / dark modes** are broken if you hardcode dark colors.
+- **Multi-flavor themes** (Catppuccin's 4 flavors) are broken: the user
+  picks Frappé, but your renderer still shows Mocha colors.
+- **Per-app theme overrides** are broken: the user sets `theme.brand` to
+  their own color, but your renderer ignores it.
+
+### Mapping cheat sheet
+
+When porting a renderer from a hardcoded palette to a `theme` read, use this
+table as a starting point:
+
+| Hardcoded (WRONG)            | Theme read (RIGHT)                       |
+|------------------------------|------------------------------------------|
+| `palette::mocha::base`       | `theme.surface.base`                     |
+| `palette::mocha::mantle`     | `theme.surface.raised`                   |
+| `palette::mocha::crust`      | `theme.surface.canvas`                   |
+| `palette::mocha::surface0`   | `theme.surface.sunken` (or `theme.surface.hover`) |
+| `palette::mocha::surface1`   | `theme.border.default` (or `theme.surface.hover`) |
+| `palette::mocha::surface2`   | `theme.border.muted`                     |
+| `palette::mocha::text`       | `theme.content.primary`                  |
+| `palette::mocha::subtext0`   | `theme.content.tertiary`                 |
+| `palette::mocha::subtext1`   | `theme.content.secondary`                |
+| `palette::mocha::overlay0`   | `theme.content.disabled`                 |
+| `palette::mocha::mauve`      | `theme.border.focus` (mapped by factory) |
+| `palette::mocha::blue`       | `theme.action.primary.bg` (mapped)       |
+| `palette::mocha::peach`      | `theme.status.warning.bg` (closest)      |
+| `palette::mocha::red`        | `theme.action.danger.bg` (mapped)        |
+| `palette::mocha::green`      | `theme.status.success.bg` (mapped)       |
+
+If a color you need is **not** in this table, your theme probably needs a
+new theme field. Don't hardcode — extend the `Theme` struct.
+
+### How to detect a hardcoded renderer in review
+
+A renderer is hardcoded if you can delete the `theme: &Theme` parameter
+from the method signature and the function still compiles and produces
+a meaningful value. If that's true, the renderer is ignoring the theme.
+
+```rust,ignore
+// ❌ Hardcoded (you can drop `theme`)
+fn bg(&self, _state: &CardRenderState, _theme: &Theme) -> Hsla {
+    palette::mocha::mantle()
+}
+
+// ✅ Theme-aware (you cannot drop `theme` without breaking compilation)
+fn bg(&self, _state: &CardRenderState, theme: &Theme) -> Hsla {
+    theme.surface.raised
+}
+```
+
 ## 9. Per-flavor palettes (Catppuccin-style)
 
 `yororen-ui-theme-catppuccin` demonstrates the "4 flavors" pattern: a single
