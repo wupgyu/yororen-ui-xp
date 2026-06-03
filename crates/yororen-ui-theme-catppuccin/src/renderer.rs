@@ -17,16 +17,29 @@
 
 use std::sync::Arc;
 
-use gpui::{Hsla, Pixels, px};
+use gpui::{FontWeight, Hsla, Pixels, SharedString, px};
 
 use yororen_ui_core::renderer::{
-    ButtonRenderState, ButtonRenderer, CardRenderState, CardRenderer, CheckboxRenderState,
-    CheckboxRenderer, EmptyStateRenderState, EmptyStateRenderer, FocusRingRenderState,
-    FocusRingRenderer, ListItemRenderState, ListItemRenderer, ModalRenderState, ModalRenderer,
-    RadioRenderState, RadioRenderer, RendererRegistry, SwitchRenderState, SwitchRenderer,
-    TagRenderState, TagRenderer, TextInputRenderState, TextInputRenderer, ToastRenderState,
-    ToastRenderer,
+    AvatarRenderState, AvatarRenderer, BadgeRenderState, BadgeRenderer, ButtonRenderState,
+    ButtonRenderer, CardRenderState, CardRenderer, CheckboxRenderState, CheckboxRenderer,
+    ComboBoxRenderState, ComboBoxRenderer, DisclosureRenderState, DisclosureRenderer,
+    DividerRenderState, DividerRenderer, DropdownMenuRenderState, DropdownMenuRenderer,
+    EmptyStateRenderState, EmptyStateRenderer, FilePathInputRenderState, FilePathInputRenderer,
+    FocusRingRenderState, FocusRingRenderer, FormRenderState, FormRenderer, HeadingRenderState,
+    HeadingRenderer, IconButtonRenderState, IconButtonRenderer, IconRenderState, IconRenderer,
+    KeybindingInputRenderState, KeybindingInputRenderer, LabelRenderState, LabelRenderer,
+    ListItemRenderState, ListItemRenderer, ModalRenderState, ModalRenderer, NotificationRenderState,
+    NotificationRenderer, NumberInputRenderState, NumberInputRenderer, PasswordInputRenderState,
+    PasswordInputRenderer, PopoverRenderState, PopoverRenderer, ProgressBarRenderState,
+    ProgressBarRenderer, RadioRenderState, RadioRenderer, RendererRegistry, SearchInputRenderState,
+    SearchInputRenderer, SelectRenderState, SelectRenderer, SkeletonRenderState, SkeletonRenderer,
+    SplitButtonRenderState, SplitButtonRenderer, SwitchRenderState, SwitchRenderer, TagRenderState,
+    TagRenderer, TextAreaRenderState, TextAreaRenderer, TextInputRenderState, TextInputRenderer,
+    ToastRenderState, ToastRenderer, ToggleButtonRenderState, ToggleButtonRenderer,
+    TooltipRenderState, TooltipRenderer, TreeItemRenderState, TreeItemRenderer,
+    IconSizePreset,
 };
+use yororen_ui_core::renderer::spec::Edges;
 use yororen_ui_core::theme::{ActionVariantKind, Theme};
 
 /// Catppuccin's signature border radius. Bigger than the v0.5 system
@@ -604,6 +617,969 @@ impl EmptyStateRenderer for CatppuccinEmptyStateRenderer {
 }
 
 // ---------------------------------------------------------------------------
+// Avatar
+// ---------------------------------------------------------------------------
+
+/// Catppuccin avatar: `surface.hover` background, pill radius for
+/// circular avatars, `surface.base` status-dot border for clear
+/// separation from the avatar surface.
+pub struct CatppuccinAvatarRenderer;
+
+impl AvatarRenderer for CatppuccinAvatarRenderer {
+    fn default_bg(&self, _state: &AvatarRenderState, theme: &Theme) -> Hsla {
+        theme.surface.hover
+    }
+    fn border_radius(&self, state: &AvatarRenderState, theme: &Theme) -> Pixels {
+        if state.is_circle {
+            theme.tokens.radii.pill
+        } else {
+            theme.tokens.radii.lg
+        }
+    }
+    fn status_dot_size(&self, _state: &AvatarRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.sizes.icon_sm
+    }
+    fn status_inset(&self, _state: &AvatarRenderState, _theme: &Theme) -> Pixels {
+        px(2.0)
+    }
+    fn status_border_w(&self, _state: &AvatarRenderState, _theme: &Theme) -> Pixels {
+        px(1.5)
+    }
+    fn status_border_color(&self, _state: &AvatarRenderState, theme: &Theme) -> Hsla {
+        theme.surface.base
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Badge
+// ---------------------------------------------------------------------------
+
+/// Catppuccin badge: pill radius, `status.info.bg` background,
+/// `status.info.fg` text color.
+pub struct CatppuccinBadgeRenderer;
+
+impl BadgeRenderer for CatppuccinBadgeRenderer {
+    fn bg(&self, _state: &BadgeRenderState, theme: &Theme) -> Hsla {
+        theme.status.info.bg
+    }
+    fn fg(&self, state: &BadgeRenderState, theme: &Theme) -> Hsla {
+        if state.has_custom_tone {
+            theme.content.on_status
+        } else {
+            theme.status.info.fg
+        }
+    }
+    fn padding_x(&self, _state: &BadgeRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.spacing.inset_sm
+    }
+    fn height(&self, _state: &BadgeRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.control.badge.min_height
+    }
+    fn font_size(&self, _state: &BadgeRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.typography.font_size_xs
+    }
+    fn font_weight(&self, _state: &BadgeRenderState, theme: &Theme) -> FontWeight {
+        theme.tokens.typography.weight_medium
+    }
+    fn border_radius(&self, _state: &BadgeRenderState, _theme: &Theme) -> Pixels {
+        px(999.0)
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Divider
+// ---------------------------------------------------------------------------
+
+/// Catppuccin divider: `border.divider` color, 1-px thickness.
+pub struct CatppuccinDividerRenderer;
+
+impl DividerRenderer for CatppuccinDividerRenderer {
+    fn color(&self, _state: &DividerRenderState, theme: &Theme) -> Hsla {
+        theme.border.divider
+    }
+    fn thickness(&self, _state: &DividerRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.control.divider.thickness
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Heading
+// ---------------------------------------------------------------------------
+
+/// Catppuccin heading: `content.primary` color, level-driven size
+/// from tokens, semibold weight.
+pub struct CatppuccinHeadingRenderer;
+
+impl HeadingRenderer for CatppuccinHeadingRenderer {
+    fn size(&self, state: &HeadingRenderState, theme: &Theme) -> Pixels {
+        let t = &theme.tokens.typography;
+        // HeadingLevel is in a private module so we can't match
+        // its variants directly. Use std::mem::discriminant
+        // comparison against two of the three known variants
+        // (H1, H2); H3 is the fall-through. `transmute_copy` of
+        // the discriminant is sound because HeadingLevel is
+        // a plain fieldless enum with sequential variants.
+        use std::mem::discriminant;
+        let h1 = discriminant(&state.level);
+        // Build a synthetic H2 discriminant by transmuting a
+        // stack copy of state.level with offset 1. H2 is H1+1.
+        let level: u8 = unsafe { std::mem::transmute_copy(&state.level) };
+        let _ = h1; // silence unused if compiler folds
+        match level {
+            0 => t.font_size_2xl, // H1
+            1 => t.font_size_xl,  // H2
+            _ => t.font_size_lg,  // H3
+        }
+    }
+    fn weight(&self, state: &HeadingRenderState, theme: &Theme) -> FontWeight {
+        let level: u8 = unsafe { std::mem::transmute_copy(&state.level) };
+        match level {
+            0 => theme.tokens.typography.weight_bold,
+            _ => theme.tokens.typography.weight_semibold,
+        }
+    }
+    fn color(&self, _state: &HeadingRenderState, theme: &Theme) -> Hsla {
+        theme.content.primary
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Icon
+// ---------------------------------------------------------------------------
+
+/// Catppuccin icon: `content.secondary` color, level-driven size
+/// from tokens.
+pub struct CatppuccinIconRenderer;
+
+impl IconRenderer for CatppuccinIconRenderer {
+    fn color(&self, state: &IconRenderState, theme: &Theme) -> Hsla {
+        if state.has_custom_color {
+            theme.content.primary
+        } else {
+            theme.content.secondary
+        }
+    }
+    fn size(&self, state: &IconRenderState, theme: &Theme) -> Pixels {
+        match state.size_preset {
+            Some(IconSizePreset::Xs) => theme.tokens.sizes.icon_xs,
+            Some(IconSizePreset::Sm) => theme.tokens.sizes.icon_sm,
+            Some(IconSizePreset::Md) => theme.tokens.sizes.icon_md,
+            Some(IconSizePreset::Lg) => theme.tokens.sizes.icon_lg,
+            Some(IconSizePreset::Xl) => theme.tokens.sizes.icon_xl,
+            _ => theme.tokens.sizes.icon_md,
+        }
+    }
+    fn size_xs(&self, _state: &IconRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.sizes.icon_xs
+    }
+    fn size_sm(&self, _state: &IconRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.sizes.icon_sm
+    }
+    fn size_md(&self, _state: &IconRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.sizes.icon_md
+    }
+    fn size_lg(&self, _state: &IconRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.sizes.icon_lg
+    }
+    fn size_xl(&self, _state: &IconRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.sizes.icon_xl
+    }
+}
+
+// ---------------------------------------------------------------------------
+// IconButton
+// ---------------------------------------------------------------------------
+
+/// Catppuccin icon button: `surface.hover` background on hover,
+/// `md` radius, 0.5 disabled opacity.
+pub struct CatppuccinIconButtonRenderer;
+
+impl IconButtonRenderer for CatppuccinIconButtonRenderer {
+    fn bg(&self, _state: &IconButtonRenderState, _theme: &Theme) -> Hsla {
+        // Static transparent; hover state is drawn separately.
+        let c = gpui::hsla(0.0, 0.0, 0.0, 0.0);
+        c
+    }
+    fn hover_bg(&self, _state: &IconButtonRenderState, theme: &Theme) -> Hsla {
+        theme.surface.hover
+    }
+    fn size(&self, _state: &IconButtonRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.control.icon_button.min_size
+    }
+    fn border_radius(&self, _state: &IconButtonRenderState, _theme: &Theme) -> Pixels {
+        px(CATPPUCCIN_RADIUS)
+    }
+    fn disabled_opacity(&self, _state: &IconButtonRenderState, _theme: &Theme) -> f32 {
+        0.5
+    }
+}
+
+// ---------------------------------------------------------------------------
+// ToggleButton
+// ---------------------------------------------------------------------------
+
+/// Catppuccin toggle button: action-variant-aware bg, 12-px radius.
+pub struct CatppuccinToggleButtonRenderer;
+
+impl ToggleButtonRenderer for CatppuccinToggleButtonRenderer {
+    fn bg(&self, state: &ToggleButtonRenderState, theme: &Theme) -> Hsla {
+        if state.selected {
+            theme.action_variant(state.variant).active_bg
+        } else {
+            theme.action_variant(state.variant).bg
+        }
+    }
+    fn fg(&self, state: &ToggleButtonRenderState, theme: &Theme) -> Hsla {
+        if state.disabled {
+            theme.action_variant(state.variant).disabled_fg
+        } else {
+            theme.action_variant(state.variant).fg
+        }
+    }
+    fn min_height(&self, _state: &ToggleButtonRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.control.button.min_height
+    }
+    fn border_radius(&self, _state: &ToggleButtonRenderState, _theme: &Theme) -> Pixels {
+        px(CATPPUCCIN_RADIUS)
+    }
+    fn disabled_opacity(&self, _state: &ToggleButtonRenderState, _theme: &Theme) -> f32 {
+        0.5
+    }
+}
+
+// ---------------------------------------------------------------------------
+// ProgressBar
+// ---------------------------------------------------------------------------
+
+/// Catppuccin progress bar: `surface.hover` track, `action.primary`
+/// fill, 8-px radius.
+pub struct CatppuccinProgressBarRenderer;
+
+impl ProgressBarRenderer for CatppuccinProgressBarRenderer {
+    fn track(&self, _state: &ProgressBarRenderState, theme: &Theme) -> Hsla {
+        theme.surface.hover
+    }
+    fn fill(&self, _state: &ProgressBarRenderState, theme: &Theme) -> Hsla {
+        theme.action.primary.bg
+    }
+    fn height(&self, _state: &ProgressBarRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.control.progress.bar_default_h
+    }
+    fn border_color(&self, _state: &ProgressBarRenderState, theme: &Theme) -> Hsla {
+        theme.border.muted
+    }
+    fn border_radius(&self, _state: &ProgressBarRenderState, _theme: &Theme) -> Pixels {
+        px(CATPPUCCIN_RADIUS_SM)
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Skeleton
+// ---------------------------------------------------------------------------
+
+/// Catppuccin skeleton: `surface.hover` background, `md` radius.
+pub struct CatppuccinSkeletonRenderer;
+
+impl SkeletonRenderer for CatppuccinSkeletonRenderer {
+    fn bg(&self, _state: &SkeletonRenderState, theme: &Theme) -> Hsla {
+        theme.surface.hover
+    }
+    fn min_height(&self, _state: &SkeletonRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.control.skeleton.line_h
+    }
+    fn border_radius(&self, _state: &SkeletonRenderState, _theme: &Theme) -> Pixels {
+        px(CATPPUCCIN_RADIUS_SM)
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Tooltip
+// ---------------------------------------------------------------------------
+
+/// Catppuccin tooltip: `surface.canvas` background, `content.primary`
+/// text, `xs` font size, `sm` radius.
+pub struct CatppuccinTooltipRenderer;
+
+impl TooltipRenderer for CatppuccinTooltipRenderer {
+    fn bg(&self, _state: &TooltipRenderState, theme: &Theme) -> Hsla {
+        theme.surface.canvas
+    }
+    fn fg(&self, _state: &TooltipRenderState, theme: &Theme) -> Hsla {
+        theme.content.primary
+    }
+    fn padding(
+        &self,
+        _state: &TooltipRenderState,
+        theme: &Theme,
+    ) -> Edges<Pixels> {
+        Edges::symmetric(
+            theme.tokens.spacing.inset_sm,
+            theme.tokens.spacing.inset_xs,
+        )
+    }
+    fn font_size(&self, _state: &TooltipRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.typography.font_size_xs
+    }
+    fn border_radius(&self, _state: &TooltipRenderState, _theme: &Theme) -> Pixels {
+        px(CATPPUCCIN_RADIUS_SM)
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Notification
+// ---------------------------------------------------------------------------
+
+/// Catppuccin notification: `surface.raised` background,
+/// `border.default` border, 12-px radius, soft shadow.
+pub struct CatppuccinNotificationRenderer;
+
+impl NotificationRenderer for CatppuccinNotificationRenderer {
+    fn bg(&self, _state: &NotificationRenderState, theme: &Theme) -> Hsla {
+        theme.surface.raised
+    }
+    fn border(&self, _state: &NotificationRenderState, theme: &Theme) -> Hsla {
+        theme.border.default
+    }
+    fn padding(
+        &self,
+        _state: &NotificationRenderState,
+        theme: &Theme,
+    ) -> Edges<Pixels> {
+        Edges::all(theme.tokens.spacing.inset_md)
+    }
+    fn border_radius(&self, _state: &NotificationRenderState, _theme: &Theme) -> Pixels {
+        px(CATPPUCCIN_RADIUS)
+    }
+    fn shadow_alpha(&self, _state: &NotificationRenderState, _theme: &Theme) -> f32 {
+        0.30
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Popover
+// ---------------------------------------------------------------------------
+
+/// Catppuccin popover: `surface.raised` background, `border.default`
+/// border, 12-px radius.
+pub struct CatppuccinPopoverRenderer;
+
+impl PopoverRenderer for CatppuccinPopoverRenderer {
+    fn bg(&self, _state: &PopoverRenderState, theme: &Theme) -> Hsla {
+        theme.surface.raised
+    }
+    fn border(&self, _state: &PopoverRenderState, theme: &Theme) -> Hsla {
+        theme.border.default
+    }
+    fn shadow_alpha(&self, _state: &PopoverRenderState, _theme: &Theme) -> f32 {
+        0.30
+    }
+    fn border_radius(&self, _state: &PopoverRenderState, _theme: &Theme) -> Pixels {
+        px(CATPPUCCIN_RADIUS)
+    }
+    fn offset(&self, _state: &PopoverRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.control.popover.offset
+    }
+}
+
+// ---------------------------------------------------------------------------
+// DropdownMenu
+// ---------------------------------------------------------------------------
+
+/// Catppuccin dropdown menu: `surface.hover` trigger, `surface.hover`
+/// trigger hover, 12-px radius.
+pub struct CatppuccinDropdownMenuRenderer;
+
+impl DropdownMenuRenderer for CatppuccinDropdownMenuRenderer {
+    fn trigger_bg(&self, _state: &DropdownMenuRenderState, theme: &Theme) -> Hsla {
+        theme.surface.hover
+    }
+    fn trigger_hover_bg(&self, _state: &DropdownMenuRenderState, theme: &Theme) -> Hsla {
+        theme.surface.base
+    }
+    fn trigger_fg(&self, _state: &DropdownMenuRenderState, theme: &Theme) -> Hsla {
+        theme.content.primary
+    }
+    fn min_height(&self, _state: &DropdownMenuRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.control.button.min_height
+    }
+    fn border_radius(&self, _state: &DropdownMenuRenderState, _theme: &Theme) -> Pixels {
+        px(CATPPUCCIN_RADIUS)
+    }
+    fn chevron_rotation(&self, _state: &DropdownMenuRenderState, _theme: &Theme) -> f32 {
+        0.0
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Select
+// ---------------------------------------------------------------------------
+
+/// Catppuccin select: `surface.base` background, `border.focus`
+/// focus border, 12-px radius.
+pub struct CatppuccinSelectRenderer;
+
+impl SelectRenderer for CatppuccinSelectRenderer {
+    fn bg(&self, state: &SelectRenderState, theme: &Theme) -> Hsla {
+        if state.disabled {
+            theme.surface.sunken
+        } else {
+            theme.surface.base
+        }
+    }
+    fn border(&self, _state: &SelectRenderState, theme: &Theme) -> Hsla {
+        theme.border.default
+    }
+    fn focus_border(&self, _state: &SelectRenderState, theme: &Theme) -> Hsla {
+        theme.border.focus
+    }
+    fn fg(&self, state: &SelectRenderState, theme: &Theme) -> Hsla {
+        if state.disabled {
+            theme.content.disabled
+        } else {
+            theme.content.primary
+        }
+    }
+    fn hint_color(&self, _state: &SelectRenderState, theme: &Theme) -> Hsla {
+        theme.content.tertiary
+    }
+    fn min_height(&self, _state: &SelectRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.control.input.min_height
+    }
+    fn padding(
+        &self,
+        _state: &SelectRenderState,
+        theme: &Theme,
+    ) -> Edges<Pixels> {
+        Edges::symmetric(
+            theme.tokens.control.input.horizontal_padding,
+            theme.tokens.control.input.vertical_padding,
+        )
+    }
+    fn border_radius(&self, _state: &SelectRenderState, _theme: &Theme) -> Pixels {
+        px(CATPPUCCIN_RADIUS)
+    }
+    fn chevron_rotation(&self, _state: &SelectRenderState, _theme: &Theme) -> f32 {
+        0.0
+    }
+}
+
+// ---------------------------------------------------------------------------
+// ComboBox
+// ---------------------------------------------------------------------------
+
+/// Catppuccin combo box: `surface.base` background, `border.focus`
+/// focus border, 12-px radius.
+pub struct CatppuccinComboBoxRenderer;
+
+impl ComboBoxRenderer for CatppuccinComboBoxRenderer {
+    fn bg(&self, state: &ComboBoxRenderState, theme: &Theme) -> Hsla {
+        if state.disabled {
+            theme.surface.sunken
+        } else {
+            theme.surface.base
+        }
+    }
+    fn border(&self, _state: &ComboBoxRenderState, theme: &Theme) -> Hsla {
+        theme.border.default
+    }
+    fn focus_border(&self, _state: &ComboBoxRenderState, theme: &Theme) -> Hsla {
+        theme.border.focus
+    }
+    fn fg(&self, state: &ComboBoxRenderState, theme: &Theme) -> Hsla {
+        if state.disabled {
+            theme.content.disabled
+        } else {
+            theme.content.primary
+        }
+    }
+    fn search_bg(&self, _state: &ComboBoxRenderState, theme: &Theme) -> Hsla {
+        theme.surface.base
+    }
+    fn min_height(&self, _state: &ComboBoxRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.control.input.min_height
+    }
+    fn padding(
+        &self,
+        _state: &ComboBoxRenderState,
+        theme: &Theme,
+    ) -> Edges<Pixels> {
+        Edges::symmetric(
+            theme.tokens.control.input.horizontal_padding,
+            theme.tokens.control.input.vertical_padding,
+        )
+    }
+    fn border_radius(&self, _state: &ComboBoxRenderState, _theme: &Theme) -> Pixels {
+        px(CATPPUCCIN_RADIUS)
+    }
+}
+
+// ---------------------------------------------------------------------------
+// TextArea
+// ---------------------------------------------------------------------------
+
+/// Catppuccin text area: `surface.base` background, `border.focus`
+/// focus border, 12-px radius.
+pub struct CatppuccinTextAreaRenderer;
+
+impl TextAreaRenderer for CatppuccinTextAreaRenderer {
+    fn bg(&self, state: &TextAreaRenderState, theme: &Theme) -> Hsla {
+        if state.disabled {
+            theme.surface.sunken
+        } else {
+            theme.surface.base
+        }
+    }
+    fn border(&self, _state: &TextAreaRenderState, theme: &Theme) -> Hsla {
+        theme.border.default
+    }
+    fn focus_border(&self, _state: &TextAreaRenderState, theme: &Theme) -> Hsla {
+        theme.border.focus
+    }
+    fn text_color(&self, state: &TextAreaRenderState, theme: &Theme) -> Hsla {
+        if state.disabled {
+            theme.content.disabled
+        } else {
+            theme.content.primary
+        }
+    }
+    fn min_height(&self, _state: &TextAreaRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.control.input.min_height * 2.0
+    }
+    fn padding(
+        &self,
+        _state: &TextAreaRenderState,
+        theme: &Theme,
+    ) -> Edges<Pixels> {
+        Edges::symmetric(
+            theme.tokens.control.input.horizontal_padding,
+            theme.tokens.control.input.vertical_padding,
+        )
+    }
+    fn border_radius(&self, _state: &TextAreaRenderState, _theme: &Theme) -> Pixels {
+        px(CATPPUCCIN_RADIUS)
+    }
+}
+
+// ---------------------------------------------------------------------------
+// NumberInput
+// ---------------------------------------------------------------------------
+
+/// Catppuccin number input: `surface.base` background, `surface.hover`
+/// stepper background, 12-px radius.
+pub struct CatppuccinNumberInputRenderer;
+
+impl NumberInputRenderer for CatppuccinNumberInputRenderer {
+    fn bg(&self, state: &NumberInputRenderState, theme: &Theme) -> Hsla {
+        if state.disabled {
+            theme.surface.sunken
+        } else {
+            theme.surface.base
+        }
+    }
+    fn border(&self, _state: &NumberInputRenderState, theme: &Theme) -> Hsla {
+        theme.border.default
+    }
+    fn focus_border(&self, _state: &NumberInputRenderState, theme: &Theme) -> Hsla {
+        theme.border.focus
+    }
+    fn stepper_bg(&self, _state: &NumberInputRenderState, theme: &Theme) -> Hsla {
+        theme.surface.hover
+    }
+    fn stepper_fg(&self, _state: &NumberInputRenderState, theme: &Theme) -> Hsla {
+        theme.content.secondary
+    }
+    fn min_height(&self, _state: &NumberInputRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.control.input.min_height
+    }
+    fn padding(
+        &self,
+        _state: &NumberInputRenderState,
+        theme: &Theme,
+    ) -> Edges<Pixels> {
+        Edges::symmetric(
+            theme.tokens.control.input.horizontal_padding,
+            theme.tokens.control.input.vertical_padding,
+        )
+    }
+    fn stepper_button_size(&self, _state: &NumberInputRenderState, _theme: &Theme) -> Pixels {
+        px(28.0)
+    }
+    fn stepper_icon_size(&self, _state: &NumberInputRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.sizes.icon_sm
+    }
+    fn border_radius(&self, _state: &NumberInputRenderState, _theme: &Theme) -> Pixels {
+        px(CATPPUCCIN_RADIUS)
+    }
+}
+
+// ---------------------------------------------------------------------------
+// PasswordInput
+// ---------------------------------------------------------------------------
+
+/// Catppuccin password input: `surface.base` background,
+/// `border.focus` focus border, 12-px radius.
+pub struct CatppuccinPasswordInputRenderer;
+
+impl PasswordInputRenderer for CatppuccinPasswordInputRenderer {
+    fn bg(&self, state: &PasswordInputRenderState, theme: &Theme) -> Hsla {
+        if state.disabled {
+            theme.surface.sunken
+        } else {
+            theme.surface.base
+        }
+    }
+    fn border(&self, _state: &PasswordInputRenderState, theme: &Theme) -> Hsla {
+        theme.border.default
+    }
+    fn focus_border(&self, _state: &PasswordInputRenderState, theme: &Theme) -> Hsla {
+        theme.border.focus
+    }
+    fn fg(&self, state: &PasswordInputRenderState, theme: &Theme) -> Hsla {
+        if state.disabled {
+            theme.content.disabled
+        } else {
+            theme.content.primary
+        }
+    }
+    fn min_height(&self, _state: &PasswordInputRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.control.input.min_height
+    }
+    fn padding(
+        &self,
+        _state: &PasswordInputRenderState,
+        theme: &Theme,
+    ) -> Edges<Pixels> {
+        Edges::symmetric(
+            theme.tokens.control.input.horizontal_padding,
+            theme.tokens.control.input.vertical_padding,
+        )
+    }
+    fn border_radius(&self, _state: &PasswordInputRenderState, _theme: &Theme) -> Pixels {
+        px(CATPPUCCIN_RADIUS)
+    }
+    fn toggle_icon_size(&self, _state: &PasswordInputRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.sizes.icon_sm
+    }
+}
+
+// ---------------------------------------------------------------------------
+// FilePathInput
+// ---------------------------------------------------------------------------
+
+/// Catppuccin file-path input: `surface.base` background,
+/// `surface.hover` browse button, 12-px radius.
+pub struct CatppuccinFilePathInputRenderer;
+
+impl FilePathInputRenderer for CatppuccinFilePathInputRenderer {
+    fn bg(&self, state: &FilePathInputRenderState, theme: &Theme) -> Hsla {
+        if state.disabled {
+            theme.surface.sunken
+        } else {
+            theme.surface.base
+        }
+    }
+    fn border(&self, _state: &FilePathInputRenderState, theme: &Theme) -> Hsla {
+        theme.border.default
+    }
+    fn focus_border(&self, _state: &FilePathInputRenderState, theme: &Theme) -> Hsla {
+        theme.border.focus
+    }
+    fn button_bg(&self, _state: &FilePathInputRenderState, theme: &Theme) -> Hsla {
+        theme.surface.hover
+    }
+    fn button_fg(&self, _state: &FilePathInputRenderState, theme: &Theme) -> Hsla {
+        theme.content.primary
+    }
+    fn min_height(&self, _state: &FilePathInputRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.control.input.min_height
+    }
+    fn padding(
+        &self,
+        _state: &FilePathInputRenderState,
+        theme: &Theme,
+    ) -> Edges<Pixels> {
+        Edges::symmetric(
+            theme.tokens.control.input.horizontal_padding,
+            theme.tokens.control.input.vertical_padding,
+        )
+    }
+    fn action_gap(&self, _state: &FilePathInputRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.spacing.inset_sm
+    }
+    fn border_radius(&self, _state: &FilePathInputRenderState, _theme: &Theme) -> Pixels {
+        px(CATPPUCCIN_RADIUS)
+    }
+    fn icon_size(&self, _state: &FilePathInputRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.sizes.icon_sm
+    }
+}
+
+// ---------------------------------------------------------------------------
+// SearchInput
+// ---------------------------------------------------------------------------
+
+/// Catppuccin search input: `surface.base` background,
+/// `content.tertiary` icon, 12-px radius.
+pub struct CatppuccinSearchInputRenderer;
+
+impl SearchInputRenderer for CatppuccinSearchInputRenderer {
+    fn bg(&self, state: &SearchInputRenderState, theme: &Theme) -> Hsla {
+        if state.disabled {
+            theme.surface.sunken
+        } else {
+            theme.surface.base
+        }
+    }
+    fn border(&self, _state: &SearchInputRenderState, theme: &Theme) -> Hsla {
+        theme.border.default
+    }
+    fn focus_border(&self, _state: &SearchInputRenderState, theme: &Theme) -> Hsla {
+        theme.border.focus
+    }
+    fn icon_color(&self, _state: &SearchInputRenderState, theme: &Theme) -> Hsla {
+        theme.content.tertiary
+    }
+    fn fg(&self, state: &SearchInputRenderState, theme: &Theme) -> Hsla {
+        if state.disabled {
+            theme.content.disabled
+        } else {
+            theme.content.primary
+        }
+    }
+    fn min_height(&self, _state: &SearchInputRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.control.input.min_height
+    }
+    fn padding(
+        &self,
+        _state: &SearchInputRenderState,
+        theme: &Theme,
+    ) -> Edges<Pixels> {
+        Edges::symmetric(
+            theme.tokens.control.input.horizontal_padding,
+            theme.tokens.control.input.vertical_padding,
+        )
+    }
+    fn border_radius(&self, _state: &SearchInputRenderState, _theme: &Theme) -> Pixels {
+        px(CATPPUCCIN_RADIUS)
+    }
+    fn input_gap(&self, _state: &SearchInputRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.spacing.inset_sm
+    }
+    fn icon_size(&self, _state: &SearchInputRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.sizes.icon_sm
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Disclosure
+// ---------------------------------------------------------------------------
+
+/// Catppuccin disclosure: `surface.hover` trigger background,
+/// `surface.hover` trigger hover, 12-px radius.
+pub struct CatppuccinDisclosureRenderer;
+
+impl DisclosureRenderer for CatppuccinDisclosureRenderer {
+    fn trigger_bg(&self, _state: &DisclosureRenderState, theme: &Theme) -> Hsla {
+        theme.surface.hover
+    }
+    fn trigger_fg(&self, _state: &DisclosureRenderState, theme: &Theme) -> Hsla {
+        theme.content.primary
+    }
+    fn trigger_hover_bg(&self, _state: &DisclosureRenderState, theme: &Theme) -> Hsla {
+        theme.surface.base
+    }
+    fn min_height(&self, _state: &DisclosureRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.control.button.min_height
+    }
+    fn border_radius(&self, _state: &DisclosureRenderState, _theme: &Theme) -> Pixels {
+        px(CATPPUCCIN_RADIUS)
+    }
+    fn chevron_rotation(&self, state: &DisclosureRenderState, _theme: &Theme) -> f32 {
+        if state.open {
+            90.0
+        } else {
+            0.0
+        }
+    }
+    fn body_padding(&self, _state: &DisclosureRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.spacing.inset_md
+    }
+}
+
+// ---------------------------------------------------------------------------
+// KeybindingInput
+// ---------------------------------------------------------------------------
+
+/// Catppuccin keybinding input: `surface.base` background,
+/// `surface.hover` kbd background, 12-px radius.
+pub struct CatppuccinKeybindingInputRenderer;
+
+impl KeybindingInputRenderer for CatppuccinKeybindingInputRenderer {
+    fn bg(&self, _state: &KeybindingInputRenderState, theme: &Theme) -> Hsla {
+        theme.surface.base
+    }
+    fn border(&self, _state: &KeybindingInputRenderState, theme: &Theme) -> Hsla {
+        theme.border.default
+    }
+    fn focus_border(&self, _state: &KeybindingInputRenderState, theme: &Theme) -> Hsla {
+        theme.border.focus
+    }
+    fn kbd_bg(&self, _state: &KeybindingInputRenderState, theme: &Theme) -> Hsla {
+        theme.surface.hover
+    }
+    fn kbd_fg(&self, _state: &KeybindingInputRenderState, theme: &Theme) -> Hsla {
+        theme.content.primary
+    }
+    fn kbd_padding(
+        &self,
+        _state: &KeybindingInputRenderState,
+        _theme: &Theme,
+    ) -> Edges<Pixels> {
+        Edges::symmetric(px(6.0), px(2.0))
+    }
+    fn kbd_min_width(&self, _state: &KeybindingInputRenderState, _theme: &Theme) -> Pixels {
+        px(24.0)
+    }
+    fn min_height(&self, _state: &KeybindingInputRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.control.input.min_height
+    }
+    fn border_radius(&self, _state: &KeybindingInputRenderState, _theme: &Theme) -> Pixels {
+        px(CATPPUCCIN_RADIUS)
+    }
+    fn icon_size(&self, _state: &KeybindingInputRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.sizes.icon_sm
+    }
+}
+
+// ---------------------------------------------------------------------------
+// SplitButton
+// ---------------------------------------------------------------------------
+
+/// Catppuccin split button: `action.primary.bg` primary,
+/// `action.primary.active_bg` chevron, 12-px radius.
+pub struct CatppuccinSplitButtonRenderer;
+
+impl SplitButtonRenderer for CatppuccinSplitButtonRenderer {
+    fn primary_bg(&self, _state: &SplitButtonRenderState, theme: &Theme) -> Hsla {
+        theme.action.primary.bg
+    }
+    fn primary_fg(&self, _state: &SplitButtonRenderState, theme: &Theme) -> Hsla {
+        theme.action.primary.fg
+    }
+    fn chevron_bg(&self, _state: &SplitButtonRenderState, theme: &Theme) -> Hsla {
+        theme.action.primary.active_bg
+    }
+    fn chevron_fg(&self, _state: &SplitButtonRenderState, theme: &Theme) -> Hsla {
+        theme.action.primary.fg
+    }
+    fn chevron_hover_bg(&self, _state: &SplitButtonRenderState, theme: &Theme) -> Hsla {
+        theme.action.primary.hover_bg
+    }
+    fn min_height(&self, _state: &SplitButtonRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.control.button.min_height
+    }
+    fn border_radius(&self, _state: &SplitButtonRenderState, _theme: &Theme) -> Pixels {
+        px(CATPPUCCIN_RADIUS)
+    }
+    fn gap(&self, _state: &SplitButtonRenderState, _theme: &Theme) -> Pixels {
+        px(2.0)
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Form
+// ---------------------------------------------------------------------------
+
+/// Catppuccin form: token-driven gap, status colors for
+/// error/helper.
+pub struct CatppuccinFormRenderer;
+
+impl FormRenderer for CatppuccinFormRenderer {
+    fn gap(&self, _state: &FormRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.spacing.inset_md
+    }
+    fn label_color(&self, _state: &FormRenderState, theme: &Theme) -> Hsla {
+        theme.content.primary
+    }
+    fn error_color(&self, _state: &FormRenderState, theme: &Theme) -> Hsla {
+        theme.status.error.bg
+    }
+    fn helper_color(&self, _state: &FormRenderState, theme: &Theme) -> Hsla {
+        theme.content.tertiary
+    }
+}
+
+// ---------------------------------------------------------------------------
+// TreeItem
+// ---------------------------------------------------------------------------
+
+/// Catppuccin tree item: `surface.base` bg, `surface.hover` hover,
+/// `border.focus` selected.
+pub struct CatppuccinTreeItemRenderer;
+
+impl TreeItemRenderer for CatppuccinTreeItemRenderer {
+    fn bg(&self, _state: &TreeItemRenderState, theme: &Theme) -> Hsla {
+        theme.surface.base
+    }
+    fn hover_bg(&self, _state: &TreeItemRenderState, theme: &Theme) -> Hsla {
+        theme.surface.hover
+    }
+    fn selected_bg(&self, _state: &TreeItemRenderState, theme: &Theme) -> Hsla {
+        theme.border.focus
+    }
+    fn fg(&self, state: &TreeItemRenderState, theme: &Theme) -> Hsla {
+        if state.selected {
+            theme.content.on_primary
+        } else {
+            theme.content.primary
+        }
+    }
+    fn indent(&self, _state: &TreeItemRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.spacing.inset_md
+    }
+    fn padding(
+        &self,
+        _state: &TreeItemRenderState,
+        theme: &Theme,
+    ) -> Edges<Pixels> {
+        Edges::symmetric(
+            theme.tokens.spacing.inset_sm,
+            theme.tokens.spacing.inset_xs,
+        )
+    }
+    fn min_height(&self, _state: &TreeItemRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.control.list_item.min_height
+    }
+    fn chevron_size(&self, _state: &TreeItemRenderState, theme: &Theme) -> Pixels {
+        theme.tokens.sizes.icon_sm
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Label
+// ---------------------------------------------------------------------------
+
+/// Catppuccin label: `content.primary` color, semibold weight when
+/// `strong` is set.
+pub struct CatppuccinLabelRenderer;
+
+impl LabelRenderer for CatppuccinLabelRenderer {
+    fn color(&self, state: &LabelRenderState, theme: &Theme) -> Hsla {
+        if state.muted {
+            theme.content.tertiary
+        } else {
+            theme.content.primary
+        }
+    }
+    fn strong_weight(&self, _state: &LabelRenderState, theme: &Theme) -> FontWeight {
+        theme.tokens.typography.weight_semibold
+    }
+    fn family_mono(&self, _state: &LabelRenderState, _theme: &Theme) -> SharedString {
+        SharedString::from("monospace")
+    }
+}
+
+// ---------------------------------------------------------------------------
 // RendererRegistry
 // ---------------------------------------------------------------------------
 
@@ -614,6 +1590,9 @@ impl EmptyStateRenderer for CatppuccinEmptyStateRenderer {
 /// defaults.
 pub fn catppuccin_registry() -> RendererRegistry {
     RendererRegistry::token_based()
+        // Phase F.1-F.3 (12 renderers): button, card, modal,
+        // focus_ring, text_input, switch, checkbox, radio, toast,
+        // tag, list_item, empty_state.
         .with_button(Arc::new(CatppuccinButtonRenderer))
         .with_card(Arc::new(CatppuccinCardRenderer))
         .with_modal(Arc::new(CatppuccinModalRenderer))
@@ -626,11 +1605,40 @@ pub fn catppuccin_registry() -> RendererRegistry {
         .with_tag(Arc::new(CatppuccinTagRenderer))
         .with_list_item(Arc::new(CatppuccinListItemRenderer))
         .with_empty_state(Arc::new(CatppuccinEmptyStateRenderer))
+        // Phase F.4 patch (25 more renderers): closes the gap to a
+        // complete skin.
+        .with_avatar(Arc::new(CatppuccinAvatarRenderer))
+        .with_badge(Arc::new(CatppuccinBadgeRenderer))
+        .with_divider(Arc::new(CatppuccinDividerRenderer))
+        .with_heading(Arc::new(CatppuccinHeadingRenderer))
+        .with_icon(Arc::new(CatppuccinIconRenderer))
+        .with_icon_button(Arc::new(CatppuccinIconButtonRenderer))
+        .with_toggle_button(Arc::new(CatppuccinToggleButtonRenderer))
+        .with_progress_bar(Arc::new(CatppuccinProgressBarRenderer))
+        .with_skeleton(Arc::new(CatppuccinSkeletonRenderer))
+        .with_tooltip(Arc::new(CatppuccinTooltipRenderer))
+        .with_notification(Arc::new(CatppuccinNotificationRenderer))
+        .with_popover(Arc::new(CatppuccinPopoverRenderer))
+        .with_dropdown_menu(Arc::new(CatppuccinDropdownMenuRenderer))
+        .with_select(Arc::new(CatppuccinSelectRenderer))
+        .with_combo_box(Arc::new(CatppuccinComboBoxRenderer))
+        .with_text_area(Arc::new(CatppuccinTextAreaRenderer))
+        .with_number_input(Arc::new(CatppuccinNumberInputRenderer))
+        .with_password_input(Arc::new(CatppuccinPasswordInputRenderer))
+        .with_file_path_input(Arc::new(CatppuccinFilePathInputRenderer))
+        .with_search_input(Arc::new(CatppuccinSearchInputRenderer))
+        .with_disclosure(Arc::new(CatppuccinDisclosureRenderer))
+        .with_keybinding_input(Arc::new(CatppuccinKeybindingInputRenderer))
+        .with_split_button(Arc::new(CatppuccinSplitButtonRenderer))
+        .with_form(Arc::new(CatppuccinFormRenderer))
+        .with_tree_item(Arc::new(CatppuccinTreeItemRenderer))
+        .with_label(Arc::new(CatppuccinLabelRenderer))
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::palette;
     use yororen_ui_core::theme::ActionVariantKind;
 
     fn cat_light() -> Theme {
@@ -831,5 +1839,54 @@ mod tests {
         let _ = reg
             .empty_state
             .icon_color(&EmptyStateRenderState::default(), &cat_light());
+    }
+
+    /// Phase F.4 patch coverage: all 25 newly added renderers
+    /// are wired into the registry and can be invoked without
+    /// panicking. This is a smoke test — it doesn't verify the
+    /// output, just that the trait methods are callable.
+    #[test]
+    fn registry_includes_new_renderers() {
+        use yororen_ui_core::renderer::{
+            AvatarRenderState, BadgeRenderState, ComboBoxRenderState,
+            DisclosureRenderState, DividerRenderState, DropdownMenuRenderState,
+            FilePathInputRenderState, FormRenderState, HeadingRenderState,
+            IconButtonRenderState, IconRenderState, KeybindingInputRenderState,
+            LabelRenderState, NotificationRenderState, NumberInputRenderState,
+            PasswordInputRenderState, PopoverRenderState, ProgressBarRenderState,
+            SearchInputRenderState, SelectRenderState, SkeletonRenderState,
+            SplitButtonRenderState, TextAreaRenderState, ToggleButtonRenderState,
+            TooltipRenderState, TreeItemRenderState,
+        };
+        let reg = catppuccin_registry();
+        let theme = cat_light();
+        let _ = reg.avatar.default_bg(&AvatarRenderState::default(), &theme);
+        let _ = reg.badge.bg(&BadgeRenderState::default(), &theme);
+        let _ = reg.divider.color(&DividerRenderState::default(), &theme);
+        let _ = reg
+            .heading
+            .size(&HeadingRenderState { level: unsafe { std::mem::zeroed() } }, &theme);
+        let _ = reg.icon.color(&IconRenderState::default(), &theme);
+        let _ = reg.icon_button.bg(&IconButtonRenderState::default(), &theme);
+        let _ = reg.toggle_button.bg(&ToggleButtonRenderState::default(), &theme);
+        let _ = reg.progress_bar.track(&ProgressBarRenderState::default(), &theme);
+        let _ = reg.skeleton.bg(&SkeletonRenderState::default(), &theme);
+        let _ = reg.tooltip.bg(&TooltipRenderState::default(), &theme);
+        let _ = reg.notification.bg(&NotificationRenderState::default(), &theme);
+        let _ = reg.popover.bg(&PopoverRenderState::default(), &theme);
+        let _ = reg.dropdown_menu.trigger_bg(&DropdownMenuRenderState::default(), &theme);
+        let _ = reg.select.bg(&SelectRenderState::default(), &theme);
+        let _ = reg.combo_box.bg(&ComboBoxRenderState::default(), &theme);
+        let _ = reg.text_area.bg(&TextAreaRenderState::default(), &theme);
+        let _ = reg.number_input.bg(&NumberInputRenderState::default(), &theme);
+        let _ = reg.password_input.bg(&PasswordInputRenderState::default(), &theme);
+        let _ = reg.file_path_input.bg(&FilePathInputRenderState::default(), &theme);
+        let _ = reg.search_input.bg(&SearchInputRenderState::default(), &theme);
+        let _ = reg.disclosure.trigger_bg(&DisclosureRenderState::default(), &theme);
+        let _ = reg.keybinding_input.bg(&KeybindingInputRenderState::default(), &theme);
+        let _ = reg.split_button.primary_bg(&SplitButtonRenderState::default(), &theme);
+        let _ = reg.form.gap(&FormRenderState::default(), &theme);
+        let _ = reg.tree_item.bg(&TreeItemRenderState::default(), &theme);
+        let _ = reg.label.color(&LabelRenderState::default(), &theme);
     }
 }
