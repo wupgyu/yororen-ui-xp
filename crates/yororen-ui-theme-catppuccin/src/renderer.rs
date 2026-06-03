@@ -19,6 +19,7 @@ use std::sync::Arc;
 
 use gpui::{FontWeight, Hsla, Pixels, SharedString, px};
 
+use yororen_ui_core::renderer::spec::Edges;
 use yororen_ui_core::renderer::{
     AvatarRenderState, AvatarRenderer, BadgeRenderState, BadgeRenderer, ButtonRenderState,
     ButtonRenderer, CardRenderState, CardRenderer, CheckboxRenderState, CheckboxRenderer,
@@ -27,19 +28,18 @@ use yororen_ui_core::renderer::{
     EmptyStateRenderState, EmptyStateRenderer, FilePathInputRenderState, FilePathInputRenderer,
     FocusRingRenderState, FocusRingRenderer, FormRenderState, FormRenderer, HeadingRenderState,
     HeadingRenderer, IconButtonRenderState, IconButtonRenderer, IconRenderState, IconRenderer,
-    KeybindingInputRenderState, KeybindingInputRenderer, LabelRenderState, LabelRenderer,
-    ListItemRenderState, ListItemRenderer, ModalRenderState, ModalRenderer, NotificationRenderState,
-    NotificationRenderer, NumberInputRenderState, NumberInputRenderer, PasswordInputRenderState,
-    PasswordInputRenderer, PopoverRenderState, PopoverRenderer, ProgressBarRenderState,
-    ProgressBarRenderer, RadioRenderState, RadioRenderer, RendererRegistry, SearchInputRenderState,
-    SearchInputRenderer, SelectRenderState, SelectRenderer, SkeletonRenderState, SkeletonRenderer,
-    SplitButtonRenderState, SplitButtonRenderer, SwitchRenderState, SwitchRenderer, TagRenderState,
-    TagRenderer, TextAreaRenderState, TextAreaRenderer, TextInputRenderState, TextInputRenderer,
-    ToastRenderState, ToastRenderer, ToggleButtonRenderState, ToggleButtonRenderer,
-    TooltipRenderState, TooltipRenderer, TreeItemRenderState, TreeItemRenderer,
-    IconSizePreset,
+    IconSizePreset, KeybindingInputRenderState, KeybindingInputRenderer, LabelRenderState,
+    LabelRenderer, ListItemRenderState, ListItemRenderer, ModalRenderState, ModalRenderer,
+    NotificationRenderState, NotificationRenderer, NumberInputRenderState, NumberInputRenderer,
+    PasswordInputRenderState, PasswordInputRenderer, PopoverRenderState, PopoverRenderer,
+    ProgressBarRenderState, ProgressBarRenderer, RadioRenderState, RadioRenderer, RendererRegistry,
+    SearchInputRenderState, SearchInputRenderer, SelectRenderState, SelectRenderer,
+    SkeletonRenderState, SkeletonRenderer, SplitButtonRenderState, SplitButtonRenderer,
+    SwitchRenderState, SwitchRenderer, TagRenderState, TagRenderer, TextAreaRenderState,
+    TextAreaRenderer, TextInputRenderState, TextInputRenderer, ToastRenderState, ToastRenderer,
+    ToggleButtonRenderState, ToggleButtonRenderer, TooltipRenderState, TooltipRenderer,
+    TreeItemRenderState, TreeItemRenderer,
 };
-use yororen_ui_core::renderer::spec::Edges;
 use yororen_ui_core::theme::{ActionVariantKind, Theme};
 
 /// Catppuccin's signature border radius. Bigger than the v0.5 system
@@ -797,8 +797,7 @@ pub struct CatppuccinIconButtonRenderer;
 impl IconButtonRenderer for CatppuccinIconButtonRenderer {
     fn bg(&self, _state: &IconButtonRenderState, _theme: &Theme) -> Hsla {
         // Static transparent; hover state is drawn separately.
-        let c = gpui::hsla(0.0, 0.0, 0.0, 0.0);
-        c
+        gpui::hsla(0.0, 0.0, 0.0, 0.0)
     }
     fn hover_bg(&self, _state: &IconButtonRenderState, theme: &Theme) -> Hsla {
         theme.surface.hover
@@ -907,15 +906,8 @@ impl TooltipRenderer for CatppuccinTooltipRenderer {
     fn fg(&self, _state: &TooltipRenderState, theme: &Theme) -> Hsla {
         theme.content.primary
     }
-    fn padding(
-        &self,
-        _state: &TooltipRenderState,
-        theme: &Theme,
-    ) -> Edges<Pixels> {
-        Edges::symmetric(
-            theme.tokens.spacing.inset_sm,
-            theme.tokens.spacing.inset_xs,
-        )
+    fn padding(&self, _state: &TooltipRenderState, theme: &Theme) -> Edges<Pixels> {
+        Edges::symmetric(theme.tokens.spacing.inset_sm, theme.tokens.spacing.inset_xs)
     }
     fn font_size(&self, _state: &TooltipRenderState, theme: &Theme) -> Pixels {
         theme.tokens.typography.font_size_xs
@@ -940,11 +932,7 @@ impl NotificationRenderer for CatppuccinNotificationRenderer {
     fn border(&self, _state: &NotificationRenderState, theme: &Theme) -> Hsla {
         theme.border.default
     }
-    fn padding(
-        &self,
-        _state: &NotificationRenderState,
-        theme: &Theme,
-    ) -> Edges<Pixels> {
+    fn padding(&self, _state: &NotificationRenderState, theme: &Theme) -> Edges<Pixels> {
         Edges::all(theme.tokens.spacing.inset_md)
     }
     fn border_radius(&self, _state: &NotificationRenderState, _theme: &Theme) -> Pixels {
@@ -1045,11 +1033,7 @@ impl SelectRenderer for CatppuccinSelectRenderer {
     fn min_height(&self, _state: &SelectRenderState, theme: &Theme) -> Pixels {
         theme.tokens.control.input.min_height
     }
-    fn padding(
-        &self,
-        _state: &SelectRenderState,
-        theme: &Theme,
-    ) -> Edges<Pixels> {
+    fn padding(&self, _state: &SelectRenderState, theme: &Theme) -> Edges<Pixels> {
         Edges::symmetric(
             theme.tokens.control.input.horizontal_padding,
             theme.tokens.control.input.vertical_padding,
@@ -1098,11 +1082,7 @@ impl ComboBoxRenderer for CatppuccinComboBoxRenderer {
     fn min_height(&self, _state: &ComboBoxRenderState, theme: &Theme) -> Pixels {
         theme.tokens.control.input.min_height
     }
-    fn padding(
-        &self,
-        _state: &ComboBoxRenderState,
-        theme: &Theme,
-    ) -> Edges<Pixels> {
+    fn padding(&self, _state: &ComboBoxRenderState, theme: &Theme) -> Edges<Pixels> {
         Edges::symmetric(
             theme.tokens.control.input.horizontal_padding,
             theme.tokens.control.input.vertical_padding,
@@ -1145,11 +1125,7 @@ impl TextAreaRenderer for CatppuccinTextAreaRenderer {
     fn min_height(&self, _state: &TextAreaRenderState, theme: &Theme) -> Pixels {
         theme.tokens.control.input.min_height * 2.0
     }
-    fn padding(
-        &self,
-        _state: &TextAreaRenderState,
-        theme: &Theme,
-    ) -> Edges<Pixels> {
+    fn padding(&self, _state: &TextAreaRenderState, theme: &Theme) -> Edges<Pixels> {
         Edges::symmetric(
             theme.tokens.control.input.horizontal_padding,
             theme.tokens.control.input.vertical_padding,
@@ -1191,11 +1167,7 @@ impl NumberInputRenderer for CatppuccinNumberInputRenderer {
     fn min_height(&self, _state: &NumberInputRenderState, theme: &Theme) -> Pixels {
         theme.tokens.control.input.min_height
     }
-    fn padding(
-        &self,
-        _state: &NumberInputRenderState,
-        theme: &Theme,
-    ) -> Edges<Pixels> {
+    fn padding(&self, _state: &NumberInputRenderState, theme: &Theme) -> Edges<Pixels> {
         Edges::symmetric(
             theme.tokens.control.input.horizontal_padding,
             theme.tokens.control.input.vertical_padding,
@@ -1244,11 +1216,7 @@ impl PasswordInputRenderer for CatppuccinPasswordInputRenderer {
     fn min_height(&self, _state: &PasswordInputRenderState, theme: &Theme) -> Pixels {
         theme.tokens.control.input.min_height
     }
-    fn padding(
-        &self,
-        _state: &PasswordInputRenderState,
-        theme: &Theme,
-    ) -> Edges<Pixels> {
+    fn padding(&self, _state: &PasswordInputRenderState, theme: &Theme) -> Edges<Pixels> {
         Edges::symmetric(
             theme.tokens.control.input.horizontal_padding,
             theme.tokens.control.input.vertical_padding,
@@ -1293,11 +1261,7 @@ impl FilePathInputRenderer for CatppuccinFilePathInputRenderer {
     fn min_height(&self, _state: &FilePathInputRenderState, theme: &Theme) -> Pixels {
         theme.tokens.control.input.min_height
     }
-    fn padding(
-        &self,
-        _state: &FilePathInputRenderState,
-        theme: &Theme,
-    ) -> Edges<Pixels> {
+    fn padding(&self, _state: &FilePathInputRenderState, theme: &Theme) -> Edges<Pixels> {
         Edges::symmetric(
             theme.tokens.control.input.horizontal_padding,
             theme.tokens.control.input.vertical_padding,
@@ -1349,11 +1313,7 @@ impl SearchInputRenderer for CatppuccinSearchInputRenderer {
     fn min_height(&self, _state: &SearchInputRenderState, theme: &Theme) -> Pixels {
         theme.tokens.control.input.min_height
     }
-    fn padding(
-        &self,
-        _state: &SearchInputRenderState,
-        theme: &Theme,
-    ) -> Edges<Pixels> {
+    fn padding(&self, _state: &SearchInputRenderState, theme: &Theme) -> Edges<Pixels> {
         Edges::symmetric(
             theme.tokens.control.input.horizontal_padding,
             theme.tokens.control.input.vertical_padding,
@@ -1395,11 +1355,7 @@ impl DisclosureRenderer for CatppuccinDisclosureRenderer {
         px(CATPPUCCIN_RADIUS)
     }
     fn chevron_rotation(&self, state: &DisclosureRenderState, _theme: &Theme) -> f32 {
-        if state.open {
-            90.0
-        } else {
-            0.0
-        }
+        if state.open { 90.0 } else { 0.0 }
     }
     fn body_padding(&self, _state: &DisclosureRenderState, theme: &Theme) -> Pixels {
         theme.tokens.spacing.inset_md
@@ -1430,11 +1386,7 @@ impl KeybindingInputRenderer for CatppuccinKeybindingInputRenderer {
     fn kbd_fg(&self, _state: &KeybindingInputRenderState, theme: &Theme) -> Hsla {
         theme.content.primary
     }
-    fn kbd_padding(
-        &self,
-        _state: &KeybindingInputRenderState,
-        _theme: &Theme,
-    ) -> Edges<Pixels> {
+    fn kbd_padding(&self, _state: &KeybindingInputRenderState, _theme: &Theme) -> Edges<Pixels> {
         Edges::symmetric(px(6.0), px(2.0))
     }
     fn kbd_min_width(&self, _state: &KeybindingInputRenderState, _theme: &Theme) -> Pixels {
@@ -1537,15 +1489,8 @@ impl TreeItemRenderer for CatppuccinTreeItemRenderer {
     fn indent(&self, _state: &TreeItemRenderState, theme: &Theme) -> Pixels {
         theme.tokens.spacing.inset_md
     }
-    fn padding(
-        &self,
-        _state: &TreeItemRenderState,
-        theme: &Theme,
-    ) -> Edges<Pixels> {
-        Edges::symmetric(
-            theme.tokens.spacing.inset_sm,
-            theme.tokens.spacing.inset_xs,
-        )
+    fn padding(&self, _state: &TreeItemRenderState, theme: &Theme) -> Edges<Pixels> {
+        Edges::symmetric(theme.tokens.spacing.inset_sm, theme.tokens.spacing.inset_xs)
     }
     fn min_height(&self, _state: &TreeItemRenderState, theme: &Theme) -> Pixels {
         theme.tokens.control.list_item.min_height
@@ -1709,7 +1654,10 @@ mod tests {
         let state = CardRenderState::default();
         let light_bg = r.bg(&state, &light);
         let dark_bg = r.bg(&state, &dark);
-        assert_ne!(light_bg, dark_bg, "light and dark should produce different card bg");
+        assert_ne!(
+            light_bg, dark_bg,
+            "light and dark should produce different card bg"
+        );
         // Sanity: light bg should be on the "light" side (Latte's
         // surface.raised is #E6E9EF, a near-white tone), dark bg
         // should be on the "dark" side (Mocha's surface.raised is
@@ -1753,7 +1701,10 @@ mod tests {
         // a Catppuccin light theme this is latte::blue; in dark
         // theme this is mocha::blue. Both are blue, but the
         // lightness differs.
-        let state = SwitchRenderState { checked: true, ..Default::default() };
+        let state = SwitchRenderState {
+            checked: true,
+            ..Default::default()
+        };
         let light_on = r.track_bg(&state, &light);
         let dark_on = r.track_bg(&state, &dark);
         // The exact lightness ordering depends on the Latte vs Mocha
@@ -1768,7 +1719,10 @@ mod tests {
         let r = CatppuccinCheckboxRenderer;
         let light = cat_light();
         let dark = cat_dark();
-        let state = CheckboxRenderState { checked: true, ..Default::default() };
+        let state = CheckboxRenderState {
+            checked: true,
+            ..Default::default()
+        };
         // The Catppuccin checkbox uses the focus color (mauve) for
         // the checked bg, which is theme.border.focus.
         assert_eq!(r.box_bg(&state, &light), light.border.focus);
@@ -1848,43 +1802,68 @@ mod tests {
     #[test]
     fn registry_includes_new_renderers() {
         use yororen_ui_core::renderer::{
-            AvatarRenderState, BadgeRenderState, ComboBoxRenderState,
-            DisclosureRenderState, DividerRenderState, DropdownMenuRenderState,
-            FilePathInputRenderState, FormRenderState, HeadingRenderState,
-            IconButtonRenderState, IconRenderState, KeybindingInputRenderState,
+            AvatarRenderState, BadgeRenderState, ComboBoxRenderState, DisclosureRenderState,
+            DividerRenderState, DropdownMenuRenderState, FilePathInputRenderState, FormRenderState,
+            HeadingRenderState, IconButtonRenderState, IconRenderState, KeybindingInputRenderState,
             LabelRenderState, NotificationRenderState, NumberInputRenderState,
             PasswordInputRenderState, PopoverRenderState, ProgressBarRenderState,
-            SearchInputRenderState, SelectRenderState, SkeletonRenderState,
-            SplitButtonRenderState, TextAreaRenderState, ToggleButtonRenderState,
-            TooltipRenderState, TreeItemRenderState,
+            SearchInputRenderState, SelectRenderState, SkeletonRenderState, SplitButtonRenderState,
+            TextAreaRenderState, ToggleButtonRenderState, TooltipRenderState, TreeItemRenderState,
         };
         let reg = catppuccin_registry();
         let theme = cat_light();
         let _ = reg.avatar.default_bg(&AvatarRenderState::default(), &theme);
         let _ = reg.badge.bg(&BadgeRenderState::default(), &theme);
         let _ = reg.divider.color(&DividerRenderState::default(), &theme);
-        let _ = reg
-            .heading
-            .size(&HeadingRenderState { level: unsafe { std::mem::zeroed() } }, &theme);
+        let _ = reg.heading.size(
+            &HeadingRenderState {
+                level: unsafe { std::mem::zeroed() },
+            },
+            &theme,
+        );
         let _ = reg.icon.color(&IconRenderState::default(), &theme);
-        let _ = reg.icon_button.bg(&IconButtonRenderState::default(), &theme);
-        let _ = reg.toggle_button.bg(&ToggleButtonRenderState::default(), &theme);
-        let _ = reg.progress_bar.track(&ProgressBarRenderState::default(), &theme);
+        let _ = reg
+            .icon_button
+            .bg(&IconButtonRenderState::default(), &theme);
+        let _ = reg
+            .toggle_button
+            .bg(&ToggleButtonRenderState::default(), &theme);
+        let _ = reg
+            .progress_bar
+            .track(&ProgressBarRenderState::default(), &theme);
         let _ = reg.skeleton.bg(&SkeletonRenderState::default(), &theme);
         let _ = reg.tooltip.bg(&TooltipRenderState::default(), &theme);
-        let _ = reg.notification.bg(&NotificationRenderState::default(), &theme);
+        let _ = reg
+            .notification
+            .bg(&NotificationRenderState::default(), &theme);
         let _ = reg.popover.bg(&PopoverRenderState::default(), &theme);
-        let _ = reg.dropdown_menu.trigger_bg(&DropdownMenuRenderState::default(), &theme);
+        let _ = reg
+            .dropdown_menu
+            .trigger_bg(&DropdownMenuRenderState::default(), &theme);
         let _ = reg.select.bg(&SelectRenderState::default(), &theme);
         let _ = reg.combo_box.bg(&ComboBoxRenderState::default(), &theme);
         let _ = reg.text_area.bg(&TextAreaRenderState::default(), &theme);
-        let _ = reg.number_input.bg(&NumberInputRenderState::default(), &theme);
-        let _ = reg.password_input.bg(&PasswordInputRenderState::default(), &theme);
-        let _ = reg.file_path_input.bg(&FilePathInputRenderState::default(), &theme);
-        let _ = reg.search_input.bg(&SearchInputRenderState::default(), &theme);
-        let _ = reg.disclosure.trigger_bg(&DisclosureRenderState::default(), &theme);
-        let _ = reg.keybinding_input.bg(&KeybindingInputRenderState::default(), &theme);
-        let _ = reg.split_button.primary_bg(&SplitButtonRenderState::default(), &theme);
+        let _ = reg
+            .number_input
+            .bg(&NumberInputRenderState::default(), &theme);
+        let _ = reg
+            .password_input
+            .bg(&PasswordInputRenderState::default(), &theme);
+        let _ = reg
+            .file_path_input
+            .bg(&FilePathInputRenderState::default(), &theme);
+        let _ = reg
+            .search_input
+            .bg(&SearchInputRenderState::default(), &theme);
+        let _ = reg
+            .disclosure
+            .trigger_bg(&DisclosureRenderState::default(), &theme);
+        let _ = reg
+            .keybinding_input
+            .bg(&KeybindingInputRenderState::default(), &theme);
+        let _ = reg
+            .split_button
+            .primary_bg(&SplitButtonRenderState::default(), &theme);
         let _ = reg.form.gap(&FormRenderState::default(), &theme);
         let _ = reg.tree_item.bg(&TreeItemRenderState::default(), &theme);
         let _ = reg.label.color(&LabelRenderState::default(), &theme);

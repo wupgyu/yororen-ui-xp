@@ -124,12 +124,8 @@ impl CatppuccinFlavor {
     }
 
     /// All four flavors, in canonical order.
-    pub const ALL: [CatppuccinFlavor; 4] = [
-        Self::Latte,
-        Self::Frappe,
-        Self::Macchiato,
-        Self::Mocha,
-    ];
+    pub const ALL: [CatppuccinFlavor; 4] =
+        [Self::Latte, Self::Frappe, Self::Macchiato, Self::Mocha];
 
     /// Build a `Theme` for this flavor. Thin wrapper around the
     /// factory functions in [`factories`].
@@ -197,11 +193,7 @@ pub fn install(cx: &mut App, appearance: WindowAppearance) {
 /// ```rust,ignore
 /// catppuccin::install_flavor(cx, CatppuccinFlavor::Frappe, cx.window_appearance());
 /// ```
-pub fn install_flavor(
-    cx: &mut App,
-    flavor: CatppuccinFlavor,
-    appearance: WindowAppearance,
-) {
+pub fn install_flavor(cx: &mut App, flavor: CatppuccinFlavor, appearance: WindowAppearance) {
     let theme = flavor.theme();
     cx.set_global(GlobalTheme::new_with_themes(
         appearance,
@@ -278,10 +270,7 @@ mod tests {
     #[test]
     fn flavor_from_appearance_maps_correctly() {
         use gpui::WindowAppearance::*;
-        assert_eq!(
-            flavor_from_appearance(Light),
-            CatppuccinFlavor::Latte
-        );
+        assert_eq!(flavor_from_appearance(Light), CatppuccinFlavor::Latte);
         assert_eq!(
             flavor_from_appearance(VibrantLight),
             CatppuccinFlavor::Frappe
@@ -290,10 +279,7 @@ mod tests {
             flavor_from_appearance(VibrantDark),
             CatppuccinFlavor::Macchiato
         );
-        assert_eq!(
-            flavor_from_appearance(Dark),
-            CatppuccinFlavor::Mocha
-        );
+        assert_eq!(flavor_from_appearance(Dark), CatppuccinFlavor::Mocha);
     }
 
     #[test]
