@@ -71,12 +71,10 @@ pub mod variant;
 
 mod factories;
 
-// Public factory functions. `themeset_all_four` is re-exported for
-// back-compat but emits a `#[deprecated]` warning.
-#[allow(deprecated)]
+// Public factory functions.
 pub use factories::{
     FrappeTheme, LatteTheme, MacchiatoTheme, MochaTheme, dark, frappe, frappe_theme, latte_theme,
-    light, macchiato, macchiato_theme, mocha, mocha_theme, themeset, themeset_all_four,
+    light, macchiato, macchiato_theme, mocha, mocha_theme, themeset,
 };
 
 use std::sync::Arc;

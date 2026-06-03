@@ -280,19 +280,6 @@ pub fn themeset() -> ThemeSet {
     ThemeSet::new(light()).dark(dark())
 }
 
-/// **Deprecated** in v0.5.0 — `ThemeSet` only has 2 slots
-/// (light / dark), so this function is equivalent to
-/// [`themeset`]. For explicit 4-flavor selection use
-/// [`CatppuccinFlavor`](crate::CatppuccinFlavor) and
-/// [`install_flavor`](crate::install_flavor) instead.
-#[deprecated(
-    since = "0.5.0",
-    note = "ThemeSet is 2-slot; use CatppuccinFlavor + install_flavor instead"
-)]
-pub fn themeset_all_four() -> ThemeSet {
-    themeset()
-}
-
 /// Alias for [`light`] returning a strongly-typed `LatteTheme` for
 /// documentation / downcasting. Today this is just a `Theme`; the
 /// alias is provided so future versions can add Latte-specific
