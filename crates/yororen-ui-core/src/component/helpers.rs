@@ -2,6 +2,37 @@
 //!
 //! This module provides common utility functions used across multiple components
 //! to reduce code duplication.
+//!
+//! # Renderer-model relationship
+//!
+//! v0.4 introduces the per-component `XxxRenderer` trait model
+//! ([`crate::renderer::ButtonRenderer`], [`crate::renderer::TextInputRenderer`],
+//! etc.). Most input components (`text_input`, `text_area`,
+//! `password_input`, `number_input`, `search_input`, `file_path_input`,
+//! `keybinding_input`, `select`, `combo_box`) read their visuals
+//! exclusively through that trait. The v0.4 `compute_input_style` helper
+//! was removed in v0.4 (see V5 release notes); the same
+//! disabled + custom override contract is now implemented as
+//! conditional logic inside each `TokenXxxRenderer::bg`/`border`/etc.
+//! method.
+//!
+//! Action-style and toggle-style components still go through the
+//! `compute_action_style` / `compute_toggle_style` helpers in this
+//! module, because the `disabled` × `variant` × `VariantStyle`
+//! composition is shared across `Button` / `IconButton` /
+//! `ToggleButton` / `SplitButton` (and the toggle family
+//! `Checkbox` / `Switch` / `Radio`) — not just a per-component
+//! lookup. These helpers are an **internal composition step** that
+//! feeds into the renderer path: the component reads the
+//! `ActionStyle` / `ToggleStyle` once per render and passes the
+//! resolved colors down to its `TokenXxxRenderer` call. They are
+//! not part of the component's public API surface.
+//!
+//! If you are adding a new component that needs a one-shot
+//! disabled × variant × override composition, prefer
+//! `compute_action_style` / `compute_toggle_style` over rolling
+//! a new ad-hoc `compute_*_style` helper. The naming convention
+//! is intentional.
 
 use std::sync::Arc;
 
