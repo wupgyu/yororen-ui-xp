@@ -2,17 +2,17 @@
 
 use gpui::{App, AppContext, Entity, Global};
 
-/// Which theme the right half of the window uses. The left half
-/// always shows the system palette.
+/// Which theme the demo is currently using. `with_theme` was removed
+/// (P0-2) so the demo flips the global theme instead of per-element
+/// overrides.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum RightThemeKind {
-    /// Same as left half: v0.5 system + token renderers.
+    /// v0.5 system + token renderers.
+    #[default]
     System,
     /// Catppuccin Mocha palette + Catppuccin renderers.
-    #[default]
     Catppuccin,
-    /// Material Design 3 palette + Material renderers (Phase H.1,
-    /// the second official theme).
+    /// Material Design 3 palette + Material renderers.
     Material,
     /// v0.5 system palette but with the Catppuccin renderers
     /// layered on top. Demonstrates that renderer swap and palette
@@ -21,7 +21,7 @@ pub enum RightThemeKind {
 }
 
 pub struct ThemeShowcaseState {
-    pub right_kind: Entity<RightThemeKind>,
+    pub kind: Entity<RightThemeKind>,
 }
 
 impl Global for ThemeShowcaseState {}
@@ -29,11 +29,7 @@ impl Global for ThemeShowcaseState {}
 impl ThemeShowcaseState {
     pub fn new(cx: &mut App) -> Self {
         Self {
-            right_kind: cx.new(|_| RightThemeKind::default()),
+            kind: cx.new(|_| RightThemeKind::default()),
         }
-    }
-
-    pub fn right_kind(&self, cx: &gpui::App) -> RightThemeKind {
-        *self.right_kind.read(cx)
     }
 }

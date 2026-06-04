@@ -2,11 +2,11 @@
 
 use gpui::{App, AppContext, Entity, Global};
 
-/// Which side of the window is currently using the mini theme. The
-/// left half always shows the system palette; the right half can be
-/// toggled between system and mini.
+/// Whether the demo is currently showing the mini theme. `with_theme`
+/// was removed (P0-2) so the demo flips the global theme instead of
+/// per-element overrides.
 pub struct ThemeCompareState {
-    pub right_uses_mini: Entity<bool>,
+    pub uses_mini: Entity<bool>,
 }
 
 impl Global for ThemeCompareState {}
@@ -14,11 +14,7 @@ impl Global for ThemeCompareState {}
 impl ThemeCompareState {
     pub fn new(cx: &mut App) -> Self {
         Self {
-            right_uses_mini: cx.new(|_| true),
+            uses_mini: cx.new(|_| false),
         }
-    }
-
-    pub fn right_uses_mini(&self, cx: &App) -> bool {
-        *self.right_uses_mini.read(cx)
     }
 }

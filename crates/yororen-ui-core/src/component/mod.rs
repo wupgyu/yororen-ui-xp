@@ -57,7 +57,6 @@ mod tree_drag;
 mod tree_item;
 mod tree_node;
 mod virtual_row;
-mod with_theme;
 
 pub mod callback;
 pub mod helpers;
@@ -123,7 +122,6 @@ pub use tree_drag::*;
 pub use tree_item::*;
 pub use tree_node::*;
 pub use virtual_row::*;
-pub use with_theme::*;
 
 pub fn init(cx: &mut gpui::App) {
     text_input::init(cx);

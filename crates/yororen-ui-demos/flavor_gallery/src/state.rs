@@ -57,8 +57,12 @@ impl std::fmt::Display for FlavorKind {
 /// visibility flags for the per-flavor modal that the user opens
 /// via the "Show modal" button.
 pub struct FlavorGalleryState {
-    /// The 4 (now 5) columns always show a modal, but only one
-    /// is open at a time. We track an enum to know which one.
+    /// The flavor whose theme is currently active. `with_theme` was
+    /// removed (P0-2) so the demo flips the global theme to this
+    /// flavor on click.
+    pub active_flavor: Entity<FlavorKind>,
+    /// The currently open modal (if any). With per-element overrides
+    /// gone, only one modal can be visible at a time.
     pub active_modal: Entity<ActiveModal>,
 }
 
@@ -76,6 +80,7 @@ impl Global for FlavorGalleryState {}
 impl FlavorGalleryState {
     pub fn new(cx: &mut App) -> Self {
         Self {
+            active_flavor: cx.new(|_| FlavorKind::default()),
             active_modal: cx.new(|_| ActiveModal::default()),
         }
     }
