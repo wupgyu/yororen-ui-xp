@@ -27,8 +27,8 @@ use yororen_ui_core::renderer::{
     DividerRenderState, DividerRenderer, DropdownMenuRenderState, DropdownMenuRenderer,
     EmptyStateRenderState, EmptyStateRenderer, FilePathInputRenderState, FilePathInputRenderer,
     FocusRingRenderState, FocusRingRenderer, FormRenderState, FormRenderer, HeadingRenderState,
-    HeadingRenderer, IconButtonRenderState, IconButtonRenderer, IconRenderState, IconRenderer,
-    IconSizePreset, KeybindingInputRenderState, KeybindingInputRenderer, LabelRenderState,
+    HeadingRenderer, IconButtonRenderState, IconButtonRenderer, KeybindingInputRenderState,
+    KeybindingInputRenderer, LabelRenderState,
     LabelRenderer, ListItemRenderState, ListItemRenderer, ModalRenderState, ModalRenderer,
     NotificationRenderState, NotificationRenderer, NumberInputRenderState, NumberInputRenderer,
     PanelRenderState, PanelRenderer, PasswordInputRenderState, PasswordInputRenderer,
@@ -779,44 +779,12 @@ impl HeadingRenderer for CatppuccinHeadingRenderer {
 // Icon
 // ---------------------------------------------------------------------------
 
-/// Catppuccin icon: `content.secondary` color, level-driven size
-/// from tokens.
-pub struct CatppuccinIconRenderer;
+// The Icon component reads `theme.content.secondary` and the size
+// tokens directly; the icon renderer trait was a single trait with
+// no state of its own, so it added an indirection layer without
+// giving the theme package anything to override.
 
-impl IconRenderer for CatppuccinIconRenderer {
-    fn color(&self, state: &IconRenderState, theme: &Theme) -> Hsla {
-        if state.has_custom_color {
-            theme.content.primary
-        } else {
-            theme.content.secondary
-        }
-    }
-    fn size(&self, state: &IconRenderState, theme: &Theme) -> Pixels {
-        match state.size_preset {
-            Some(IconSizePreset::Xs) => theme.tokens.sizes.icon_xs,
-            Some(IconSizePreset::Sm) => theme.tokens.sizes.icon_sm,
-            Some(IconSizePreset::Md) => theme.tokens.sizes.icon_md,
-            Some(IconSizePreset::Lg) => theme.tokens.sizes.icon_lg,
-            Some(IconSizePreset::Xl) => theme.tokens.sizes.icon_xl,
-            _ => theme.tokens.sizes.icon_md,
-        }
-    }
-    fn size_xs(&self, _state: &IconRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.sizes.icon_xs
-    }
-    fn size_sm(&self, _state: &IconRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.sizes.icon_sm
-    }
-    fn size_md(&self, _state: &IconRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.sizes.icon_md
-    }
-    fn size_lg(&self, _state: &IconRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.sizes.icon_lg
-    }
-    fn size_xl(&self, _state: &IconRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.sizes.icon_xl
-    }
-}
+// ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
 // IconButton
@@ -1589,7 +1557,6 @@ pub fn catppuccin_registry() -> RendererRegistry {
         .with_badge(Arc::new(CatppuccinBadgeRenderer))
         .with_divider(Arc::new(CatppuccinDividerRenderer))
         .with_heading(Arc::new(CatppuccinHeadingRenderer))
-        .with_icon(Arc::new(CatppuccinIconRenderer))
         .with_icon_button(Arc::new(CatppuccinIconButtonRenderer))
         .with_toggle_button(Arc::new(CatppuccinToggleButtonRenderer))
         .with_progress_bar(Arc::new(CatppuccinProgressBarRenderer))

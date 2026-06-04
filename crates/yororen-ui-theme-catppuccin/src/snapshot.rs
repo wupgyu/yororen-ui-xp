@@ -39,7 +39,7 @@ use crate::renderer::{
     CatppuccinDisclosureRenderer, CatppuccinDividerRenderer, CatppuccinDropdownMenuRenderer,
     CatppuccinEmptyStateRenderer, CatppuccinFilePathInputRenderer, CatppuccinFocusRingRenderer,
     CatppuccinFormRenderer, CatppuccinHeadingRenderer, CatppuccinIconButtonRenderer,
-    CatppuccinIconRenderer, CatppuccinKeybindingInputRenderer, CatppuccinLabelRenderer,
+    CatppuccinKeybindingInputRenderer, CatppuccinLabelRenderer,
     CatppuccinListItemRenderer, CatppuccinModalRenderer, CatppuccinNotificationRenderer,
     CatppuccinNumberInputRenderer, CatppuccinPanelRenderer, CatppuccinPasswordInputRenderer,
     CatppuccinPopoverRenderer, CatppuccinProgressBarRenderer, CatppuccinRadioRenderer,
@@ -52,7 +52,7 @@ use yororen_ui_core::renderer::{
     AvatarRenderState, BadgeRenderState, ButtonRenderState, CardRenderState, CheckboxRenderState,
     ComboBoxRenderState, DisclosureRenderState, DividerRenderState, DropdownMenuRenderState,
     EmptyStateRenderState, FilePathInputRenderState, FocusRingRenderState, FormRenderState,
-    HeadingRenderState, IconButtonRenderState, IconRenderState, KeybindingInputRenderState,
+    HeadingRenderState, IconButtonRenderState, KeybindingInputRenderState,
     LabelRenderState, ListItemRenderState, ModalRenderState, NotificationRenderState,
     NumberInputRenderState, PanelRenderState, PasswordInputRenderState, PopoverRenderState,
     ProgressBarRenderState, RadioRenderState, SearchInputRenderState, SelectRenderState,
@@ -67,7 +67,7 @@ use yororen_ui_core::renderer::{
     AvatarRenderer, BadgeRenderer, ButtonRenderer, CardRenderer, CheckboxRenderer,
     ComboBoxRenderer, DisclosureRenderer, DividerRenderer, DropdownMenuRenderer,
     EmptyStateRenderer, FilePathInputRenderer, FocusRingRenderer, FormRenderer, HeadingRenderer,
-    IconButtonRenderer, IconRenderer, KeybindingInputRenderer, LabelRenderer, ListItemRenderer,
+    IconButtonRenderer, KeybindingInputRenderer, LabelRenderer, ListItemRenderer,
     ModalRenderer, NotificationRenderer, NumberInputRenderer, PanelRenderer, PasswordInputRenderer,
     PopoverRenderer, ProgressBarRenderer, RadioRenderer, SearchInputRenderer, SelectRenderer,
     SkeletonRenderer, SplitButtonRenderer, SwitchRenderer, TagRenderer, TextAreaRenderer,
@@ -296,11 +296,6 @@ pub fn build_snapshot() -> SnapshotHash {
         "heading.color",
         CatppuccinHeadingRenderer.color(&heading_state(), &light),
         CatppuccinHeadingRenderer.color(&heading_state(), &dark)
-    );
-    snap!(
-        "icon.color",
-        CatppuccinIconRenderer.color(&IconRenderState::default(), &light),
-        CatppuccinIconRenderer.color(&IconRenderState::default(), &dark)
     );
     snap!(
         "icon_button.bg",
