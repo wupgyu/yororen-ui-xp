@@ -6,7 +6,7 @@ use gpui::{
 };
 
 use crate::{
-    component::{button, label, text_input},
+    component::{button, compute_input_style, label, text_input},
     i18n::{PlaceholderContext, PlaceholderKey},
     theme::{ActionVariantKind, ActiveTheme},
 };
@@ -200,11 +200,14 @@ impl RenderOnce for FilePathInput {
         let text = SharedString::from(value.to_string_lossy().to_string());
         let showing_placeholder = value.as_os_str().is_empty();
 
-        let base_border = if disabled {
-            theme.border.muted
-        } else {
-            border.unwrap_or(theme.border.default)
-        };
+        // Route the standard disabled / override / theme fallback
+        // through `compute_input_style` so all input components
+        // share one path. The status-driven border override is
+        // layered on top *after* this — `compute_input_style` does
+        // not know about file-path validation, and the override
+        // is the only deviation from the standard input style.
+        let input_style =
+            compute_input_style(&theme, disabled, bg, border, focus_border, text_color);
 
         let derived_status = if status.is_some() {
             status
@@ -221,20 +224,13 @@ impl RenderOnce for FilePathInput {
             None => None,
         };
 
-        let border_color = status_color.unwrap_or(base_border);
-        let focus_border_color = focus_border.unwrap_or(theme.border.focus);
+        // Status color wins over the input-style border; otherwise
+        // fall back to the standard input border.
+        let border_color = status_color.unwrap_or(input_style.border);
+        let focus_border_color = focus_border.unwrap_or(input_style.focus_border);
 
-        let bg_color = if disabled {
-            theme.surface.sunken
-        } else {
-            bg.unwrap_or(theme.surface.base)
-        };
-
-        let text_color_value = if disabled {
-            theme.content.disabled
-        } else {
-            text_color.unwrap_or(theme.content.primary)
-        };
+        let bg_color = input_style.bg;
+        let text_color_value = input_style.text_color;
 
         let on_change = self.on_change;
 
