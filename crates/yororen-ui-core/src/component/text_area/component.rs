@@ -12,7 +12,6 @@ use super::actions::*;
 use super::element::TextAreaElement;
 use super::state::{EnterBehavior, TextAreaHandler, TextAreaState, WrapMode};
 use crate::action_handler;
-use crate::component::compute_input_style;
 use crate::theme::ActiveTheme;
 
 #[derive(IntoElement)]
