@@ -362,8 +362,7 @@ pub type TreeItemContextMenuCallback =
 pub type TreeIdCallback = std::sync::Arc<dyn Fn(&TreeNodeId)>;
 
 /// Checkbox change callback (node id + new checked state).
-pub type TreeCheckCallback =
-    std::sync::Arc<dyn Fn(&TreeNodeId, TreeCheckedState)>;
+pub type TreeCheckCallback = std::sync::Arc<dyn Fn(&TreeNodeId, TreeCheckedState)>;
 
 /// Flattened tree node for virtualized rendering.
 ///

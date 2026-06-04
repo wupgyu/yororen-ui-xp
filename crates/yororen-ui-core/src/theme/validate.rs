@@ -160,15 +160,27 @@ pub fn validate(theme: &Theme) -> Vec<Issue> {
     let pixel_fields: &[(&str, gpui::Pixels)] = &[
         // Button
         ("control.button.min_height", c.button.min_height),
-        ("control.button.icon_button_min_size", c.button.icon_button_min_size),
-        ("control.button.horizontal_padding", c.button.horizontal_padding),
+        (
+            "control.button.icon_button_min_size",
+            c.button.icon_button_min_size,
+        ),
+        (
+            "control.button.horizontal_padding",
+            c.button.horizontal_padding,
+        ),
         ("control.button.icon_gap", c.button.icon_gap),
         // Input
         ("control.input.min_height", c.input.min_height),
-        ("control.input.horizontal_padding", c.input.horizontal_padding),
+        (
+            "control.input.horizontal_padding",
+            c.input.horizontal_padding,
+        ),
         ("control.input.vertical_padding", c.input.vertical_padding),
         ("control.input.cursor_thickness", c.input.cursor_thickness),
-        ("control.input.focus_ring_thickness", c.input.focus_ring_thickness),
+        (
+            "control.input.focus_ring_thickness",
+            c.input.focus_ring_thickness,
+        ),
         ("control.input.icon_gap", c.input.icon_gap),
         ("control.input.spinner_size", c.input.spinner_size),
         ("control.input.text_area_min_h", c.input.text_area_min_h),
@@ -206,10 +218,11 @@ fn validate_finite_pixels(token_path: &'static str, value: gpui::Pixels, issues:
     let v: f32 = value.into();
     if !v.is_finite() || v < 0.0 || v > 4096.0 {
         issues.push(Issue {
-            kind: IssueKind::TokenOutOfRange { token_path, value: v },
-            message: format!(
-                "{token_path} must be a finite value in [0.0, 4096.0] px, got {v}"
-            ),
+            kind: IssueKind::TokenOutOfRange {
+                token_path,
+                value: v,
+            },
+            message: format!("{token_path} must be a finite value in [0.0, 4096.0] px, got {v}"),
         });
     }
 }

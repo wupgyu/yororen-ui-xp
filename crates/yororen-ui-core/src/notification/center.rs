@@ -286,7 +286,13 @@ impl NotificationCenter {
         state.queue.iter().cloned().collect()
     }
 
-    pub(crate) fn click(&self, id: NotificationId, ev: &ClickEvent, window: &mut Window, cx: &mut gpui::App) {
+    pub(crate) fn click(
+        &self,
+        id: NotificationId,
+        ev: &ClickEvent,
+        window: &mut Window,
+        cx: &mut gpui::App,
+    ) {
         let (n, cb) = {
             let state = self.state.lock().unwrap();
             let n = state.queue.iter().find(|n| n.id == id).cloned();
@@ -299,7 +305,12 @@ impl NotificationCenter {
         }
     }
 
-    pub(crate) fn dismiss_from_ui(&self, id: NotificationId, window: &mut Window, cx: &mut gpui::App) {
+    pub(crate) fn dismiss_from_ui(
+        &self,
+        id: NotificationId,
+        window: &mut Window,
+        cx: &mut gpui::App,
+    ) {
         let (n, cb) = {
             let state = self.state.lock().unwrap();
             let n = state.queue.iter().find(|n| n.id == id).cloned();

@@ -1,4 +1,3 @@
-
 use gpui::{
     Div, ElementId, Hsla, InteractiveElement, IntoElement, MouseButton, MouseDownEvent,
     ParentElement, RenderOnce, Styled, div, prelude::FluentBuilder,

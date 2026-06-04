@@ -80,7 +80,10 @@ impl RenderOnce for Avatar {
         let is_circle = matches!(self.shape, AvatarShape::Circle);
 
         let theme = cx.theme();
-        let r: &dyn AvatarRenderer = &**theme.renderers.get_avatar().expect("AvatarRenderer registered");
+        let r: &dyn AvatarRenderer = &**theme
+            .renderers
+            .get_avatar()
+            .expect("AvatarRenderer registered");
         let state = AvatarRenderState {
             has_custom_bg: self.bg.is_some(),
             has_status: self.status.is_some(),

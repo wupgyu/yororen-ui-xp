@@ -68,15 +68,24 @@ impl IconName {
 /// slug itself, which encodes every discriminant of `IconName`, so
 /// e.g. `Maximize(true)` and `Maximize(false)` cannot collide.
 fn cached(name: IconName) -> SharedString {
-    static CACHE: OnceLock<std::sync::Mutex<std::collections::HashMap<&'static str, SharedString>>> =
-        OnceLock::new();
+    static CACHE: OnceLock<
+        std::sync::Mutex<std::collections::HashMap<&'static str, SharedString>>,
+    > = OnceLock::new();
     let slug = name.slug();
     let cache = CACHE.get_or_init(|| std::sync::Mutex::new(Default::default()));
-    if let Some(s) = cache.lock().expect("icon cache poisoned").get(slug).cloned() {
+    if let Some(s) = cache
+        .lock()
+        .expect("icon cache poisoned")
+        .get(slug)
+        .cloned()
+    {
         return s;
     }
     let s: SharedString = format!("icons/{slug}.svg").into();
-    cache.lock().expect("icon cache poisoned").insert(slug, s.clone());
+    cache
+        .lock()
+        .expect("icon cache poisoned")
+        .insert(slug, s.clone());
     s
 }
 

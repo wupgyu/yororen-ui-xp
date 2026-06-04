@@ -216,8 +216,10 @@ impl LabelProps {
     /// composer's own markup.
     pub fn color(&self, cx: &App) -> Hsla {
         let theme = cx.theme();
-        let r: &dyn crate::renderer::LabelRenderer =
-            &**theme.renderers.get_label().expect("LabelRenderer registered");
+        let r: &dyn crate::renderer::LabelRenderer = &**theme
+            .renderers
+            .get_label()
+            .expect("LabelRenderer registered");
         r.color(
             &crate::renderer::LabelRenderState {
                 muted: self.muted,

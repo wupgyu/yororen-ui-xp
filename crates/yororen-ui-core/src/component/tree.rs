@@ -28,9 +28,9 @@ use crate::component::ClickCallback;
 use crate::theme::ActiveTheme;
 
 use super::tree_data::{
-    ArcTreeNode, FlatTreeNode, SelectionMode, TreeCheckCallback, TreeCheckedState,
-    TreeIdCallback, TreeItemClickCallback, TreeItemContextMenuCallback, TreeNode, TreeNodeData,
-    TreeNodeId, TreeState, flatten_tree,
+    ArcTreeNode, FlatTreeNode, SelectionMode, TreeCheckCallback, TreeCheckedState, TreeIdCallback,
+    TreeItemClickCallback, TreeItemContextMenuCallback, TreeNode, TreeNodeData, TreeNodeId,
+    TreeState, flatten_tree,
 };
 
 /// Creates a new tree component.

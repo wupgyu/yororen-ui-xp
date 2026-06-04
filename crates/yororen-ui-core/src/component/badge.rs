@@ -61,7 +61,10 @@ impl RenderOnce for Badge {
         let user_tone = self.tone;
 
         let theme = cx.theme();
-        let r: &dyn BadgeRenderer = &**theme.renderers.get_badge().expect("BadgeRenderer registered");
+        let r: &dyn BadgeRenderer = &**theme
+            .renderers
+            .get_badge()
+            .expect("BadgeRenderer registered");
         let state = BadgeRenderState {
             has_custom_tone: user_tone.is_some(),
         };

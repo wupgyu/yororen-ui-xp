@@ -138,7 +138,10 @@ impl RenderOnce for Checkbox {
             resolve_state_value_simple(explicit_checked, &internal_checked, cx, use_internal);
 
         let theme = cx.theme();
-        let r: &dyn CheckboxRenderer = &**theme.renderers.get_checkbox().expect("CheckboxRenderer registered");
+        let r: &dyn CheckboxRenderer = &**theme
+            .renderers
+            .get_checkbox()
+            .expect("CheckboxRenderer registered");
         let state = CheckboxRenderState {
             checked,
             disabled,

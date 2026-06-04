@@ -183,35 +183,35 @@ impl RendererRegistry {
         .with_focus_ring(Arc::new(TokenFocusRingRenderer))
         .with_badge(Arc::new(TokenBadgeRenderer))
         .with_tag(Arc::new(TokenTagRenderer))
-            .with_progress_bar(Arc::new(TokenProgressBarRenderer))
-            .with_skeleton(Arc::new(TokenSkeletonRenderer))
-            .with_tooltip(Arc::new(TokenTooltipRenderer))
-            .with_avatar(Arc::new(TokenAvatarRenderer))
-            .with_switch(Arc::new(TokenSwitchRenderer))
-            .with_checkbox(Arc::new(TokenCheckboxRenderer))
-            .with_radio(Arc::new(TokenRadioRenderer))
-            .with_text_input(Arc::new(TokenTextInputRenderer))
-            .with_text_area(Arc::new(TokenTextAreaRenderer))
-            .with_password_input(Arc::new(TokenPasswordInputRenderer))
-            .with_number_input(Arc::new(TokenNumberInputRenderer))
-            .with_file_path_input(Arc::new(TokenFilePathInputRenderer))
-            .with_search_input(Arc::new(TokenSearchInputRenderer))
-            .with_select(Arc::new(TokenSelectRenderer))
-            .with_combo_box(Arc::new(TokenComboBoxRenderer))
-            .with_modal(Arc::new(TokenModalRenderer))
-            .with_popover(Arc::new(TokenPopoverRenderer))
-            .with_dropdown_menu(Arc::new(TokenDropdownMenuRenderer))
-            .with_disclosure(Arc::new(TokenDisclosureRenderer))
-            .with_toast(Arc::new(TokenToastRenderer))
-            .with_notification(Arc::new(TokenNotificationRenderer))
-            .with_panel(Arc::new(TokenPanelRenderer))
-            .with_card(Arc::new(TokenCardRenderer))
-            .with_form(Arc::new(TokenFormRenderer))
-            .with_list_item(Arc::new(TokenListItemRenderer))
-            .with_tree_item(Arc::new(TokenTreeItemRenderer))
-            .with_keybinding_input(Arc::new(TokenKeybindingInputRenderer))
-            .with_split_button(Arc::new(TokenSplitButtonRenderer))
-            .with_empty_state(Arc::new(TokenEmptyStateRenderer))
+        .with_progress_bar(Arc::new(TokenProgressBarRenderer))
+        .with_skeleton(Arc::new(TokenSkeletonRenderer))
+        .with_tooltip(Arc::new(TokenTooltipRenderer))
+        .with_avatar(Arc::new(TokenAvatarRenderer))
+        .with_switch(Arc::new(TokenSwitchRenderer))
+        .with_checkbox(Arc::new(TokenCheckboxRenderer))
+        .with_radio(Arc::new(TokenRadioRenderer))
+        .with_text_input(Arc::new(TokenTextInputRenderer))
+        .with_text_area(Arc::new(TokenTextAreaRenderer))
+        .with_password_input(Arc::new(TokenPasswordInputRenderer))
+        .with_number_input(Arc::new(TokenNumberInputRenderer))
+        .with_file_path_input(Arc::new(TokenFilePathInputRenderer))
+        .with_search_input(Arc::new(TokenSearchInputRenderer))
+        .with_select(Arc::new(TokenSelectRenderer))
+        .with_combo_box(Arc::new(TokenComboBoxRenderer))
+        .with_modal(Arc::new(TokenModalRenderer))
+        .with_popover(Arc::new(TokenPopoverRenderer))
+        .with_dropdown_menu(Arc::new(TokenDropdownMenuRenderer))
+        .with_disclosure(Arc::new(TokenDisclosureRenderer))
+        .with_toast(Arc::new(TokenToastRenderer))
+        .with_notification(Arc::new(TokenNotificationRenderer))
+        .with_panel(Arc::new(TokenPanelRenderer))
+        .with_card(Arc::new(TokenCardRenderer))
+        .with_form(Arc::new(TokenFormRenderer))
+        .with_list_item(Arc::new(TokenListItemRenderer))
+        .with_tree_item(Arc::new(TokenTreeItemRenderer))
+        .with_keybinding_input(Arc::new(TokenKeybindingInputRenderer))
+        .with_split_button(Arc::new(TokenSplitButtonRenderer))
+        .with_empty_state(Arc::new(TokenEmptyStateRenderer))
     }
 
     // -- 38 setters (one per component) ---------------------------------
@@ -227,7 +227,11 @@ impl RendererRegistry {
     renderer_setter!(with_focus_ring, FocusRingRenderState, FocusRingRenderer);
     renderer_setter!(with_badge, BadgeRenderState, BadgeRenderer);
     renderer_setter!(with_tag, TagRenderState, TagRenderer);
-    renderer_setter!(with_progress_bar, ProgressBarRenderState, ProgressBarRenderer);
+    renderer_setter!(
+        with_progress_bar,
+        ProgressBarRenderState,
+        ProgressBarRenderer
+    );
     renderer_setter!(with_skeleton, SkeletonRenderState, SkeletonRenderer);
     renderer_setter!(with_tooltip, TooltipRenderState, TooltipRenderer);
     renderer_setter!(with_avatar, AvatarRenderState, AvatarRenderer);
@@ -235,28 +239,64 @@ impl RendererRegistry {
     renderer_setter!(with_checkbox, CheckboxRenderState, CheckboxRenderer);
     renderer_setter!(with_radio, RadioRenderState, RadioRenderer);
     renderer_setter!(with_icon_button, IconButtonRenderState, IconButtonRenderer);
-    renderer_setter!(with_toggle_button, ToggleButtonRenderState, ToggleButtonRenderer);
+    renderer_setter!(
+        with_toggle_button,
+        ToggleButtonRenderState,
+        ToggleButtonRenderer
+    );
     renderer_setter!(with_text_input, TextInputRenderState, TextInputRenderer);
     renderer_setter!(with_modal, ModalRenderState, ModalRenderer);
     renderer_setter!(with_popover, PopoverRenderState, PopoverRenderer);
-    renderer_setter!(with_dropdown_menu, DropdownMenuRenderState, DropdownMenuRenderer);
+    renderer_setter!(
+        with_dropdown_menu,
+        DropdownMenuRenderState,
+        DropdownMenuRenderer
+    );
     renderer_setter!(with_toast, ToastRenderState, ToastRenderer);
-    renderer_setter!(with_notification, NotificationRenderState, NotificationRenderer);
+    renderer_setter!(
+        with_notification,
+        NotificationRenderState,
+        NotificationRenderer
+    );
     renderer_setter!(with_panel, PanelRenderState, PanelRenderer);
     renderer_setter!(with_card, CardRenderState, CardRenderer);
     renderer_setter!(with_form, FormRenderState, FormRenderer);
     renderer_setter!(with_list_item, ListItemRenderState, ListItemRenderer);
     renderer_setter!(with_text_area, TextAreaRenderState, TextAreaRenderer);
-    renderer_setter!(with_password_input, PasswordInputRenderState, PasswordInputRenderer);
-    renderer_setter!(with_number_input, NumberInputRenderState, NumberInputRenderer);
-    renderer_setter!(with_file_path_input, FilePathInputRenderState, FilePathInputRenderer);
-    renderer_setter!(with_search_input, SearchInputRenderState, SearchInputRenderer);
+    renderer_setter!(
+        with_password_input,
+        PasswordInputRenderState,
+        PasswordInputRenderer
+    );
+    renderer_setter!(
+        with_number_input,
+        NumberInputRenderState,
+        NumberInputRenderer
+    );
+    renderer_setter!(
+        with_file_path_input,
+        FilePathInputRenderState,
+        FilePathInputRenderer
+    );
+    renderer_setter!(
+        with_search_input,
+        SearchInputRenderState,
+        SearchInputRenderer
+    );
     renderer_setter!(with_select, SelectRenderState, SelectRenderer);
     renderer_setter!(with_combo_box, ComboBoxRenderState, ComboBoxRenderer);
     renderer_setter!(with_disclosure, DisclosureRenderState, DisclosureRenderer);
     renderer_setter!(with_tree_item, TreeItemRenderState, TreeItemRenderer);
-    renderer_setter!(with_keybinding_input, KeybindingInputRenderState, KeybindingInputRenderer);
-    renderer_setter!(with_split_button, SplitButtonRenderState, SplitButtonRenderer);
+    renderer_setter!(
+        with_keybinding_input,
+        KeybindingInputRenderState,
+        KeybindingInputRenderer
+    );
+    renderer_setter!(
+        with_split_button,
+        SplitButtonRenderState,
+        SplitButtonRenderer
+    );
     renderer_setter!(with_empty_state, EmptyStateRenderState, EmptyStateRenderer);
 
     /// Internal: typed lookup. The component-side accessors are
@@ -266,14 +306,11 @@ impl RendererRegistry {
     /// to `Box<dyn Any + Send + Sync>`. So the inner `Any` is
     /// `Arc<dyn XxxRenderer>`. We downcast back to that `Arc<...>`
     /// to recover the original typed renderer.
-    fn get_typed<S: super::spec::RenderState, R: ?Sized + 'static>(
-        &self,
-    ) -> Option<&Arc<R>> {
+    fn get_typed<S: super::spec::RenderState, R: ?Sized + 'static>(&self) -> Option<&Arc<R>> {
         self.map
             .get(&TypeId::of::<S>())
             .and_then(|arc| arc.downcast_ref::<Arc<R>>())
     }
-
 
     // -- 38 typed accessors (one per component) -------------------------
     // Each returns `Option<&Arc<dyn XxxRenderer>>`. Components call
@@ -288,7 +325,11 @@ impl RendererRegistry {
     renderer_getter!(get_focus_ring, FocusRingRenderState, FocusRingRenderer);
     renderer_getter!(get_badge, BadgeRenderState, BadgeRenderer);
     renderer_getter!(get_tag, TagRenderState, TagRenderer);
-    renderer_getter!(get_progress_bar, ProgressBarRenderState, ProgressBarRenderer);
+    renderer_getter!(
+        get_progress_bar,
+        ProgressBarRenderState,
+        ProgressBarRenderer
+    );
     renderer_getter!(get_skeleton, SkeletonRenderState, SkeletonRenderer);
     renderer_getter!(get_tooltip, TooltipRenderState, TooltipRenderer);
     renderer_getter!(get_avatar, AvatarRenderState, AvatarRenderer);
@@ -296,27 +337,63 @@ impl RendererRegistry {
     renderer_getter!(get_checkbox, CheckboxRenderState, CheckboxRenderer);
     renderer_getter!(get_radio, RadioRenderState, RadioRenderer);
     renderer_getter!(get_icon_button, IconButtonRenderState, IconButtonRenderer);
-    renderer_getter!(get_toggle_button, ToggleButtonRenderState, ToggleButtonRenderer);
+    renderer_getter!(
+        get_toggle_button,
+        ToggleButtonRenderState,
+        ToggleButtonRenderer
+    );
     renderer_getter!(get_text_input, TextInputRenderState, TextInputRenderer);
     renderer_getter!(get_modal, ModalRenderState, ModalRenderer);
     renderer_getter!(get_popover, PopoverRenderState, PopoverRenderer);
-    renderer_getter!(get_dropdown_menu, DropdownMenuRenderState, DropdownMenuRenderer);
+    renderer_getter!(
+        get_dropdown_menu,
+        DropdownMenuRenderState,
+        DropdownMenuRenderer
+    );
     renderer_getter!(get_toast, ToastRenderState, ToastRenderer);
-    renderer_getter!(get_notification, NotificationRenderState, NotificationRenderer);
+    renderer_getter!(
+        get_notification,
+        NotificationRenderState,
+        NotificationRenderer
+    );
     renderer_getter!(get_panel, PanelRenderState, PanelRenderer);
     renderer_getter!(get_card, CardRenderState, CardRenderer);
     renderer_getter!(get_form, FormRenderState, FormRenderer);
     renderer_getter!(get_list_item, ListItemRenderState, ListItemRenderer);
     renderer_getter!(get_text_area, TextAreaRenderState, TextAreaRenderer);
-    renderer_getter!(get_password_input, PasswordInputRenderState, PasswordInputRenderer);
-    renderer_getter!(get_number_input, NumberInputRenderState, NumberInputRenderer);
-    renderer_getter!(get_file_path_input, FilePathInputRenderState, FilePathInputRenderer);
-    renderer_getter!(get_search_input, SearchInputRenderState, SearchInputRenderer);
+    renderer_getter!(
+        get_password_input,
+        PasswordInputRenderState,
+        PasswordInputRenderer
+    );
+    renderer_getter!(
+        get_number_input,
+        NumberInputRenderState,
+        NumberInputRenderer
+    );
+    renderer_getter!(
+        get_file_path_input,
+        FilePathInputRenderState,
+        FilePathInputRenderer
+    );
+    renderer_getter!(
+        get_search_input,
+        SearchInputRenderState,
+        SearchInputRenderer
+    );
     renderer_getter!(get_select, SelectRenderState, SelectRenderer);
     renderer_getter!(get_combo_box, ComboBoxRenderState, ComboBoxRenderer);
     renderer_getter!(get_disclosure, DisclosureRenderState, DisclosureRenderer);
     renderer_getter!(get_tree_item, TreeItemRenderState, TreeItemRenderer);
-    renderer_getter!(get_keybinding_input, KeybindingInputRenderState, KeybindingInputRenderer);
-    renderer_getter!(get_split_button, SplitButtonRenderState, SplitButtonRenderer);
+    renderer_getter!(
+        get_keybinding_input,
+        KeybindingInputRenderState,
+        KeybindingInputRenderer
+    );
+    renderer_getter!(
+        get_split_button,
+        SplitButtonRenderState,
+        SplitButtonRenderer
+    );
     renderer_getter!(get_empty_state, EmptyStateRenderState, EmptyStateRenderer);
 }

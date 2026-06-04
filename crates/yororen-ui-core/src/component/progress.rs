@@ -312,7 +312,10 @@ impl RenderOnce for ProgressBar {
         let element_id = self.element_id.clone();
 
         let theme = cx.theme();
-        let r: &dyn ProgressBarRenderer = &**theme.renderers.get_progress_bar().expect("ProgressBarRenderer registered");
+        let r: &dyn ProgressBarRenderer = &**theme
+            .renderers
+            .get_progress_bar()
+            .expect("ProgressBarRenderer registered");
         let state = ProgressBarRenderState {
             indeterminate: self.indeterminate,
             has_custom_height: {

@@ -78,7 +78,10 @@ impl RenderOnce for FocusRing {
         let id = self.element_id.clone();
 
         let theme = cx.theme();
-        let r: &dyn FocusRingRenderer = &**theme.renderers.get_focus_ring().expect("FocusRingRenderer registered");
+        let r: &dyn FocusRingRenderer = &**theme
+            .renderers
+            .get_focus_ring()
+            .expect("FocusRingRenderer registered");
         let state = FocusRingRenderState {
             has_custom_color: user_color.is_some(),
         };

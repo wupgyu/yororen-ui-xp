@@ -120,7 +120,10 @@ impl RenderOnce for Label {
     fn render(self, _window: &mut gpui::Window, cx: &mut gpui::App) -> impl IntoElement {
         let direction = cx.theme().text_direction;
         let theme = cx.theme();
-        let r: &dyn LabelRenderer = &**theme.renderers.get_label().expect("LabelRenderer registered");
+        let r: &dyn LabelRenderer = &**theme
+            .renderers
+            .get_label()
+            .expect("LabelRenderer registered");
         let state = LabelRenderState {
             muted: self.muted,
             strong: self.strong,

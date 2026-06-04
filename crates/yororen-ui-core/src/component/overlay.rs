@@ -238,8 +238,10 @@ impl RenderOnce for Overlay {
         };
 
         let theme = cx.theme();
-        let r: &dyn crate::renderer::ModalRenderer =
-            &**theme.renderers.get_modal().expect("ModalRenderer registered");
+        let r: &dyn crate::renderer::ModalRenderer = &**theme
+            .renderers
+            .get_modal()
+            .expect("ModalRenderer registered");
         let scrim_color = r.scrim(&Default::default(), theme.as_ref());
 
         let dismiss_scrim = self.dismiss_on_scrim;
@@ -252,11 +254,10 @@ impl RenderOnce for Overlay {
         // scrim needs to be the focused element (or an ancestor
         // of it) for `capture_key_down` to receive Esc — the
         // keyboard dispatch path is rooted at the focused node.
-        let prev_open_state = window.use_keyed_state(
-            (element_id.clone(), "ui:overlay:prev-open"),
-            cx,
-            |_, _| false,
-        );
+        let prev_open_state =
+            window.use_keyed_state((element_id.clone(), "ui:overlay:prev-open"), cx, |_, _| {
+                false
+            });
         let was_open = *prev_open_state.read(cx);
         prev_open_state.update(cx, |v, _cx| *v = self.open);
 

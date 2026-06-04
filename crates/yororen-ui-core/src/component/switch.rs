@@ -137,7 +137,10 @@ impl RenderOnce for Switch {
             resolve_state_value_simple(explicit_checked, &internal_checked, cx, use_internal);
 
         let theme = cx.theme();
-        let r: &dyn SwitchRenderer = &**theme.renderers.get_switch().expect("SwitchRenderer registered");
+        let r: &dyn SwitchRenderer = &**theme
+            .renderers
+            .get_switch()
+            .expect("SwitchRenderer registered");
         let state = SwitchRenderState {
             checked,
             disabled,

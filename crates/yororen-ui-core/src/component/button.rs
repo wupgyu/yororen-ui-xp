@@ -8,9 +8,7 @@ use gpui::{
 
 use crate::component::{ClickCallback, HoverCallback};
 use crate::renderer::variant::VariantState;
-use crate::renderer::{
-    ButtonRenderState, ButtonVariant, Edges, VariantKey,
-};
+use crate::renderer::{ButtonRenderState, ButtonVariant, Edges, VariantKey};
 use crate::theme::{ActionVariantKind, ActiveTheme};
 
 /// Creates a new button element.
@@ -173,7 +171,10 @@ impl RenderOnce for Button {
 
         // button visuals go through ButtonRenderer.
         let theme = cx.theme();
-        let r: &dyn ButtonRenderer = &**theme.renderers.get_button().expect("ButtonRenderer registered");
+        let r: &dyn ButtonRenderer = &**theme
+            .renderers
+            .get_button()
+            .expect("ButtonRenderer registered");
         let state = ButtonRenderState {
             variant: variant_builtin,
             disabled,

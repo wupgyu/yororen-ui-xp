@@ -128,7 +128,10 @@ impl Render for TooltipView {
         cx: &mut gpui::Context<Self>,
     ) -> impl IntoElement {
         let theme = cx.theme();
-        let r: &dyn TooltipRenderer = &**theme.renderers.get_tooltip().expect("TooltipRenderer registered");
+        let r: &dyn TooltipRenderer = &**theme
+            .renderers
+            .get_tooltip()
+            .expect("TooltipRenderer registered");
         let state = TooltipRenderState {
             has_custom_bg: self.bg.is_some(),
             has_custom_fg: self.text_color.is_some(),
