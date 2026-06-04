@@ -78,6 +78,55 @@ jobs:
             cargo publish --dry-run --allow-dirty -p $(basename $crate | tr '-' '_') || exit 1
           done
 
+  public-api:
+    # Phase H.2: enforce no breaking change to the public
+    # surface. Compares the current `cargo public-api` output
+    # against the committed `upstream/*.api.txt` baselines.
+    # Any diff is a breaking change; either fix the code or
+    # update the baseline (with a CHANGELOG entry).
+    name: public-api diff
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install cargo-public-api
+        run: cargo install --locked cargo-public-api
+      - name: Cache cargo registry & build
+        uses: Swatinem/rust-cache@v2
+      - name: Build the workspace
+        # We need the public-api crate to exist on disk before
+        # `cargo public-api` can scan it.
+        run: cargo build -p yororen_ui_core -p yororen_ui_theme_system -p yororen_ui_theme_catppuccin -p yororen_ui_theme_material -p yororen_ui
+      - name: Diff public-api vs upstream baselines
+        # For each tracked crate, regenerate the simplified
+        # public API and `diff` it against the committed
+        # baseline in `upstream/`. A non-empty diff fails the
+        # job.
+        run: |
+          set -euo pipefail
+          failed=0
+          for pair in \
+              "yororen_ui_core:yororen_ui_core" \
+              "yororen_ui_theme_system:yororen_ui_theme_system" \
+              "yororen_ui_theme_catppuccin:yororen_ui_theme_catppuccin" \
+              "yororen_ui_theme_material:yororen_ui_theme_material" \
+              "yororen_ui:yororen_ui"; do
+            crate="${pair%%:*}"
+            crate_dash="${pair##*:}"
+            echo "=== diff ${crate} vs upstream/${crate_dash}.api.txt ==="
+            if cargo public-api -p "${crate}" --simplified > /tmp/current.api 2>/dev/null \
+              && diff -u "upstream/${crate_dash}.api.txt" /tmp/current.api; then
+              echo "OK"
+            else
+              echo "FAIL: ${crate} public API drifted from upstream/${crate_dash}.api.txt"
+              failed=1
+            fi
+          done
+          if [ "${failed}" -ne 0 ]; then
+            echo "::error::public-api drift detected. Either fix the code or update upstream/*.api.txt with a CHANGELOG entry."
+            exit 1
+          fi
+
   visual-regression:
     # Phase F-δ: visual-regression test for the Catppuccin theme.
     # Currently uses a "theme-snapshot" test (every renderer's
