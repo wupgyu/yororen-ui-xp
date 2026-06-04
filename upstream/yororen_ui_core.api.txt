@@ -1067,22 +1067,6 @@ impl core::marker::Unpin for yororen_ui_core::component::ActionStyle
 impl core::marker::UnsafeUnpin for yororen_ui_core::component::ActionStyle
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::component::ActionStyle
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::component::ActionStyle
-pub struct yororen_ui_core::component::helpers::InputStyle
-pub yororen_ui_core::component::helpers::InputStyle::bg: gpui::color::Hsla
-pub yororen_ui_core::component::helpers::InputStyle::border: gpui::color::Hsla
-pub yororen_ui_core::component::helpers::InputStyle::focus_border: gpui::color::Hsla
-pub yororen_ui_core::component::helpers::InputStyle::text_color: gpui::color::Hsla
-impl core::clone::Clone for yororen_ui_core::component::InputStyle
-pub fn yororen_ui_core::component::InputStyle::clone(&self) -> yororen_ui_core::component::InputStyle
-impl core::fmt::Debug for yororen_ui_core::component::InputStyle
-pub fn yororen_ui_core::component::InputStyle::fmt(&self, &mut core::fmt::Formatter<'_>) -> core::fmt::Result
-impl core::marker::Freeze for yororen_ui_core::component::InputStyle
-impl core::marker::Send for yororen_ui_core::component::InputStyle
-impl core::marker::Sync for yororen_ui_core::component::InputStyle
-impl core::marker::Unpin for yororen_ui_core::component::InputStyle
-impl core::marker::UnsafeUnpin for yororen_ui_core::component::InputStyle
-impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::component::InputStyle
-impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::component::InputStyle
 pub struct yororen_ui_core::component::helpers::ToggleStyle
 pub yororen_ui_core::component::helpers::ToggleStyle::bg: gpui::color::Hsla
 pub yororen_ui_core::component::helpers::ToggleStyle::border: gpui::color::Hsla
@@ -1102,7 +1086,6 @@ impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::component::Tog
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::component::ToggleStyle
 pub fn yororen_ui_core::component::helpers::compute_action_style(&yororen_ui_core::theme::Theme, yororen_ui_core::theme::ActionVariantKind, bool, core::option::Option<gpui::color::Hsla>, core::option::Option<gpui::color::Hsla>) -> yororen_ui_core::component::ActionStyle
 pub fn yororen_ui_core::component::helpers::compute_action_style_with_custom(&yororen_ui_core::theme::Theme, yororen_ui_core::theme::ActionVariantKind, core::option::Option<alloc::sync::Arc<dyn yororen_ui_core::renderer::variant::VariantStyle>>, bool, core::option::Option<gpui::color::Hsla>, core::option::Option<gpui::color::Hsla>) -> yororen_ui_core::component::ActionStyle
-pub fn yororen_ui_core::component::helpers::compute_input_style(&yororen_ui_core::theme::Theme, bool, core::option::Option<gpui::color::Hsla>, core::option::Option<gpui::color::Hsla>, core::option::Option<gpui::color::Hsla>, core::option::Option<gpui::color::Hsla>) -> yororen_ui_core::component::InputStyle
 pub fn yororen_ui_core::component::helpers::compute_toggle_style(&yororen_ui_core::theme::Theme, bool, bool, core::option::Option<gpui::color::Hsla>) -> yororen_ui_core::component::ToggleStyle
 pub fn yororen_ui_core::component::helpers::create_internal_state<T: core::clone::Clone + core::default::Default + 'static>(&mut gpui::window::Window, &mut gpui::app::App, &gpui::window::ElementId, alloc::string::String, T, bool) -> core::option::Option<gpui::app::entity_map::Entity<T>>
 pub fn yororen_ui_core::component::helpers::desired_menu_left(gpui::geometry::Bounds<gpui::geometry::Pixels>, gpui::geometry::Pixels, yororen_ui_core::i18n::locale::TextDirection, bool, &gpui::window::Window) -> gpui::geometry::Pixels
@@ -2495,22 +2478,6 @@ impl core::marker::Unpin for yororen_ui_core::component::InlineError
 impl core::marker::UnsafeUnpin for yororen_ui_core::component::InlineError
 impl !core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::component::InlineError
 impl !core::panic::unwind_safe::UnwindSafe for yororen_ui_core::component::InlineError
-pub struct yororen_ui_core::component::InputStyle
-pub yororen_ui_core::component::InputStyle::bg: gpui::color::Hsla
-pub yororen_ui_core::component::InputStyle::border: gpui::color::Hsla
-pub yororen_ui_core::component::InputStyle::focus_border: gpui::color::Hsla
-pub yororen_ui_core::component::InputStyle::text_color: gpui::color::Hsla
-impl core::clone::Clone for yororen_ui_core::component::InputStyle
-pub fn yororen_ui_core::component::InputStyle::clone(&self) -> yororen_ui_core::component::InputStyle
-impl core::fmt::Debug for yororen_ui_core::component::InputStyle
-pub fn yororen_ui_core::component::InputStyle::fmt(&self, &mut core::fmt::Formatter<'_>) -> core::fmt::Result
-impl core::marker::Freeze for yororen_ui_core::component::InputStyle
-impl core::marker::Send for yororen_ui_core::component::InputStyle
-impl core::marker::Sync for yororen_ui_core::component::InputStyle
-impl core::marker::Unpin for yororen_ui_core::component::InputStyle
-impl core::marker::UnsafeUnpin for yororen_ui_core::component::InputStyle
-impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::component::InputStyle
-impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::component::InputStyle
 pub struct yororen_ui_core::component::KeybindingInput
 impl yororen_ui_core::component::KeybindingInput
 pub fn yororen_ui_core::component::KeybindingInput::bg(self, impl core::convert::Into<gpui::color::Hsla>) -> Self
@@ -4051,7 +4018,6 @@ pub fn yororen_ui_core::component::clickable_surface(impl core::convert::Into<gp
 pub fn yororen_ui_core::component::combo_box(impl core::convert::Into<gpui::window::ElementId>) -> yororen_ui_core::component::ComboBox
 pub fn yororen_ui_core::component::compute_action_style(&yororen_ui_core::theme::Theme, yororen_ui_core::theme::ActionVariantKind, bool, core::option::Option<gpui::color::Hsla>, core::option::Option<gpui::color::Hsla>) -> yororen_ui_core::component::ActionStyle
 pub fn yororen_ui_core::component::compute_action_style_with_custom(&yororen_ui_core::theme::Theme, yororen_ui_core::theme::ActionVariantKind, core::option::Option<alloc::sync::Arc<dyn yororen_ui_core::renderer::variant::VariantStyle>>, bool, core::option::Option<gpui::color::Hsla>, core::option::Option<gpui::color::Hsla>) -> yororen_ui_core::component::ActionStyle
-pub fn yororen_ui_core::component::compute_input_style(&yororen_ui_core::theme::Theme, bool, core::option::Option<gpui::color::Hsla>, core::option::Option<gpui::color::Hsla>, core::option::Option<gpui::color::Hsla>, core::option::Option<gpui::color::Hsla>) -> yororen_ui_core::component::InputStyle
 pub fn yororen_ui_core::component::compute_toggle_style(&yororen_ui_core::theme::Theme, bool, bool, core::option::Option<gpui::color::Hsla>) -> yororen_ui_core::component::ToggleStyle
 pub fn yororen_ui_core::component::context_menu_trigger(impl core::convert::Into<gpui::window::ElementId>) -> yororen_ui_core::component::ContextMenuTrigger
 pub fn yororen_ui_core::component::create_internal_state<T: core::clone::Clone + core::default::Default + 'static>(&mut gpui::window::Window, &mut gpui::app::App, &gpui::window::ElementId, alloc::string::String, T, bool) -> core::option::Option<gpui::app::entity_map::Entity<T>>
@@ -5669,7 +5635,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::avatar::TokenAvatarRende
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::avatar::TokenAvatarRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::avatar::TokenAvatarRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::avatar::TokenAvatarRenderer
-pub trait yororen_ui_core::renderer::avatar::AvatarRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::avatar::AvatarRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::avatar::AvatarRenderer::border_radius(&self, &yororen_ui_core::renderer::avatar::AvatarRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::avatar::AvatarRenderer::default_bg(&self, &yororen_ui_core::renderer::avatar::AvatarRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::avatar::AvatarRenderer::status_border_color(&self, &yororen_ui_core::renderer::avatar::AvatarRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
@@ -5717,7 +5683,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::badge::TokenBadgeRendere
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::badge::TokenBadgeRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::badge::TokenBadgeRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::badge::TokenBadgeRenderer
-pub trait yororen_ui_core::renderer::badge::BadgeRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::badge::BadgeRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::badge::BadgeRenderer::bg(&self, &yororen_ui_core::renderer::badge::BadgeRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::badge::BadgeRenderer::border_radius(&self, &yororen_ui_core::renderer::badge::BadgeRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::badge::BadgeRenderer::fg(&self, &yororen_ui_core::renderer::badge::BadgeRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
@@ -5772,7 +5738,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::button::TokenButtonRende
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::button::TokenButtonRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::button::TokenButtonRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::button::TokenButtonRenderer
-pub trait yororen_ui_core::renderer::button::ButtonRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::button::ButtonRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::button::ButtonRenderer::bg(&self, &yororen_ui_core::renderer::button::ButtonRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::button::ButtonRenderer::border(&self, &yororen_ui_core::renderer::button::ButtonRenderState, &yororen_ui_core::theme::Theme) -> core::option::Option<yororen_ui_core::renderer::spec::BorderSpec>
 pub fn yororen_ui_core::renderer::button::ButtonRenderer::border_radius(&self, &yororen_ui_core::renderer::button::ButtonRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -5822,7 +5788,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::card::TokenCardRenderer
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::card::TokenCardRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::card::TokenCardRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::card::TokenCardRenderer
-pub trait yororen_ui_core::renderer::card::CardRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::card::CardRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::card::CardRenderer::bg(&self, &yororen_ui_core::renderer::card::CardRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::card::CardRenderer::border(&self, &yororen_ui_core::renderer::card::CardRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::card::CardRenderer::border_radius(&self, &yororen_ui_core::renderer::card::CardRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -5871,7 +5837,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::checkbox::TokenCheckboxR
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::checkbox::TokenCheckboxRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::checkbox::TokenCheckboxRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::checkbox::TokenCheckboxRenderer
-pub trait yororen_ui_core::renderer::checkbox::CheckboxRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::checkbox::CheckboxRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::checkbox::CheckboxRenderer::box_bg(&self, &yororen_ui_core::renderer::checkbox::CheckboxRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::checkbox::CheckboxRenderer::box_border(&self, &yororen_ui_core::renderer::checkbox::CheckboxRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::checkbox::CheckboxRenderer::box_hover_bg(&self, &yororen_ui_core::renderer::checkbox::CheckboxRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
@@ -5892,6 +5858,10 @@ pub fn yororen_ui_core::renderer::checkbox::TokenCheckboxRenderer::focus_color(&
 pub fn yororen_ui_core::renderer::checkbox::arc_checkbox<T: yororen_ui_core::renderer::checkbox::CheckboxRenderer + 'static>(T) -> alloc::sync::Arc<dyn yororen_ui_core::renderer::checkbox::CheckboxRenderer>
 pub mod yororen_ui_core::renderer::combo_box
 pub struct yororen_ui_core::renderer::combo_box::ComboBoxRenderState
+pub yororen_ui_core::renderer::combo_box::ComboBoxRenderState::custom_bg: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::combo_box::ComboBoxRenderState::custom_border: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::combo_box::ComboBoxRenderState::custom_fg: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::combo_box::ComboBoxRenderState::custom_focus_border: core::option::Option<gpui::color::Hsla>
 pub yororen_ui_core::renderer::combo_box::ComboBoxRenderState::disabled: bool
 pub yororen_ui_core::renderer::combo_box::ComboBoxRenderState::has_value: bool
 pub yororen_ui_core::renderer::combo_box::ComboBoxRenderState::open: bool
@@ -5926,7 +5896,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::combo_box::TokenComboBox
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::combo_box::TokenComboBoxRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::combo_box::TokenComboBoxRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::combo_box::TokenComboBoxRenderer
-pub trait yororen_ui_core::renderer::combo_box::ComboBoxRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::combo_box::ComboBoxRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::combo_box::ComboBoxRenderer::bg(&self, &yororen_ui_core::renderer::combo_box::ComboBoxRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::combo_box::ComboBoxRenderer::border(&self, &yororen_ui_core::renderer::combo_box::ComboBoxRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::combo_box::ComboBoxRenderer::border_radius(&self, &yororen_ui_core::renderer::combo_box::ComboBoxRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -5978,7 +5948,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::disclosure::TokenDisclos
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::disclosure::TokenDisclosureRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::disclosure::TokenDisclosureRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::disclosure::TokenDisclosureRenderer
-pub trait yororen_ui_core::renderer::disclosure::DisclosureRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::disclosure::DisclosureRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::disclosure::DisclosureRenderer::body_padding(&self, &yororen_ui_core::renderer::disclosure::DisclosureRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::disclosure::DisclosureRenderer::border_radius(&self, &yororen_ui_core::renderer::disclosure::DisclosureRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::disclosure::DisclosureRenderer::chevron_rotation(&self, &yororen_ui_core::renderer::disclosure::DisclosureRenderState, &yororen_ui_core::theme::Theme) -> f32
@@ -6023,7 +5993,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::divider::TokenDividerRen
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::divider::TokenDividerRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::divider::TokenDividerRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::divider::TokenDividerRenderer
-pub trait yororen_ui_core::renderer::divider::DividerRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::divider::DividerRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::divider::DividerRenderer::color(&self, &yororen_ui_core::renderer::divider::DividerRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::divider::DividerRenderer::thickness(&self, &yororen_ui_core::renderer::divider::DividerRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 impl yororen_ui_core::renderer::divider::DividerRenderer for yororen_ui_core::renderer::divider::TokenDividerRenderer
@@ -6062,7 +6032,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::dropdown_menu::TokenDrop
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::dropdown_menu::TokenDropdownMenuRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::dropdown_menu::TokenDropdownMenuRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::dropdown_menu::TokenDropdownMenuRenderer
-pub trait yororen_ui_core::renderer::dropdown_menu::DropdownMenuRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::dropdown_menu::DropdownMenuRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::dropdown_menu::DropdownMenuRenderer::border_radius(&self, &yororen_ui_core::renderer::dropdown_menu::DropdownMenuRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::dropdown_menu::DropdownMenuRenderer::chevron_rotation(&self, &yororen_ui_core::renderer::dropdown_menu::DropdownMenuRenderState, &yororen_ui_core::theme::Theme) -> f32
 pub fn yororen_ui_core::renderer::dropdown_menu::DropdownMenuRenderer::min_height(&self, &yororen_ui_core::renderer::dropdown_menu::DropdownMenuRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -6108,7 +6078,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::empty_state::TokenEmptyS
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::empty_state::TokenEmptyStateRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::empty_state::TokenEmptyStateRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::empty_state::TokenEmptyStateRenderer
-pub trait yororen_ui_core::renderer::empty_state::EmptyStateRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::empty_state::EmptyStateRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::empty_state::EmptyStateRenderer::body_color(&self, &yororen_ui_core::renderer::empty_state::EmptyStateRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::empty_state::EmptyStateRenderer::gap(&self, &yororen_ui_core::renderer::empty_state::EmptyStateRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::empty_state::EmptyStateRenderer::icon_color(&self, &yororen_ui_core::renderer::empty_state::EmptyStateRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
@@ -6125,6 +6095,10 @@ pub fn yororen_ui_core::renderer::empty_state::TokenEmptyStateRenderer::title_co
 pub fn yororen_ui_core::renderer::empty_state::arc_empty_state<T: yororen_ui_core::renderer::empty_state::EmptyStateRenderer + 'static>(T) -> alloc::sync::Arc<dyn yororen_ui_core::renderer::empty_state::EmptyStateRenderer>
 pub mod yororen_ui_core::renderer::file_path_input
 pub struct yororen_ui_core::renderer::file_path_input::FilePathInputRenderState
+pub yororen_ui_core::renderer::file_path_input::FilePathInputRenderState::custom_bg: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::file_path_input::FilePathInputRenderState::custom_border: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::file_path_input::FilePathInputRenderState::custom_fg: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::file_path_input::FilePathInputRenderState::custom_focus_border: core::option::Option<gpui::color::Hsla>
 pub yororen_ui_core::renderer::file_path_input::FilePathInputRenderState::disabled: bool
 pub yororen_ui_core::renderer::file_path_input::FilePathInputRenderState::focused: bool
 impl core::clone::Clone for yororen_ui_core::renderer::file_path_input::FilePathInputRenderState
@@ -6160,7 +6134,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::file_path_input::TokenFi
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::file_path_input::TokenFilePathInputRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::file_path_input::TokenFilePathInputRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::file_path_input::TokenFilePathInputRenderer
-pub trait yororen_ui_core::renderer::file_path_input::FilePathInputRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::file_path_input::FilePathInputRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::file_path_input::FilePathInputRenderer::action_gap(&self, &yororen_ui_core::renderer::file_path_input::FilePathInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::file_path_input::FilePathInputRenderer::bg(&self, &yororen_ui_core::renderer::file_path_input::FilePathInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::file_path_input::FilePathInputRenderer::border(&self, &yororen_ui_core::renderer::file_path_input::FilePathInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
@@ -6211,7 +6185,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::focus_ring::TokenFocusRi
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::focus_ring::TokenFocusRingRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::focus_ring::TokenFocusRingRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::focus_ring::TokenFocusRingRenderer
-pub trait yororen_ui_core::renderer::focus_ring::FocusRingRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::focus_ring::FocusRingRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::focus_ring::FocusRingRenderer::color(&self, &yororen_ui_core::renderer::focus_ring::FocusRingRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::focus_ring::FocusRingRenderer::width(&self, &yororen_ui_core::renderer::focus_ring::FocusRingRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 impl yororen_ui_core::renderer::focus_ring::FocusRingRenderer for yororen_ui_core::renderer::focus_ring::TokenFocusRingRenderer
@@ -6247,7 +6221,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::form::TokenFormRenderer
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::form::TokenFormRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::form::TokenFormRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::form::TokenFormRenderer
-pub trait yororen_ui_core::renderer::form::FormRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::form::FormRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::form::FormRenderer::error_color(&self, &yororen_ui_core::renderer::form::FormRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::form::FormRenderer::gap(&self, &yororen_ui_core::renderer::form::FormRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::form::FormRenderer::helper_color(&self, &yororen_ui_core::renderer::form::FormRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
@@ -6285,7 +6259,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::heading::TokenHeadingRen
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::heading::TokenHeadingRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::heading::TokenHeadingRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::heading::TokenHeadingRenderer
-pub trait yororen_ui_core::renderer::heading::HeadingRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::heading::HeadingRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::heading::HeadingRenderer::color(&self, &yororen_ui_core::renderer::heading::HeadingRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::heading::HeadingRenderer::size(&self, &yororen_ui_core::renderer::heading::HeadingRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::heading::HeadingRenderer::weight(&self, &yororen_ui_core::renderer::heading::HeadingRenderState, &yororen_ui_core::theme::Theme) -> gpui::text_system::FontWeight
@@ -6328,7 +6302,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::icon_button::TokenIconBu
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::icon_button::TokenIconButtonRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::icon_button::TokenIconButtonRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::icon_button::TokenIconButtonRenderer
-pub trait yororen_ui_core::renderer::icon_button::IconButtonRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::icon_button::IconButtonRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::icon_button::IconButtonRenderer::bg(&self, &yororen_ui_core::renderer::icon_button::IconButtonRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::icon_button::IconButtonRenderer::border_radius(&self, &yororen_ui_core::renderer::icon_button::IconButtonRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::icon_button::IconButtonRenderer::disabled_opacity(&self, &yororen_ui_core::renderer::icon_button::IconButtonRenderState, &yororen_ui_core::theme::Theme) -> f32
@@ -6344,6 +6318,10 @@ pub fn yororen_ui_core::renderer::icon_button::arc_icon_button<T: yororen_ui_cor
 pub mod yororen_ui_core::renderer::keybinding_input
 pub struct yororen_ui_core::renderer::keybinding_input::KeybindingInputRenderState
 pub yororen_ui_core::renderer::keybinding_input::KeybindingInputRenderState::capturing: bool
+pub yororen_ui_core::renderer::keybinding_input::KeybindingInputRenderState::custom_bg: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::keybinding_input::KeybindingInputRenderState::custom_border: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::keybinding_input::KeybindingInputRenderState::custom_fg: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::keybinding_input::KeybindingInputRenderState::custom_focus_border: core::option::Option<gpui::color::Hsla>
 pub yororen_ui_core::renderer::keybinding_input::KeybindingInputRenderState::disabled: bool
 impl core::clone::Clone for yororen_ui_core::renderer::keybinding_input::KeybindingInputRenderState
 pub fn yororen_ui_core::renderer::keybinding_input::KeybindingInputRenderState::clone(&self) -> yororen_ui_core::renderer::keybinding_input::KeybindingInputRenderState
@@ -6378,7 +6356,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::keybinding_input::TokenK
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::keybinding_input::TokenKeybindingInputRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::keybinding_input::TokenKeybindingInputRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::keybinding_input::TokenKeybindingInputRenderer
-pub trait yororen_ui_core::renderer::keybinding_input::KeybindingInputRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::keybinding_input::KeybindingInputRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::keybinding_input::KeybindingInputRenderer::bg(&self, &yororen_ui_core::renderer::keybinding_input::KeybindingInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::keybinding_input::KeybindingInputRenderer::border(&self, &yororen_ui_core::renderer::keybinding_input::KeybindingInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::keybinding_input::KeybindingInputRenderer::border_radius(&self, &yororen_ui_core::renderer::keybinding_input::KeybindingInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -6433,7 +6411,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::label::TokenLabelRendere
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::label::TokenLabelRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::label::TokenLabelRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::label::TokenLabelRenderer
-pub trait yororen_ui_core::renderer::label::LabelRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::label::LabelRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::label::LabelRenderer::color(&self, &yororen_ui_core::renderer::label::LabelRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::label::LabelRenderer::family_mono(&self, &yororen_ui_core::renderer::label::LabelRenderState, &yororen_ui_core::theme::Theme) -> gpui::shared_string::SharedString
 pub fn yororen_ui_core::renderer::label::LabelRenderer::strong_weight(&self, &yororen_ui_core::renderer::label::LabelRenderState, &yororen_ui_core::theme::Theme) -> gpui::text_system::FontWeight
@@ -6477,7 +6455,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::list_item::TokenListItem
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::list_item::TokenListItemRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::list_item::TokenListItemRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::list_item::TokenListItemRenderer
-pub trait yororen_ui_core::renderer::list_item::ListItemRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::list_item::ListItemRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::list_item::ListItemRenderer::bg(&self, &yororen_ui_core::renderer::list_item::ListItemRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::list_item::ListItemRenderer::border_radius(&self, &yororen_ui_core::renderer::list_item::ListItemRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::list_item::ListItemRenderer::fg(&self, &yororen_ui_core::renderer::list_item::ListItemRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
@@ -6525,7 +6503,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::modal::TokenModalRendere
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::modal::TokenModalRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::modal::TokenModalRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::modal::TokenModalRenderer
-pub trait yororen_ui_core::renderer::modal::ModalRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::modal::ModalRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::modal::ModalRenderer::panel_bg(&self, &yororen_ui_core::renderer::modal::ModalRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::modal::ModalRenderer::panel_border(&self, &yororen_ui_core::renderer::modal::ModalRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::modal::ModalRenderer::panel_border_radius(&self, &yororen_ui_core::renderer::modal::ModalRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -6570,7 +6548,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::notification::TokenNotif
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::notification::TokenNotificationRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::notification::TokenNotificationRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::notification::TokenNotificationRenderer
-pub trait yororen_ui_core::renderer::notification::NotificationRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::notification::NotificationRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::notification::NotificationRenderer::bg(&self, &yororen_ui_core::renderer::notification::NotificationRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::notification::NotificationRenderer::border(&self, &yororen_ui_core::renderer::notification::NotificationRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::notification::NotificationRenderer::border_radius(&self, &yororen_ui_core::renderer::notification::NotificationRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -6585,6 +6563,10 @@ pub fn yororen_ui_core::renderer::notification::TokenNotificationRenderer::shado
 pub fn yororen_ui_core::renderer::notification::arc_notification<T: yororen_ui_core::renderer::notification::NotificationRenderer + 'static>(T) -> alloc::sync::Arc<dyn yororen_ui_core::renderer::notification::NotificationRenderer>
 pub mod yororen_ui_core::renderer::number_input
 pub struct yororen_ui_core::renderer::number_input::NumberInputRenderState
+pub yororen_ui_core::renderer::number_input::NumberInputRenderState::custom_bg: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::number_input::NumberInputRenderState::custom_border: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::number_input::NumberInputRenderState::custom_fg: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::number_input::NumberInputRenderState::custom_focus_border: core::option::Option<gpui::color::Hsla>
 pub yororen_ui_core::renderer::number_input::NumberInputRenderState::disabled: bool
 pub yororen_ui_core::renderer::number_input::NumberInputRenderState::focused: bool
 impl core::clone::Clone for yororen_ui_core::renderer::number_input::NumberInputRenderState
@@ -6620,7 +6602,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::number_input::TokenNumbe
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::number_input::TokenNumberInputRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::number_input::TokenNumberInputRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::number_input::TokenNumberInputRenderer
-pub trait yororen_ui_core::renderer::number_input::NumberInputRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::number_input::NumberInputRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::number_input::NumberInputRenderer::bg(&self, &yororen_ui_core::renderer::number_input::NumberInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::number_input::NumberInputRenderer::border(&self, &yororen_ui_core::renderer::number_input::NumberInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::number_input::NumberInputRenderer::border_radius(&self, &yororen_ui_core::renderer::number_input::NumberInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -6676,7 +6658,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::panel::TokenPanelRendere
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::panel::TokenPanelRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::panel::TokenPanelRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::panel::TokenPanelRenderer
-pub trait yororen_ui_core::renderer::panel::PanelRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::panel::PanelRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::panel::PanelRenderer::bg(&self, &yororen_ui_core::renderer::panel::PanelRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::panel::PanelRenderer::border(&self, &yororen_ui_core::renderer::panel::PanelRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::panel::PanelRenderer::border_radius(&self, &yororen_ui_core::renderer::panel::PanelRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -6691,6 +6673,10 @@ pub fn yororen_ui_core::renderer::panel::TokenPanelRenderer::shadow_alpha(&self,
 pub fn yororen_ui_core::renderer::panel::arc_panel<T: yororen_ui_core::renderer::panel::PanelRenderer + 'static>(T) -> alloc::sync::Arc<dyn yororen_ui_core::renderer::panel::PanelRenderer>
 pub mod yororen_ui_core::renderer::password_input
 pub struct yororen_ui_core::renderer::password_input::PasswordInputRenderState
+pub yororen_ui_core::renderer::password_input::PasswordInputRenderState::custom_bg: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::password_input::PasswordInputRenderState::custom_border: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::password_input::PasswordInputRenderState::custom_fg: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::password_input::PasswordInputRenderState::custom_focus_border: core::option::Option<gpui::color::Hsla>
 pub yororen_ui_core::renderer::password_input::PasswordInputRenderState::disabled: bool
 pub yororen_ui_core::renderer::password_input::PasswordInputRenderState::focused: bool
 impl core::clone::Clone for yororen_ui_core::renderer::password_input::PasswordInputRenderState
@@ -6724,7 +6710,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::password_input::TokenPas
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::password_input::TokenPasswordInputRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::password_input::TokenPasswordInputRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::password_input::TokenPasswordInputRenderer
-pub trait yororen_ui_core::renderer::password_input::PasswordInputRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::password_input::PasswordInputRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::password_input::PasswordInputRenderer::bg(&self, &yororen_ui_core::renderer::password_input::PasswordInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::password_input::PasswordInputRenderer::border(&self, &yororen_ui_core::renderer::password_input::PasswordInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::password_input::PasswordInputRenderer::border_radius(&self, &yororen_ui_core::renderer::password_input::PasswordInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -6773,7 +6759,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::popover::TokenPopoverRen
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::popover::TokenPopoverRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::popover::TokenPopoverRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::popover::TokenPopoverRenderer
-pub trait yororen_ui_core::renderer::popover::PopoverRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::popover::PopoverRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::popover::PopoverRenderer::bg(&self, &yororen_ui_core::renderer::popover::PopoverRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::popover::PopoverRenderer::border(&self, &yororen_ui_core::renderer::popover::PopoverRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::popover::PopoverRenderer::border_radius(&self, &yororen_ui_core::renderer::popover::PopoverRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -6818,7 +6804,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::progress::TokenProgressB
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::progress::TokenProgressBarRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::progress::TokenProgressBarRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::progress::TokenProgressBarRenderer
-pub trait yororen_ui_core::renderer::progress::ProgressBarRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::progress::ProgressBarRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::progress::ProgressBarRenderer::border_color(&self, &yororen_ui_core::renderer::progress::ProgressBarRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::progress::ProgressBarRenderer::border_radius(&self, &yororen_ui_core::renderer::progress::ProgressBarRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::progress::ProgressBarRenderer::fill(&self, &yororen_ui_core::renderer::progress::ProgressBarRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
@@ -6867,7 +6853,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::radio::TokenRadioRendere
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::radio::TokenRadioRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::radio::TokenRadioRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::radio::TokenRadioRenderer
-pub trait yororen_ui_core::renderer::radio::RadioRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::radio::RadioRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::radio::RadioRenderer::disabled_opacity(&self, &yororen_ui_core::renderer::radio::RadioRenderState, &yororen_ui_core::theme::Theme) -> f32
 pub fn yororen_ui_core::renderer::radio::RadioRenderer::dot_fg(&self, &yororen_ui_core::renderer::radio::RadioRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::radio::RadioRenderer::dot_size(&self, &yororen_ui_core::renderer::radio::RadioRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -6888,45 +6874,45 @@ pub fn yororen_ui_core::renderer::radio::TokenRadioRenderer::ring_size(&self, &y
 pub fn yororen_ui_core::renderer::radio::arc_radio<T: yororen_ui_core::renderer::radio::RadioRenderer + 'static>(T) -> alloc::sync::Arc<dyn yororen_ui_core::renderer::radio::RadioRenderer>
 pub mod yororen_ui_core::renderer::registry
 pub struct yororen_ui_core::renderer::registry::RendererRegistry
-pub yororen_ui_core::renderer::registry::RendererRegistry::avatar: alloc::sync::Arc<dyn yororen_ui_core::renderer::avatar::AvatarRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::badge: alloc::sync::Arc<dyn yororen_ui_core::renderer::badge::BadgeRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::button: alloc::sync::Arc<dyn yororen_ui_core::renderer::button::ButtonRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::card: alloc::sync::Arc<dyn yororen_ui_core::renderer::card::CardRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::checkbox: alloc::sync::Arc<dyn yororen_ui_core::renderer::checkbox::CheckboxRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::combo_box: alloc::sync::Arc<dyn yororen_ui_core::renderer::combo_box::ComboBoxRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::disclosure: alloc::sync::Arc<dyn yororen_ui_core::renderer::disclosure::DisclosureRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::divider: alloc::sync::Arc<dyn yororen_ui_core::renderer::divider::DividerRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::dropdown_menu: alloc::sync::Arc<dyn yororen_ui_core::renderer::dropdown_menu::DropdownMenuRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::empty_state: alloc::sync::Arc<dyn yororen_ui_core::renderer::empty_state::EmptyStateRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::file_path_input: alloc::sync::Arc<dyn yororen_ui_core::renderer::file_path_input::FilePathInputRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::focus_ring: alloc::sync::Arc<dyn yororen_ui_core::renderer::focus_ring::FocusRingRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::form: alloc::sync::Arc<dyn yororen_ui_core::renderer::form::FormRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::heading: alloc::sync::Arc<dyn yororen_ui_core::renderer::heading::HeadingRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::icon_button: alloc::sync::Arc<dyn yororen_ui_core::renderer::icon_button::IconButtonRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::keybinding_input: alloc::sync::Arc<dyn yororen_ui_core::renderer::keybinding_input::KeybindingInputRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::label: alloc::sync::Arc<dyn yororen_ui_core::renderer::label::LabelRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::list_item: alloc::sync::Arc<dyn yororen_ui_core::renderer::list_item::ListItemRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::modal: alloc::sync::Arc<dyn yororen_ui_core::renderer::modal::ModalRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::notification: alloc::sync::Arc<dyn yororen_ui_core::renderer::notification::NotificationRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::number_input: alloc::sync::Arc<dyn yororen_ui_core::renderer::number_input::NumberInputRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::panel: alloc::sync::Arc<dyn yororen_ui_core::renderer::panel::PanelRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::password_input: alloc::sync::Arc<dyn yororen_ui_core::renderer::password_input::PasswordInputRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::popover: alloc::sync::Arc<dyn yororen_ui_core::renderer::popover::PopoverRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::progress_bar: alloc::sync::Arc<dyn yororen_ui_core::renderer::progress::ProgressBarRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::radio: alloc::sync::Arc<dyn yororen_ui_core::renderer::radio::RadioRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::search_input: alloc::sync::Arc<dyn yororen_ui_core::renderer::search_input::SearchInputRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::select: alloc::sync::Arc<dyn yororen_ui_core::renderer::select::SelectRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::skeleton: alloc::sync::Arc<dyn yororen_ui_core::renderer::skeleton::SkeletonRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::split_button: alloc::sync::Arc<dyn yororen_ui_core::renderer::split_button::SplitButtonRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::switch: alloc::sync::Arc<dyn yororen_ui_core::renderer::switch::SwitchRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::tag: alloc::sync::Arc<dyn yororen_ui_core::renderer::tag::TagRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::text_area: alloc::sync::Arc<dyn yororen_ui_core::renderer::text_area::TextAreaRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::text_input: alloc::sync::Arc<dyn yororen_ui_core::renderer::text_input::TextInputRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::toast: alloc::sync::Arc<dyn yororen_ui_core::renderer::toast::ToastRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::toggle_button: alloc::sync::Arc<dyn yororen_ui_core::renderer::toggle_button::ToggleButtonRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::tooltip: alloc::sync::Arc<dyn yororen_ui_core::renderer::tooltip::TooltipRenderer>
-pub yororen_ui_core::renderer::registry::RendererRegistry::tree_item: alloc::sync::Arc<dyn yororen_ui_core::renderer::tree_item::TreeItemRenderer>
 impl yororen_ui_core::renderer::registry::RendererRegistry
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_avatar(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::avatar::AvatarRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_badge(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::badge::BadgeRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_button(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::button::ButtonRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_card(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::card::CardRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_checkbox(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::checkbox::CheckboxRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_combo_box(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::combo_box::ComboBoxRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_disclosure(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::disclosure::DisclosureRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_divider(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::divider::DividerRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_dropdown_menu(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::dropdown_menu::DropdownMenuRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_empty_state(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::empty_state::EmptyStateRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_file_path_input(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::file_path_input::FilePathInputRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_focus_ring(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::focus_ring::FocusRingRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_form(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::form::FormRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_heading(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::heading::HeadingRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_icon_button(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::icon_button::IconButtonRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_keybinding_input(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::keybinding_input::KeybindingInputRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_label(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::label::LabelRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_list_item(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::list_item::ListItemRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_modal(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::modal::ModalRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_notification(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::notification::NotificationRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_number_input(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::number_input::NumberInputRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_panel(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::panel::PanelRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_password_input(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::password_input::PasswordInputRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_popover(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::popover::PopoverRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_progress_bar(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::progress::ProgressBarRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_radio(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::radio::RadioRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_search_input(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::search_input::SearchInputRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_select(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::select::SelectRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_skeleton(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::skeleton::SkeletonRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_split_button(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::split_button::SplitButtonRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_switch(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::switch::SwitchRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_tag(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::tag::TagRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_text_area(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::text_area::TextAreaRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_text_input(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::text_input::TextInputRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_toast(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::toast::ToastRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_toggle_button(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::toggle_button::ToggleButtonRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_tooltip(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::tooltip::TooltipRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_tree_item(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::tree_item::TreeItemRenderer>>
 pub fn yororen_ui_core::renderer::registry::RendererRegistry::token_based() -> Self
 pub fn yororen_ui_core::renderer::registry::RendererRegistry::with_avatar(self, alloc::sync::Arc<dyn yororen_ui_core::renderer::avatar::AvatarRenderer>) -> Self
 pub fn yororen_ui_core::renderer::registry::RendererRegistry::with_badge(self, alloc::sync::Arc<dyn yororen_ui_core::renderer::badge::BadgeRenderer>) -> Self
@@ -6981,6 +6967,10 @@ impl !core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::reg
 impl !core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::registry::RendererRegistry
 pub mod yororen_ui_core::renderer::search_input
 pub struct yororen_ui_core::renderer::search_input::SearchInputRenderState
+pub yororen_ui_core::renderer::search_input::SearchInputRenderState::custom_bg: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::search_input::SearchInputRenderState::custom_border: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::search_input::SearchInputRenderState::custom_fg: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::search_input::SearchInputRenderState::custom_focus_border: core::option::Option<gpui::color::Hsla>
 pub yororen_ui_core::renderer::search_input::SearchInputRenderState::disabled: bool
 pub yororen_ui_core::renderer::search_input::SearchInputRenderState::focused: bool
 impl core::clone::Clone for yororen_ui_core::renderer::search_input::SearchInputRenderState
@@ -7016,7 +7006,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::search_input::TokenSearc
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::search_input::TokenSearchInputRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::search_input::TokenSearchInputRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::search_input::TokenSearchInputRenderer
-pub trait yororen_ui_core::renderer::search_input::SearchInputRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::search_input::SearchInputRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::search_input::SearchInputRenderer::bg(&self, &yororen_ui_core::renderer::search_input::SearchInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::search_input::SearchInputRenderer::border(&self, &yororen_ui_core::renderer::search_input::SearchInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::search_input::SearchInputRenderer::border_radius(&self, &yororen_ui_core::renderer::search_input::SearchInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -7041,6 +7031,10 @@ pub fn yororen_ui_core::renderer::search_input::TokenSearchInputRenderer::paddin
 pub fn yororen_ui_core::renderer::search_input::arc_search_input<T: yororen_ui_core::renderer::search_input::SearchInputRenderer + 'static>(T) -> alloc::sync::Arc<dyn yororen_ui_core::renderer::search_input::SearchInputRenderer>
 pub mod yororen_ui_core::renderer::select
 pub struct yororen_ui_core::renderer::select::SelectRenderState
+pub yororen_ui_core::renderer::select::SelectRenderState::custom_bg: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::select::SelectRenderState::custom_border: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::select::SelectRenderState::custom_fg: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::select::SelectRenderState::custom_focus_border: core::option::Option<gpui::color::Hsla>
 pub yororen_ui_core::renderer::select::SelectRenderState::disabled: bool
 pub yororen_ui_core::renderer::select::SelectRenderState::has_value: bool
 pub yororen_ui_core::renderer::select::SelectRenderState::open: bool
@@ -7076,7 +7070,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::select::TokenSelectRende
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::select::TokenSelectRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::select::TokenSelectRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::select::TokenSelectRenderer
-pub trait yororen_ui_core::renderer::select::SelectRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::select::SelectRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::select::SelectRenderer::bg(&self, &yororen_ui_core::renderer::select::SelectRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::select::SelectRenderer::border(&self, &yororen_ui_core::renderer::select::SelectRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::select::SelectRenderer::border_radius(&self, &yororen_ui_core::renderer::select::SelectRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -7127,7 +7121,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::skeleton::TokenSkeletonR
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::skeleton::TokenSkeletonRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::skeleton::TokenSkeletonRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::skeleton::TokenSkeletonRenderer
-pub trait yororen_ui_core::renderer::skeleton::SkeletonRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::skeleton::SkeletonRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::skeleton::SkeletonRenderer::bg(&self, &yororen_ui_core::renderer::skeleton::SkeletonRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::skeleton::SkeletonRenderer::border_radius(&self, &yororen_ui_core::renderer::skeleton::SkeletonRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::skeleton::SkeletonRenderer::min_height(&self, &yororen_ui_core::renderer::skeleton::SkeletonRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -7219,6 +7213,8 @@ impl core::marker::Unpin for yororen_ui_core::renderer::spec::ShadowSpec
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::spec::ShadowSpec
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::spec::ShadowSpec
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::spec::ShadowSpec
+pub trait yororen_ui_core::renderer::spec::RenderState: core::any::Any + 'static + core::marker::Send + core::marker::Sync
+impl<T> yororen_ui_core::renderer::spec::RenderState for T where T: core::any::Any + 'static + core::marker::Send + core::marker::Sync
 pub mod yororen_ui_core::renderer::split_button
 pub struct yororen_ui_core::renderer::split_button::SplitButtonRenderState
 pub yororen_ui_core::renderer::split_button::SplitButtonRenderState::disabled: bool
@@ -7254,7 +7250,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::split_button::TokenSplit
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::split_button::TokenSplitButtonRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::split_button::TokenSplitButtonRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::split_button::TokenSplitButtonRenderer
-pub trait yororen_ui_core::renderer::split_button::SplitButtonRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::split_button::SplitButtonRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::split_button::SplitButtonRenderer::border_radius(&self, &yororen_ui_core::renderer::split_button::SplitButtonRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::split_button::SplitButtonRenderer::chevron_bg(&self, &yororen_ui_core::renderer::split_button::SplitButtonRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::split_button::SplitButtonRenderer::chevron_fg(&self, &yororen_ui_core::renderer::split_button::SplitButtonRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
@@ -7311,7 +7307,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::switch::TokenSwitchRende
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::switch::TokenSwitchRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::switch::TokenSwitchRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::switch::TokenSwitchRenderer
-pub trait yororen_ui_core::renderer::switch::SwitchRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::switch::SwitchRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::switch::SwitchRenderer::disabled_opacity(&self, &yororen_ui_core::renderer::switch::SwitchRenderState, &yororen_ui_core::theme::Theme) -> f32
 pub fn yororen_ui_core::renderer::switch::SwitchRenderer::focus_color(&self, &yororen_ui_core::renderer::switch::SwitchRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::switch::SwitchRenderer::knob_bg(&self, &yororen_ui_core::renderer::switch::SwitchRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
@@ -7371,7 +7367,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::tag::TokenTagRenderer
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::tag::TokenTagRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::tag::TokenTagRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::tag::TokenTagRenderer
-pub trait yororen_ui_core::renderer::tag::TagRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::tag::TagRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::tag::TagRenderer::bg(&self, &yororen_ui_core::renderer::tag::TagRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::tag::TagRenderer::border_radius(&self, &yororen_ui_core::renderer::tag::TagRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::tag::TagRenderer::close_hover_bg(&self, &yororen_ui_core::renderer::tag::TagRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
@@ -7394,6 +7390,10 @@ pub fn yororen_ui_core::renderer::tag::TokenTagRenderer::padding_x(&self, &yoror
 pub fn yororen_ui_core::renderer::tag::arc_tag<T: yororen_ui_core::renderer::tag::TagRenderer + 'static>(T) -> alloc::sync::Arc<dyn yororen_ui_core::renderer::tag::TagRenderer>
 pub mod yororen_ui_core::renderer::text_area
 pub struct yororen_ui_core::renderer::text_area::TextAreaRenderState
+pub yororen_ui_core::renderer::text_area::TextAreaRenderState::custom_bg: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::text_area::TextAreaRenderState::custom_border: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::text_area::TextAreaRenderState::custom_focus_border: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::text_area::TextAreaRenderState::custom_text_color: core::option::Option<gpui::color::Hsla>
 pub yororen_ui_core::renderer::text_area::TextAreaRenderState::disabled: bool
 pub yororen_ui_core::renderer::text_area::TextAreaRenderState::focused: bool
 pub yororen_ui_core::renderer::text_area::TextAreaRenderState::has_custom_bg: bool
@@ -7427,7 +7427,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::text_area::TokenTextArea
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::text_area::TokenTextAreaRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::text_area::TokenTextAreaRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::text_area::TokenTextAreaRenderer
-pub trait yororen_ui_core::renderer::text_area::TextAreaRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::text_area::TextAreaRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::text_area::TextAreaRenderer::bg(&self, &yororen_ui_core::renderer::text_area::TextAreaRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::text_area::TextAreaRenderer::border(&self, &yororen_ui_core::renderer::text_area::TextAreaRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::text_area::TextAreaRenderer::border_radius(&self, &yororen_ui_core::renderer::text_area::TextAreaRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -7446,6 +7446,10 @@ pub fn yororen_ui_core::renderer::text_area::TokenTextAreaRenderer::text_color(&
 pub fn yororen_ui_core::renderer::text_area::arc_text_area<T: yororen_ui_core::renderer::text_area::TextAreaRenderer + 'static>(T) -> alloc::sync::Arc<dyn yororen_ui_core::renderer::text_area::TextAreaRenderer>
 pub mod yororen_ui_core::renderer::text_input
 pub struct yororen_ui_core::renderer::text_input::TextInputRenderState
+pub yororen_ui_core::renderer::text_input::TextInputRenderState::custom_bg: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::text_input::TextInputRenderState::custom_border: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::text_input::TextInputRenderState::custom_focus_border: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::text_input::TextInputRenderState::custom_text_color: core::option::Option<gpui::color::Hsla>
 pub yororen_ui_core::renderer::text_input::TextInputRenderState::disabled: bool
 pub yororen_ui_core::renderer::text_input::TextInputRenderState::focused: bool
 pub yororen_ui_core::renderer::text_input::TextInputRenderState::has_custom_bg: bool
@@ -7483,7 +7487,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::text_input::TokenTextInp
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::text_input::TokenTextInputRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::text_input::TokenTextInputRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::text_input::TokenTextInputRenderer
-pub trait yororen_ui_core::renderer::text_input::TextInputRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::text_input::TextInputRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::text_input::TextInputRenderer::bg(&self, &yororen_ui_core::renderer::text_input::TextInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::text_input::TextInputRenderer::border(&self, &yororen_ui_core::renderer::text_input::TextInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::text_input::TextInputRenderer::border_radius(&self, &yororen_ui_core::renderer::text_input::TextInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -7536,7 +7540,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::toast::TokenToastRendere
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::toast::TokenToastRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::toast::TokenToastRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::toast::TokenToastRenderer
-pub trait yororen_ui_core::renderer::toast::ToastRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::toast::ToastRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::toast::ToastRenderer::bg(&self, &yororen_ui_core::renderer::toast::ToastRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::toast::ToastRenderer::border(&self, &yororen_ui_core::renderer::toast::ToastRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::toast::ToastRenderer::border_radius(&self, &yororen_ui_core::renderer::toast::ToastRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -7584,7 +7588,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::toggle_button::TokenTogg
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::toggle_button::TokenToggleButtonRenderer
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::toggle_button::TokenToggleButtonRenderer
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::toggle_button::TokenToggleButtonRenderer
-pub trait yororen_ui_core::renderer::toggle_button::ToggleButtonRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::toggle_button::ToggleButtonRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::toggle_button::ToggleButtonRenderer::bg(&self, &yororen_ui_core::renderer::toggle_button::ToggleButtonRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::toggle_button::ToggleButtonRenderer::border_radius(&self, &yororen_ui_core::renderer::toggle_button::ToggleButtonRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::toggle_button::ToggleButtonRenderer::disabled_opacity(&self, &yororen_ui_core::renderer::toggle_button::ToggleButtonRenderState, &yororen_ui_core::theme::Theme) -> f32
@@ -7629,7 +7633,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::tooltip::TooltipRenderSt
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::tooltip::TooltipRenderState
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::tooltip::TooltipRenderState
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::tooltip::TooltipRenderState
-pub trait yororen_ui_core::renderer::tooltip::TooltipRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::tooltip::TooltipRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::tooltip::TooltipRenderer::bg(&self, &yororen_ui_core::renderer::tooltip::TooltipRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::tooltip::TooltipRenderer::border_radius(&self, &yororen_ui_core::renderer::tooltip::TooltipRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::tooltip::TooltipRenderer::fg(&self, &yororen_ui_core::renderer::tooltip::TooltipRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
@@ -7679,7 +7683,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::tree_item::TreeItemRende
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::tree_item::TreeItemRenderState
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::tree_item::TreeItemRenderState
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::tree_item::TreeItemRenderState
-pub trait yororen_ui_core::renderer::tree_item::TreeItemRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::tree_item::TreeItemRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::tree_item::TreeItemRenderer::bg(&self, &yororen_ui_core::renderer::tree_item::TreeItemRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::tree_item::TreeItemRenderer::chevron_size(&self, &yororen_ui_core::renderer::tree_item::TreeItemRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::tree_item::TreeItemRenderer::fg(&self, &yororen_ui_core::renderer::tree_item::TreeItemRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
@@ -8027,6 +8031,10 @@ impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::checkbox::Checkbox
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::checkbox::CheckboxRenderState
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::checkbox::CheckboxRenderState
 pub struct yororen_ui_core::renderer::ComboBoxRenderState
+pub yororen_ui_core::renderer::ComboBoxRenderState::custom_bg: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::ComboBoxRenderState::custom_border: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::ComboBoxRenderState::custom_fg: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::ComboBoxRenderState::custom_focus_border: core::option::Option<gpui::color::Hsla>
 pub yororen_ui_core::renderer::ComboBoxRenderState::disabled: bool
 pub yororen_ui_core::renderer::ComboBoxRenderState::has_value: bool
 pub yororen_ui_core::renderer::ComboBoxRenderState::open: bool
@@ -8133,6 +8141,10 @@ impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::empty_state::Empty
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::empty_state::EmptyStateRenderState
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::empty_state::EmptyStateRenderState
 pub struct yororen_ui_core::renderer::FilePathInputRenderState
+pub yororen_ui_core::renderer::FilePathInputRenderState::custom_bg: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::FilePathInputRenderState::custom_border: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::FilePathInputRenderState::custom_fg: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::FilePathInputRenderState::custom_focus_border: core::option::Option<gpui::color::Hsla>
 pub yororen_ui_core::renderer::FilePathInputRenderState::disabled: bool
 pub yororen_ui_core::renderer::FilePathInputRenderState::focused: bool
 impl core::clone::Clone for yororen_ui_core::renderer::file_path_input::FilePathInputRenderState
@@ -8224,6 +8236,10 @@ impl !core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::ico
 impl !core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::icon_button::IconButtonRenderState
 pub struct yororen_ui_core::renderer::KeybindingInputRenderState
 pub yororen_ui_core::renderer::KeybindingInputRenderState::capturing: bool
+pub yororen_ui_core::renderer::KeybindingInputRenderState::custom_bg: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::KeybindingInputRenderState::custom_border: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::KeybindingInputRenderState::custom_fg: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::KeybindingInputRenderState::custom_focus_border: core::option::Option<gpui::color::Hsla>
 pub yororen_ui_core::renderer::KeybindingInputRenderState::disabled: bool
 impl core::clone::Clone for yororen_ui_core::renderer::keybinding_input::KeybindingInputRenderState
 pub fn yororen_ui_core::renderer::keybinding_input::KeybindingInputRenderState::clone(&self) -> yororen_ui_core::renderer::keybinding_input::KeybindingInputRenderState
@@ -8307,6 +8323,10 @@ impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::notification::Noti
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::notification::NotificationRenderState
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::notification::NotificationRenderState
 pub struct yororen_ui_core::renderer::NumberInputRenderState
+pub yororen_ui_core::renderer::NumberInputRenderState::custom_bg: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::NumberInputRenderState::custom_border: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::NumberInputRenderState::custom_fg: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::NumberInputRenderState::custom_focus_border: core::option::Option<gpui::color::Hsla>
 pub yororen_ui_core::renderer::NumberInputRenderState::disabled: bool
 pub yororen_ui_core::renderer::NumberInputRenderState::focused: bool
 impl core::clone::Clone for yororen_ui_core::renderer::number_input::NumberInputRenderState
@@ -8342,6 +8362,10 @@ impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::panel::PanelRender
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::panel::PanelRenderState
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::panel::PanelRenderState
 pub struct yororen_ui_core::renderer::PasswordInputRenderState
+pub yororen_ui_core::renderer::PasswordInputRenderState::custom_bg: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::PasswordInputRenderState::custom_border: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::PasswordInputRenderState::custom_fg: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::PasswordInputRenderState::custom_focus_border: core::option::Option<gpui::color::Hsla>
 pub yororen_ui_core::renderer::PasswordInputRenderState::disabled: bool
 pub yororen_ui_core::renderer::PasswordInputRenderState::focused: bool
 impl core::clone::Clone for yororen_ui_core::renderer::password_input::PasswordInputRenderState
@@ -8409,45 +8433,45 @@ impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::radio::RadioRender
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::radio::RadioRenderState
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::radio::RadioRenderState
 pub struct yororen_ui_core::renderer::RendererRegistry
-pub yororen_ui_core::renderer::RendererRegistry::avatar: alloc::sync::Arc<dyn yororen_ui_core::renderer::avatar::AvatarRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::badge: alloc::sync::Arc<dyn yororen_ui_core::renderer::badge::BadgeRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::button: alloc::sync::Arc<dyn yororen_ui_core::renderer::button::ButtonRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::card: alloc::sync::Arc<dyn yororen_ui_core::renderer::card::CardRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::checkbox: alloc::sync::Arc<dyn yororen_ui_core::renderer::checkbox::CheckboxRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::combo_box: alloc::sync::Arc<dyn yororen_ui_core::renderer::combo_box::ComboBoxRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::disclosure: alloc::sync::Arc<dyn yororen_ui_core::renderer::disclosure::DisclosureRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::divider: alloc::sync::Arc<dyn yororen_ui_core::renderer::divider::DividerRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::dropdown_menu: alloc::sync::Arc<dyn yororen_ui_core::renderer::dropdown_menu::DropdownMenuRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::empty_state: alloc::sync::Arc<dyn yororen_ui_core::renderer::empty_state::EmptyStateRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::file_path_input: alloc::sync::Arc<dyn yororen_ui_core::renderer::file_path_input::FilePathInputRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::focus_ring: alloc::sync::Arc<dyn yororen_ui_core::renderer::focus_ring::FocusRingRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::form: alloc::sync::Arc<dyn yororen_ui_core::renderer::form::FormRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::heading: alloc::sync::Arc<dyn yororen_ui_core::renderer::heading::HeadingRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::icon_button: alloc::sync::Arc<dyn yororen_ui_core::renderer::icon_button::IconButtonRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::keybinding_input: alloc::sync::Arc<dyn yororen_ui_core::renderer::keybinding_input::KeybindingInputRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::label: alloc::sync::Arc<dyn yororen_ui_core::renderer::label::LabelRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::list_item: alloc::sync::Arc<dyn yororen_ui_core::renderer::list_item::ListItemRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::modal: alloc::sync::Arc<dyn yororen_ui_core::renderer::modal::ModalRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::notification: alloc::sync::Arc<dyn yororen_ui_core::renderer::notification::NotificationRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::number_input: alloc::sync::Arc<dyn yororen_ui_core::renderer::number_input::NumberInputRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::panel: alloc::sync::Arc<dyn yororen_ui_core::renderer::panel::PanelRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::password_input: alloc::sync::Arc<dyn yororen_ui_core::renderer::password_input::PasswordInputRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::popover: alloc::sync::Arc<dyn yororen_ui_core::renderer::popover::PopoverRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::progress_bar: alloc::sync::Arc<dyn yororen_ui_core::renderer::progress::ProgressBarRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::radio: alloc::sync::Arc<dyn yororen_ui_core::renderer::radio::RadioRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::search_input: alloc::sync::Arc<dyn yororen_ui_core::renderer::search_input::SearchInputRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::select: alloc::sync::Arc<dyn yororen_ui_core::renderer::select::SelectRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::skeleton: alloc::sync::Arc<dyn yororen_ui_core::renderer::skeleton::SkeletonRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::split_button: alloc::sync::Arc<dyn yororen_ui_core::renderer::split_button::SplitButtonRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::switch: alloc::sync::Arc<dyn yororen_ui_core::renderer::switch::SwitchRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::tag: alloc::sync::Arc<dyn yororen_ui_core::renderer::tag::TagRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::text_area: alloc::sync::Arc<dyn yororen_ui_core::renderer::text_area::TextAreaRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::text_input: alloc::sync::Arc<dyn yororen_ui_core::renderer::text_input::TextInputRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::toast: alloc::sync::Arc<dyn yororen_ui_core::renderer::toast::ToastRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::toggle_button: alloc::sync::Arc<dyn yororen_ui_core::renderer::toggle_button::ToggleButtonRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::tooltip: alloc::sync::Arc<dyn yororen_ui_core::renderer::tooltip::TooltipRenderer>
-pub yororen_ui_core::renderer::RendererRegistry::tree_item: alloc::sync::Arc<dyn yororen_ui_core::renderer::tree_item::TreeItemRenderer>
 impl yororen_ui_core::renderer::registry::RendererRegistry
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_avatar(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::avatar::AvatarRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_badge(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::badge::BadgeRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_button(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::button::ButtonRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_card(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::card::CardRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_checkbox(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::checkbox::CheckboxRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_combo_box(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::combo_box::ComboBoxRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_disclosure(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::disclosure::DisclosureRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_divider(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::divider::DividerRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_dropdown_menu(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::dropdown_menu::DropdownMenuRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_empty_state(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::empty_state::EmptyStateRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_file_path_input(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::file_path_input::FilePathInputRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_focus_ring(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::focus_ring::FocusRingRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_form(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::form::FormRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_heading(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::heading::HeadingRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_icon_button(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::icon_button::IconButtonRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_keybinding_input(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::keybinding_input::KeybindingInputRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_label(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::label::LabelRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_list_item(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::list_item::ListItemRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_modal(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::modal::ModalRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_notification(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::notification::NotificationRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_number_input(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::number_input::NumberInputRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_panel(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::panel::PanelRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_password_input(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::password_input::PasswordInputRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_popover(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::popover::PopoverRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_progress_bar(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::progress::ProgressBarRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_radio(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::radio::RadioRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_search_input(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::search_input::SearchInputRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_select(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::select::SelectRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_skeleton(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::skeleton::SkeletonRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_split_button(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::split_button::SplitButtonRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_switch(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::switch::SwitchRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_tag(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::tag::TagRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_text_area(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::text_area::TextAreaRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_text_input(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::text_input::TextInputRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_toast(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::toast::ToastRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_toggle_button(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::toggle_button::ToggleButtonRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_tooltip(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::tooltip::TooltipRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_tree_item(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::tree_item::TreeItemRenderer>>
 pub fn yororen_ui_core::renderer::registry::RendererRegistry::token_based() -> Self
 pub fn yororen_ui_core::renderer::registry::RendererRegistry::with_avatar(self, alloc::sync::Arc<dyn yororen_ui_core::renderer::avatar::AvatarRenderer>) -> Self
 pub fn yororen_ui_core::renderer::registry::RendererRegistry::with_badge(self, alloc::sync::Arc<dyn yororen_ui_core::renderer::badge::BadgeRenderer>) -> Self
@@ -8501,6 +8525,10 @@ impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::registry::Renderer
 impl !core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::registry::RendererRegistry
 impl !core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::registry::RendererRegistry
 pub struct yororen_ui_core::renderer::SearchInputRenderState
+pub yororen_ui_core::renderer::SearchInputRenderState::custom_bg: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::SearchInputRenderState::custom_border: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::SearchInputRenderState::custom_fg: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::SearchInputRenderState::custom_focus_border: core::option::Option<gpui::color::Hsla>
 pub yororen_ui_core::renderer::SearchInputRenderState::disabled: bool
 pub yororen_ui_core::renderer::SearchInputRenderState::focused: bool
 impl core::clone::Clone for yororen_ui_core::renderer::search_input::SearchInputRenderState
@@ -8518,6 +8546,10 @@ impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::search_input::Sear
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::search_input::SearchInputRenderState
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::search_input::SearchInputRenderState
 pub struct yororen_ui_core::renderer::SelectRenderState
+pub yororen_ui_core::renderer::SelectRenderState::custom_bg: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::SelectRenderState::custom_border: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::SelectRenderState::custom_fg: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::SelectRenderState::custom_focus_border: core::option::Option<gpui::color::Hsla>
 pub yororen_ui_core::renderer::SelectRenderState::disabled: bool
 pub yororen_ui_core::renderer::SelectRenderState::has_value: bool
 pub yororen_ui_core::renderer::SelectRenderState::open: bool
@@ -8624,6 +8656,10 @@ impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::tag::TagRenderStat
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::tag::TagRenderState
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::tag::TagRenderState
 pub struct yororen_ui_core::renderer::TextAreaRenderState
+pub yororen_ui_core::renderer::TextAreaRenderState::custom_bg: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::TextAreaRenderState::custom_border: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::TextAreaRenderState::custom_focus_border: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::TextAreaRenderState::custom_text_color: core::option::Option<gpui::color::Hsla>
 pub yororen_ui_core::renderer::TextAreaRenderState::disabled: bool
 pub yororen_ui_core::renderer::TextAreaRenderState::focused: bool
 pub yororen_ui_core::renderer::TextAreaRenderState::has_custom_bg: bool
@@ -8642,6 +8678,10 @@ impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::text_area::TextAre
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::text_area::TextAreaRenderState
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::text_area::TextAreaRenderState
 pub struct yororen_ui_core::renderer::TextInputRenderState
+pub yororen_ui_core::renderer::TextInputRenderState::custom_bg: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::TextInputRenderState::custom_border: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::TextInputRenderState::custom_focus_border: core::option::Option<gpui::color::Hsla>
+pub yororen_ui_core::renderer::TextInputRenderState::custom_text_color: core::option::Option<gpui::color::Hsla>
 pub yororen_ui_core::renderer::TextInputRenderState::disabled: bool
 pub yororen_ui_core::renderer::TextInputRenderState::focused: bool
 pub yororen_ui_core::renderer::TextInputRenderState::has_custom_bg: bool
@@ -9402,7 +9442,7 @@ impl core::marker::Unpin for yororen_ui_core::renderer::variant::VariantState
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::variant::VariantState
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::variant::VariantState
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::variant::VariantState
-pub trait yororen_ui_core::renderer::AvatarRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::AvatarRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::AvatarRenderer::border_radius(&self, &yororen_ui_core::renderer::avatar::AvatarRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::AvatarRenderer::default_bg(&self, &yororen_ui_core::renderer::avatar::AvatarRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::AvatarRenderer::status_border_color(&self, &yororen_ui_core::renderer::avatar::AvatarRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
@@ -9416,7 +9456,7 @@ pub fn yororen_ui_core::renderer::avatar::TokenAvatarRenderer::status_border_col
 pub fn yororen_ui_core::renderer::avatar::TokenAvatarRenderer::status_border_w(&self, &yororen_ui_core::renderer::avatar::AvatarRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::avatar::TokenAvatarRenderer::status_dot_size(&self, &yororen_ui_core::renderer::avatar::AvatarRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::avatar::TokenAvatarRenderer::status_inset(&self, &yororen_ui_core::renderer::avatar::AvatarRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
-pub trait yororen_ui_core::renderer::BadgeRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::BadgeRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::BadgeRenderer::bg(&self, &yororen_ui_core::renderer::badge::BadgeRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::BadgeRenderer::border_radius(&self, &yororen_ui_core::renderer::badge::BadgeRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::BadgeRenderer::fg(&self, &yororen_ui_core::renderer::badge::BadgeRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
@@ -9432,7 +9472,7 @@ pub fn yororen_ui_core::renderer::badge::TokenBadgeRenderer::font_size(&self, &y
 pub fn yororen_ui_core::renderer::badge::TokenBadgeRenderer::font_weight(&self, &yororen_ui_core::renderer::badge::BadgeRenderState, &yororen_ui_core::theme::Theme) -> gpui::text_system::FontWeight
 pub fn yororen_ui_core::renderer::badge::TokenBadgeRenderer::height(&self, &yororen_ui_core::renderer::badge::BadgeRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::badge::TokenBadgeRenderer::padding_x(&self, &yororen_ui_core::renderer::badge::BadgeRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
-pub trait yororen_ui_core::renderer::ButtonRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::ButtonRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::ButtonRenderer::bg(&self, &yororen_ui_core::renderer::button::ButtonRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::ButtonRenderer::border(&self, &yororen_ui_core::renderer::button::ButtonRenderState, &yororen_ui_core::theme::Theme) -> core::option::Option<yororen_ui_core::renderer::spec::BorderSpec>
 pub fn yororen_ui_core::renderer::ButtonRenderer::border_radius(&self, &yororen_ui_core::renderer::button::ButtonRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -9450,7 +9490,7 @@ pub fn yororen_ui_core::renderer::button::TokenButtonRenderer::fg(&self, &yorore
 pub fn yororen_ui_core::renderer::button::TokenButtonRenderer::min_height(&self, &yororen_ui_core::renderer::button::ButtonRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::button::TokenButtonRenderer::padding(&self, &yororen_ui_core::renderer::button::ButtonRenderState, &yororen_ui_core::theme::Theme) -> yororen_ui_core::renderer::spec::Edges<gpui::geometry::Pixels>
 pub fn yororen_ui_core::renderer::button::TokenButtonRenderer::shadow(&self, &yororen_ui_core::renderer::button::ButtonRenderState, &yororen_ui_core::theme::Theme) -> core::option::Option<yororen_ui_core::renderer::spec::ShadowSpec>
-pub trait yororen_ui_core::renderer::CardRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::CardRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::CardRenderer::bg(&self, &yororen_ui_core::renderer::card::CardRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::CardRenderer::border(&self, &yororen_ui_core::renderer::card::CardRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::CardRenderer::border_radius(&self, &yororen_ui_core::renderer::card::CardRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -9462,7 +9502,7 @@ pub fn yororen_ui_core::renderer::card::TokenCardRenderer::border(&self, &yorore
 pub fn yororen_ui_core::renderer::card::TokenCardRenderer::border_radius(&self, &yororen_ui_core::renderer::card::CardRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::card::TokenCardRenderer::padding(&self, &yororen_ui_core::renderer::card::CardRenderState, &yororen_ui_core::theme::Theme) -> yororen_ui_core::renderer::spec::Edges<gpui::geometry::Pixels>
 pub fn yororen_ui_core::renderer::card::TokenCardRenderer::shadow_alpha(&self, &yororen_ui_core::renderer::card::CardRenderState, &yororen_ui_core::theme::Theme) -> f32
-pub trait yororen_ui_core::renderer::CheckboxRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::CheckboxRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::CheckboxRenderer::box_bg(&self, &yororen_ui_core::renderer::checkbox::CheckboxRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::CheckboxRenderer::box_border(&self, &yororen_ui_core::renderer::checkbox::CheckboxRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::CheckboxRenderer::box_hover_bg(&self, &yororen_ui_core::renderer::checkbox::CheckboxRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
@@ -9480,7 +9520,7 @@ pub fn yororen_ui_core::renderer::checkbox::TokenCheckboxRenderer::check_fg(&sel
 pub fn yororen_ui_core::renderer::checkbox::TokenCheckboxRenderer::check_size(&self, &yororen_ui_core::renderer::checkbox::CheckboxRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::checkbox::TokenCheckboxRenderer::disabled_opacity(&self, &yororen_ui_core::renderer::checkbox::CheckboxRenderState, &yororen_ui_core::theme::Theme) -> f32
 pub fn yororen_ui_core::renderer::checkbox::TokenCheckboxRenderer::focus_color(&self, &yororen_ui_core::renderer::checkbox::CheckboxRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
-pub trait yororen_ui_core::renderer::ComboBoxRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::ComboBoxRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::ComboBoxRenderer::bg(&self, &yororen_ui_core::renderer::combo_box::ComboBoxRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::ComboBoxRenderer::border(&self, &yororen_ui_core::renderer::combo_box::ComboBoxRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::ComboBoxRenderer::border_radius(&self, &yororen_ui_core::renderer::combo_box::ComboBoxRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -9498,7 +9538,7 @@ pub fn yororen_ui_core::renderer::combo_box::TokenComboBoxRenderer::focus_border
 pub fn yororen_ui_core::renderer::combo_box::TokenComboBoxRenderer::min_height(&self, &yororen_ui_core::renderer::combo_box::ComboBoxRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::combo_box::TokenComboBoxRenderer::padding(&self, &yororen_ui_core::renderer::combo_box::ComboBoxRenderState, &yororen_ui_core::theme::Theme) -> yororen_ui_core::renderer::spec::Edges<gpui::geometry::Pixels>
 pub fn yororen_ui_core::renderer::combo_box::TokenComboBoxRenderer::search_bg(&self, &yororen_ui_core::renderer::combo_box::ComboBoxRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
-pub trait yororen_ui_core::renderer::DisclosureRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::DisclosureRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::DisclosureRenderer::body_padding(&self, &yororen_ui_core::renderer::disclosure::DisclosureRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::DisclosureRenderer::border_radius(&self, &yororen_ui_core::renderer::disclosure::DisclosureRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::DisclosureRenderer::chevron_rotation(&self, &yororen_ui_core::renderer::disclosure::DisclosureRenderState, &yororen_ui_core::theme::Theme) -> f32
@@ -9514,13 +9554,13 @@ pub fn yororen_ui_core::renderer::disclosure::TokenDisclosureRenderer::min_heigh
 pub fn yororen_ui_core::renderer::disclosure::TokenDisclosureRenderer::trigger_bg(&self, &yororen_ui_core::renderer::disclosure::DisclosureRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::disclosure::TokenDisclosureRenderer::trigger_fg(&self, &yororen_ui_core::renderer::disclosure::DisclosureRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::disclosure::TokenDisclosureRenderer::trigger_hover_bg(&self, &yororen_ui_core::renderer::disclosure::DisclosureRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
-pub trait yororen_ui_core::renderer::DividerRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::DividerRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::DividerRenderer::color(&self, &yororen_ui_core::renderer::divider::DividerRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::DividerRenderer::thickness(&self, &yororen_ui_core::renderer::divider::DividerRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 impl yororen_ui_core::renderer::divider::DividerRenderer for yororen_ui_core::renderer::divider::TokenDividerRenderer
 pub fn yororen_ui_core::renderer::divider::TokenDividerRenderer::color(&self, &yororen_ui_core::renderer::divider::DividerRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::divider::TokenDividerRenderer::thickness(&self, &yororen_ui_core::renderer::divider::DividerRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
-pub trait yororen_ui_core::renderer::DropdownMenuRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::DropdownMenuRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::DropdownMenuRenderer::border_radius(&self, &yororen_ui_core::renderer::dropdown_menu::DropdownMenuRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::DropdownMenuRenderer::chevron_rotation(&self, &yororen_ui_core::renderer::dropdown_menu::DropdownMenuRenderState, &yororen_ui_core::theme::Theme) -> f32
 pub fn yororen_ui_core::renderer::DropdownMenuRenderer::min_height(&self, &yororen_ui_core::renderer::dropdown_menu::DropdownMenuRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -9534,7 +9574,7 @@ pub fn yororen_ui_core::renderer::dropdown_menu::TokenDropdownMenuRenderer::min_
 pub fn yororen_ui_core::renderer::dropdown_menu::TokenDropdownMenuRenderer::trigger_bg(&self, &yororen_ui_core::renderer::dropdown_menu::DropdownMenuRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::dropdown_menu::TokenDropdownMenuRenderer::trigger_fg(&self, &yororen_ui_core::renderer::dropdown_menu::DropdownMenuRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::dropdown_menu::TokenDropdownMenuRenderer::trigger_hover_bg(&self, &yororen_ui_core::renderer::dropdown_menu::DropdownMenuRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
-pub trait yororen_ui_core::renderer::EmptyStateRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::EmptyStateRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::EmptyStateRenderer::body_color(&self, &yororen_ui_core::renderer::empty_state::EmptyStateRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::EmptyStateRenderer::gap(&self, &yororen_ui_core::renderer::empty_state::EmptyStateRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::EmptyStateRenderer::icon_color(&self, &yororen_ui_core::renderer::empty_state::EmptyStateRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
@@ -9548,7 +9588,7 @@ pub fn yororen_ui_core::renderer::empty_state::TokenEmptyStateRenderer::icon_col
 pub fn yororen_ui_core::renderer::empty_state::TokenEmptyStateRenderer::icon_size(&self, &yororen_ui_core::renderer::empty_state::EmptyStateRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::empty_state::TokenEmptyStateRenderer::padding(&self, &yororen_ui_core::renderer::empty_state::EmptyStateRenderState, &yororen_ui_core::theme::Theme) -> yororen_ui_core::renderer::spec::Edges<gpui::geometry::Pixels>
 pub fn yororen_ui_core::renderer::empty_state::TokenEmptyStateRenderer::title_color(&self, &yororen_ui_core::renderer::empty_state::EmptyStateRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
-pub trait yororen_ui_core::renderer::FilePathInputRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::FilePathInputRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::FilePathInputRenderer::action_gap(&self, &yororen_ui_core::renderer::file_path_input::FilePathInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::FilePathInputRenderer::bg(&self, &yororen_ui_core::renderer::file_path_input::FilePathInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::FilePathInputRenderer::border(&self, &yororen_ui_core::renderer::file_path_input::FilePathInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
@@ -9570,13 +9610,13 @@ pub fn yororen_ui_core::renderer::file_path_input::TokenFilePathInputRenderer::f
 pub fn yororen_ui_core::renderer::file_path_input::TokenFilePathInputRenderer::icon_size(&self, &yororen_ui_core::renderer::file_path_input::FilePathInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::file_path_input::TokenFilePathInputRenderer::min_height(&self, &yororen_ui_core::renderer::file_path_input::FilePathInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::file_path_input::TokenFilePathInputRenderer::padding(&self, &yororen_ui_core::renderer::file_path_input::FilePathInputRenderState, &yororen_ui_core::theme::Theme) -> yororen_ui_core::renderer::spec::Edges<gpui::geometry::Pixels>
-pub trait yororen_ui_core::renderer::FocusRingRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::FocusRingRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::FocusRingRenderer::color(&self, &yororen_ui_core::renderer::focus_ring::FocusRingRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::FocusRingRenderer::width(&self, &yororen_ui_core::renderer::focus_ring::FocusRingRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 impl yororen_ui_core::renderer::focus_ring::FocusRingRenderer for yororen_ui_core::renderer::focus_ring::TokenFocusRingRenderer
 pub fn yororen_ui_core::renderer::focus_ring::TokenFocusRingRenderer::color(&self, &yororen_ui_core::renderer::focus_ring::FocusRingRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::focus_ring::TokenFocusRingRenderer::width(&self, &yororen_ui_core::renderer::focus_ring::FocusRingRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
-pub trait yororen_ui_core::renderer::FormRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::FormRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::FormRenderer::error_color(&self, &yororen_ui_core::renderer::form::FormRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::FormRenderer::gap(&self, &yororen_ui_core::renderer::form::FormRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::FormRenderer::helper_color(&self, &yororen_ui_core::renderer::form::FormRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
@@ -9586,7 +9626,7 @@ pub fn yororen_ui_core::renderer::form::TokenFormRenderer::error_color(&self, &y
 pub fn yororen_ui_core::renderer::form::TokenFormRenderer::gap(&self, &yororen_ui_core::renderer::form::FormRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::form::TokenFormRenderer::helper_color(&self, &yororen_ui_core::renderer::form::FormRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::form::TokenFormRenderer::label_color(&self, &yororen_ui_core::renderer::form::FormRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
-pub trait yororen_ui_core::renderer::HeadingRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::HeadingRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::HeadingRenderer::color(&self, &yororen_ui_core::renderer::heading::HeadingRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::HeadingRenderer::size(&self, &yororen_ui_core::renderer::heading::HeadingRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::HeadingRenderer::weight(&self, &yororen_ui_core::renderer::heading::HeadingRenderState, &yororen_ui_core::theme::Theme) -> gpui::text_system::FontWeight
@@ -9594,7 +9634,7 @@ impl yororen_ui_core::renderer::heading::HeadingRenderer for yororen_ui_core::re
 pub fn yororen_ui_core::renderer::heading::TokenHeadingRenderer::color(&self, &yororen_ui_core::renderer::heading::HeadingRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::heading::TokenHeadingRenderer::size(&self, &yororen_ui_core::renderer::heading::HeadingRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::heading::TokenHeadingRenderer::weight(&self, &yororen_ui_core::renderer::heading::HeadingRenderState, &yororen_ui_core::theme::Theme) -> gpui::text_system::FontWeight
-pub trait yororen_ui_core::renderer::IconButtonRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::IconButtonRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::IconButtonRenderer::bg(&self, &yororen_ui_core::renderer::icon_button::IconButtonRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::IconButtonRenderer::border_radius(&self, &yororen_ui_core::renderer::icon_button::IconButtonRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::IconButtonRenderer::disabled_opacity(&self, &yororen_ui_core::renderer::icon_button::IconButtonRenderState, &yororen_ui_core::theme::Theme) -> f32
@@ -9606,7 +9646,7 @@ pub fn yororen_ui_core::renderer::icon_button::TokenIconButtonRenderer::border_r
 pub fn yororen_ui_core::renderer::icon_button::TokenIconButtonRenderer::disabled_opacity(&self, &yororen_ui_core::renderer::icon_button::IconButtonRenderState, &yororen_ui_core::theme::Theme) -> f32
 pub fn yororen_ui_core::renderer::icon_button::TokenIconButtonRenderer::hover_bg(&self, &yororen_ui_core::renderer::icon_button::IconButtonRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::icon_button::TokenIconButtonRenderer::size(&self, &yororen_ui_core::renderer::icon_button::IconButtonRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
-pub trait yororen_ui_core::renderer::KeybindingInputRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::KeybindingInputRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::KeybindingInputRenderer::bg(&self, &yororen_ui_core::renderer::keybinding_input::KeybindingInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::KeybindingInputRenderer::border(&self, &yororen_ui_core::renderer::keybinding_input::KeybindingInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::KeybindingInputRenderer::border_radius(&self, &yororen_ui_core::renderer::keybinding_input::KeybindingInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -9628,7 +9668,7 @@ pub fn yororen_ui_core::renderer::keybinding_input::TokenKeybindingInputRenderer
 pub fn yororen_ui_core::renderer::keybinding_input::TokenKeybindingInputRenderer::kbd_min_width(&self, &yororen_ui_core::renderer::keybinding_input::KeybindingInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::keybinding_input::TokenKeybindingInputRenderer::kbd_padding(&self, &yororen_ui_core::renderer::keybinding_input::KeybindingInputRenderState, &yororen_ui_core::theme::Theme) -> yororen_ui_core::renderer::spec::Edges<gpui::geometry::Pixels>
 pub fn yororen_ui_core::renderer::keybinding_input::TokenKeybindingInputRenderer::min_height(&self, &yororen_ui_core::renderer::keybinding_input::KeybindingInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
-pub trait yororen_ui_core::renderer::LabelRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::LabelRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::LabelRenderer::color(&self, &yororen_ui_core::renderer::label::LabelRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::LabelRenderer::family_mono(&self, &yororen_ui_core::renderer::label::LabelRenderState, &yororen_ui_core::theme::Theme) -> gpui::shared_string::SharedString
 pub fn yororen_ui_core::renderer::LabelRenderer::strong_weight(&self, &yororen_ui_core::renderer::label::LabelRenderState, &yororen_ui_core::theme::Theme) -> gpui::text_system::FontWeight
@@ -9636,7 +9676,7 @@ impl yororen_ui_core::renderer::label::LabelRenderer for yororen_ui_core::render
 pub fn yororen_ui_core::renderer::label::TokenLabelRenderer::color(&self, &yororen_ui_core::renderer::label::LabelRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::label::TokenLabelRenderer::family_mono(&self, &yororen_ui_core::renderer::label::LabelRenderState, &yororen_ui_core::theme::Theme) -> gpui::shared_string::SharedString
 pub fn yororen_ui_core::renderer::label::TokenLabelRenderer::strong_weight(&self, &yororen_ui_core::renderer::label::LabelRenderState, &yororen_ui_core::theme::Theme) -> gpui::text_system::FontWeight
-pub trait yororen_ui_core::renderer::ListItemRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::ListItemRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::ListItemRenderer::bg(&self, &yororen_ui_core::renderer::list_item::ListItemRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::ListItemRenderer::border_radius(&self, &yororen_ui_core::renderer::list_item::ListItemRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::ListItemRenderer::fg(&self, &yororen_ui_core::renderer::list_item::ListItemRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
@@ -9652,7 +9692,7 @@ pub fn yororen_ui_core::renderer::list_item::TokenListItemRenderer::hover_bg(&se
 pub fn yororen_ui_core::renderer::list_item::TokenListItemRenderer::min_height(&self, &yororen_ui_core::renderer::list_item::ListItemRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::list_item::TokenListItemRenderer::padding(&self, &yororen_ui_core::renderer::list_item::ListItemRenderState, &yororen_ui_core::theme::Theme) -> yororen_ui_core::renderer::spec::Edges<gpui::geometry::Pixels>
 pub fn yororen_ui_core::renderer::list_item::TokenListItemRenderer::selected_bg(&self, &yororen_ui_core::renderer::list_item::ListItemRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
-pub trait yororen_ui_core::renderer::ModalRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::ModalRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::ModalRenderer::panel_bg(&self, &yororen_ui_core::renderer::modal::ModalRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::ModalRenderer::panel_border(&self, &yororen_ui_core::renderer::modal::ModalRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::ModalRenderer::panel_border_radius(&self, &yororen_ui_core::renderer::modal::ModalRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -9666,7 +9706,7 @@ pub fn yororen_ui_core::renderer::modal::TokenModalRenderer::panel_border_radius
 pub fn yororen_ui_core::renderer::modal::TokenModalRenderer::panel_padding(&self, &yororen_ui_core::renderer::modal::ModalRenderState, &yororen_ui_core::theme::Theme) -> yororen_ui_core::renderer::spec::Edges<gpui::geometry::Pixels>
 pub fn yororen_ui_core::renderer::modal::TokenModalRenderer::panel_shadow_alpha(&self, &yororen_ui_core::renderer::modal::ModalRenderState, &yororen_ui_core::theme::Theme) -> f32
 pub fn yororen_ui_core::renderer::modal::TokenModalRenderer::scrim(&self, &yororen_ui_core::renderer::modal::ModalRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
-pub trait yororen_ui_core::renderer::NotificationRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::NotificationRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::NotificationRenderer::bg(&self, &yororen_ui_core::renderer::notification::NotificationRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::NotificationRenderer::border(&self, &yororen_ui_core::renderer::notification::NotificationRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::NotificationRenderer::border_radius(&self, &yororen_ui_core::renderer::notification::NotificationRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -9678,7 +9718,7 @@ pub fn yororen_ui_core::renderer::notification::TokenNotificationRenderer::borde
 pub fn yororen_ui_core::renderer::notification::TokenNotificationRenderer::border_radius(&self, &yororen_ui_core::renderer::notification::NotificationRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::notification::TokenNotificationRenderer::padding(&self, &yororen_ui_core::renderer::notification::NotificationRenderState, &yororen_ui_core::theme::Theme) -> yororen_ui_core::renderer::spec::Edges<gpui::geometry::Pixels>
 pub fn yororen_ui_core::renderer::notification::TokenNotificationRenderer::shadow_alpha(&self, &yororen_ui_core::renderer::notification::NotificationRenderState, &yororen_ui_core::theme::Theme) -> f32
-pub trait yororen_ui_core::renderer::NumberInputRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::NumberInputRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::NumberInputRenderer::bg(&self, &yororen_ui_core::renderer::number_input::NumberInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::NumberInputRenderer::border(&self, &yororen_ui_core::renderer::number_input::NumberInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::NumberInputRenderer::border_radius(&self, &yororen_ui_core::renderer::number_input::NumberInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -9700,7 +9740,7 @@ pub fn yororen_ui_core::renderer::number_input::TokenNumberInputRenderer::steppe
 pub fn yororen_ui_core::renderer::number_input::TokenNumberInputRenderer::stepper_button_size(&self, &yororen_ui_core::renderer::number_input::NumberInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::number_input::TokenNumberInputRenderer::stepper_fg(&self, &yororen_ui_core::renderer::number_input::NumberInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::number_input::TokenNumberInputRenderer::stepper_icon_size(&self, &yororen_ui_core::renderer::number_input::NumberInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
-pub trait yororen_ui_core::renderer::PanelRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::PanelRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::PanelRenderer::bg(&self, &yororen_ui_core::renderer::panel::PanelRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::PanelRenderer::border(&self, &yororen_ui_core::renderer::panel::PanelRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::PanelRenderer::border_radius(&self, &yororen_ui_core::renderer::panel::PanelRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -9712,7 +9752,7 @@ pub fn yororen_ui_core::renderer::panel::TokenPanelRenderer::border(&self, &yoro
 pub fn yororen_ui_core::renderer::panel::TokenPanelRenderer::border_radius(&self, &yororen_ui_core::renderer::panel::PanelRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::panel::TokenPanelRenderer::padding(&self, &yororen_ui_core::renderer::panel::PanelRenderState, &yororen_ui_core::theme::Theme) -> yororen_ui_core::renderer::spec::Edges<gpui::geometry::Pixels>
 pub fn yororen_ui_core::renderer::panel::TokenPanelRenderer::shadow_alpha(&self, &yororen_ui_core::renderer::panel::PanelRenderState, &yororen_ui_core::theme::Theme) -> f32
-pub trait yororen_ui_core::renderer::PasswordInputRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::PasswordInputRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::PasswordInputRenderer::bg(&self, &yororen_ui_core::renderer::password_input::PasswordInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::PasswordInputRenderer::border(&self, &yororen_ui_core::renderer::password_input::PasswordInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::PasswordInputRenderer::border_radius(&self, &yororen_ui_core::renderer::password_input::PasswordInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -9730,7 +9770,7 @@ pub fn yororen_ui_core::renderer::password_input::TokenPasswordInputRenderer::fo
 pub fn yororen_ui_core::renderer::password_input::TokenPasswordInputRenderer::min_height(&self, &yororen_ui_core::renderer::password_input::PasswordInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::password_input::TokenPasswordInputRenderer::padding(&self, &yororen_ui_core::renderer::password_input::PasswordInputRenderState, &yororen_ui_core::theme::Theme) -> yororen_ui_core::renderer::spec::Edges<gpui::geometry::Pixels>
 pub fn yororen_ui_core::renderer::password_input::TokenPasswordInputRenderer::toggle_icon_size(&self, &yororen_ui_core::renderer::password_input::PasswordInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
-pub trait yororen_ui_core::renderer::PopoverRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::PopoverRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::PopoverRenderer::bg(&self, &yororen_ui_core::renderer::popover::PopoverRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::PopoverRenderer::border(&self, &yororen_ui_core::renderer::popover::PopoverRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::PopoverRenderer::border_radius(&self, &yororen_ui_core::renderer::popover::PopoverRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -9742,7 +9782,7 @@ pub fn yororen_ui_core::renderer::popover::TokenPopoverRenderer::border(&self, &
 pub fn yororen_ui_core::renderer::popover::TokenPopoverRenderer::border_radius(&self, &yororen_ui_core::renderer::popover::PopoverRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::popover::TokenPopoverRenderer::offset(&self, &yororen_ui_core::renderer::popover::PopoverRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::popover::TokenPopoverRenderer::shadow_alpha(&self, &yororen_ui_core::renderer::popover::PopoverRenderState, &yororen_ui_core::theme::Theme) -> f32
-pub trait yororen_ui_core::renderer::ProgressBarRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::ProgressBarRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::ProgressBarRenderer::border_color(&self, &yororen_ui_core::renderer::progress::ProgressBarRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::ProgressBarRenderer::border_radius(&self, &yororen_ui_core::renderer::progress::ProgressBarRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::ProgressBarRenderer::fill(&self, &yororen_ui_core::renderer::progress::ProgressBarRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
@@ -9754,7 +9794,7 @@ pub fn yororen_ui_core::renderer::progress::TokenProgressBarRenderer::border_rad
 pub fn yororen_ui_core::renderer::progress::TokenProgressBarRenderer::fill(&self, &yororen_ui_core::renderer::progress::ProgressBarRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::progress::TokenProgressBarRenderer::height(&self, &yororen_ui_core::renderer::progress::ProgressBarRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::progress::TokenProgressBarRenderer::track(&self, &yororen_ui_core::renderer::progress::ProgressBarRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
-pub trait yororen_ui_core::renderer::RadioRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::RadioRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::RadioRenderer::disabled_opacity(&self, &yororen_ui_core::renderer::radio::RadioRenderState, &yororen_ui_core::theme::Theme) -> f32
 pub fn yororen_ui_core::renderer::RadioRenderer::dot_fg(&self, &yororen_ui_core::renderer::radio::RadioRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::RadioRenderer::dot_size(&self, &yororen_ui_core::renderer::radio::RadioRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -9772,7 +9812,7 @@ pub fn yororen_ui_core::renderer::radio::TokenRadioRenderer::ring_bg(&self, &yor
 pub fn yororen_ui_core::renderer::radio::TokenRadioRenderer::ring_border(&self, &yororen_ui_core::renderer::radio::RadioRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::radio::TokenRadioRenderer::ring_hover_bg(&self, &yororen_ui_core::renderer::radio::RadioRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::radio::TokenRadioRenderer::ring_size(&self, &yororen_ui_core::renderer::radio::RadioRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
-pub trait yororen_ui_core::renderer::SearchInputRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::SearchInputRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::SearchInputRenderer::bg(&self, &yororen_ui_core::renderer::search_input::SearchInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::SearchInputRenderer::border(&self, &yororen_ui_core::renderer::search_input::SearchInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::SearchInputRenderer::border_radius(&self, &yororen_ui_core::renderer::search_input::SearchInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -9794,7 +9834,7 @@ pub fn yororen_ui_core::renderer::search_input::TokenSearchInputRenderer::icon_s
 pub fn yororen_ui_core::renderer::search_input::TokenSearchInputRenderer::input_gap(&self, &yororen_ui_core::renderer::search_input::SearchInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::search_input::TokenSearchInputRenderer::min_height(&self, &yororen_ui_core::renderer::search_input::SearchInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::search_input::TokenSearchInputRenderer::padding(&self, &yororen_ui_core::renderer::search_input::SearchInputRenderState, &yororen_ui_core::theme::Theme) -> yororen_ui_core::renderer::spec::Edges<gpui::geometry::Pixels>
-pub trait yororen_ui_core::renderer::SelectRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::SelectRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::SelectRenderer::bg(&self, &yororen_ui_core::renderer::select::SelectRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::SelectRenderer::border(&self, &yororen_ui_core::renderer::select::SelectRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::SelectRenderer::border_radius(&self, &yororen_ui_core::renderer::select::SelectRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -9814,7 +9854,7 @@ pub fn yororen_ui_core::renderer::select::TokenSelectRenderer::focus_border(&sel
 pub fn yororen_ui_core::renderer::select::TokenSelectRenderer::hint_color(&self, &yororen_ui_core::renderer::select::SelectRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::select::TokenSelectRenderer::min_height(&self, &yororen_ui_core::renderer::select::SelectRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::select::TokenSelectRenderer::padding(&self, &yororen_ui_core::renderer::select::SelectRenderState, &yororen_ui_core::theme::Theme) -> yororen_ui_core::renderer::spec::Edges<gpui::geometry::Pixels>
-pub trait yororen_ui_core::renderer::SkeletonRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::SkeletonRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::SkeletonRenderer::bg(&self, &yororen_ui_core::renderer::skeleton::SkeletonRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::SkeletonRenderer::border_radius(&self, &yororen_ui_core::renderer::skeleton::SkeletonRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::SkeletonRenderer::min_height(&self, &yororen_ui_core::renderer::skeleton::SkeletonRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -9822,7 +9862,7 @@ impl yororen_ui_core::renderer::skeleton::SkeletonRenderer for yororen_ui_core::
 pub fn yororen_ui_core::renderer::skeleton::TokenSkeletonRenderer::bg(&self, &yororen_ui_core::renderer::skeleton::SkeletonRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::skeleton::TokenSkeletonRenderer::border_radius(&self, &yororen_ui_core::renderer::skeleton::SkeletonRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::skeleton::TokenSkeletonRenderer::min_height(&self, &yororen_ui_core::renderer::skeleton::SkeletonRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
-pub trait yororen_ui_core::renderer::SplitButtonRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::SplitButtonRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::SplitButtonRenderer::border_radius(&self, &yororen_ui_core::renderer::split_button::SplitButtonRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::SplitButtonRenderer::chevron_bg(&self, &yororen_ui_core::renderer::split_button::SplitButtonRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::SplitButtonRenderer::chevron_fg(&self, &yororen_ui_core::renderer::split_button::SplitButtonRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
@@ -9840,7 +9880,7 @@ pub fn yororen_ui_core::renderer::split_button::TokenSplitButtonRenderer::gap(&s
 pub fn yororen_ui_core::renderer::split_button::TokenSplitButtonRenderer::min_height(&self, &yororen_ui_core::renderer::split_button::SplitButtonRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::split_button::TokenSplitButtonRenderer::primary_bg(&self, &yororen_ui_core::renderer::split_button::SplitButtonRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::split_button::TokenSplitButtonRenderer::primary_fg(&self, &yororen_ui_core::renderer::split_button::SplitButtonRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
-pub trait yororen_ui_core::renderer::SwitchRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::SwitchRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::SwitchRenderer::disabled_opacity(&self, &yororen_ui_core::renderer::switch::SwitchRenderState, &yororen_ui_core::theme::Theme) -> f32
 pub fn yororen_ui_core::renderer::SwitchRenderer::focus_color(&self, &yororen_ui_core::renderer::switch::SwitchRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::SwitchRenderer::knob_bg(&self, &yororen_ui_core::renderer::switch::SwitchRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
@@ -9862,7 +9902,7 @@ pub fn yororen_ui_core::renderer::switch::TokenSwitchRenderer::track_border(&sel
 pub fn yororen_ui_core::renderer::switch::TokenSwitchRenderer::track_h(&self, &yororen_ui_core::renderer::switch::SwitchRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::switch::TokenSwitchRenderer::track_hover_bg(&self, &yororen_ui_core::renderer::switch::SwitchRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::switch::TokenSwitchRenderer::track_w(&self, &yororen_ui_core::renderer::switch::SwitchRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
-pub trait yororen_ui_core::renderer::TagRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::TagRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::TagRenderer::bg(&self, &yororen_ui_core::renderer::tag::TagRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::TagRenderer::border_radius(&self, &yororen_ui_core::renderer::tag::TagRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::TagRenderer::close_hover_bg(&self, &yororen_ui_core::renderer::tag::TagRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
@@ -9882,7 +9922,7 @@ pub fn yororen_ui_core::renderer::tag::TokenTagRenderer::font_size(&self, &yoror
 pub fn yororen_ui_core::renderer::tag::TokenTagRenderer::font_weight(&self, &yororen_ui_core::renderer::tag::TagRenderState, &yororen_ui_core::theme::Theme) -> gpui::text_system::FontWeight
 pub fn yororen_ui_core::renderer::tag::TokenTagRenderer::min_height(&self, &yororen_ui_core::renderer::tag::TagRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::tag::TokenTagRenderer::padding_x(&self, &yororen_ui_core::renderer::tag::TagRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
-pub trait yororen_ui_core::renderer::TextAreaRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::TextAreaRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::TextAreaRenderer::bg(&self, &yororen_ui_core::renderer::text_area::TextAreaRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::TextAreaRenderer::border(&self, &yororen_ui_core::renderer::text_area::TextAreaRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::TextAreaRenderer::border_radius(&self, &yororen_ui_core::renderer::text_area::TextAreaRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -9898,7 +9938,7 @@ pub fn yororen_ui_core::renderer::text_area::TokenTextAreaRenderer::focus_border
 pub fn yororen_ui_core::renderer::text_area::TokenTextAreaRenderer::min_height(&self, &yororen_ui_core::renderer::text_area::TextAreaRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::text_area::TokenTextAreaRenderer::padding(&self, &yororen_ui_core::renderer::text_area::TextAreaRenderState, &yororen_ui_core::theme::Theme) -> yororen_ui_core::renderer::spec::Edges<gpui::geometry::Pixels>
 pub fn yororen_ui_core::renderer::text_area::TokenTextAreaRenderer::text_color(&self, &yororen_ui_core::renderer::text_area::TextAreaRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
-pub trait yororen_ui_core::renderer::TextInputRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::TextInputRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::TextInputRenderer::bg(&self, &yororen_ui_core::renderer::text_input::TextInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::TextInputRenderer::border(&self, &yororen_ui_core::renderer::text_input::TextInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::TextInputRenderer::border_radius(&self, &yororen_ui_core::renderer::text_input::TextInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -9918,7 +9958,7 @@ pub fn yororen_ui_core::renderer::text_input::TokenTextInputRenderer::hint_color
 pub fn yororen_ui_core::renderer::text_input::TokenTextInputRenderer::min_height(&self, &yororen_ui_core::renderer::text_input::TextInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::text_input::TokenTextInputRenderer::padding(&self, &yororen_ui_core::renderer::text_input::TextInputRenderState, &yororen_ui_core::theme::Theme) -> yororen_ui_core::renderer::spec::Edges<gpui::geometry::Pixels>
 pub fn yororen_ui_core::renderer::text_input::TokenTextInputRenderer::text_color(&self, &yororen_ui_core::renderer::text_input::TextInputRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
-pub trait yororen_ui_core::renderer::ToastRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::ToastRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::ToastRenderer::bg(&self, &yororen_ui_core::renderer::toast::ToastRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::ToastRenderer::border(&self, &yororen_ui_core::renderer::toast::ToastRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::ToastRenderer::border_radius(&self, &yororen_ui_core::renderer::toast::ToastRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
@@ -9932,7 +9972,7 @@ pub fn yororen_ui_core::renderer::toast::TokenToastRenderer::border_radius(&self
 pub fn yororen_ui_core::renderer::toast::TokenToastRenderer::fg(&self, &yororen_ui_core::renderer::toast::ToastRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::toast::TokenToastRenderer::padding(&self, &yororen_ui_core::renderer::toast::ToastRenderState, &yororen_ui_core::theme::Theme) -> yororen_ui_core::renderer::spec::Edges<gpui::geometry::Pixels>
 pub fn yororen_ui_core::renderer::toast::TokenToastRenderer::shadow_alpha(&self, &yororen_ui_core::renderer::toast::ToastRenderState, &yororen_ui_core::theme::Theme) -> f32
-pub trait yororen_ui_core::renderer::ToggleButtonRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::ToggleButtonRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::ToggleButtonRenderer::bg(&self, &yororen_ui_core::renderer::toggle_button::ToggleButtonRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::ToggleButtonRenderer::border_radius(&self, &yororen_ui_core::renderer::toggle_button::ToggleButtonRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::ToggleButtonRenderer::disabled_opacity(&self, &yororen_ui_core::renderer::toggle_button::ToggleButtonRenderState, &yororen_ui_core::theme::Theme) -> f32
@@ -9944,7 +9984,7 @@ pub fn yororen_ui_core::renderer::toggle_button::TokenToggleButtonRenderer::bord
 pub fn yororen_ui_core::renderer::toggle_button::TokenToggleButtonRenderer::disabled_opacity(&self, &yororen_ui_core::renderer::toggle_button::ToggleButtonRenderState, &yororen_ui_core::theme::Theme) -> f32
 pub fn yororen_ui_core::renderer::toggle_button::TokenToggleButtonRenderer::fg(&self, &yororen_ui_core::renderer::toggle_button::ToggleButtonRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::toggle_button::TokenToggleButtonRenderer::min_height(&self, &yororen_ui_core::renderer::toggle_button::ToggleButtonRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
-pub trait yororen_ui_core::renderer::TooltipRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::TooltipRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::TooltipRenderer::bg(&self, &yororen_ui_core::renderer::tooltip::TooltipRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::TooltipRenderer::border_radius(&self, &yororen_ui_core::renderer::tooltip::TooltipRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::TooltipRenderer::fg(&self, &yororen_ui_core::renderer::tooltip::TooltipRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
@@ -9956,7 +9996,7 @@ pub fn yororen_ui_core::renderer::tooltip::TokenTooltipRenderer::border_radius(&
 pub fn yororen_ui_core::renderer::tooltip::TokenTooltipRenderer::fg(&self, &yororen_ui_core::renderer::tooltip::TooltipRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::tooltip::TokenTooltipRenderer::font_size(&self, &yororen_ui_core::renderer::tooltip::TooltipRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::tooltip::TokenTooltipRenderer::padding(&self, &yororen_ui_core::renderer::tooltip::TooltipRenderState, &yororen_ui_core::theme::Theme) -> yororen_ui_core::renderer::spec::Edges<gpui::geometry::Pixels>
-pub trait yororen_ui_core::renderer::TreeItemRenderer: core::marker::Send + core::marker::Sync
+pub trait yororen_ui_core::renderer::TreeItemRenderer: core::any::Any + core::marker::Send + core::marker::Sync
 pub fn yororen_ui_core::renderer::TreeItemRenderer::bg(&self, &yororen_ui_core::renderer::tree_item::TreeItemRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::TreeItemRenderer::chevron_size(&self, &yororen_ui_core::renderer::tree_item::TreeItemRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_core::renderer::TreeItemRenderer::fg(&self, &yororen_ui_core::renderer::tree_item::TreeItemRenderState, &yororen_ui_core::theme::Theme) -> gpui::color::Hsla
@@ -11190,45 +11230,45 @@ impl core::marker::UnsafeUnpin for yororen_ui_core::theme::tokens::RadiiTokens
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::theme::tokens::RadiiTokens
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::theme::tokens::RadiiTokens
 pub struct yororen_ui_core::theme::RendererRegistry
-pub yororen_ui_core::theme::RendererRegistry::avatar: alloc::sync::Arc<dyn yororen_ui_core::renderer::avatar::AvatarRenderer>
-pub yororen_ui_core::theme::RendererRegistry::badge: alloc::sync::Arc<dyn yororen_ui_core::renderer::badge::BadgeRenderer>
-pub yororen_ui_core::theme::RendererRegistry::button: alloc::sync::Arc<dyn yororen_ui_core::renderer::button::ButtonRenderer>
-pub yororen_ui_core::theme::RendererRegistry::card: alloc::sync::Arc<dyn yororen_ui_core::renderer::card::CardRenderer>
-pub yororen_ui_core::theme::RendererRegistry::checkbox: alloc::sync::Arc<dyn yororen_ui_core::renderer::checkbox::CheckboxRenderer>
-pub yororen_ui_core::theme::RendererRegistry::combo_box: alloc::sync::Arc<dyn yororen_ui_core::renderer::combo_box::ComboBoxRenderer>
-pub yororen_ui_core::theme::RendererRegistry::disclosure: alloc::sync::Arc<dyn yororen_ui_core::renderer::disclosure::DisclosureRenderer>
-pub yororen_ui_core::theme::RendererRegistry::divider: alloc::sync::Arc<dyn yororen_ui_core::renderer::divider::DividerRenderer>
-pub yororen_ui_core::theme::RendererRegistry::dropdown_menu: alloc::sync::Arc<dyn yororen_ui_core::renderer::dropdown_menu::DropdownMenuRenderer>
-pub yororen_ui_core::theme::RendererRegistry::empty_state: alloc::sync::Arc<dyn yororen_ui_core::renderer::empty_state::EmptyStateRenderer>
-pub yororen_ui_core::theme::RendererRegistry::file_path_input: alloc::sync::Arc<dyn yororen_ui_core::renderer::file_path_input::FilePathInputRenderer>
-pub yororen_ui_core::theme::RendererRegistry::focus_ring: alloc::sync::Arc<dyn yororen_ui_core::renderer::focus_ring::FocusRingRenderer>
-pub yororen_ui_core::theme::RendererRegistry::form: alloc::sync::Arc<dyn yororen_ui_core::renderer::form::FormRenderer>
-pub yororen_ui_core::theme::RendererRegistry::heading: alloc::sync::Arc<dyn yororen_ui_core::renderer::heading::HeadingRenderer>
-pub yororen_ui_core::theme::RendererRegistry::icon_button: alloc::sync::Arc<dyn yororen_ui_core::renderer::icon_button::IconButtonRenderer>
-pub yororen_ui_core::theme::RendererRegistry::keybinding_input: alloc::sync::Arc<dyn yororen_ui_core::renderer::keybinding_input::KeybindingInputRenderer>
-pub yororen_ui_core::theme::RendererRegistry::label: alloc::sync::Arc<dyn yororen_ui_core::renderer::label::LabelRenderer>
-pub yororen_ui_core::theme::RendererRegistry::list_item: alloc::sync::Arc<dyn yororen_ui_core::renderer::list_item::ListItemRenderer>
-pub yororen_ui_core::theme::RendererRegistry::modal: alloc::sync::Arc<dyn yororen_ui_core::renderer::modal::ModalRenderer>
-pub yororen_ui_core::theme::RendererRegistry::notification: alloc::sync::Arc<dyn yororen_ui_core::renderer::notification::NotificationRenderer>
-pub yororen_ui_core::theme::RendererRegistry::number_input: alloc::sync::Arc<dyn yororen_ui_core::renderer::number_input::NumberInputRenderer>
-pub yororen_ui_core::theme::RendererRegistry::panel: alloc::sync::Arc<dyn yororen_ui_core::renderer::panel::PanelRenderer>
-pub yororen_ui_core::theme::RendererRegistry::password_input: alloc::sync::Arc<dyn yororen_ui_core::renderer::password_input::PasswordInputRenderer>
-pub yororen_ui_core::theme::RendererRegistry::popover: alloc::sync::Arc<dyn yororen_ui_core::renderer::popover::PopoverRenderer>
-pub yororen_ui_core::theme::RendererRegistry::progress_bar: alloc::sync::Arc<dyn yororen_ui_core::renderer::progress::ProgressBarRenderer>
-pub yororen_ui_core::theme::RendererRegistry::radio: alloc::sync::Arc<dyn yororen_ui_core::renderer::radio::RadioRenderer>
-pub yororen_ui_core::theme::RendererRegistry::search_input: alloc::sync::Arc<dyn yororen_ui_core::renderer::search_input::SearchInputRenderer>
-pub yororen_ui_core::theme::RendererRegistry::select: alloc::sync::Arc<dyn yororen_ui_core::renderer::select::SelectRenderer>
-pub yororen_ui_core::theme::RendererRegistry::skeleton: alloc::sync::Arc<dyn yororen_ui_core::renderer::skeleton::SkeletonRenderer>
-pub yororen_ui_core::theme::RendererRegistry::split_button: alloc::sync::Arc<dyn yororen_ui_core::renderer::split_button::SplitButtonRenderer>
-pub yororen_ui_core::theme::RendererRegistry::switch: alloc::sync::Arc<dyn yororen_ui_core::renderer::switch::SwitchRenderer>
-pub yororen_ui_core::theme::RendererRegistry::tag: alloc::sync::Arc<dyn yororen_ui_core::renderer::tag::TagRenderer>
-pub yororen_ui_core::theme::RendererRegistry::text_area: alloc::sync::Arc<dyn yororen_ui_core::renderer::text_area::TextAreaRenderer>
-pub yororen_ui_core::theme::RendererRegistry::text_input: alloc::sync::Arc<dyn yororen_ui_core::renderer::text_input::TextInputRenderer>
-pub yororen_ui_core::theme::RendererRegistry::toast: alloc::sync::Arc<dyn yororen_ui_core::renderer::toast::ToastRenderer>
-pub yororen_ui_core::theme::RendererRegistry::toggle_button: alloc::sync::Arc<dyn yororen_ui_core::renderer::toggle_button::ToggleButtonRenderer>
-pub yororen_ui_core::theme::RendererRegistry::tooltip: alloc::sync::Arc<dyn yororen_ui_core::renderer::tooltip::TooltipRenderer>
-pub yororen_ui_core::theme::RendererRegistry::tree_item: alloc::sync::Arc<dyn yororen_ui_core::renderer::tree_item::TreeItemRenderer>
 impl yororen_ui_core::renderer::registry::RendererRegistry
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_avatar(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::avatar::AvatarRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_badge(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::badge::BadgeRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_button(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::button::ButtonRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_card(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::card::CardRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_checkbox(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::checkbox::CheckboxRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_combo_box(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::combo_box::ComboBoxRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_disclosure(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::disclosure::DisclosureRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_divider(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::divider::DividerRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_dropdown_menu(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::dropdown_menu::DropdownMenuRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_empty_state(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::empty_state::EmptyStateRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_file_path_input(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::file_path_input::FilePathInputRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_focus_ring(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::focus_ring::FocusRingRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_form(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::form::FormRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_heading(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::heading::HeadingRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_icon_button(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::icon_button::IconButtonRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_keybinding_input(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::keybinding_input::KeybindingInputRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_label(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::label::LabelRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_list_item(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::list_item::ListItemRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_modal(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::modal::ModalRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_notification(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::notification::NotificationRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_number_input(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::number_input::NumberInputRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_panel(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::panel::PanelRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_password_input(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::password_input::PasswordInputRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_popover(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::popover::PopoverRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_progress_bar(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::progress::ProgressBarRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_radio(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::radio::RadioRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_search_input(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::search_input::SearchInputRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_select(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::select::SelectRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_skeleton(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::skeleton::SkeletonRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_split_button(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::split_button::SplitButtonRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_switch(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::switch::SwitchRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_tag(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::tag::TagRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_text_area(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::text_area::TextAreaRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_text_input(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::text_input::TextInputRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_toast(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::toast::ToastRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_toggle_button(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::toggle_button::ToggleButtonRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_tooltip(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::tooltip::TooltipRenderer>>
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_tree_item(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::tree_item::TreeItemRenderer>>
 pub fn yororen_ui_core::renderer::registry::RendererRegistry::token_based() -> Self
 pub fn yororen_ui_core::renderer::registry::RendererRegistry::with_avatar(self, alloc::sync::Arc<dyn yororen_ui_core::renderer::avatar::AvatarRenderer>) -> Self
 pub fn yororen_ui_core::renderer::registry::RendererRegistry::with_badge(self, alloc::sync::Arc<dyn yororen_ui_core::renderer::badge::BadgeRenderer>) -> Self
