@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use gpui::{App, Global, Hsla, WindowAppearance};
+use gpui::{App, Global, Hsla};
 
 use crate::i18n::TextDirection;
 
@@ -136,6 +136,28 @@ impl Theme {
     }
 }
 
+// Compile-time proof that `Theme` is `Send + Sync`.
+//
+// `Theme` is stored inside `GlobalTheme` and shared across gpui worker
+// threads. The unsoundness risk is that a future field could introduce
+// interior mutability that is *not* `Send + Sync` (e.g. `RefCell<…>`)
+// and break that assumption silently. This assertion makes any such
+// regression a hard compile error.
+//
+// Manually verified (2026-06-04): all fields are `Send + Sync`:
+//   - palette fields: `Hsla` (`Copy`, trivially `Send + Sync`)
+//   - `text_direction: TextDirection` (`enum`)
+//   - `tokens: DesignTokens` — all leaf fields are `Pixels` / `Duration`
+//   - `renderers: RendererRegistry` — 40+ `Arc<dyn …Renderer>` where
+//     every `*Renderer` trait is declared `: Send + Sync`.
+//
+// If you add a new field, re-verify and update this comment.
+const _: fn() = || {
+    const fn assert_send_sync<T: Send + Sync>() {}
+    assert_send_sync::<Theme>();
+    assert_send_sync::<GlobalTheme>();
+};
+
 pub struct GlobalTheme {
     theme: Arc<Theme>,
 }
@@ -143,14 +165,20 @@ pub struct GlobalTheme {
 impl Global for GlobalTheme {}
 
 impl GlobalTheme {
-    /// Construct a `GlobalTheme` from a caller-supplied `ThemeSet`.
+    /// Install `theme` as the single process-global theme.
     ///
     /// `core` is headless: it does not ship a default palette. Use a
-    /// theme package (e.g. `yororen_ui_theme_system::install`) to obtain a
-    /// `ThemeSet` and pass it here.
-    pub fn new_with_themes(appearance: WindowAppearance, themes: ThemeSet) -> Self {
+    /// theme package (e.g. `yororen_ui_theme_system::install`) to
+    /// obtain a `Theme` and pass it here.
+    ///
+    /// As of P0-3 this is the only identity. The previous `ThemeSet`
+    /// (light/dark factory) and `new_with_themes(appearance, …)` were
+    /// removed because three parallel identity systems caused
+    /// boundary confusion. The new model is: the app picks the right
+    /// `Theme` for the OS appearance, then sets it once.
+    pub fn new(theme: impl Into<Arc<Theme>>) -> Self {
         Self {
-            theme: themes.resolve(appearance),
+            theme: theme.into(),
         }
     }
 
@@ -171,38 +199,6 @@ impl GlobalTheme {
     /// `WindowAppearance` selection.
     pub fn into_arc(self) -> Arc<Theme> {
         self.theme
-    }
-}
-
-#[derive(Clone, Debug)]
-pub struct ThemeSet {
-    pub light: Arc<Theme>,
-    pub dark: Option<Arc<Theme>>,
-}
-
-impl ThemeSet {
-    pub fn new(light: impl Into<Arc<Theme>>) -> Self {
-        Self {
-            light: light.into(),
-            dark: None,
-        }
-    }
-
-    pub fn dark(mut self, dark: impl Into<Arc<Theme>>) -> Self {
-        self.dark = Some(dark.into());
-        self
-    }
-
-    pub fn resolve(&self, appearance: WindowAppearance) -> Arc<Theme> {
-        if let Some(dark) = &self.dark {
-            match appearance {
-                WindowAppearance::Dark | WindowAppearance::VibrantDark => dark.clone(),
-                WindowAppearance::Light | WindowAppearance::VibrantLight => self.light.clone(),
-            }
-        } else {
-            // If the caller did not provide a dark palette, force light mode.
-            self.light.clone()
-        }
     }
 }
 
@@ -237,6 +233,34 @@ impl ActiveTheme for App {
         GlobalTheme::theme(self)
     }
 }
+
+// Performance note (P1-5):
+//
+// `cx.theme()` is hot in every render. It returns `&Arc<Theme>`,
+// not `&Theme`, so:
+//   - `let theme = cx.theme();` is a single reference copy (no
+//     atomic increment).
+//   - `let theme = cx.theme().clone();` is one `Arc::clone` (one
+//     atomic increment). It does NOT recursively clone
+//     `Theme.renderers` — `Arc::clone` only touches the outer
+//     `Arc<Theme>`'s refcount.
+//
+// The earlier concern that "1000 nodes = 40k Arc clones" was based
+// on the misreading that `Theme::clone` was deep. It is not:
+// `Theme` is wrapped in `Arc<Theme>` inside `GlobalTheme`, and
+// that is what `cx.theme()` returns. Renderer methods that take
+// `&Theme` are reached by a single deref.
+//
+// Where to watch out: `cx.global::<GlobalTheme>().current()` (or
+// any code path that explicitly clones the inner `Theme`) will
+// invoke `Theme::clone`, which is `#[derive(Clone)]` and DOES
+// recursively clone every field — including the 40+ `Arc<dyn …>`
+// in `RendererRegistry`. So:
+//   - Prefer `cx.theme()` (or `cx.theme().clone()`) for read-only
+//     access.
+//   - Never call `cx.global::<GlobalTheme>().current().as_ref().clone()`
+//     inside a render loop; that allocates 40+ Arc::clone per
+//     frame.
 
 #[cfg(test)]
 mod tests {
