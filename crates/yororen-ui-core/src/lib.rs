@@ -3,6 +3,7 @@ pub mod animation;
 pub mod assets;
 pub mod component;
 pub mod constants;
+pub mod hooks;
 pub mod hover_refresh;
 pub mod i18n;
 pub mod notification;
