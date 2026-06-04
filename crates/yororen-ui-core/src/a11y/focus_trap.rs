@@ -16,7 +16,7 @@
 //!   caller — FocusTrap doesn't know which child elements are
 //!   focusable. Most apps will want to wrap FocusTrap around a
 //!   container that has explicit focusable children, and the
-//!   caller can use `keyboard_nav::find_next` (Phase G.2 helper)
+//!   caller can use `keyboard_nav::find_next` (a11y helper)
 //!   to determine the next element. If the caller doesn't
 //!   implement this, focus will simply move out of the trap
 //!   (gpui's default Tab behavior).

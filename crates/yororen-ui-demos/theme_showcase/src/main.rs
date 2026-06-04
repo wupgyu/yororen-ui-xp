@@ -1,6 +1,6 @@
 //! yororen-ui Theme Showcase Demo
 //!
-//! Phase F.4 end-to-end proof. Renders a split window:
+//! Exercises the four official theme configurations side by side.
 //!
 //! - **Left half** uses the default `theme-system` palette + token
 //!   renderers. (v0.5 visual baseline.)
@@ -72,9 +72,9 @@ fn main() {
 /// proves that a Catppuccin "look" can be applied to any palette
 /// (and vice versa).
 ///
-/// F-γ (Phase F review requirement): this covers all 37 renderers
+/// This covers the 37 Catppuccin renderer entries
 /// the Catppuccin theme ships, not just a subset. The 1 remaining
-/// gap is the `widget/` package, which is out of scope for Phase F.
+/// gap is the `widget/` package, which is out of scope for the theme package.
 pub fn catppuccin_renderer_only(appearance: WindowAppearance) -> yororen_ui::theme::Theme {
     let mut t = match appearance {
         WindowAppearance::Light | WindowAppearance::VibrantLight => theme_system::light(),
@@ -96,7 +96,7 @@ pub fn catppuccin_theme(appearance: WindowAppearance) -> yororen_ui::theme::Them
 
 /// Build a Material Design 3 theme matching the current
 /// `WindowAppearance` (Light or Dark scheme) with the full
-/// Material renderer registry. Phase H.1 (the second official
+/// Material renderer registry — the second official theme,
 /// theme) ships this.
 pub fn material_theme(appearance: WindowAppearance) -> yororen_ui::theme::Theme {
     match appearance {
@@ -154,7 +154,7 @@ mod tests {
         ToastRenderState, ToggleButtonRenderState, TooltipRenderState, TreeItemRenderState,
     };
 
-    /// F-γ: catppuccin_renderer_only() must cover all 37 renderers.
+    /// `catppuccin_renderer_only()` must cover all 37 renderers.
     /// This is a smoke test that calls a primary method on each
     /// renderer to verify the registry is fully populated.
     #[test]

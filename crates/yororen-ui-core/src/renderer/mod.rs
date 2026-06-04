@@ -1,5 +1,6 @@
-//! Component renderer traits. Phase B spike scope was just `ButtonRenderer`;
-//! Phase C generalizes the same shape to all components.
+//! Component renderer traits, one per component. The
+//! `ButtonRenderer` entry is the reference example; the other 37
+//! follow the same pattern.
 
 pub mod avatar;
 pub mod badge;

@@ -1,6 +1,6 @@
 //! yororen-ui i18n Showcase Demo
 //!
-//! Verifies Phase A deliverables end-to-end:
+//! Verifies the i18n cutover: three locale crates, runtime switching,
 //! - Three external locale crates (en / zh-CN / ar) installed at
 //!   runtime; switching is a one-line global set.
 //! - i18n keys (`common.save`, `common.cancel`, ...) resolve through

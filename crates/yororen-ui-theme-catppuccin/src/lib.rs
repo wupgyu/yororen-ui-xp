@@ -2,7 +2,7 @@
 //! `yororen-ui`.
 //!
 //! This crate is the v0.5 reference implementation of a "real-world"
-//! theme package built on top of the Phase C Renderer trait system.
+//! theme package built on top of the Renderer trait system.
 //! It demonstrates that a third party can ship a full skin without
 //! modifying `yororen-ui-core`, by composing:
 //!

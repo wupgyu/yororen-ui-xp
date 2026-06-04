@@ -1,8 +1,7 @@
-//! `ButtonRenderer` trait — the Phase B spike.
+//! `ButtonRenderer` trait — the reference example.
 //!
-//! One trait, one component. If this design holds up, Phase C generalizes
-//! the same shape to 30+ components. If not, we revise the spike before
-//! committing to the trait fleet.
+//! One trait, one component. The other 37 component renderer
+//! traits follow the same shape.
 
 use std::sync::Arc;
 

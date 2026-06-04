@@ -178,7 +178,7 @@ impl RenderOnce for Button {
         let variant_builtin: ActionVariantKind =
             variant.as_builtin().unwrap_or(ActionVariantKind::Neutral);
 
-        // Phase B spike: button visuals go through ButtonRenderer.
+        // button visuals go through ButtonRenderer.
         let theme = cx.theme();
         let r = &theme.renderers.button;
         let state = ButtonRenderState {

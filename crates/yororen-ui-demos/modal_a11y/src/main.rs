@@ -1,6 +1,6 @@
 //! yororen-ui Modal a11y Demo
 //!
-//! Phase G.5 end-to-end proof. The window shows a few buttons that
+//! A11y modal demo: focuses a modal through the one-line `modal_dialog(id)` API,
 //! each open a different kind of modal. Together they exercise the
 //! v0.5 accessibility stack:
 //!

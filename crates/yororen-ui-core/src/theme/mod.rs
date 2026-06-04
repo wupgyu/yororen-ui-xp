@@ -27,8 +27,8 @@ pub struct Theme {
     /// spacing, radii, and motion. Themes override these to reshape the UI
     /// without touching component logic.
     pub tokens: DesignTokens,
-    /// Per-component renderers. Phase B spike: only `button`. Phase C
-    /// generalizes this to 30+ components.
+    /// Per-component renderers. The `ButtonRenderer` entry is the
+    /// reference example; the other 37 follow the same pattern.
     pub renderers: RendererRegistry,
 }
 

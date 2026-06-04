@@ -1,6 +1,6 @@
 //! yororen-ui Variant Showcase Demo
 //!
-//! Verifies Phase E end-to-end. Registers two custom button variants
+//! Exercises the variant registry with two custom button variants Registers two custom button variants
 //! ("ghost" and "branded") via the global `VariantRegistry`, then
 //! builds a small button gallery where each row uses a different
 //! variant. The 3 built-in variants (Neutral / Primary / Danger) are

@@ -16,7 +16,7 @@ use crate::{
 
 /// Callback type for modal close handler. `Arc<dyn Fn>` so it can
 /// be cloned into multiple closures (e.g. the close button and
-/// the G-α Panel wrapper).
+/// the Panel wrapper).
 pub type ModalCloseCallback = Arc<dyn Fn(&mut gpui::Window, &mut gpui::App) + Send + Sync>;
 
 /// Modal content shell (dialog panel).
@@ -42,7 +42,8 @@ pub type ModalCloseCallback = Arc<dyn Fn(&mut gpui::Window, &mut gpui::App) + Se
 ///
 /// # Accessibility
 ///
-/// This component carries the following ARIA fields (Phase G.4):
+///
+/// This component carries the following ARIA fields:
 /// - `role`: defaults to `Role::Dialog`, settable via `.role(...)`.
 /// - `aria-modal`: defaults to `true`, settable via `.aria_modal(false)`.
 /// - `aria-label`: optional, settable via `.aria_label(...)`.
@@ -58,8 +59,8 @@ pub type ModalCloseCallback = Arc<dyn Fn(&mut gpui::Window, &mut gpui::App) + Se
 /// (e.g. via a wrapping element's `data-*` attributes).
 ///
 /// For full accessibility support, ensure:
-/// - The modal is wrapped in an `Overlay` (Phase G.2) which
-///   provides scrim click, Esc, and body scroll lock.
+/// - The modal is wrapped in an `Overlay` which provides scrim
+///   click, Esc, and body scroll lock.
 /// - Focus is moved to the modal's first focusable element on
 ///   open (the [`FocusTrap`](crate::a11y::FocusTrap) helper is
 ///   the recommended way to do this).
@@ -83,13 +84,13 @@ pub struct Modal {
     /// Accessibility: ID of the element that describes this modal.
     /// This is typically used to associate additional descriptive content.
     described_by: Option<SharedString>,
-    /// ARIA role. Default: `Role::Dialog`. Phase G.4 addition.
+    /// ARIA role. Default: `Role::Dialog`. ARIA field.
     role: Role,
-    /// ARIA label (short description). Phase G.4 addition.
+    /// ARIA label (short description). ARIA field.
     aria_label: Option<SharedString>,
-    /// ARIA labelledby (ID of label element). Phase G.4 addition.
+    /// ARIA labelledby (ID of label element). ARIA field.
     aria_labelledby: Option<SharedString>,
-    /// ARIA modal flag. Default: `true` for modals. Phase G.4 addition.
+    /// ARIA modal flag. Default: `true` for modals. ARIA field.
     aria_modal: bool,
 }
 
@@ -191,27 +192,27 @@ impl Modal {
         self
     }
 
-    /// Set the ARIA role. Default: `Role::Dialog`. Phase G.4.
+    /// Set the ARIA role. Default: `Role::Dialog`. ARIA field.
     pub fn role(mut self, role: Role) -> Self {
         self.role = role;
         self
     }
 
     /// Set the ARIA label (short description for screen readers).
-    /// Phase G.4.
+    /// Modal a11y shell.
     pub fn aria_label(mut self, label: impl Into<SharedString>) -> Self {
         self.aria_label = Some(label.into());
         self
     }
 
     /// Set the ARIA labelledby (ID of the labelling element).
-    /// Phase G.4.
+    /// Modal a11y shell.
     pub fn aria_labelledby(mut self, id: impl Into<SharedString>) -> Self {
         self.aria_labelledby = Some(id.into());
         self
     }
 
-    /// Set the ARIA modal flag. Default: `true` for modals. Phase G.4.
+    /// Set the ARIA modal flag. Default: `true` for modals.
     /// Set to `false` for non-modal dialogs (e.g. permission prompts that
     /// don't block background interaction).
     pub fn aria_modal(mut self, modal: bool) -> Self {
@@ -221,22 +222,22 @@ impl Modal {
 
     /// Read-only accessor for the ARIA role. Useful for tests and
     /// for parent components that want to forward the role to a
-    /// wrapping element. Phase G.4.
+    /// wrapping element. ARIA field.
     pub fn get_role(&self) -> Role {
         self.role
     }
 
-    /// Read-only accessor for `aria-label`. Phase G.4.
+    /// Read-only accessor for `aria-label`. ARIA field.
     pub fn get_aria_label(&self) -> Option<&SharedString> {
         self.aria_label.as_ref()
     }
 
-    /// Read-only accessor for `aria-labelledby`. Phase G.4.
+    /// Read-only accessor for `aria-labelledby`. ARIA field.
     pub fn get_aria_labelledby(&self) -> Option<&SharedString> {
         self.aria_labelledby.as_ref()
     }
 
-    /// Read-only accessor for `aria-modal`. Phase G.4.
+    /// Read-only accessor for `aria-modal`. ARIA field.
     pub fn get_aria_modal(&self) -> bool {
         self.aria_modal
     }
@@ -304,7 +305,7 @@ impl RenderOnce for Modal {
 
         let direction = cx.theme().text_direction;
 
-        // G-α refactor: Modal now composes a Panel internally. The
+        // Modal composes a Panel internally. The
         // Panel owns the bg / border / border-radius / shadow /
         // padding (drawn from the active theme's PanelRenderer
         // with caller overrides layered on top). The Modal adds

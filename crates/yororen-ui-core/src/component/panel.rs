@@ -1,8 +1,8 @@
 //! `Panel` — a generic dialog/surface component.
 //!
-//! Phase G-α hard requirement (per the v0.5 review): the panel
-//! concept that used to live only as inline comments inside
-//! `modal.rs` is now a first-class component in its own file.
+//! The panel concept that used to live only as inline comments
+//! inside `modal.rs` is now a first-class component in its own
+//! file.
 //!
 //! A `Panel` is the visual "card" primitive: it draws the
 //! background, border, border-radius, shadow, and inset padding.

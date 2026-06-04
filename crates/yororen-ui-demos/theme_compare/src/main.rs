@@ -1,6 +1,6 @@
 //! yororen-ui Theme Compare Demo
 //!
-//! Verifies Phase D end-to-end. Splits the window into a left half
+//! Exercises the global theme flip path used by the compare app. Splits the window into a left half
 //! (theme-system) and a right half (theme-mini). The same Button /
 //! Card renderers are used on both sides — only the
 //! `Theme.renderers` registry differs.

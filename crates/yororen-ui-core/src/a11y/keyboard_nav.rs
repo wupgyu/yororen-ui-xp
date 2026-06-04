@@ -1,6 +1,6 @@
 //! Keyboard navigation utilities.
 //!
-//! Phase G.2 module. Provides helpers for moving focus through a
+//! a11y module. Provides helpers for moving focus through a
 //! container of focusable elements when the user presses Tab or
 //! Shift+Tab.
 //!

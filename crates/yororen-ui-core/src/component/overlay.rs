@@ -1,8 +1,8 @@
 //! `Overlay` — a full-window scrim that wraps a single child element
 //! (typically a [`Modal`](super::modal::Modal)).
 //!
-//! Phase G.2 introduces the v0.5 accessibility story for floating
-//! UI. `Overlay` is the building block that provides:
+//! The accessibility story for floating UI in v0.5 is built on
+//! top of this. `Overlay` provides:
 //!
 //! - **Scrim**: a semi-transparent full-window backdrop using the
 //!   `ModalRenderer::scrim` color from the active theme.

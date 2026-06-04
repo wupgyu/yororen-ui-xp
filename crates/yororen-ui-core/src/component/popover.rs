@@ -57,8 +57,8 @@ pub struct Popover {
     bg: Option<Hsla>,
     border: Option<Hsla>,
     on_close: Option<CloseFn>,
-    /// Whether the Escape key dismisses the popover. Default: true
-    /// (Phase G.3). Set to false for non-dismissable popovers
+    /// Whether the Escape key dismisses the popover. Default: true.
+    /// Set to false for non-dismissable popovers
     /// (e.g. persistent notification stacks).
     dismiss_on_escape: bool,
 }
@@ -162,8 +162,8 @@ impl Popover {
     }
 
     /// Set whether the Escape key dismisses the popover. Default:
-    /// `true` (Phase G.3). Set to `false` for non-dismissable
-    /// popovers (e.g. persistent notification stacks).
+    /// `true`. Set to `false` for non-dismissable popovers
+    /// (e.g. persistent notification stacks).
     pub fn dismiss_on_escape(mut self, dismiss: bool) -> Self {
         self.dismiss_on_escape = dismiss;
         self

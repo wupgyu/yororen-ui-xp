@@ -1,8 +1,6 @@
 //! Visual regression snapshot for the Catppuccin theme.
 //!
-//! Phase F-δ (per the v0.5 review): we'd ideally have pixel-level
-//! screenshots in CI. gpui-ce 0.3.3 has no public API to render
-//! to an offscreen surface, so a true screenshot test requires
+//! A pixel-level screenshot test would be ideal, but gpui-ce 0.3.3
 //! `xvfb-run` on Linux and a windowed demo on macOS / Windows.
 //!
 //! In the absence of that, this module provides the next-best
@@ -276,7 +274,7 @@ pub fn build_snapshot() -> SnapshotHash {
         CatppuccinEmptyStateRenderer.icon_color(&EmptyStateRenderState::default(), &dark)
     );
 
-    // G-α new renderers
+    // additional renderers
     snap!(
         "avatar.bg",
         CatppuccinAvatarRenderer.default_bg(&AvatarRenderState::default(), &light),

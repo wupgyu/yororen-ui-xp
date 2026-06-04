@@ -2,14 +2,14 @@
 //! composes `Modal` with `Overlay` + body scroll lock, and links
 //! the close-button callback to the overlay's dismiss state.
 //!
-//! Phase G-gamma + G-delta hard requirements from the v0.5 review:
+//! Requirements from the v0.5 review:
 //!
-//! - G-gamma: `Modal::new().open(true)` should be enough on its
+//! - A single `Modal::new().open(true)` should be enough on its
 //!   own to get a fully a11y modal (focus trap + Esc +
 //!   click-outside + scroll lock). We satisfy this by
 //!   introducing a new `ModalShell` factory that wraps
 //!   everything together.
-//! - G-delta: the close button on the inner Modal must close
+//! - The close button on the inner Modal must close
 //!   the outer overlay (the original two callbacks are
 //!   independent). ModalShell solves this by having the Modal's
 //!   on_close callback also flip the shell's `open` state,
@@ -236,8 +236,8 @@ impl RenderOnce for ModalShell {
             modal
         };
 
-        // G-delta linking: the modal's close button now triggers
-        // Programmatic in the shell's on_close. The Overlay's
+        // The modal's close button now triggers Programmatic in
+        // the shell's on_close. The Overlay's
         // scrim click + Esc fire ScrimClick / Escape respectively.
         let inner: AnyElement = modal.into_any_element();
 

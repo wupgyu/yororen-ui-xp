@@ -250,7 +250,7 @@ mod tests {
         assert!(!v.no_scroll_lock);
     }
 
-    /// G-γ: `modal_dialog(id)` is the one-line API. The
+    /// `modal_dialog(id)` is the one-line modal API. The
     /// resulting `ModalShell` is `IntoElement` so the caller can
     /// embed it in a parent layout directly. We exercise both
     /// paths: raw construction, and `.into_any_element()` for

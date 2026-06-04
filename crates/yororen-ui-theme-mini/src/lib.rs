@@ -1,4 +1,4 @@
-//! Phase D mini theme for `yororen-ui`.
+//! A minimal theme package: 3 custom renderers layered on system palette.
 //!
 //! This crate exists to prove the Renderer trait system actually works
 //! end-to-end. It overrides 3 renderers (button, card, modal) on top of

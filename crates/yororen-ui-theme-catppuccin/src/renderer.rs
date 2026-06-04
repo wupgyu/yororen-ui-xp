@@ -1535,7 +1535,7 @@ impl LabelRenderer for CatppuccinLabelRenderer {
 /// defaults.
 pub fn catppuccin_registry() -> RendererRegistry {
     RendererRegistry::token_based()
-        // Phase F.1-F.3 (12 renderers): button, card, modal,
+        // First batch of renderers: button, card, modal,
         // focus_ring, text_input, switch, checkbox, radio, toast,
         // tag, list_item, empty_state.
         .with_button(Arc::new(CatppuccinButtonRenderer))
@@ -1550,8 +1550,7 @@ pub fn catppuccin_registry() -> RendererRegistry {
         .with_tag(Arc::new(CatppuccinTagRenderer))
         .with_list_item(Arc::new(CatppuccinListItemRenderer))
         .with_empty_state(Arc::new(CatppuccinEmptyStateRenderer))
-        // Phase F.4 patch (25 more renderers): closes the gap to a
-        // complete skin.
+        // Second batch closes the gap to a complete skin.
         .with_avatar(Arc::new(CatppuccinAvatarRenderer))
         .with_panel(Arc::new(CatppuccinPanelRenderer))
         .with_badge(Arc::new(CatppuccinBadgeRenderer))
@@ -1795,7 +1794,7 @@ mod tests {
             .icon_color(&EmptyStateRenderState::default(), &cat_light());
     }
 
-    /// Phase F.4 patch coverage: all 25 newly added renderers
+    /// Every entry that ships a Catppuccin variant
     /// are wired into the registry and can be invoked without
     /// panicking. This is a smoke test — it doesn't verify the
     /// output, just that the trait methods are callable.

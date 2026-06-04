@@ -1,5 +1,5 @@
 //! `RendererRegistry` — the collection of component renderers wired into
-//! a `Theme`. Phase B ships the button entry; Phase C adds the remaining
+//! a `Theme`. The `ButtonRenderer` entry is the reference example;
 //! 30+ components one trait per file.
 
 use std::sync::Arc;

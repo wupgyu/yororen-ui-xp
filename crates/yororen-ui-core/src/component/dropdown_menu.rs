@@ -70,8 +70,7 @@ pub struct DropdownMenu {
     width: Option<gpui::Pixels>,
     placement: PopoverPlacement,
     on_select: Option<SelectFn>,
-    /// Whether the Escape key dismisses the menu. Default: true
-    /// (Phase G.3).
+    /// Whether the Escape key dismisses the menu. Default: true.
     dismiss_on_escape: bool,
 }
 
@@ -157,8 +156,7 @@ impl DropdownMenu {
         self
     }
 
-    /// Set whether the Escape key dismisses the menu. Default:
-    /// `true` (Phase G.3).
+    /// Set whether the Escape key dismisses the menu. Default: `true`.
     pub fn dismiss_on_escape(mut self, dismiss: bool) -> Self {
         self.dismiss_on_escape = dismiss;
         self

@@ -31,7 +31,7 @@ pub type ClickOutsideCallback = Arc<dyn Fn(&MouseDownEvent, &mut Window, &mut Ap
 
 /// A small wrapper that installs an `on_mouse_down_out` handler on a
 /// `Div`. This is the building block used by `Popover`,
-/// `DropdownMenu`, and (in Phase G) `Modal`.
+/// `DropdownMenu`, and `Modal`.
 ///
 /// `Popover` historically did this inline:
 ///
