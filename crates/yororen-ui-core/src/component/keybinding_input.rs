@@ -190,7 +190,7 @@ impl RenderOnce for KeybindingInput {
 
         let height = self
             .height
-            .unwrap_or_else(|| cx.theme().tokens.control.button.min_height.into());
+            .unwrap_or_else(|| theme.tokens.control.button.min_height.into());
 
         let on_change = self.on_change;
         let use_internal_value = on_change.is_none();
@@ -311,7 +311,7 @@ impl RenderOnce for KeybindingInput {
 
         let mods_for_display = *current_modifiers.read(cx);
 
-        let direction = cx.theme().text_direction;
+        let direction = theme.text_direction;
 
         self.base
             .id(id.clone())

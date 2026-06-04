@@ -210,7 +210,7 @@ impl RenderOnce for SearchInput {
         let resolved = crate::component::ResolvedVariant::resolve(&variant, cx);
         let custom_style = resolved.custom_style;
         let variant_builtin = resolved.builtin;
-        let theme_action_variant = cx.theme().action_variant(variant_builtin).clone();
+        let theme_action_variant = theme.action_variant(variant_builtin).clone();
         let action_variant = if let Some(s) = &custom_style {
             ActionVariant {
                 bg: s.bg(&VariantState { disabled }),
@@ -249,7 +249,7 @@ impl RenderOnce for SearchInput {
 
         let on_submit_for_input = on_submit.clone();
 
-        let direction = cx.theme().text_direction;
+        let direction = theme.text_direction;
         let mut base = self
             .base
             .id(id.clone())
@@ -268,7 +268,7 @@ impl RenderOnce for SearchInput {
             .when(disabled, |this| this.opacity(0.6).cursor_not_allowed())
             .child(
                 icon(IconName::Search)
-                    .size(cx.theme().tokens.sizes.icon_md)
+                    .size(theme.tokens.sizes.icon_md)
                     .color(hint),
             )
             .child(
@@ -296,7 +296,7 @@ impl RenderOnce for SearchInput {
 
         // Conditionally add clear button
         if clear_visible && !disabled {
-            let clear_size = cx.theme().tokens.sizes.control_h_xs;
+            let clear_size = theme.tokens.sizes.control_h_xs;
             base = base.child(
                 div()
                     .w(clear_size)
@@ -308,7 +308,7 @@ impl RenderOnce for SearchInput {
                         icon_button(clear_id)
                             .variant(variant.clone())
                             .icon(icon(IconName::Close))
-                            .icon_size(cx.theme().tokens.sizes.icon_md)
+                            .icon_size(theme.tokens.sizes.icon_md)
                             .w(clear_size)
                             .h(clear_size)
                             .rounded_md()

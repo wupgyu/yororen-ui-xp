@@ -183,7 +183,7 @@ impl RenderOnce for FilePathInput {
         let theme = cx.theme().clone();
         let height = self
             .height
-            .unwrap_or_else(|| cx.theme().tokens.control.button.min_height.into());
+            .unwrap_or_else(|| theme.tokens.control.button.min_height.into());
         let border = self.border;
         let focus_border = self.focus_border;
         let bg = self.bg;
@@ -255,7 +255,7 @@ impl RenderOnce for FilePathInput {
         let input_id: ElementId = (id.clone(), "ui:file-path:input").into();
         let button_id: ElementId = (id.clone(), "ui:file-path:button").into();
 
-        let direction = cx.theme().text_direction;
+        let direction = theme.text_direction;
 
         self.base
             .id(id.clone())
@@ -280,7 +280,7 @@ impl RenderOnce for FilePathInput {
             )
             .child(
                 button(button_id)
-                    .h(cx.theme().tokens.control.button.min_height)
+                    .h(theme.tokens.control.button.min_height)
                     .px_3()
                     .rounded_md()
                     .variant(ActionVariantKind::Neutral)

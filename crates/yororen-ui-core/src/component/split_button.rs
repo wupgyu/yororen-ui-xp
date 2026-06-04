@@ -199,7 +199,9 @@ impl RenderOnce for SplitButton {
         let resolved = crate::component::ResolvedVariant::resolve(&variant, cx);
         let custom_style = resolved.custom_style;
         let variant_builtin = resolved.builtin;
-        let theme_action_variant = cx.theme().action_variant(variant_builtin).clone();
+
+        let theme = cx.theme().clone();
+        let theme_action_variant = theme.action_variant(variant_builtin).clone();
         let action_variant = if let Some(s) = &custom_style {
             crate::theme::ActionVariant {
                 bg: s.bg(&VariantState { disabled }),

@@ -9,8 +9,7 @@ use gpui::{
 use crate::{
     animation::constants::duration,
     component::{
-        ArrowDirection, BoundsTrackerElement, IconName, desired_menu_left,
-        icon, text_input,
+        ArrowDirection, BoundsTrackerElement, IconName, desired_menu_left, icon, text_input,
     },
     i18n::{I18n, PlaceholderContext, PlaceholderKey, TextDirection},
     theme::ActiveTheme,
@@ -424,7 +423,7 @@ impl RenderOnce for ComboBox {
             )
             .child(
                 icon(IconName::Arrow(ArrowDirection::Down))
-                    .size(cx.theme().tokens.sizes.icon_md)
+                    .size(theme.tokens.sizes.icon_md)
                     .color(hint),
             );
 
@@ -447,7 +446,7 @@ impl RenderOnce for ComboBox {
 
             let trigger_bounds = *trigger_bounds_state_for_menu.read(cx);
             let menu_width_px =
-                menu_width_px(menu_width, cx.theme().tokens.control.combo_box.menu_width);
+                menu_width_px(menu_width, theme.tokens.control.combo_box.menu_width);
             let menu_left =
                 desired_menu_left(trigger_bounds, menu_width_px, direction, false, window);
             let relative_left = menu_left - trigger_bounds.left();
@@ -566,7 +565,7 @@ impl RenderOnce for ComboBox {
                         .when(is_selected, |this| {
                             this.child(
                                 icon(IconName::Check)
-                                    .size(cx.theme().tokens.sizes.icon_sm)
+                                    .size(theme.tokens.sizes.icon_sm)
                                     .color(theme.action.primary.bg),
                             )
                         })
