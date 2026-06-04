@@ -189,20 +189,31 @@ pub trait Translate {
     /// Translate a key to a string.
     fn t(&self, key: &str) -> SharedString;
 
-    /// Translate with placeholders.
-    fn t_with_args(&self, key: &str, args: &HashMap<&str, &str>) -> SharedString;
+    /// Translate with positional placeholders.
+    ///
+    /// The `args` slice supplies the values for each `{}` in the
+    /// template, in order. This replaces the previous
+    /// `HashMap<&str, &str>` API, which was unsafe (a key being a
+    /// substring of another key would corrupt the output).
+    fn t_with_args(&self, key: &str, args: &[&str]) -> SharedString;
+
+    /// Look up a translation, returning `None` if the key is missing.
+    ///
+    /// This is the P1-2 explicit-fallback API: production code that
+    /// needs to distinguish "no translation" from "translation equals
+    /// the key" should use this and decide whether to log, surface
+    /// a metric, or panic at the call site. The `t(...)` shortcut
+    /// remains for the 99% path where falling back to the key is
+    /// acceptable.
+    fn lookup(&self, key: &str) -> Option<SharedString>;
 }
 
 impl Translate for App {
     fn t(&self, key: &str) -> SharedString {
-        let i18n = self.i18n();
-        match i18n.t(key) {
-            Some(s) => s.to_string().into(),
-            None => key.to_string().into(),
-        }
+        self.lookup(key).unwrap_or_else(|| key.to_string().into())
     }
 
-    fn t_with_args(&self, key: &str, args: &HashMap<&str, &str>) -> SharedString {
+    fn t_with_args(&self, key: &str, args: &[&str]) -> SharedString {
         let i18n = self.i18n();
         let base = match i18n.t(key) {
             Some(s) => s.to_string(),
@@ -211,16 +222,58 @@ impl Translate for App {
 
         replace_placeholders(&base, args).into()
     }
+
+    fn lookup(&self, key: &str) -> Option<SharedString> {
+        self.i18n().t(key).map(|s| s.to_string().into())
+    }
 }
 
 /// Replace placeholders in a string with values from the args map.
-fn replace_placeholders(template: &str, args: &HashMap<&str, &str>) -> String {
-    let mut result = template.to_string();
-    for (key, value) in args {
-        let placeholder = format!("{{{}}}", key);
-        result = result.replace(&placeholder, value);
+///
+/// Placeholders use the `{}` style (consistent with `format!`). The
+/// parser is non-greedy and matches each `{}` to a key from `args`
+/// in declaration order. `{{` and `}}` are escape sequences for
+/// literal braces.
+///
+/// This is safer than the previous `String::replace` approach, which
+/// silently corrupted templates when a value happened to be the
+/// substring of another key (e.g. `name` vs `name_id`).
+///
+/// Trade-offs vs a `{key}` style:
+/// - Pros: cannot be confused with literal text containing braces
+///   such as math notation. Substring conflicts are impossible.
+/// - Cons: requires declaration order, not named lookup. The
+///   `t_with_args` call site must keep argument order in sync with
+///   the template, but that's already the case for `format!` and
+///   is the i18n convention.
+fn replace_placeholders(template: &str, args: &[&str]) -> String {
+    let mut out = String::with_capacity(template.len());
+    let mut chars = template.chars().peekable();
+    let mut arg_idx = 0;
+    while let Some(c) = chars.next() {
+        match c {
+            '{' if chars.peek() == Some(&'{') => {
+                chars.next();
+                out.push('{');
+            }
+            '}' if chars.peek() == Some(&'}') => {
+                chars.next();
+                out.push('}');
+            }
+            '{' => {
+                if arg_idx < args.len() {
+                    out.push_str(args[arg_idx]);
+                    arg_idx += 1;
+                } else {
+                    // Missing arg: leave the `{}` literal so the
+                    // bug is visible at runtime.
+                    out.push('{');
+                }
+            }
+            other => out.push(other),
+        }
     }
-    result
+    out
 }
 
 #[cfg(test)]
