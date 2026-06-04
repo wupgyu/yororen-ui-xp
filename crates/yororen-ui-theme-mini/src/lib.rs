@@ -45,7 +45,7 @@ use yororen_ui_core::renderer::{
     ButtonRenderState, ButtonRenderer, CardRenderState, CardRenderer, ModalRenderState,
     ModalRenderer, RendererRegistry,
 };
-use yororen_ui_core::theme::{GlobalTheme, Theme, ThemeSet};
+use yororen_ui_core::theme::{GlobalTheme, Theme};
 
 use yororen_ui_theme_system as theme_system;
 
@@ -243,10 +243,7 @@ pub fn install(cx: &mut App, appearance: WindowAppearance) {
         _ => theme_system::dark(),
     };
     theme.renderers = mini_registry();
-    cx.set_global(GlobalTheme::new_with_themes(
-        appearance,
-        ThemeSet::new(theme),
-    ));
+    cx.set_global(GlobalTheme::new(theme));
 }
 
 // Re-export token fallback renderers so callers that want to extend

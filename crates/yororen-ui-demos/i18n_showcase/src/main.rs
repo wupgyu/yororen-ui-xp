@@ -19,7 +19,7 @@ use yororen_ui::i18n::{
     GlobalPlaceholderResolver, I18nContext, Locale, PlaceholderKey, PlaceholderResolver,
     TextDirection,
 };
-use yororen_ui::theme::{GlobalTheme, ThemeSet};
+use yororen_ui::theme::GlobalTheme;
 
 use yororen_ui_locale_ar as locale_ar;
 use yororen_ui_locale_en as locale_en;
@@ -96,9 +96,6 @@ pub fn switch_locale(cx: &mut App, tag: &str) {
     // ends before we call `cx.set_global`.
     let mut theme = cx.global::<GlobalTheme>().current().as_ref().clone();
     theme.text_direction = direction;
-    cx.set_global(GlobalTheme::new_with_themes(
-        gpui::WindowAppearance::Light,
-        ThemeSet::new(theme),
-    ));
+    cx.set_global(GlobalTheme::new(theme));
     cx.refresh_windows();
 }

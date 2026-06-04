@@ -9,7 +9,7 @@ use yororen_ui_core::i18n::TextDirection;
 use yororen_ui_core::theme::tokens::DesignTokens;
 use yororen_ui_core::theme::{
     ActionTheme, ActionVariant, BorderTheme, ContentTheme, ShadowTheme, StatusTheme, StatusVariant,
-    SurfaceTheme, Theme, ThemeSet,
+    SurfaceTheme, Theme,
 };
 
 use crate::palette;
@@ -271,13 +271,6 @@ pub fn mocha() -> Theme {
 /// surface so `catppuccin::dark()` is discoverable.
 pub fn dark() -> Theme {
     mocha()
-}
-
-/// `ThemeSet` matching the standard 2-flavor installer (Latte +
-/// Mocha). This is the default [`crate::themeset`] used by
-/// [`crate::install`].
-pub fn themeset() -> ThemeSet {
-    ThemeSet::new(light()).dark(dark())
 }
 
 /// Alias for [`light`] returning a strongly-typed `LatteTheme` for

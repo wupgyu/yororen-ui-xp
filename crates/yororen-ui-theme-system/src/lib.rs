@@ -18,15 +18,10 @@ use std::sync::Arc;
 use gpui::App;
 use gpui::WindowAppearance;
 
-use yororen_ui_core::theme::{GlobalTheme, Theme, ThemeSet};
+use yororen_ui_core::theme::{GlobalTheme, Theme};
 
 mod dark;
 mod light;
-
-/// Construct a `ThemeSet` containing the default light and dark palettes.
-pub fn themeset() -> ThemeSet {
-    ThemeSet::new(light::light()).dark(dark::dark())
-}
 
 /// Install the default theme on the given `App`. Picks light or dark based
 /// on the current `WindowAppearance`.
@@ -35,8 +30,17 @@ pub fn themeset() -> ThemeSet {
 /// ```rust,ignore
 /// theme_system::install(cx, window.appearance());
 /// ```
+///
+/// As of P0-3 this is the only supported identity. The previous
+/// `ThemeSet` (light/dark factory) was removed; the app now picks
+/// the right `Theme` for the OS appearance and stores it in a single
+/// `GlobalTheme` global.
 pub fn install(cx: &mut App, appearance: WindowAppearance) {
-    cx.set_global(GlobalTheme::new_with_themes(appearance, themeset()));
+    let theme = match appearance {
+        WindowAppearance::Dark | WindowAppearance::VibrantDark => dark::dark(),
+        WindowAppearance::Light | WindowAppearance::VibrantLight => light::light(),
+    };
+    cx.set_global(GlobalTheme::new(theme));
 }
 
 /// Build a `Theme` from the system's default light palette.
@@ -68,11 +72,5 @@ mod tests {
         let l = light();
         let d = dark();
         assert_ne!(l.surface.canvas.a, d.surface.canvas.a + 1.0); // sanity: distinct a channel
-    }
-
-    #[test]
-    fn themeset_has_both() {
-        let ts = themeset();
-        assert!(ts.dark.is_some());
     }
 }

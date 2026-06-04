@@ -74,7 +74,7 @@ mod factories;
 // Public factory functions.
 pub use factories::{
     FrappeTheme, LatteTheme, MacchiatoTheme, MochaTheme, dark, frappe, frappe_theme, latte_theme,
-    light, macchiato, macchiato_theme, mocha, mocha_theme, themeset,
+    light, macchiato, macchiato_theme, mocha, mocha_theme,
 };
 
 use std::sync::Arc;
@@ -82,7 +82,7 @@ use std::sync::Arc;
 use gpui::App;
 use gpui::WindowAppearance;
 
-use yororen_ui_core::theme::{GlobalTheme, Theme, ThemeSet};
+use yororen_ui_core::theme::{GlobalTheme, Theme};
 
 /// Catppuccin flavor identifier.
 ///
@@ -181,7 +181,11 @@ pub fn light_arc() -> Arc<Theme> {
 /// catppuccin::install(cx, window.appearance());
 /// ```
 pub fn install(cx: &mut App, appearance: WindowAppearance) {
-    cx.set_global(GlobalTheme::new_with_themes(appearance, themeset()));
+    let theme = match appearance {
+        WindowAppearance::Light | WindowAppearance::VibrantLight => light(),
+        WindowAppearance::Dark | WindowAppearance::VibrantDark => dark(),
+    };
+    cx.set_global(GlobalTheme::new(theme));
 }
 
 /// Install the Catppuccin theme with a specific flavor, ignoring
@@ -190,14 +194,11 @@ pub fn install(cx: &mut App, appearance: WindowAppearance) {
 /// running headless without an OS appearance.
 ///
 /// ```rust,ignore
-/// catppuccin::install_flavor(cx, CatppuccinFlavor::Frappe, cx.window_appearance());
+/// catppuccin::install_flavor(cx, CatppuccinFlavor::Frappe);
 /// ```
-pub fn install_flavor(cx: &mut App, flavor: CatppuccinFlavor, appearance: WindowAppearance) {
+pub fn install_flavor(cx: &mut App, flavor: CatppuccinFlavor) {
     let theme = flavor.theme();
-    cx.set_global(GlobalTheme::new_with_themes(
-        appearance,
-        ThemeSet::new(theme),
-    ));
+    cx.set_global(GlobalTheme::new(theme));
 }
 
 #[cfg(test)]
@@ -210,12 +211,6 @@ mod tests {
         let cat_l = light();
         let sys_l = theme_system::light();
         assert_ne!(cat_l.surface.base, sys_l.surface.base);
-    }
-
-    #[test]
-    fn catppuccin_themeset_has_both() {
-        let ts = themeset();
-        assert!(ts.dark.is_some());
     }
 
     #[test]

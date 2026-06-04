@@ -2,7 +2,6 @@ pub mod a11y;
 pub mod animation;
 pub mod assets;
 pub mod component;
-pub mod composite;
 pub mod constants;
 pub mod hooks;
 pub mod hover_refresh;

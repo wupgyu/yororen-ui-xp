@@ -47,7 +47,7 @@ pub mod renderer;
 
 mod factories;
 
-pub use factories::{dark, install, light, themeset};
+pub use factories::{dark, install, light};
 
 #[cfg(test)]
 mod tests {

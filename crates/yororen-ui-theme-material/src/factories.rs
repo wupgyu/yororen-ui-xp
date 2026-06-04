@@ -12,7 +12,7 @@ use yororen_ui_core::i18n::TextDirection;
 use yororen_ui_core::theme::tokens::DesignTokens;
 use yororen_ui_core::theme::{
     ActionTheme, ActionVariant, BorderTheme, ContentTheme, GlobalTheme, ShadowTheme, StatusTheme,
-    StatusVariant, SurfaceTheme, Theme, ThemeSet,
+    StatusVariant, SurfaceTheme, Theme,
 };
 
 use crate::palette::{dark, light, rgb};
@@ -191,14 +191,13 @@ pub fn dark() -> Theme {
     }
 }
 
-/// `ThemeSet` containing both M3 schemes.
-pub fn themeset() -> ThemeSet {
-    ThemeSet::new(light()).dark(dark())
-}
-
 /// Install the Material 3 theme on the given `App`.
 pub fn install(cx: &mut App, appearance: WindowAppearance) {
-    cx.set_global(GlobalTheme::new_with_themes(appearance, themeset()));
+    let theme = match appearance {
+        WindowAppearance::Light | WindowAppearance::VibrantLight => light(),
+        WindowAppearance::Dark | WindowAppearance::VibrantDark => dark(),
+    };
+    cx.set_global(GlobalTheme::new(theme));
 }
 
 #[cfg(test)]
