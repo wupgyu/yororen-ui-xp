@@ -238,28 +238,39 @@ impl VariantRegistry {
     }
 
     /// Register (or replace) a custom variant.
+    ///
+    /// Silently no-ops if the internal lock is poisoned. This is the
+    /// right policy because variant registration is a startup-time
+    /// configuration call and there's nothing useful for callers to
+    /// do with a `Result` they couldn't recover from anyway. The
+    /// original panic that poisoned the lock is the real bug.
     pub fn register(&self, key: VariantKey, style: Arc<dyn VariantStyle>) {
-        let mut w = self
-            .customs
-            .write()
-            .expect("variant registry lock poisoned");
+        let Ok(mut w) = self.customs.write() else {
+            eprintln!(
+                "[yororen-ui-core::variant] register({key:?}) skipped: registry lock poisoned"
+            );
+            return;
+        };
         w.insert(key, style);
     }
 
     /// Remove a previously-registered custom variant. Returns the
-    /// removed style if it existed.
+    /// removed style if it existed; returns `None` and logs a
+    /// warning if the lock is poisoned.
     pub fn unregister(&self, key: &VariantKey) -> Option<Arc<dyn VariantStyle>> {
-        let mut w = self
-            .customs
-            .write()
-            .expect("variant registry lock poisoned");
+        let Ok(mut w) = self.customs.write() else {
+            eprintln!(
+                "[yororen-ui-core::variant] unregister({key:?}) skipped: registry lock poisoned"
+            );
+            return None;
+        };
         w.remove(key)
     }
 
     /// Resolve a custom variant by key. Returns `None` if no custom
-    /// style was registered for this key.
+    /// style was registered for this key, or if the lock is poisoned.
     pub fn resolve(&self, key: &VariantKey) -> Option<Arc<dyn VariantStyle>> {
-        let r = self.customs.read().expect("variant registry lock poisoned");
+        let r = self.customs.read().ok()?;
         r.get(key).cloned()
     }
 
@@ -269,12 +280,10 @@ impl VariantRegistry {
         self.builtins.get(&key).cloned()
     }
 
-    /// Number of custom variants currently registered.
+    /// Number of custom variants currently registered. Returns 0 if
+    /// the lock is poisoned (rather than panicking).
     pub fn custom_count(&self) -> usize {
-        self.customs
-            .read()
-            .expect("variant registry lock poisoned")
-            .len()
+        self.customs.read().map(|r| r.len()).unwrap_or(0)
     }
 }
 
@@ -349,12 +358,20 @@ pub fn resolve_custom_variant(cx: &App, key: &VariantKey) -> Option<Arc<dyn Vari
         .and_then(|g| g.0.resolve(key))
 }
 
-/// Compose a base variant with a list of override variants. The
-/// returned `Arc<dyn VariantStyle>` is a `ComposedVariantStyle` that
-/// delegates each method to the first variant whose override returns
-/// `Some`; otherwise falls back to the base. Mirrors the
-/// `class-variance-authority` shape so theme packages can express
-/// "primary, but in a brand color, with extra-large padding".
+/// Compose a base variant with a list of override variants.
+///
+/// Semantics mirror `class-variance-authority` / CSS class
+/// composition: each subsequent override fully replaces the
+/// previous one for `bg` / `fg` / `border`. The last override in
+/// the list wins. If `overrides` is empty, the composed style is
+/// behaviorally identical to `base`. `disabled_opacity` is always
+/// taken from `base`, because it expresses the disabled policy of
+/// the underlying variant — overrides typically only restyle the
+/// active surface, not the disabled fade.
+///
+/// The `VariantKey` carried alongside each override is opaque to
+/// this layer and is used only by the caller to track provenance
+/// (e.g. theme inspector tooling).
 pub fn variant_compose(
     base: Arc<dyn VariantStyle>,
     overrides: &[(VariantKey, Arc<dyn VariantStyle>)],
@@ -370,6 +387,17 @@ struct ComposedVariantStyle {
     overrides: Vec<(VariantKey, Arc<dyn VariantStyle>)>,
 }
 
+impl ComposedVariantStyle {
+    /// Returns the effective `VariantStyle` for visual properties:
+    /// the last override if any, otherwise the base.
+    fn effective(&self) -> &dyn VariantStyle {
+        match self.overrides.last() {
+            Some((_, s)) => s.as_ref(),
+            None => self.base.as_ref(),
+        }
+    }
+}
+
 impl std::fmt::Debug for ComposedVariantStyle {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("ComposedVariantStyle")
@@ -380,22 +408,17 @@ impl std::fmt::Debug for ComposedVariantStyle {
 
 impl VariantStyle for ComposedVariantStyle {
     fn bg(&self, state: &VariantState) -> Hsla {
-        for (_, o) in &self.overrides {
-            // We don't try to be smart about which key wins; the
-            // override is opaque to us at this layer, so we just
-            // delegate to the base. Callers that want per-key
-            // override should use the registry's resolve() instead.
-            let _ = o;
-        }
-        self.base.bg(state)
+        self.effective().bg(state)
     }
     fn fg(&self, state: &VariantState) -> Hsla {
-        self.base.fg(state)
+        self.effective().fg(state)
     }
     fn border(&self, state: &VariantState) -> Option<Hsla> {
-        self.base.border(state)
+        self.effective().border(state)
     }
     fn disabled_opacity(&self) -> f32 {
+        // Always defer to the base: overrides describe the active
+        // surface, not the disabled fade policy.
         self.base.disabled_opacity()
     }
 }
@@ -485,6 +508,43 @@ mod tests {
             composed_with_one_override.bg(&VariantState { disabled: true }),
             rgb(0xCCCCCC).into()
         );
+    }
+
+    #[test]
+    fn variant_compose_last_override_wins() {
+        let base: Arc<dyn VariantStyle> = Arc::new(TokenVariantStyle {
+            bg: rgb(0x111111).into(),
+            fg: rgb(0x222222).into(),
+            disabled_bg: rgb(0x333333).into(),
+            disabled_fg: rgb(0x444444).into(),
+            disabled_opacity: 0.4,
+        });
+        let first_override: Arc<dyn VariantStyle> = Arc::new(TokenVariantStyle {
+            bg: rgb(0x550000).into(),
+            fg: rgb(0x660000).into(),
+            disabled_bg: rgb(0x770000).into(),
+            disabled_fg: rgb(0x880000).into(),
+            disabled_opacity: 0.9,
+        });
+        let second_override: Arc<dyn VariantStyle> = Arc::new(TokenVariantStyle {
+            bg: rgb(0x005500).into(),
+            fg: rgb(0x006600).into(),
+            disabled_bg: rgb(0x007700).into(),
+            disabled_fg: rgb(0x008800).into(),
+            disabled_opacity: 0.9,
+        });
+        let composed = variant_compose(
+            base,
+            &[
+                (VariantKey::borrowed("first"), first_override),
+                (VariantKey::borrowed("second"), second_override),
+            ],
+        );
+        // The second (last) override wins for visual properties.
+        assert_eq!(composed.bg(&VariantState::default()), rgb(0x005500).into());
+        assert_eq!(composed.fg(&VariantState::default()), rgb(0x006600).into());
+        // disabled_opacity always defers to base.
+        assert_eq!(composed.disabled_opacity(), 0.4);
     }
 
     #[test]
