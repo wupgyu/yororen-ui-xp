@@ -10,6 +10,7 @@ use crate::component::popover::{Popover, PopoverPlacement};
 /// \`PopoverRoot\` is the split-API form of \`popover()\`. It
 /// mirrors the builder shape but exposes \`.trigger(...)\` and
 /// \`.content(...)\` as the primary entry points.
+#[derive(IntoElement)]
 pub struct PopoverRoot {
     id: ElementId,
     open: bool,

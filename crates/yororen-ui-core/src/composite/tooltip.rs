@@ -5,6 +5,7 @@ use gpui::{AnyElement, ElementId, IntoElement, RenderOnce, div, ParentElement};
 /// \`TooltipRoot\` is the split-API form of \`tooltip()\`. It
 /// mirrors the builder shape but exposes \`.trigger(...)\` and
 /// \`.content(...)\` as the primary entry points.
+#[derive(IntoElement)]
 pub struct TooltipRoot {
     id: ElementId,
     trigger: Option<AnyElement>,

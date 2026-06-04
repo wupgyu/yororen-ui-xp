@@ -6,6 +6,7 @@ use crate::component::dropdown_menu::{DropdownItem, DropdownMenu, DropdownMenuIt
 use crate::component::popover::PopoverPlacement;
 
 /// \`DropdownMenuRoot\` is the split-API form of \`dropdown_menu()\`.
+#[derive(IntoElement)]
 pub struct DropdownMenuRoot {
     id: ElementId,
     label: SharedString,

@@ -7,6 +7,7 @@ use crate::component::modal::Modal;
 /// \`ModalRoot\` is the split-API form of \`modal()\`. It
 /// mirrors the builder shape but exposes \`.trigger(...)\` and
 /// \`.content(...)\` as the primary entry points.
+#[derive(IntoElement)]
 pub struct ModalRoot {
     id: ElementId,
     title: Option<SharedString>,

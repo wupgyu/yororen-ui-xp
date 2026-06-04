@@ -54,6 +54,7 @@ use crate::theme::ActiveTheme;
 /// Returned by [`use_button`]. Caller applies `on_click` and
 /// (optionally) `hover_state` to its own div. `focus_handle` is
 /// exposed so keyboard handlers can be wired in.
+#[derive(Clone)]
 pub struct ButtonProps {
     pub id: ElementId,
     pub on_click: Option<ClickCallback>,
@@ -236,6 +237,7 @@ pub fn use_label(text: impl Into<String>, _cx: &mut App) -> LabelProps {
 
 /// Returned by [`use_switch`]. Tracks `checked` / `disabled` and
 /// exposes an `on_toggle` for the caller.
+#[derive(Clone)]
 pub struct SwitchProps {
     pub id: ElementId,
     pub checked: bool,
@@ -298,6 +300,7 @@ impl SwitchProps {
 // use_checkbox
 // ---------------------------------------------------------------------------
 
+#[derive(Clone)]
 pub struct CheckboxProps {
     pub id: ElementId,
     pub checked: bool,
@@ -360,6 +363,7 @@ impl CheckboxProps {
 // use_radio
 // ---------------------------------------------------------------------------
 
+#[derive(Clone)]
 pub struct RadioProps {
     pub id: ElementId,
     pub checked: bool,
@@ -422,6 +426,7 @@ impl RadioProps {
 // use_toggle_button
 // ---------------------------------------------------------------------------
 
+#[derive(Clone)]
 pub struct ToggleButtonProps {
     pub id: ElementId,
     pub label: String,
@@ -490,6 +495,7 @@ impl ToggleButtonProps {
 // use_icon_button
 // ---------------------------------------------------------------------------
 
+#[derive(Clone)]
 pub struct IconButtonProps {
     pub id: ElementId,
     pub disabled: bool,
@@ -551,6 +557,7 @@ impl IconButtonProps {
 /// Returned by [`use_text_input`]. Carries `value` / `placeholder`
 /// / `disabled` and a `FocusHandle` so the caller can render any
 /// markup on top.
+#[derive(Clone)]
 pub struct TextInputProps {
     pub id: ElementId,
     pub value: String,

@@ -5,6 +5,7 @@ use gpui::{ClickEvent, ElementId, IntoElement, RenderOnce, SharedString, div, Pa
 use crate::component::combo_box::{ComboBox, ComboBoxOption};
 
 /// \`ComboBoxRoot\` is the split-API form of \`combo_box()\`.
+#[derive(IntoElement)]
 pub struct ComboBoxRoot {
     id: ElementId,
     value: String,

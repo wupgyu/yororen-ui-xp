@@ -5,6 +5,7 @@ use gpui::{ElementId, IntoElement, RenderOnce, SharedString, div, ParentElement}
 use crate::component::select::{Select, SelectOption};
 
 /// \`SelectRoot\` is the split-API form of \`select()\`.
+#[derive(IntoElement)]
 pub struct SelectRoot {
     id: ElementId,
     value: String,
