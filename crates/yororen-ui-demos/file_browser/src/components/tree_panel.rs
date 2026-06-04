@@ -11,7 +11,6 @@ use yororen_ui::component::{
     SelectionMode, TreeNode, TreeState, button, context_menu_trigger, empty_state, label, tree,
 };
 use yororen_ui::theme::{ActionVariantKind, Theme};
-use yororen_ui::widget::virtual_list_state;
 
 use crate::actions;
 use crate::state::FileBrowserState;
@@ -61,7 +60,7 @@ impl FileBrowserTreePanel {
                 .into_any_element()
         } else {
             let list_state =
-                virtual_list_state(tree_nodes.len(), gpui::ListAlignment::Top, px(32.));
+                gpui::ListState::new(tree_nodes.len(), gpui::ListAlignment::Top, px(32.));
             tree(TreeState::new(), &tree_nodes)
                 .id("file-browser:tree")
                 .virtualized(true)

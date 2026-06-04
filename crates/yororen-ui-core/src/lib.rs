@@ -9,4 +9,3 @@ pub mod notification;
 pub mod renderer;
 pub mod rtl;
 pub mod theme;
-pub mod widget;
