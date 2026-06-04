@@ -1,3 +1,16 @@
+//! Form layout container.
+//!
+//! A small wrapper around `div()` that gives a stable element id
+//! (so a parent can nest it inside a `use_keyed_state` without
+//! losing its state) and exposes the most common flex knobs:
+//! direction (column / row) and gap. For richer layouts use a
+//! raw `div()`.
+//!
+//! `Form` intentionally does **not** own a field-set: form
+//! validation, submission, and field iteration live in the host
+//! app. This component is the layout primitive, not a state
+//! machine.
+
 use gpui::prelude::FluentBuilder;
 use gpui::{
     Div, ElementId, Hsla, InteractiveElement, IntoElement, ParentElement, RenderOnce, SharedString,
@@ -29,6 +42,20 @@ impl Form {
 
     pub fn id(mut self, id: impl Into<ElementId>) -> Self {
         self.element_id = id.into();
+        self
+    }
+
+    /// Set the gap between form rows. Default is 12 px
+    /// (gap_3). Useful when a form has densely packed fields
+    /// or roomy groupings.
+    pub fn gap(mut self, gap: gpui::Pixels) -> Self {
+        self.base = self.base.gap(gap);
+        self
+    }
+
+    /// Lay children out in a row instead of the default column.
+    pub fn horizontal(mut self) -> Self {
+        self.base = self.base.flex_row();
         self
     }
 }
