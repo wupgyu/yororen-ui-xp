@@ -1,6 +1,25 @@
-//! `RendererRegistry` — the collection of component renderers wired into
-//! a `Theme`. The `ButtonRenderer` entry is the reference example;
-//! 30+ components one trait per file.
+//! `RendererRegistry` — the collection of component renderers wired
+//! into a `Theme`. The `ButtonRenderer` entry is the reference
+//! example; 30+ components have one trait per file.
+//!
+//! ## Why named fields instead of a `HashMap<TypeId, Arc<dyn Any>>`?
+//!
+//! A previous draft of v0.4 exposed a generic
+//! `with_component<S, R>(...)` / `get_component<S>()` API alongside
+//! a unified `ComponentRenderer<S>` trait. That work was reverted
+//! in v0.4.1 because the generic API was a no-op (it stored nothing
+//! and looked up nothing) yet shipped publicly, which actively
+//! misled theme authors. The 40+ named `Arc<dyn …Renderer>` fields
+//! below remain the source of truth.
+//!
+//! A real `HashMap<TypeId, Arc<dyn Any>>` migration would require
+//! every `XxxRenderer` to be a blanket impl over a shared trait
+//! AND every component render path to look up the renderer by
+//! type id. That is a v0.5 architectural change — not a v0.4
+//! hidden-state swap. Keeping the named fields means there is
+//! exactly one place a theme installs a renderer and exactly one
+//! place a component reads it, which is what the original v0.3
+//! design asked for.
 
 use std::sync::Arc;
 
@@ -294,41 +313,5 @@ impl RendererRegistry {
     pub fn with_empty_state(mut self, r: Arc<dyn EmptyStateRenderer>) -> Self {
         self.empty_state = r;
         self
-    }
-
-    /// Generic component renderer setter.
-    ///
-    /// Lets a theme package install a renderer for a render-state
-    /// type without writing a `with_<x>` setter per component. The
-    /// 40+ `with_<x>` setters above remain as thin wrappers for
-    /// backward-compat; new code can use this entry point.
-    ///
-    /// The renderer's render-state type is the key. The registry
-    /// downcasts `Arc<dyn Any>` back to `Arc<dyn ComponentRenderer<S>>`
-    /// when components read it. Note: this is currently a
-    /// documentation hook; the actual HashMap-based storage
-    /// migration is staged for v0.4.1.
-    pub fn with_component<S, R>(self, _renderer: Arc<R>) -> Self
-    where
-        S: super::component_renderer::RenderState,
-        R: super::component_renderer::ComponentRenderer<S> + 'static,
-    {
-        // Stage 1: type-system only. Stage 2 (v0.4.1) will swap the
-        // 40+ named `Arc<dyn …>` fields for a `HashMap<TypeId, Arc<dyn
-        // Any>>` and route reads through it.
-        self
-    }
-
-    /// Generic renderer lookup.
-    ///
-    /// Returns `None` until the storage migration is complete; the
-    /// per-component `Arc<dyn …Renderer>` fields are still the
-    /// source of truth. The method exists so call-sites can adopt
-    /// the new API in advance and migrate to the HashMap-based
-    /// lookup transparently when stage 2 ships.
-    pub fn get_component<S: super::component_renderer::RenderState>(
-        &self,
-    ) -> Option<Arc<dyn super::component_renderer::ComponentRenderer<S>>> {
-        None
     }
 }
