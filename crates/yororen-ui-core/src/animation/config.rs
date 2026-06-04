@@ -68,17 +68,19 @@ impl AnimationConfig {
         self
     }
 
-    /// Convert to gpui Animation.
+    /// Convert to a `gpui::Animation` honoring the configured
+    /// `duration`, `easing` and `repeat`. `gpui::Animation` does
+    /// not currently model `delay` or `reverse`, so those two
+    /// fields are advisory-only (callers that need them must
+    /// orchestrate manually via `cx.spawn` + timers, see
+    /// `animation::orchestrator`).
     pub fn to_gpui_animation(self) -> gpui::Animation {
-        let mut animation = gpui::Animation::new(self.duration);
+        let mut animation = gpui::Animation::new(self.duration).with_easing(self.easing);
 
         if self.repeat {
             animation = animation.repeat();
         }
 
-        // Note: gpui's Animation doesn't expose custom easing directly,
-        // it uses the built-in easing functions. We'll use a wrapper approach
-        // for custom easing in the preset module.
         animation
     }
 
