@@ -6,7 +6,7 @@ use gpui::{
 };
 
 use crate::{
-    component::{IconName, TextInputState, icon, icon_button, text_input},
+    component::{IconName, TextInputState, compute_input_style, icon, icon_button, text_input},
     renderer::variant::VariantState,
     renderer::{ButtonVariant, VariantKey, resolve_custom_variant},
     theme::{ActionVariant, ActionVariantKind, ActiveTheme},
@@ -173,10 +173,8 @@ impl RenderOnce for SearchInput {
         let height = self
             .height
             .unwrap_or_else(|| cx.theme().tokens.control.button.min_height.into());
-        let bg = self.bg;
-        let border = self.border;
-        let focus_border = self.focus_border;
-        let text_color = self.text_color;
+        let input_style =
+            compute_input_style(cx.theme(), disabled, self.bg, self.border, self.focus_border, self.text_color);
         let on_change = self.on_change;
         let on_submit = self.on_submit;
         let variant = self.variant;
@@ -245,13 +243,11 @@ impl RenderOnce for SearchInput {
             .gap_1()
             .h(height)
             .px_2()
-            .bg(bg.unwrap_or(theme.surface.base))
+            .bg(input_style.bg)
             .border_1()
-            .border_color(border.unwrap_or(theme.border.default))
+            .border_color(input_style.border)
             .rounded_md()
-            .when_some(focus_border, |this, focus_border| {
-                this.focus_visible(|style| style.border_2().border_color(focus_border))
-            })
+            .focus_visible(|style| style.border_2().border_color(input_style.focus_border))
             .when(disabled, |this| this.opacity(0.6).cursor_not_allowed())
             .child(
                 icon(IconName::Search)
@@ -268,7 +264,7 @@ impl RenderOnce for SearchInput {
                         .bg(theme.surface.base.alpha(0.0))
                         .border(theme.border.default.alpha(0.0))
                         .focus_border(theme.border.default.alpha(0.0))
-                        .text_color(text_color.unwrap_or(theme.content.primary))
+                        .text_color(input_style.text_color)
                         .on_change(on_change_for_input)
                         .on_submit({
                             let on_submit = on_submit_for_input;
