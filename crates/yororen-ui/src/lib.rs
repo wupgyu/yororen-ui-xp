@@ -3,18 +3,18 @@
 //! Re-exports the three layers:
 //!
 //! - [`yororen_ui_core`] — headless primitives + i18n + a11y + rtl + animation + assets.
-//! - [`yororen_ui_renderer`] — 38 component renderers + Theme (JSON-backed).
+//! - [`yororen_ui_default_renderer`] — 38 component renderers + Theme (JSON-backed) + bundled themes.
 //!
 //! Plus the bundled locale catalogs (`en`, `zh-CN`, `ar`).
 //!
 //! Themes ship as JSON files in the renderer crate; no separate
-//! theme package is needed. See `yororen_ui_renderer::themes`
+//! theme package is needed. See `yororen_ui_default_renderer::themes`
 //! for the bundled `system_light`, `system_dark`, etc. loaders.
 
 pub use yororen_ui_core::{a11y, animation, assets, headless, i18n, notification, rtl};
 pub use yororen_ui_core::renderer::{RendererContext, RendererMarker, RendererRegistry};
 pub use yororen_ui_core::theme::{ActiveTheme, GlobalTheme, Theme};
-pub use yororen_ui_renderer as renderer;
+pub use yororen_ui_default_renderer as renderer;
 
 pub use yororen_ui_locale_ar as locale_ar;
 pub use yororen_ui_locale_en as locale_en;
