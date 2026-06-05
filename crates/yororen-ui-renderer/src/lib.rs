@@ -25,6 +25,7 @@
 
 pub mod renderers;
 pub mod theme;
+pub mod themes;
 
 pub use renderers::button::DefaultButton;
 pub use renderers::checkbox::DefaultCheckbox;
@@ -36,3 +37,4 @@ pub use renderers::text_input::DefaultTextInput;
 pub use renderers::toggle_button::DefaultToggleButton;
 
 pub use theme::{GlobalTheme, Theme};
+pub use themes::{install, install_with, register_default_renderers, system_dark, system_for, system_light};

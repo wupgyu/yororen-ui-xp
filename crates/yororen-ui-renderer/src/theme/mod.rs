@@ -129,6 +129,468 @@ impl Theme {
             ActionVariantKind::Danger => &self.action.danger,
         }
     }
+
+    /// Populate a `Theme` from a JSON string in the v0.3
+    /// `serde_json::Value`-backed schema. Unknown / missing
+    /// fields fall back to `Default::default()` (zeros). The
+    /// 38 `XxxRenderer` keep reading the strong-typed fields
+    /// below — this constructor is the bridge that lets a
+    /// JSON file drive the existing v0.4 code without
+    /// rewriting all 38 renderers.
+    pub fn from_json(s: &str) -> Result<Self, serde_json::Error> {
+        let core = yororen_ui_core::theme::Theme::from_json(s)?;
+        Ok(Self::from_core(&core))
+    }
+
+    /// Populate a `Theme` from the v0.3 core `Theme`
+    /// (serde_json::Value wrapper). See [`from_json`].
+    pub fn from_core(core: &yororen_ui_core::theme::Theme) -> Self {
+        fn get_color(c: &yororen_ui_core::theme::Theme, path: &str) -> Hsla {
+            c.get_color(path).unwrap_or_default()
+        }
+        fn get_num(c: &yororen_ui_core::theme::Theme, path: &str) -> f32 {
+            c.get_number(path).unwrap_or(0.0) as f32
+        }
+        fn get_dur(c: &yororen_ui_core::theme::Theme, path: &str) -> std::time::Duration {
+            std::time::Duration::from_millis(get_num(c, path) as u64)
+        }
+        fn get_font_weight(c: &yororen_ui_core::theme::Theme, path: &str) -> gpui::FontWeight {
+            let v = c.get_number(path).unwrap_or(400.0) as f32;
+            gpui::FontWeight(v)
+        }
+        fn get_text_direction(c: &yororen_ui_core::theme::Theme) -> TextDirection {
+            if c.get_bool("text_direction_rtl").unwrap_or(false) {
+                TextDirection::Rtl
+            } else {
+                TextDirection::Ltr
+            }
+        }
+        let c = core;
+        let surface = SurfaceTheme {
+            canvas: get_color(c, "surface.canvas"),
+            base: get_color(c, "surface.base"),
+            raised: get_color(c, "surface.raised"),
+            sunken: get_color(c, "surface.sunken"),
+            hover: get_color(c, "surface.hover"),
+        };
+        let content = ContentTheme {
+            primary: get_color(c, "content.primary"),
+            secondary: get_color(c, "content.secondary"),
+            tertiary: get_color(c, "content.tertiary"),
+            disabled: get_color(c, "content.disabled"),
+            on_primary: get_color(c, "content.on_primary"),
+            on_status: get_color(c, "content.on_status"),
+        };
+        let border = BorderTheme {
+            default: get_color(c, "border.default"),
+            muted: get_color(c, "border.muted"),
+            focus: get_color(c, "border.focus"),
+            divider: get_color(c, "border.divider"),
+        };
+        let make_variant = |key: &str| ActionVariant {
+            bg: get_color(c, &format!("action.{}.bg", key)),
+            hover_bg: get_color(c, &format!("action.{}.hover_bg", key)),
+            active_bg: get_color(c, &format!("action.{}.active_bg", key)),
+            fg: get_color(c, &format!("action.{}.fg", key)),
+            disabled_bg: get_color(c, &format!("action.{}.disabled_bg", key)),
+            disabled_fg: get_color(c, &format!("action.{}.disabled_fg", key)),
+        };
+        let action = ActionTheme {
+            neutral: make_variant("neutral"),
+            primary: make_variant("primary"),
+            danger: make_variant("danger"),
+        };
+        let make_status = |kind: &str| StatusVariant {
+            bg: get_color(c, &format!("status.{}.bg", kind)),
+            fg: get_color(c, &format!("status.{}.fg", kind)),
+        };
+        let status = StatusTheme {
+            success: make_status("success"),
+            warning: make_status("warning"),
+            error: make_status("error"),
+            info: make_status("info"),
+        };
+        let shadow = ShadowTheme {
+            elevation_1: get_color(c, "shadow.elevation_1"),
+            elevation_2: get_color(c, "shadow.elevation_2"),
+        };
+        let sizes = SizeTokens {
+            control_h_xxs: gpui::px(get_num(c, "tokens.sizes.control_h_xxs")),
+            control_h_xs: gpui::px(get_num(c, "tokens.sizes.control_h_xs")),
+            control_h_sm: gpui::px(get_num(c, "tokens.sizes.control_h_sm")),
+            control_h_md: gpui::px(get_num(c, "tokens.sizes.control_h_md")),
+            control_h_lg: gpui::px(get_num(c, "tokens.sizes.control_h_lg")),
+            control_h_xl: gpui::px(get_num(c, "tokens.sizes.control_h_xl")),
+            icon_xxs: gpui::px(get_num(c, "tokens.sizes.icon_xxs")),
+            icon_xs: gpui::px(get_num(c, "tokens.sizes.icon_xs")),
+            icon_sm: gpui::px(get_num(c, "tokens.sizes.icon_sm")),
+            icon_md: gpui::px(get_num(c, "tokens.sizes.icon_md")),
+            icon_lg: gpui::px(get_num(c, "tokens.sizes.icon_lg")),
+            icon_xl: gpui::px(get_num(c, "tokens.sizes.icon_xl")),
+            avatar_xs: gpui::px(get_num(c, "tokens.sizes.avatar_xs")),
+            avatar_sm: gpui::px(get_num(c, "tokens.sizes.avatar_sm")),
+            avatar_md: gpui::px(get_num(c, "tokens.sizes.avatar_md")),
+            avatar_lg: gpui::px(get_num(c, "tokens.sizes.avatar_lg")),
+            avatar_xl: gpui::px(get_num(c, "tokens.sizes.avatar_xl")),
+            status_dot: gpui::px(get_num(c, "tokens.sizes.status_dot")),
+        };
+        let radii = RadiiTokens {
+            none: gpui::px(get_num(c, "tokens.radii.none")),
+            xs: gpui::px(get_num(c, "tokens.radii.xs")),
+            sm: gpui::px(get_num(c, "tokens.radii.sm")),
+            md: gpui::px(get_num(c, "tokens.radii.md")),
+            lg: gpui::px(get_num(c, "tokens.radii.lg")),
+            xl: gpui::px(get_num(c, "tokens.radii.xl")),
+            pill: gpui::px(get_num(c, "tokens.radii.pill")),
+        };
+        let spacing = SpacingTokens {
+            gap_0: gpui::px(get_num(c, "tokens.spacing.gap_0")),
+            gap_1: gpui::px(get_num(c, "tokens.spacing.gap_1")),
+            gap_2: gpui::px(get_num(c, "tokens.spacing.gap_2")),
+            gap_3: gpui::px(get_num(c, "tokens.spacing.gap_3")),
+            gap_4: gpui::px(get_num(c, "tokens.spacing.gap_4")),
+            gap_5: gpui::px(get_num(c, "tokens.spacing.gap_5")),
+            gap_6: gpui::px(get_num(c, "tokens.spacing.gap_6")),
+            gap_7: gpui::px(get_num(c, "tokens.spacing.gap_7")),
+            inset_xs: gpui::px(get_num(c, "tokens.spacing.inset_xs")),
+            inset_sm: gpui::px(get_num(c, "tokens.spacing.inset_sm")),
+            inset_md: gpui::px(get_num(c, "tokens.spacing.inset_md")),
+            inset_lg: gpui::px(get_num(c, "tokens.spacing.inset_lg")),
+            inset_xl: gpui::px(get_num(c, "tokens.spacing.inset_xl")),
+        };
+        let typography = TypographyTokens {
+            font_size_xxs: gpui::px(get_num(c, "tokens.typography.font_size_xxs")),
+            font_size_xs: gpui::px(get_num(c, "tokens.typography.font_size_xs")),
+            font_size_sm: gpui::px(get_num(c, "tokens.typography.font_size_sm")),
+            font_size_md: gpui::px(get_num(c, "tokens.typography.font_size_md")),
+            font_size_lg: gpui::px(get_num(c, "tokens.typography.font_size_lg")),
+            font_size_xl: gpui::px(get_num(c, "tokens.typography.font_size_xl")),
+            font_size_2xl: gpui::px(get_num(c, "tokens.typography.font_size_2xl")),
+            line_height_tight: get_num(c, "tokens.typography.line_height_tight"),
+            line_height_normal: get_num(c, "tokens.typography.line_height_normal"),
+            line_height_loose: get_num(c, "tokens.typography.line_height_loose"),
+            weight_regular: get_font_weight(c, "tokens.typography.weight_regular"),
+            weight_medium: get_font_weight(c, "tokens.typography.weight_medium"),
+            weight_semibold: get_font_weight(c, "tokens.typography.weight_semibold"),
+            weight_bold: get_font_weight(c, "tokens.typography.weight_bold"),
+            family_default: c
+                .get_string("tokens.typography.family_default")
+                .unwrap_or("system-ui")
+                .to_string()
+                .into(),
+            family_mono: c
+                .get_string("tokens.typography.family_mono")
+                .unwrap_or("ui-monospace")
+                .to_string()
+                .into(),
+        };
+        let motion = MotionTokens {
+            duration_instant: get_dur(c, "tokens.motion.duration_instant"),
+            duration_very_fast: get_dur(c, "tokens.motion.duration_very_fast"),
+            duration_fast: get_dur(c, "tokens.motion.duration_fast"),
+            duration_normal: get_dur(c, "tokens.motion.duration_normal"),
+            duration_slow: get_dur(c, "tokens.motion.duration_slow"),
+            duration_very_slow: get_dur(c, "tokens.motion.duration_very_slow"),
+            duration_cursor_blink: get_dur(c, "tokens.motion.duration_cursor_blink"),
+            duration_skeleton_pulse: get_dur(c, "tokens.motion.duration_skeleton_pulse"),
+            duration_progress_spinner: get_dur(c, "tokens.motion.duration_progress_spinner"),
+            duration_modal_fade: get_dur(c, "tokens.motion.duration_modal_fade"),
+            duration_modal_slide_up: get_dur(c, "tokens.motion.duration_modal_slide_up"),
+            duration_menu_open: get_dur(c, "tokens.motion.duration_menu_open"),
+            duration_menu_open_fast: get_dur(c, "tokens.motion.duration_menu_open_fast"),
+            duration_menu_open_slow: get_dur(c, "tokens.motion.duration_menu_open_slow"),
+            duration_tooltip_show: get_dur(c, "tokens.motion.duration_tooltip_show"),
+            duration_tooltip_hide: get_dur(c, "tokens.motion.duration_tooltip_hide"),
+            duration_navigator_slider: get_dur(c, "tokens.motion.duration_navigator_slider"),
+            duration_tab_switch: get_dur(c, "tokens.motion.duration_tab_switch"),
+            duration_skeleton_pulse_1: get_dur(c, "tokens.motion.duration_skeleton_pulse_1"),
+            duration_skeleton_pulse_2: get_dur(c, "tokens.motion.duration_skeleton_pulse_2"),
+            duration_progress_circle: get_dur(c, "tokens.motion.duration_progress_circle"),
+            duration_progress_bar: get_dur(c, "tokens.motion.duration_progress_bar"),
+            easing_linear: tokens::linear,
+            easing_standard: tokens::ease_in_out,
+            easing_emphasized: tokens::ease_out_cubic,
+            easing_decelerate: tokens::ease_out_quint,
+            easing_accelerate: tokens::ease_in,
+            pulse_min_opacity: get_num(c, "tokens.motion.pulse_min_opacity"),
+            pulse_max_opacity: get_num(c, "tokens.motion.pulse_max_opacity"),
+            slide_distance: get_num(c, "tokens.motion.slide_distance"),
+            bounce_distance: get_num(c, "tokens.motion.bounce_distance"),
+        };
+        // Build the 36 ControlTokens sub-structs. This is mechanical
+        // because they all follow `get_num` + `gpui::px` from a path.
+        let px_num = |path: &str| gpui::px(get_num(c, path));
+        let control = tokens::ControlTokens {
+            button: tokens::ButtonTokens {
+                min_height: px_num("tokens.control.button.min_height"),
+                icon_button_min_size: px_num("tokens.control.button.icon_button_min_size"),
+                horizontal_padding: px_num("tokens.control.button.horizontal_padding"),
+                icon_gap: px_num("tokens.control.button.icon_gap"),
+            },
+            input: tokens::InputTokens {
+                min_height: px_num("tokens.control.input.min_height"),
+                horizontal_padding: px_num("tokens.control.input.horizontal_padding"),
+                vertical_padding: px_num("tokens.control.input.vertical_padding"),
+                cursor_thickness: px_num("tokens.control.input.cursor_thickness"),
+                focus_ring_thickness: px_num("tokens.control.input.focus_ring_thickness"),
+                icon_gap: px_num("tokens.control.input.icon_gap"),
+                spinner_size: px_num("tokens.control.input.spinner_size"),
+                text_area_min_h: px_num("tokens.control.input.text_area_min_h"),
+            },
+            switch: tokens::SwitchTokens {
+                track_w: px_num("tokens.control.switch.track_w"),
+                track_h: px_num("tokens.control.switch.track_h"),
+                knob_size: px_num("tokens.control.switch.knob_size"),
+                padding: px_num("tokens.control.switch.padding"),
+                border_w: px_num("tokens.control.switch.border_w"),
+                focus_border_w: px_num("tokens.control.switch.focus_border_w"),
+                duration: get_dur(c, "tokens.control.switch.duration"),
+                disabled_opacity: get_num(c, "tokens.control.switch.disabled_opacity"),
+            },
+            checkbox: tokens::CheckboxTokens {
+                box_size: px_num("tokens.control.checkbox.box_size"),
+                check_size: px_num("tokens.control.checkbox.check_size"),
+                border_w: px_num("tokens.control.checkbox.border_w"),
+                focus_border_w: px_num("tokens.control.checkbox.focus_border_w"),
+                border_radius: px_num("tokens.control.checkbox.border_radius"),
+            },
+            radio: tokens::RadioTokens {
+                ring_size: px_num("tokens.control.radio.ring_size"),
+                dot_size: px_num("tokens.control.radio.dot_size"),
+                border_w: px_num("tokens.control.radio.border_w"),
+                border_radius: px_num("tokens.control.radio.border_radius"),
+            },
+            select: tokens::SelectTokens {
+                min_height: px_num("tokens.control.select.min_height"),
+                horizontal_padding: px_num("tokens.control.select.horizontal_padding"),
+                chevron_size: px_num("tokens.control.select.chevron_size"),
+                menu_min_width: px_num("tokens.control.select.menu_min_width"),
+                menu_width: px_num("tokens.control.select.menu_width"),
+                menu_max_height: px_num("tokens.control.select.menu_max_height"),
+                item_padding_y: px_num("tokens.control.select.item_padding_y"),
+                item_padding_x: px_num("tokens.control.select.item_padding_x"),
+            },
+            combo_box: tokens::ComboBoxTokens {
+                min_height: px_num("tokens.control.combo_box.min_height"),
+                horizontal_padding: px_num("tokens.control.combo_box.horizontal_padding"),
+                menu_width: px_num("tokens.control.combo_box.menu_width"),
+                menu_max_height: px_num("tokens.control.combo_box.menu_max_height"),
+                search_gap: px_num("tokens.control.combo_box.search_gap"),
+                item_padding_y: px_num("tokens.control.combo_box.item_padding_y"),
+                item_padding_x: px_num("tokens.control.combo_box.item_padding_x"),
+                icon_size: px_num("tokens.control.combo_box.icon_size"),
+            },
+            slider: tokens::SliderTokens {
+                track_h: px_num("tokens.control.slider.track_h"),
+                thumb_size: px_num("tokens.control.slider.thumb_size"),
+                hit_padding: px_num("tokens.control.slider.hit_padding"),
+                focus_ring: px_num("tokens.control.slider.focus_ring"),
+            },
+            toast: tokens::ToastTokens {
+                min_width: px_num("tokens.control.toast.min_width"),
+                max_width: px_num("tokens.control.toast.max_width"),
+                horizontal_padding: px_num("tokens.control.toast.horizontal_padding"),
+                vertical_padding: px_num("tokens.control.toast.vertical_padding"),
+                gap: px_num("tokens.control.toast.gap"),
+                close_icon_size: px_num("tokens.control.toast.close_icon_size"),
+            },
+            modal: tokens::ModalTokens {
+                min_width: px_num("tokens.control.modal.min_width"),
+                max_width: px_num("tokens.control.modal.max_width"),
+                padding: px_num("tokens.control.modal.padding"),
+                header_gap: px_num("tokens.control.modal.header_gap"),
+                footer_gap: px_num("tokens.control.modal.footer_gap"),
+                scrim_blur: px_num("tokens.control.modal.scrim_blur"),
+                border_radius: px_num("tokens.control.modal.border_radius"),
+            },
+            popover: tokens::PopoverTokens {
+                padding_x: px_num("tokens.control.popover.padding_x"),
+                padding_y: px_num("tokens.control.popover.padding_y"),
+                min_width: px_num("tokens.control.popover.min_width"),
+                max_width: px_num("tokens.control.popover.max_width"),
+                max_height: px_num("tokens.control.popover.max_height"),
+                arrow_size: px_num("tokens.control.popover.arrow_size"),
+                offset: px_num("tokens.control.popover.offset"),
+            },
+            dropdown: tokens::DropdownTokens {
+                padding_x: px_num("tokens.control.dropdown.padding_x"),
+                padding_y: px_num("tokens.control.dropdown.padding_y"),
+                min_width: px_num("tokens.control.dropdown.min_width"),
+                max_width: px_num("tokens.control.dropdown.max_width"),
+                max_height: px_num("tokens.control.dropdown.max_height"),
+                item_gap: px_num("tokens.control.dropdown.item_gap"),
+                icon_size: px_num("tokens.control.dropdown.icon_size"),
+            },
+            badge: tokens::BadgeTokens {
+                min_height: px_num("tokens.control.badge.min_height"),
+                horizontal_padding: px_num("tokens.control.badge.horizontal_padding"),
+                gap: px_num("tokens.control.badge.gap"),
+                icon_size: px_num("tokens.control.badge.icon_size"),
+            },
+            tag: tokens::TagTokens {
+                min_height: px_num("tokens.control.tag.min_height"),
+                horizontal_padding: px_num("tokens.control.tag.horizontal_padding"),
+                gap: px_num("tokens.control.tag.gap"),
+                close_button_size: px_num("tokens.control.tag.close_button_size"),
+                close_icon_size: px_num("tokens.control.tag.close_icon_size"),
+            },
+            skeleton: tokens::SkeletonTokens {
+                line_h: px_num("tokens.control.skeleton.line_h"),
+                line_min_w: px_num("tokens.control.skeleton.line_min_w"),
+                block_min_h: px_num("tokens.control.skeleton.block_min_h"),
+                border_radius: px_num("tokens.control.skeleton.border_radius"),
+            },
+            progress: tokens::ProgressTokens {
+                bar_h_sm: px_num("tokens.control.progress.bar_h_sm"),
+                bar_h_md: px_num("tokens.control.progress.bar_h_md"),
+                bar_h_lg: px_num("tokens.control.progress.bar_h_lg"),
+                bar_default_h: px_num("tokens.control.progress.bar_default_h"),
+                spinner_size_sm: px_num("tokens.control.progress.spinner_size_sm"),
+                spinner_size_md: px_num("tokens.control.progress.spinner_size_md"),
+                spinner_size_lg: px_num("tokens.control.progress.spinner_size_lg"),
+                circle_size_sm: px_num("tokens.control.progress.circle_size_sm"),
+                circle_size_md: px_num("tokens.control.progress.circle_size_md"),
+                circle_size_lg: px_num("tokens.control.progress.circle_size_lg"),
+                track_radius: px_num("tokens.control.progress.track_radius"),
+                steps_gap: px_num("tokens.control.progress.steps_gap"),
+            },
+            avatar: tokens::AvatarTokens {
+                border_w: px_num("tokens.control.avatar.border_w"),
+                status_inset: px_num("tokens.control.avatar.status_inset"),
+                status_dot_size: px_num("tokens.control.avatar.status_dot_size"),
+                fallback_font_size: px_num("tokens.control.avatar.fallback_font_size"),
+            },
+            tooltip: tokens::TooltipTokens {
+                padding_x: px_num("tokens.control.tooltip.padding_x"),
+                padding_y: px_num("tokens.control.tooltip.padding_y"),
+                max_width: px_num("tokens.control.tooltip.max_width"),
+                arrow_size: px_num("tokens.control.tooltip.arrow_size"),
+                offset: px_num("tokens.control.tooltip.offset"),
+            },
+            disclosure: tokens::DisclosureTokens {
+                icon_size: px_num("tokens.control.disclosure.icon_size"),
+                chevron_size: px_num("tokens.control.disclosure.chevron_size"),
+            },
+            keybinding_input: tokens::KeybindingInputTokens {
+                kbd_padding_x: px_num("tokens.control.keybinding_input.kbd_padding_x"),
+                kbd_padding_y: px_num("tokens.control.keybinding_input.kbd_padding_y"),
+                kbd_min_width: px_num("tokens.control.keybinding_input.kbd_min_width"),
+                separator_gap: px_num("tokens.control.keybinding_input.separator_gap"),
+                icon_size: px_num("tokens.control.keybinding_input.icon_size"),
+            },
+            split_button: tokens::SplitButtonTokens {
+                min_height: px_num("tokens.control.split_button.min_height"),
+                chevron_width: px_num("tokens.control.split_button.chevron_width"),
+                separator_w: px_num("tokens.control.split_button.separator_w"),
+            },
+            search_input: tokens::SearchInputTokens {
+                min_height: px_num("tokens.control.search_input.min_height"),
+                horizontal_padding: px_num("tokens.control.search_input.horizontal_padding"),
+                icon_size: px_num("tokens.control.search_input.icon_size"),
+                clear_icon_size: px_num("tokens.control.search_input.clear_icon_size"),
+                spinner_size: px_num("tokens.control.search_input.spinner_size"),
+                input_gap: px_num("tokens.control.search_input.input_gap"),
+            },
+            number_input: tokens::NumberInputTokens {
+                min_height: px_num("tokens.control.number_input.min_height"),
+                stepper_button_size: px_num("tokens.control.number_input.stepper_button_size"),
+                stepper_icon_size: px_num("tokens.control.number_input.stepper_icon_size"),
+                stepper_gap: px_num("tokens.control.number_input.stepper_gap"),
+                horizontal_padding: px_num("tokens.control.number_input.horizontal_padding"),
+            },
+            file_path_input: tokens::FilePathInputTokens {
+                min_height: px_num("tokens.control.file_path_input.min_height"),
+                horizontal_padding: px_num("tokens.control.file_path_input.horizontal_padding"),
+                icon_size: px_num("tokens.control.file_path_input.icon_size"),
+                action_button_size: px_num("tokens.control.file_path_input.action_button_size"),
+                action_gap: px_num("tokens.control.file_path_input.action_gap"),
+            },
+            icon_button: tokens::IconButtonTokens {
+                min_size: px_num("tokens.control.icon_button.min_size"),
+                icon_size: px_num("tokens.control.icon_button.icon_size"),
+            },
+            toggle_button: tokens::ToggleButtonTokens {
+                min_height: px_num("tokens.control.toggle_button.min_height"),
+                horizontal_padding: px_num("tokens.control.toggle_button.horizontal_padding"),
+                icon_gap: px_num("tokens.control.toggle_button.icon_gap"),
+            },
+            empty_state: tokens::EmptyStateTokens {
+                icon_size: px_num("tokens.control.empty_state.icon_size"),
+                title_font_size: px_num("tokens.control.empty_state.title_font_size"),
+                description_font_size: px_num("tokens.control.empty_state.description_font_size"),
+                action_gap: px_num("tokens.control.empty_state.action_gap"),
+                vertical_padding: px_num("tokens.control.empty_state.vertical_padding"),
+            },
+            list_item: tokens::ListItemTokens {
+                min_height: px_num("tokens.control.list_item.min_height"),
+                horizontal_padding: px_num("tokens.control.list_item.horizontal_padding"),
+                gap: px_num("tokens.control.list_item.gap"),
+                icon_size: px_num("tokens.control.list_item.icon_size"),
+                chevron_size: px_num("tokens.control.list_item.chevron_size"),
+            },
+            tree_item: tokens::TreeItemTokens {
+                min_height: px_num("tokens.control.tree_item.min_height"),
+                horizontal_padding: px_num("tokens.control.tree_item.horizontal_padding"),
+                indent: px_num("tokens.control.tree_item.indent"),
+                chevron_size: px_num("tokens.control.tree_item.chevron_size"),
+                icon_size: px_num("tokens.control.tree_item.icon_size"),
+                drag_handle_w: px_num("tokens.control.tree_item.drag_handle_w"),
+                drop_indicator_h: px_num("tokens.control.tree_item.drop_indicator_h"),
+            },
+            card: tokens::CardTokens {
+                padding: px_num("tokens.control.card.padding"),
+                gap: px_num("tokens.control.card.gap"),
+                border_radius: px_num("tokens.control.card.border_radius"),
+            },
+            divider: tokens::DividerTokens {
+                thickness: px_num("tokens.control.divider.thickness"),
+                margin_x: px_num("tokens.control.divider.margin_x"),
+                margin_y: px_num("tokens.control.divider.margin_y"),
+            },
+            form: tokens::FormTokens {
+                field_gap: px_num("tokens.control.form.field_gap"),
+                label_gap: px_num("tokens.control.form.label_gap"),
+                helper_gap: px_num("tokens.control.form.helper_gap"),
+                error_gap: px_num("tokens.control.form.error_gap"),
+                group_gap: px_num("tokens.control.form.group_gap"),
+                horizontal_field_gap: px_num("tokens.control.form.horizontal_field_gap"),
+                horizontal_label_width: px_num("tokens.control.form.horizontal_label_width"),
+            },
+            notification: tokens::NotificationTokens {
+                min_width: px_num("tokens.control.notification.min_width"),
+                max_width: px_num("tokens.control.notification.max_width"),
+                horizontal_padding: px_num("tokens.control.notification.horizontal_padding"),
+                vertical_padding: px_num("tokens.control.notification.vertical_padding"),
+                gap: px_num("tokens.control.notification.gap"),
+                icon_size: px_num("tokens.control.notification.icon_size"),
+                close_icon_size: px_num("tokens.control.notification.close_icon_size"),
+                host_padding: px_num("tokens.control.notification.host_padding"),
+                host_gap: px_num("tokens.control.notification.host_gap"),
+            },
+            focus_ring: tokens::FocusRingTokens {
+                thickness: px_num("tokens.control.focus_ring.thickness"),
+                offset: px_num("tokens.control.focus_ring.offset"),
+            },
+        };
+        Self {
+            surface,
+            content,
+            border,
+            action,
+            status,
+            shadow,
+            text_direction: get_text_direction(c),
+            tokens: DesignTokens {
+                sizes,
+                radii,
+                spacing,
+                typography,
+                motion,
+                control,
+            },
+            renderers: crate::renderers::registry::RendererRegistry::token_based(),
+        }
+    }
 }
 
 // Compile-time proof that `Theme` is `Send + Sync`.

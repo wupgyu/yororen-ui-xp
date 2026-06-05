@@ -7,7 +7,9 @@
 //! / `cx.renderer_arc` API.
 
 mod context;
+pub mod markers;
 mod registry;
 
 pub use context::{init_renderer_registry, RendererContext};
+pub use markers::*;
 pub use registry::{RendererMarker, RendererRegistry};
