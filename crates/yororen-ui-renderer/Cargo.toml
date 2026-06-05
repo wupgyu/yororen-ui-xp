@@ -1,0 +1,12 @@
+[package]
+name = "yororen_ui_renderer"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Default renderer for yororen-ui headless primitives. Ships the 38 XxxRenderer traits + token-based defaults + DesignTokens + Theme. Pure headless apps depend on yororen-ui-core only; consumers who want a default look depend on this crate."
+readme = "../../README.md"
+repository.workspace = true
+
+[dependencies]
+yororen-ui-core = { package = "yororen_ui_core", path = "../yororen-ui-core", version = "0.3" }
+gpui = { package = "gpui-ce", version = "0.3" }

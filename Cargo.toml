@@ -10,6 +10,7 @@ resolver = "2"
 members = [
     "crates/yororen-ui",
     "crates/yororen-ui-core",
+    "crates/yororen-ui-renderer",
     "crates/yororen-ui-theme-system",
     "crates/yororen-ui-theme-mini",
     "crates/yororen-ui-theme-catppuccin",
