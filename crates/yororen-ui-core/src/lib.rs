@@ -15,13 +15,24 @@
 //! - [`i18n`] — `I18n` global + `Locale` + translation lookups.
 //! - [`notification`] — `NotificationCenter` state machine (the visual
 //!   toast host lives in `yororen-ui-renderer`).
+//! - [`renderer`] — `RendererRegistry` + `cx.register_renderer_arc` /
+//!   `cx.renderer_arc` API for third-party renderer crates.
+//! - [`theme`] — the JSON-backed `Theme` (no schema) + `cx.theme()`
+//!   accessor.
 //! - [`rtl`] — `TextDirection` plumbing shared with `i18n`.
 //!
 //! Anything visual (palette, geometry tokens, renderer traits) lives
-//! in `yororen-ui-renderer`. Anything that *picks a concrete palette*
-//! lives in a `yororen-ui-theme-*` crate.
+//! in `yororen-ui-default-renderer` / `yororen-ui-mini-renderer`.
+//! Anything that *picks a concrete palette* lives in a JSON
+//! theme file (`themes/*.json`).
 
-#![warn(missing_docs)]
+// The 50+ headless modules each have their own doc comments
+// at the module level. The `XxxRenderState` struct fields and
+// the `XxxProps` builder methods are mechanical and stay
+// terse to keep the file readable; the meta-crate
+// (`yororen-ui::headless::Xxx`) re-exports the public API
+// with proper docs.
+#![allow(missing_docs)]
 
 pub mod a11y;
 pub mod animation;
