@@ -101,7 +101,7 @@ impl DefaultIconButton for IconButtonProps {
             .renderer_arc::<markers::IconButton, dyn IconButtonRenderer>()
             .expect("IconButtonRenderer registered");
         let state = IconButtonRenderState {
-            variant: Default::default(),
+            variant: self.variant,
             disabled: self.disabled,
             has_custom_bg: false,
             has_custom_hover_bg: false,

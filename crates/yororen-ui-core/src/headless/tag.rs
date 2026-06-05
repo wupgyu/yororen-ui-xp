@@ -15,6 +15,7 @@ pub struct TagProps {
     pub label: String,
     pub disabled: bool,
     pub closable: bool,
+    pub selected: bool,
     pub on_click: Option<ClickCallback>,
     pub on_close: Option<ClickCallback>,
 }
@@ -25,6 +26,7 @@ pub fn tag(id: impl Into<ElementId>, label: impl Into<String>, _cx: &mut App) ->
         label: label.into(),
         disabled: false,
         closable: false,
+        selected: false,
         on_click: None,
         on_close: None,
     }
@@ -37,6 +39,10 @@ impl TagProps {
     }
     pub fn closable(mut self, v: bool) -> Self {
         self.closable = v;
+        self
+    }
+    pub fn selected(mut self, v: bool) -> Self {
+        self.selected = v;
         self
     }
     pub fn on_click<F>(mut self, f: F) -> Self

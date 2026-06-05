@@ -40,14 +40,16 @@ impl Render for LayersApp {
 
         // Column 2: headless + default-renderer sugar.
         let default_btn = button("default-render", &mut **cx)
-            .default_render(cx);
+            .default_render(cx)
+            .child("Click me");
 
         // Column 3: headless + default-renderer + mini
         // override. The `default_render` call now resolves
         // to `MiniButtonRenderer` because it was installed
         // last and overwrites the same `markers::Button` key.
         let mini_btn = button("mini-override", &mut **cx)
-            .default_render(cx);
+            .default_render(cx)
+            .child("Click me");
 
         div()
             .size_full()
@@ -58,7 +60,7 @@ impl Render for LayersApp {
             .p(px(24.))
             .child(panel_body(
                 "1. Headless only",
-                "The caller writes every visual: bg, padding, radius, text. The button is just a focus + click handler.",
+                "Caller writes every visual: bg, padding, radius, text. The button is just a focus + click handler.",
                 div()
                     .flex()
                     .flex_col()
@@ -106,7 +108,18 @@ fn panel_body(
         .flex()
         .flex_col()
         .gap_2()
-        .child(label("title", title, &mut **cx).default_render(cx))
-        .child(label("blurb", blurb, &mut **cx).default_render(cx))
+        .max_w(px(420.))
+        .child(
+            label("title", title, &mut **cx)
+                .strong(true)
+                .default_render(cx),
+        )
+        .child(
+            label("blurb", blurb, &mut **cx)
+                .wrap()
+                .default_render(cx)
+                .text_size(gpui::px(13.))
+                .w(gpui::px(360.)),
+        )
         .child(body)
 }

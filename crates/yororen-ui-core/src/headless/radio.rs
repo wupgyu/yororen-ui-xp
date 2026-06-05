@@ -1,4 +1,4 @@
-//! Headless `radio` — checked / disabled / group + on_toggle, no
+//! Headless `radio` — checked / disabled / on_toggle, no
 //! visual.
 
 use std::sync::Arc;
@@ -17,13 +17,7 @@ pub struct RadioProps {
     pub disabled: bool,
     pub focus_handle: FocusHandle,
     pub on_toggle: Option<ToggleCallback>,
-    /// Optional `name` shared between sibling radios. The renderer
-    /// uses this to group keyboard navigation; the headless layer
-    /// does not consume it.
-    pub group: Option<SharedString>,
 }
-
-pub type SharedString = gpui::SharedString;
 
 pub fn radio(id: impl Into<ElementId>, cx: &mut App) -> RadioProps {
     RadioProps {
@@ -32,7 +26,6 @@ pub fn radio(id: impl Into<ElementId>, cx: &mut App) -> RadioProps {
         disabled: false,
         focus_handle: cx.focus_handle(),
         on_toggle: None,
-        group: None,
     }
 }
 
@@ -49,10 +42,6 @@ impl RadioProps {
     }
     pub fn disabled(mut self, v: bool) -> Self {
         self.disabled = v;
-        self
-    }
-    pub fn group(mut self, g: impl Into<SharedString>) -> Self {
-        self.group = Some(g.into());
         self
     }
     pub fn on_toggle<F>(mut self, f: F) -> Self

@@ -16,6 +16,13 @@ pub struct ToggleButtonProps {
     pub focus_handle: FocusHandle,
     pub on_toggle: Option<ToggleCallback>,
     pub disabled: bool,
+    /// Current `selected` state. The renderer reads this to
+    /// paint the on/off look. The caller mutates it in response
+    /// to `on_toggle` (or holds it in their own state entity).
+    pub selected: bool,
+    /// Action variant — `Neutral` / `Primary` / `Danger`. The
+    /// renderer dispatches to `action.<variant>.{bg,fg}`.
+    pub variant: crate::renderer::ActionVariantKind,
 }
 
 pub fn toggle_button(id: impl Into<ElementId>, cx: &mut App) -> ToggleButtonProps {
@@ -24,6 +31,8 @@ pub fn toggle_button(id: impl Into<ElementId>, cx: &mut App) -> ToggleButtonProp
         focus_handle: cx.focus_handle(),
         on_toggle: None,
         disabled: false,
+        selected: false,
+        variant: crate::renderer::ActionVariantKind::default(),
     }
 }
 
@@ -45,17 +54,29 @@ impl ToggleButtonProps {
         self.disabled = v;
         self
     }
+    pub fn selected(mut self, v: bool) -> Self {
+        self.selected = v;
+        self
+    }
+    pub fn variant(
+        mut self,
+        v: crate::renderer::ActionVariantKind,
+    ) -> Self {
+        self.variant = v;
+        self
+    }
 
     pub fn apply(self, el: Div) -> Stateful<Div> {
         let mut s = el.id(self.id.clone()).track_focus(&self.focus_handle);
         if !self.disabled
             && let Some(f) = self.on_toggle.clone()
         {
-            // ToggleButton receives the *new* desired state via the
-            // callback. The caller is responsible for tracking the
-            // current `selected` and toggling it in response.
+            // Pass the *current* selected state — the callback
+            // receives `!self.selected` so the caller can flip
+            // its own state in response.
+            let current = self.selected;
             s = s.on_click(move |ev, window, cx| {
-                f(true, Some(ev), window, cx);
+                f(!current, Some(ev), window, cx);
             });
         }
         s

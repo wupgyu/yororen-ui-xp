@@ -37,6 +37,7 @@ pub fn button(id: impl Into<ElementId>, cx: &mut App) -> ButtonProps {
         on_click: None,
         disabled: false,
         clickable: true,
+        variant: crate::renderer::ActionVariantKind::default(),
     }
 }
 
@@ -47,6 +48,9 @@ pub struct ButtonProps {
     pub on_click: Option<ClickCallback>,
     pub disabled: bool,
     pub clickable: bool,
+    /// Action variant — `Neutral` (default) / `Primary` / `Danger`.
+    /// The renderer dispatches to `action.<variant>.{bg,fg}`.
+    pub variant: crate::renderer::ActionVariantKind,
 }
 
 impl ButtonProps {
@@ -73,6 +77,11 @@ impl ButtonProps {
 
     pub fn clickable(mut self, clickable: bool) -> Self {
         self.clickable = clickable;
+        self
+    }
+
+    pub fn variant(mut self, v: crate::renderer::ActionVariantKind) -> Self {
+        self.variant = v;
         self
     }
 

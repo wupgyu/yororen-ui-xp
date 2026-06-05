@@ -107,11 +107,21 @@ impl DefaultToggleButton for ToggleButtonProps {
         let r: &Arc<dyn ToggleButtonRenderer> = cx
             .renderer_arc::<markers::ToggleButton, dyn ToggleButtonRenderer>()
             .expect("ToggleButtonRenderer registered");
-        let state = ToggleButtonRenderState::default();
+        let state = ToggleButtonRenderState {
+            variant: self.variant,
+            selected: self.selected,
+            disabled: self.disabled,
+            custom_style: None,
+        };
         let bg = r.bg(&state, theme);
         let fg = r.fg(&state, theme);
         let min_h = r.min_height(&state, theme);
         let radius = r.border_radius(&state, theme);
+        let opacity = if self.disabled {
+            r.disabled_opacity(&state, theme)
+        } else {
+            1.0
+        };
         let el = div()
             .bg(bg)
             .text_color(fg)
@@ -119,6 +129,7 @@ impl DefaultToggleButton for ToggleButtonProps {
             .rounded(radius)
             .px(gpui::px(12.))
             .py(gpui::px(6.))
+            .opacity(opacity)
             .flex()
             .items_center()
             .justify_center();

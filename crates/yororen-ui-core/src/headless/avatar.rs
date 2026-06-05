@@ -9,6 +9,13 @@ pub struct AvatarProps {
     pub initials: Option<String>,
     pub name: Option<SharedString>,
     pub size: Option<gpui::Pixels>,
+    /// Render as a perfect circle (otherwise a rounded square).
+    pub circle: bool,
+    /// Show a small status dot (online / away / busy).
+    pub has_status: bool,
+    /// `true` if the caller supplied a custom background color
+    /// (consumed by `AvatarRenderer.has_custom_bg`).
+    pub has_custom_bg: bool,
 }
 
 pub fn avatar(id: impl Into<ElementId>, _cx: &mut gpui::App) -> AvatarProps {
@@ -18,6 +25,9 @@ pub fn avatar(id: impl Into<ElementId>, _cx: &mut gpui::App) -> AvatarProps {
         initials: None,
         name: None,
         size: None,
+        circle: true,
+        has_status: false,
+        has_custom_bg: false,
     }
 }
 
@@ -36,6 +46,18 @@ impl AvatarProps {
     }
     pub fn size(mut self, s: impl Into<gpui::Pixels>) -> Self {
         self.size = Some(s.into());
+        self
+    }
+    pub fn circle(mut self, v: bool) -> Self {
+        self.circle = v;
+        self
+    }
+    pub fn has_status(mut self, v: bool) -> Self {
+        self.has_status = v;
+        self
+    }
+    pub fn has_custom_bg(mut self, v: bool) -> Self {
+        self.has_custom_bg = v;
         self
     }
     pub fn apply(self, el: Div) -> Stateful<Div> {

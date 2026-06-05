@@ -811,6 +811,9 @@ impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::assets::UiAsset
 pub mod yororen_ui_core::headless
 pub mod yororen_ui_core::headless::avatar
 pub struct yororen_ui_core::headless::avatar::AvatarProps
+pub yororen_ui_core::headless::avatar::AvatarProps::circle: bool
+pub yororen_ui_core::headless::avatar::AvatarProps::has_custom_bg: bool
+pub yororen_ui_core::headless::avatar::AvatarProps::has_status: bool
 pub yororen_ui_core::headless::avatar::AvatarProps::id: gpui::window::ElementId
 pub yororen_ui_core::headless::avatar::AvatarProps::initials: core::option::Option<alloc::string::String>
 pub yororen_ui_core::headless::avatar::AvatarProps::name: core::option::Option<gpui::shared_string::SharedString>
@@ -818,6 +821,9 @@ pub yororen_ui_core::headless::avatar::AvatarProps::size: core::option::Option<g
 pub yororen_ui_core::headless::avatar::AvatarProps::src: core::option::Option<gpui::shared_string::SharedString>
 impl yororen_ui_core::headless::avatar::AvatarProps
 pub fn yororen_ui_core::headless::avatar::AvatarProps::apply(self, gpui::elements::div::Div) -> gpui::elements::div::Stateful<gpui::elements::div::Div>
+pub fn yororen_ui_core::headless::avatar::AvatarProps::circle(self, bool) -> Self
+pub fn yororen_ui_core::headless::avatar::AvatarProps::has_custom_bg(self, bool) -> Self
+pub fn yororen_ui_core::headless::avatar::AvatarProps::has_status(self, bool) -> Self
 pub fn yororen_ui_core::headless::avatar::AvatarProps::initials(self, impl core::convert::Into<alloc::string::String>) -> Self
 pub fn yororen_ui_core::headless::avatar::AvatarProps::name(self, impl core::convert::Into<gpui::shared_string::SharedString>) -> Self
 pub fn yororen_ui_core::headless::avatar::AvatarProps::size(self, impl core::convert::Into<gpui::geometry::Pixels>) -> Self
@@ -907,6 +913,7 @@ pub yororen_ui_core::headless::button::ButtonProps::disabled: bool
 pub yororen_ui_core::headless::button::ButtonProps::focus_handle: gpui::window::FocusHandle
 pub yororen_ui_core::headless::button::ButtonProps::id: gpui::window::ElementId
 pub yororen_ui_core::headless::button::ButtonProps::on_click: core::option::Option<yororen_ui_core::headless::button::ClickCallback>
+pub yororen_ui_core::headless::button::ButtonProps::variant: yororen_ui_core::renderer::ActionVariantKind
 impl yororen_ui_core::headless::button::ButtonProps
 pub fn yororen_ui_core::headless::button::ButtonProps::apply(self, gpui::elements::div::Div) -> gpui::elements::div::Stateful<gpui::elements::div::Div>
 pub fn yororen_ui_core::headless::button::ButtonProps::clickable(self, bool) -> Self
@@ -914,6 +921,7 @@ pub fn yororen_ui_core::headless::button::ButtonProps::disabled(self, bool) -> S
 pub fn yororen_ui_core::headless::button::ButtonProps::focus_handle(&self) -> &gpui::window::FocusHandle
 pub fn yororen_ui_core::headless::button::ButtonProps::is_focused(&self, &gpui::window::Window) -> bool
 pub fn yororen_ui_core::headless::button::ButtonProps::on_click<F>(self, F) -> Self where F: 'static + core::marker::Send + core::marker::Sync + core::ops::function::Fn(&gpui::interactive::ClickEvent, &mut gpui::window::Window, &mut gpui::app::App)
+pub fn yororen_ui_core::headless::button::ButtonProps::variant(self, yororen_ui_core::renderer::ActionVariantKind) -> Self
 impl core::clone::Clone for yororen_ui_core::headless::button::ButtonProps
 pub fn yororen_ui_core::headless::button::ButtonProps::clone(&self) -> yororen_ui_core::headless::button::ButtonProps
 impl core::marker::Freeze for yororen_ui_core::headless::button::ButtonProps
@@ -969,10 +977,12 @@ impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::headless::button_
 pub fn yororen_ui_core::headless::button_group::button_group(impl core::convert::Into<gpui::window::ElementId>, &mut gpui::app::App) -> yororen_ui_core::headless::button_group::ButtonGroupProps
 pub mod yororen_ui_core::headless::card
 pub struct yororen_ui_core::headless::card::CardProps
+pub yororen_ui_core::headless::card::CardProps::has_custom_bg: bool
 pub yororen_ui_core::headless::card::CardProps::id: gpui::window::ElementId
 pub yororen_ui_core::headless::card::CardProps::interactive: bool
 impl yororen_ui_core::headless::card::CardProps
 pub fn yororen_ui_core::headless::card::CardProps::apply(self, gpui::elements::div::Div) -> gpui::elements::div::Stateful<gpui::elements::div::Div>
+pub fn yororen_ui_core::headless::card::CardProps::has_custom_bg(self, bool) -> Self
 pub fn yororen_ui_core::headless::card::CardProps::interactive(self, bool) -> Self
 impl core::clone::Clone for yororen_ui_core::headless::card::CardProps
 pub fn yororen_ui_core::headless::card::CardProps::clone(&self) -> yororen_ui_core::headless::card::CardProps
@@ -1294,9 +1304,11 @@ pub fn yororen_ui_core::headless::empty_state::empty_state(impl core::convert::I
 pub mod yororen_ui_core::headless::focus_ring
 pub struct yororen_ui_core::headless::focus_ring::FocusRingProps
 pub yororen_ui_core::headless::focus_ring::FocusRingProps::focus_handle: gpui::window::FocusHandle
+pub yororen_ui_core::headless::focus_ring::FocusRingProps::has_custom_color: bool
 pub yororen_ui_core::headless::focus_ring::FocusRingProps::id: gpui::window::ElementId
 impl yororen_ui_core::headless::focus_ring::FocusRingProps
 pub fn yororen_ui_core::headless::focus_ring::FocusRingProps::apply(self, gpui::elements::div::Div) -> gpui::elements::div::Stateful<gpui::elements::div::Div>
+pub fn yororen_ui_core::headless::focus_ring::FocusRingProps::has_custom_color(self, bool) -> Self
 impl core::clone::Clone for yororen_ui_core::headless::focus_ring::FocusRingProps
 pub fn yororen_ui_core::headless::focus_ring::FocusRingProps::clone(&self) -> yororen_ui_core::headless::focus_ring::FocusRingProps
 impl core::marker::Freeze for yororen_ui_core::headless::focus_ring::FocusRingProps
@@ -1439,12 +1451,14 @@ pub yororen_ui_core::headless::icon_button::IconButtonProps::disabled: bool
 pub yororen_ui_core::headless::icon_button::IconButtonProps::focus_handle: gpui::window::FocusHandle
 pub yororen_ui_core::headless::icon_button::IconButtonProps::id: gpui::window::ElementId
 pub yororen_ui_core::headless::icon_button::IconButtonProps::on_click: core::option::Option<yororen_ui_core::headless::icon_button::ClickCallback>
+pub yororen_ui_core::headless::icon_button::IconButtonProps::variant: yororen_ui_core::renderer::ActionVariantKind
 impl yororen_ui_core::headless::icon_button::IconButtonProps
 pub fn yororen_ui_core::headless::icon_button::IconButtonProps::apply(self, gpui::elements::div::Div) -> gpui::elements::div::Stateful<gpui::elements::div::Div>
 pub fn yororen_ui_core::headless::icon_button::IconButtonProps::disabled(self, bool) -> Self
 pub fn yororen_ui_core::headless::icon_button::IconButtonProps::focus_handle(&self) -> &gpui::window::FocusHandle
 pub fn yororen_ui_core::headless::icon_button::IconButtonProps::is_focused(&self, &gpui::window::Window) -> bool
 pub fn yororen_ui_core::headless::icon_button::IconButtonProps::on_click<F>(self, F) -> Self where F: 'static + core::marker::Send + core::marker::Sync + core::ops::function::Fn(&gpui::interactive::ClickEvent, &mut gpui::window::Window, &mut gpui::app::App)
+pub fn yororen_ui_core::headless::icon_button::IconButtonProps::variant(self, yororen_ui_core::renderer::ActionVariantKind) -> Self
 impl core::clone::Clone for yororen_ui_core::headless::icon_button::IconButtonProps
 pub fn yororen_ui_core::headless::icon_button::IconButtonProps::clone(&self) -> yororen_ui_core::headless::icon_button::IconButtonProps
 impl core::marker::Freeze for yororen_ui_core::headless::icon_button::IconButtonProps
@@ -2531,11 +2545,17 @@ pub fn yororen_ui_core::headless::overlay::overlay(impl core::convert::Into<gpui
 pub type yororen_ui_core::headless::overlay::OverlayCloseCallback = alloc::sync::Arc<(dyn core::ops::function::Fn(yororen_ui_core::headless::overlay::OverlayCloseReason, &mut gpui::window::Window, &mut gpui::app::App) + core::marker::Send + core::marker::Sync)>
 pub mod yororen_ui_core::headless::panel
 pub struct yororen_ui_core::headless::panel::PanelProps
+pub yororen_ui_core::headless::panel::PanelProps::has_custom_bg: bool
+pub yororen_ui_core::headless::panel::PanelProps::has_custom_border: bool
+pub yororen_ui_core::headless::panel::PanelProps::has_custom_padding: bool
 pub yororen_ui_core::headless::panel::PanelProps::id: gpui::window::ElementId
 pub yororen_ui_core::headless::panel::PanelProps::padded: bool
 pub yororen_ui_core::headless::panel::PanelProps::title: core::option::Option<alloc::string::String>
 impl yororen_ui_core::headless::panel::PanelProps
 pub fn yororen_ui_core::headless::panel::PanelProps::apply(self, gpui::elements::div::Div) -> gpui::elements::div::Stateful<gpui::elements::div::Div>
+pub fn yororen_ui_core::headless::panel::PanelProps::has_custom_bg(self, bool) -> Self
+pub fn yororen_ui_core::headless::panel::PanelProps::has_custom_border(self, bool) -> Self
+pub fn yororen_ui_core::headless::panel::PanelProps::has_custom_padding(self, bool) -> Self
 pub fn yororen_ui_core::headless::panel::PanelProps::padded(self, bool) -> Self
 pub fn yororen_ui_core::headless::panel::PanelProps::title(self, impl core::convert::Into<alloc::string::String>) -> Self
 impl core::clone::Clone for yororen_ui_core::headless::panel::PanelProps
@@ -2626,12 +2646,16 @@ pub fn yororen_ui_core::headless::popover::popover(impl core::convert::Into<gpui
 pub type yororen_ui_core::headless::popover::CloseFn = alloc::sync::Arc<(dyn core::ops::function::Fn(&mut gpui::window::Window, &mut gpui::app::App) + core::marker::Send + core::marker::Sync)>
 pub mod yororen_ui_core::headless::progress
 pub struct yororen_ui_core::headless::progress::ProgressBarProps
+pub yororen_ui_core::headless::progress::ProgressBarProps::has_custom_height: bool
 pub yororen_ui_core::headless::progress::ProgressBarProps::id: gpui::window::ElementId
+pub yororen_ui_core::headless::progress::ProgressBarProps::indeterminate: bool
 pub yororen_ui_core::headless::progress::ProgressBarProps::label: core::option::Option<alloc::string::String>
 pub yororen_ui_core::headless::progress::ProgressBarProps::max: f32
 pub yororen_ui_core::headless::progress::ProgressBarProps::value: f32
 impl yororen_ui_core::headless::progress::ProgressBarProps
 pub fn yororen_ui_core::headless::progress::ProgressBarProps::apply(self, gpui::elements::div::Div) -> gpui::elements::div::Stateful<gpui::elements::div::Div>
+pub fn yororen_ui_core::headless::progress::ProgressBarProps::has_custom_height(self, bool) -> Self
+pub fn yororen_ui_core::headless::progress::ProgressBarProps::indeterminate(self, bool) -> Self
 pub fn yororen_ui_core::headless::progress::ProgressBarProps::label(self, impl core::convert::Into<alloc::string::String>) -> Self
 pub fn yororen_ui_core::headless::progress::ProgressBarProps::max(self, f32) -> Self
 pub fn yororen_ui_core::headless::progress::ProgressBarProps::value(self, f32) -> Self
@@ -2653,7 +2677,6 @@ pub struct yororen_ui_core::headless::radio::RadioProps
 pub yororen_ui_core::headless::radio::RadioProps::checked: bool
 pub yororen_ui_core::headless::radio::RadioProps::disabled: bool
 pub yororen_ui_core::headless::radio::RadioProps::focus_handle: gpui::window::FocusHandle
-pub yororen_ui_core::headless::radio::RadioProps::group: core::option::Option<yororen_ui_core::headless::radio::SharedString>
 pub yororen_ui_core::headless::radio::RadioProps::id: gpui::window::ElementId
 pub yororen_ui_core::headless::radio::RadioProps::on_toggle: core::option::Option<yororen_ui_core::headless::switch::ToggleCallback>
 impl yororen_ui_core::headless::radio::RadioProps
@@ -2661,7 +2684,6 @@ pub fn yororen_ui_core::headless::radio::RadioProps::apply(self, gpui::elements:
 pub fn yororen_ui_core::headless::radio::RadioProps::checked(self, bool) -> Self
 pub fn yororen_ui_core::headless::radio::RadioProps::disabled(self, bool) -> Self
 pub fn yororen_ui_core::headless::radio::RadioProps::focus_handle(&self) -> &gpui::window::FocusHandle
-pub fn yororen_ui_core::headless::radio::RadioProps::group(self, impl core::convert::Into<yororen_ui_core::headless::radio::SharedString>) -> Self
 pub fn yororen_ui_core::headless::radio::RadioProps::is_focused(&self, &gpui::window::Window) -> bool
 pub fn yororen_ui_core::headless::radio::RadioProps::on_toggle<F>(self, F) -> Self where F: 'static + core::marker::Send + core::marker::Sync + core::ops::function::Fn(bool, core::option::Option<&gpui::interactive::ClickEvent>, &mut gpui::window::Window, &mut gpui::app::App)
 impl core::clone::Clone for yororen_ui_core::headless::radio::RadioProps
@@ -2674,7 +2696,6 @@ impl core::marker::UnsafeUnpin for yororen_ui_core::headless::radio::RadioProps
 impl !core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::headless::radio::RadioProps
 impl !core::panic::unwind_safe::UnwindSafe for yororen_ui_core::headless::radio::RadioProps
 pub fn yororen_ui_core::headless::radio::radio(impl core::convert::Into<gpui::window::ElementId>, &mut gpui::app::App) -> yororen_ui_core::headless::radio::RadioProps
-pub type yororen_ui_core::headless::radio::SharedString = gpui::shared_string::SharedString
 pub mod yororen_ui_core::headless::radio_group
 pub struct yororen_ui_core::headless::radio_group::RadioGroupProps
 pub yororen_ui_core::headless::radio_group::RadioGroupProps::id: gpui::window::ElementId
@@ -2784,10 +2805,14 @@ impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::headless::shortcu
 pub fn yororen_ui_core::headless::shortcut_hint::shortcut_hint(impl core::convert::Into<gpui::window::ElementId>, impl core::convert::Into<gpui::shared_string::SharedString>, impl core::iter::traits::collect::IntoIterator<Item = impl core::convert::Into<alloc::string::String>>, &mut gpui::app::App) -> yororen_ui_core::headless::shortcut_hint::ShortcutHintProps
 pub mod yororen_ui_core::headless::skeleton
 pub struct yororen_ui_core::headless::skeleton::SkeletonProps
+pub yororen_ui_core::headless::skeleton::SkeletonProps::block: bool
+pub yororen_ui_core::headless::skeleton::SkeletonProps::block_sharp: bool
 pub yororen_ui_core::headless::skeleton::SkeletonProps::id: gpui::window::ElementId
 pub yororen_ui_core::headless::skeleton::SkeletonProps::rounded: bool
 impl yororen_ui_core::headless::skeleton::SkeletonProps
 pub fn yororen_ui_core::headless::skeleton::SkeletonProps::apply(self, gpui::elements::div::Div) -> gpui::elements::div::Stateful<gpui::elements::div::Div>
+pub fn yororen_ui_core::headless::skeleton::SkeletonProps::block(self, bool) -> Self
+pub fn yororen_ui_core::headless::skeleton::SkeletonProps::block_sharp(self, bool) -> Self
 pub fn yororen_ui_core::headless::skeleton::SkeletonProps::rounded(self, bool) -> Self
 impl core::clone::Clone for yororen_ui_core::headless::skeleton::SkeletonProps
 pub fn yororen_ui_core::headless::skeleton::SkeletonProps::clone(&self) -> yororen_ui_core::headless::skeleton::SkeletonProps
@@ -2945,12 +2970,14 @@ pub yororen_ui_core::headless::tag::TagProps::id: gpui::window::ElementId
 pub yororen_ui_core::headless::tag::TagProps::label: alloc::string::String
 pub yororen_ui_core::headless::tag::TagProps::on_click: core::option::Option<yororen_ui_core::headless::tag::ClickCallback>
 pub yororen_ui_core::headless::tag::TagProps::on_close: core::option::Option<yororen_ui_core::headless::tag::ClickCallback>
+pub yororen_ui_core::headless::tag::TagProps::selected: bool
 impl yororen_ui_core::headless::tag::TagProps
 pub fn yororen_ui_core::headless::tag::TagProps::apply(self, gpui::elements::div::Div) -> gpui::elements::div::Stateful<gpui::elements::div::Div>
 pub fn yororen_ui_core::headless::tag::TagProps::closable(self, bool) -> Self
 pub fn yororen_ui_core::headless::tag::TagProps::disabled(self, bool) -> Self
 pub fn yororen_ui_core::headless::tag::TagProps::on_click<F>(self, F) -> Self where F: 'static + core::marker::Send + core::marker::Sync + core::ops::function::Fn(&gpui::interactive::ClickEvent, &mut gpui::window::Window, &mut gpui::app::App)
 pub fn yororen_ui_core::headless::tag::TagProps::on_close<F>(self, F) -> Self where F: 'static + core::marker::Send + core::marker::Sync + core::ops::function::Fn(&gpui::interactive::ClickEvent, &mut gpui::window::Window, &mut gpui::app::App)
+pub fn yororen_ui_core::headless::tag::TagProps::selected(self, bool) -> Self
 impl core::clone::Clone for yororen_ui_core::headless::tag::TagProps
 pub fn yororen_ui_core::headless::tag::TagProps::clone(&self) -> yororen_ui_core::headless::tag::TagProps
 impl core::marker::Freeze for yororen_ui_core::headless::tag::TagProps
@@ -3019,12 +3046,16 @@ pub yororen_ui_core::headless::toggle_button::ToggleButtonProps::disabled: bool
 pub yororen_ui_core::headless::toggle_button::ToggleButtonProps::focus_handle: gpui::window::FocusHandle
 pub yororen_ui_core::headless::toggle_button::ToggleButtonProps::id: gpui::window::ElementId
 pub yororen_ui_core::headless::toggle_button::ToggleButtonProps::on_toggle: core::option::Option<yororen_ui_core::headless::switch::ToggleCallback>
+pub yororen_ui_core::headless::toggle_button::ToggleButtonProps::selected: bool
+pub yororen_ui_core::headless::toggle_button::ToggleButtonProps::variant: yororen_ui_core::renderer::ActionVariantKind
 impl yororen_ui_core::headless::toggle_button::ToggleButtonProps
 pub fn yororen_ui_core::headless::toggle_button::ToggleButtonProps::apply(self, gpui::elements::div::Div) -> gpui::elements::div::Stateful<gpui::elements::div::Div>
 pub fn yororen_ui_core::headless::toggle_button::ToggleButtonProps::disabled(self, bool) -> Self
 pub fn yororen_ui_core::headless::toggle_button::ToggleButtonProps::focus_handle(&self) -> &gpui::window::FocusHandle
 pub fn yororen_ui_core::headless::toggle_button::ToggleButtonProps::is_focused(&self, &gpui::window::Window) -> bool
 pub fn yororen_ui_core::headless::toggle_button::ToggleButtonProps::on_toggle<F>(self, F) -> Self where F: 'static + core::marker::Send + core::marker::Sync + core::ops::function::Fn(bool, core::option::Option<&gpui::interactive::ClickEvent>, &mut gpui::window::Window, &mut gpui::app::App)
+pub fn yororen_ui_core::headless::toggle_button::ToggleButtonProps::selected(self, bool) -> Self
+pub fn yororen_ui_core::headless::toggle_button::ToggleButtonProps::variant(self, yororen_ui_core::renderer::ActionVariantKind) -> Self
 impl core::clone::Clone for yororen_ui_core::headless::toggle_button::ToggleButtonProps
 pub fn yororen_ui_core::headless::toggle_button::ToggleButtonProps::clone(&self) -> yororen_ui_core::headless::toggle_button::ToggleButtonProps
 impl core::marker::Freeze for yororen_ui_core::headless::toggle_button::ToggleButtonProps
@@ -3058,11 +3089,15 @@ impl core::marker::UnsafeUnpin for yororen_ui_core::headless::tooltip::TooltipPl
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::headless::tooltip::TooltipPlacement
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::headless::tooltip::TooltipPlacement
 pub struct yororen_ui_core::headless::tooltip::TooltipProps
+pub yororen_ui_core::headless::tooltip::TooltipProps::has_custom_bg: bool
+pub yororen_ui_core::headless::tooltip::TooltipProps::has_custom_fg: bool
 pub yororen_ui_core::headless::tooltip::TooltipProps::id: gpui::window::ElementId
 pub yororen_ui_core::headless::tooltip::TooltipProps::state: gpui::app::entity_map::Entity<yororen_ui_core::headless::tooltip::TooltipState>
 pub yororen_ui_core::headless::tooltip::TooltipProps::text: alloc::string::String
 impl yororen_ui_core::headless::tooltip::TooltipProps
 pub fn yororen_ui_core::headless::tooltip::TooltipProps::apply(self, gpui::elements::div::Div) -> gpui::elements::div::Stateful<gpui::elements::div::Div>
+pub fn yororen_ui_core::headless::tooltip::TooltipProps::has_custom_bg(self, bool) -> Self
+pub fn yororen_ui_core::headless::tooltip::TooltipProps::has_custom_fg(self, bool) -> Self
 impl core::clone::Clone for yororen_ui_core::headless::tooltip::TooltipProps
 pub fn yororen_ui_core::headless::tooltip::TooltipProps::clone(&self) -> yororen_ui_core::headless::tooltip::TooltipProps
 impl core::marker::Freeze for yororen_ui_core::headless::tooltip::TooltipProps
@@ -5272,6 +5307,85 @@ impl core::marker::Unpin for yororen_ui_core::renderer::TreeItem
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::TreeItem
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::TreeItem
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::TreeItem
+pub enum yororen_ui_core::renderer::ActionVariantKind
+pub yororen_ui_core::renderer::ActionVariantKind::Danger
+pub yororen_ui_core::renderer::ActionVariantKind::Neutral
+pub yororen_ui_core::renderer::ActionVariantKind::Primary
+impl yororen_ui_core::renderer::ActionVariantKind
+pub fn yororen_ui_core::renderer::ActionVariantKind::as_str(self) -> &'static str
+impl core::clone::Clone for yororen_ui_core::renderer::ActionVariantKind
+pub fn yororen_ui_core::renderer::ActionVariantKind::clone(&self) -> yororen_ui_core::renderer::ActionVariantKind
+impl core::cmp::Eq for yororen_ui_core::renderer::ActionVariantKind
+impl core::cmp::PartialEq for yororen_ui_core::renderer::ActionVariantKind
+pub fn yororen_ui_core::renderer::ActionVariantKind::eq(&self, &yororen_ui_core::renderer::ActionVariantKind) -> bool
+impl core::convert::From<yororen_ui_core::renderer::ActionVariantKind> for yororen_ui_core::renderer::BuiltinVariantKey
+pub fn yororen_ui_core::renderer::BuiltinVariantKey::from(yororen_ui_core::renderer::ActionVariantKind) -> Self
+impl core::convert::From<yororen_ui_core::renderer::ActionVariantKind> for yororen_ui_core::renderer::ButtonVariant
+pub fn yororen_ui_core::renderer::ButtonVariant::from(yororen_ui_core::renderer::ActionVariantKind) -> Self
+impl core::default::Default for yororen_ui_core::renderer::ActionVariantKind
+pub fn yororen_ui_core::renderer::ActionVariantKind::default() -> yororen_ui_core::renderer::ActionVariantKind
+impl core::fmt::Debug for yororen_ui_core::renderer::ActionVariantKind
+pub fn yororen_ui_core::renderer::ActionVariantKind::fmt(&self, &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::Copy for yororen_ui_core::renderer::ActionVariantKind
+impl core::marker::StructuralPartialEq for yororen_ui_core::renderer::ActionVariantKind
+impl core::marker::Freeze for yororen_ui_core::renderer::ActionVariantKind
+impl core::marker::Send for yororen_ui_core::renderer::ActionVariantKind
+impl core::marker::Sync for yororen_ui_core::renderer::ActionVariantKind
+impl core::marker::Unpin for yororen_ui_core::renderer::ActionVariantKind
+impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::ActionVariantKind
+impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::ActionVariantKind
+impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::ActionVariantKind
+pub enum yororen_ui_core::renderer::BuiltinVariantKey
+pub yororen_ui_core::renderer::BuiltinVariantKey::Danger
+pub yororen_ui_core::renderer::BuiltinVariantKey::Neutral
+pub yororen_ui_core::renderer::BuiltinVariantKey::Primary
+impl yororen_ui_core::renderer::BuiltinVariantKey
+pub fn yororen_ui_core::renderer::BuiltinVariantKey::as_str(self) -> &'static str
+impl core::clone::Clone for yororen_ui_core::renderer::BuiltinVariantKey
+pub fn yororen_ui_core::renderer::BuiltinVariantKey::clone(&self) -> yororen_ui_core::renderer::BuiltinVariantKey
+impl core::cmp::Eq for yororen_ui_core::renderer::BuiltinVariantKey
+impl core::cmp::PartialEq for yororen_ui_core::renderer::BuiltinVariantKey
+pub fn yororen_ui_core::renderer::BuiltinVariantKey::eq(&self, &yororen_ui_core::renderer::BuiltinVariantKey) -> bool
+impl core::convert::From<yororen_ui_core::renderer::ActionVariantKind> for yororen_ui_core::renderer::BuiltinVariantKey
+pub fn yororen_ui_core::renderer::BuiltinVariantKey::from(yororen_ui_core::renderer::ActionVariantKind) -> Self
+impl core::fmt::Debug for yororen_ui_core::renderer::BuiltinVariantKey
+pub fn yororen_ui_core::renderer::BuiltinVariantKey::fmt(&self, &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::fmt::Display for yororen_ui_core::renderer::BuiltinVariantKey
+pub fn yororen_ui_core::renderer::BuiltinVariantKey::fmt(&self, &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::hash::Hash for yororen_ui_core::renderer::BuiltinVariantKey
+pub fn yororen_ui_core::renderer::BuiltinVariantKey::hash<__H: core::hash::Hasher>(&self, &mut __H)
+impl core::marker::Copy for yororen_ui_core::renderer::BuiltinVariantKey
+impl core::marker::StructuralPartialEq for yororen_ui_core::renderer::BuiltinVariantKey
+impl core::marker::Freeze for yororen_ui_core::renderer::BuiltinVariantKey
+impl core::marker::Send for yororen_ui_core::renderer::BuiltinVariantKey
+impl core::marker::Sync for yororen_ui_core::renderer::BuiltinVariantKey
+impl core::marker::Unpin for yororen_ui_core::renderer::BuiltinVariantKey
+impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::BuiltinVariantKey
+impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::BuiltinVariantKey
+impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::BuiltinVariantKey
+pub enum yororen_ui_core::renderer::ButtonVariant
+pub yororen_ui_core::renderer::ButtonVariant::Builtin(yororen_ui_core::renderer::ActionVariantKind)
+pub yororen_ui_core::renderer::ButtonVariant::Custom(yororen_ui_core::renderer::VariantKey)
+impl yororen_ui_core::renderer::ButtonVariant
+pub fn yororen_ui_core::renderer::ButtonVariant::as_builtin(&self) -> core::option::Option<yororen_ui_core::renderer::ActionVariantKind>
+pub fn yororen_ui_core::renderer::ButtonVariant::as_str(&self) -> &'static str
+impl core::clone::Clone for yororen_ui_core::renderer::ButtonVariant
+pub fn yororen_ui_core::renderer::ButtonVariant::clone(&self) -> yororen_ui_core::renderer::ButtonVariant
+impl core::convert::From<yororen_ui_core::renderer::ActionVariantKind> for yororen_ui_core::renderer::ButtonVariant
+pub fn yororen_ui_core::renderer::ButtonVariant::from(yororen_ui_core::renderer::ActionVariantKind) -> Self
+impl core::convert::From<yororen_ui_core::renderer::VariantKey> for yororen_ui_core::renderer::ButtonVariant
+pub fn yororen_ui_core::renderer::ButtonVariant::from(yororen_ui_core::renderer::VariantKey) -> Self
+impl core::default::Default for yororen_ui_core::renderer::ButtonVariant
+pub fn yororen_ui_core::renderer::ButtonVariant::default() -> Self
+impl core::fmt::Debug for yororen_ui_core::renderer::ButtonVariant
+pub fn yororen_ui_core::renderer::ButtonVariant::fmt(&self, &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::Freeze for yororen_ui_core::renderer::ButtonVariant
+impl core::marker::Send for yororen_ui_core::renderer::ButtonVariant
+impl core::marker::Sync for yororen_ui_core::renderer::ButtonVariant
+impl core::marker::Unpin for yororen_ui_core::renderer::ButtonVariant
+impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::ButtonVariant
+impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::ButtonVariant
+impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::ButtonVariant
 pub struct yororen_ui_core::renderer::Avatar
 impl core::clone::Clone for yororen_ui_core::renderer::Avatar
 pub fn yororen_ui_core::renderer::Avatar::clone(&self) -> yororen_ui_core::renderer::Avatar
@@ -5532,6 +5646,15 @@ impl core::marker::Unpin for yororen_ui_core::renderer::Form
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::Form
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::Form
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::Form
+pub struct yororen_ui_core::renderer::GlobalVariantRegistry(pub alloc::sync::Arc<yororen_ui_core::renderer::VariantRegistry>)
+impl gpui::global::Global for yororen_ui_core::renderer::GlobalVariantRegistry
+impl core::marker::Freeze for yororen_ui_core::renderer::GlobalVariantRegistry
+impl core::marker::Send for yororen_ui_core::renderer::GlobalVariantRegistry
+impl core::marker::Sync for yororen_ui_core::renderer::GlobalVariantRegistry
+impl core::marker::Unpin for yororen_ui_core::renderer::GlobalVariantRegistry
+impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::GlobalVariantRegistry
+impl !core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::GlobalVariantRegistry
+impl !core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::GlobalVariantRegistry
 pub struct yororen_ui_core::renderer::Heading
 impl core::clone::Clone for yororen_ui_core::renderer::Heading
 pub fn yororen_ui_core::renderer::Heading::clone(&self) -> yororen_ui_core::renderer::Heading
@@ -6012,6 +6135,28 @@ impl core::marker::Unpin for yororen_ui_core::renderer::ToggleButton
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::ToggleButton
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::ToggleButton
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::ToggleButton
+pub struct yororen_ui_core::renderer::TokenVariantStyle
+pub yororen_ui_core::renderer::TokenVariantStyle::bg: gpui::color::Hsla
+pub yororen_ui_core::renderer::TokenVariantStyle::disabled_bg: gpui::color::Hsla
+pub yororen_ui_core::renderer::TokenVariantStyle::disabled_fg: gpui::color::Hsla
+pub yororen_ui_core::renderer::TokenVariantStyle::disabled_opacity: f32
+pub yororen_ui_core::renderer::TokenVariantStyle::fg: gpui::color::Hsla
+impl yororen_ui_core::renderer::TokenVariantStyle
+pub fn yororen_ui_core::renderer::TokenVariantStyle::from_action(yororen_ui_core::renderer::ActionVariantKind, &yororen_ui_core::theme::Theme) -> Self
+impl core::fmt::Debug for yororen_ui_core::renderer::TokenVariantStyle
+pub fn yororen_ui_core::renderer::TokenVariantStyle::fmt(&self, &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl yororen_ui_core::renderer::VariantStyle for yororen_ui_core::renderer::TokenVariantStyle
+pub fn yororen_ui_core::renderer::TokenVariantStyle::bg(&self, &yororen_ui_core::renderer::VariantState) -> gpui::color::Hsla
+pub fn yororen_ui_core::renderer::TokenVariantStyle::border(&self, &yororen_ui_core::renderer::VariantState) -> core::option::Option<gpui::color::Hsla>
+pub fn yororen_ui_core::renderer::TokenVariantStyle::disabled_opacity(&self) -> f32
+pub fn yororen_ui_core::renderer::TokenVariantStyle::fg(&self, &yororen_ui_core::renderer::VariantState) -> gpui::color::Hsla
+impl core::marker::Freeze for yororen_ui_core::renderer::TokenVariantStyle
+impl core::marker::Send for yororen_ui_core::renderer::TokenVariantStyle
+impl core::marker::Sync for yororen_ui_core::renderer::TokenVariantStyle
+impl core::marker::Unpin for yororen_ui_core::renderer::TokenVariantStyle
+impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::TokenVariantStyle
+impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::TokenVariantStyle
+impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::TokenVariantStyle
 pub struct yororen_ui_core::renderer::Tooltip
 impl core::clone::Clone for yororen_ui_core::renderer::Tooltip
 pub fn yororen_ui_core::renderer::Tooltip::clone(&self) -> yororen_ui_core::renderer::Tooltip
@@ -6052,6 +6197,64 @@ impl core::marker::Unpin for yororen_ui_core::renderer::TreeItem
 impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::TreeItem
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::TreeItem
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::TreeItem
+pub struct yororen_ui_core::renderer::VariantKey(pub alloc::borrow::Cow<'static, str>)
+impl yororen_ui_core::renderer::VariantKey
+pub fn yororen_ui_core::renderer::VariantKey::borrowed(&'static str) -> Self
+pub fn yororen_ui_core::renderer::VariantKey::owned(impl core::convert::Into<alloc::string::String>) -> Self
+impl core::clone::Clone for yororen_ui_core::renderer::VariantKey
+pub fn yororen_ui_core::renderer::VariantKey::clone(&self) -> yororen_ui_core::renderer::VariantKey
+impl core::cmp::Eq for yororen_ui_core::renderer::VariantKey
+impl core::cmp::PartialEq for yororen_ui_core::renderer::VariantKey
+pub fn yororen_ui_core::renderer::VariantKey::eq(&self, &yororen_ui_core::renderer::VariantKey) -> bool
+impl core::convert::From<yororen_ui_core::renderer::VariantKey> for yororen_ui_core::renderer::ButtonVariant
+pub fn yororen_ui_core::renderer::ButtonVariant::from(yororen_ui_core::renderer::VariantKey) -> Self
+impl core::fmt::Debug for yororen_ui_core::renderer::VariantKey
+pub fn yororen_ui_core::renderer::VariantKey::fmt(&self, &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::hash::Hash for yororen_ui_core::renderer::VariantKey
+pub fn yororen_ui_core::renderer::VariantKey::hash<__H: core::hash::Hasher>(&self, &mut __H)
+impl core::marker::StructuralPartialEq for yororen_ui_core::renderer::VariantKey
+impl core::marker::Freeze for yororen_ui_core::renderer::VariantKey
+impl core::marker::Send for yororen_ui_core::renderer::VariantKey
+impl core::marker::Sync for yororen_ui_core::renderer::VariantKey
+impl core::marker::Unpin for yororen_ui_core::renderer::VariantKey
+impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::VariantKey
+impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::VariantKey
+impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::VariantKey
+pub struct yororen_ui_core::renderer::VariantRegistry
+impl yororen_ui_core::renderer::VariantRegistry
+pub fn yororen_ui_core::renderer::VariantRegistry::builtin(&self, yororen_ui_core::renderer::BuiltinVariantKey) -> core::option::Option<alloc::sync::Arc<dyn yororen_ui_core::renderer::VariantStyle>>
+pub fn yororen_ui_core::renderer::VariantRegistry::custom_count(&self) -> usize
+pub fn yororen_ui_core::renderer::VariantRegistry::empty() -> Self
+pub fn yororen_ui_core::renderer::VariantRegistry::register(&self, yororen_ui_core::renderer::VariantKey, alloc::sync::Arc<dyn yororen_ui_core::renderer::VariantStyle>)
+pub fn yororen_ui_core::renderer::VariantRegistry::resolve(&self, &yororen_ui_core::renderer::VariantKey) -> core::option::Option<alloc::sync::Arc<dyn yororen_ui_core::renderer::VariantStyle>>
+pub fn yororen_ui_core::renderer::VariantRegistry::unregister(&self, &yororen_ui_core::renderer::VariantKey) -> core::option::Option<alloc::sync::Arc<dyn yororen_ui_core::renderer::VariantStyle>>
+pub fn yororen_ui_core::renderer::VariantRegistry::with_builtin(self, yororen_ui_core::renderer::BuiltinVariantKey, alloc::sync::Arc<dyn yororen_ui_core::renderer::VariantStyle>) -> Self
+pub fn yororen_ui_core::renderer::VariantRegistry::with_defaults_for_theme(&yororen_ui_core::theme::Theme) -> Self
+impl core::default::Default for yororen_ui_core::renderer::VariantRegistry
+pub fn yororen_ui_core::renderer::VariantRegistry::default() -> Self
+impl !core::marker::Freeze for yororen_ui_core::renderer::VariantRegistry
+impl core::marker::Send for yororen_ui_core::renderer::VariantRegistry
+impl core::marker::Sync for yororen_ui_core::renderer::VariantRegistry
+impl core::marker::Unpin for yororen_ui_core::renderer::VariantRegistry
+impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::VariantRegistry
+impl !core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::VariantRegistry
+impl !core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::VariantRegistry
+pub struct yororen_ui_core::renderer::VariantState
+pub yororen_ui_core::renderer::VariantState::disabled: bool
+impl core::clone::Clone for yororen_ui_core::renderer::VariantState
+pub fn yororen_ui_core::renderer::VariantState::clone(&self) -> yororen_ui_core::renderer::VariantState
+impl core::default::Default for yororen_ui_core::renderer::VariantState
+pub fn yororen_ui_core::renderer::VariantState::default() -> yororen_ui_core::renderer::VariantState
+impl core::fmt::Debug for yororen_ui_core::renderer::VariantState
+pub fn yororen_ui_core::renderer::VariantState::fmt(&self, &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::Copy for yororen_ui_core::renderer::VariantState
+impl core::marker::Freeze for yororen_ui_core::renderer::VariantState
+impl core::marker::Send for yororen_ui_core::renderer::VariantState
+impl core::marker::Sync for yororen_ui_core::renderer::VariantState
+impl core::marker::Unpin for yororen_ui_core::renderer::VariantState
+impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::VariantState
+impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::VariantState
+impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::VariantState
 pub trait yororen_ui_core::renderer::RendererContext
 pub fn yororen_ui_core::renderer::RendererContext::has_renderer<T: yororen_ui_core::renderer::RendererMarker>(&self) -> bool
 pub fn yororen_ui_core::renderer::RendererContext::register_renderer_arc<T: yororen_ui_core::renderer::RendererMarker, R: ?core::marker::Sized + core::marker::Send + core::marker::Sync + 'static>(&mut self, alloc::sync::Arc<R>)
@@ -6099,7 +6302,18 @@ impl yororen_ui_core::renderer::RendererMarker for yororen_ui_core::renderer::To
 impl yororen_ui_core::renderer::RendererMarker for yororen_ui_core::renderer::ToggleButton
 impl yororen_ui_core::renderer::RendererMarker for yororen_ui_core::renderer::Tooltip
 impl yororen_ui_core::renderer::RendererMarker for yororen_ui_core::renderer::TreeItem
+pub trait yororen_ui_core::renderer::VariantStyle: core::marker::Send + core::marker::Sync + core::fmt::Debug
+pub fn yororen_ui_core::renderer::VariantStyle::bg(&self, &yororen_ui_core::renderer::VariantState) -> gpui::color::Hsla
+pub fn yororen_ui_core::renderer::VariantStyle::border(&self, &yororen_ui_core::renderer::VariantState) -> core::option::Option<gpui::color::Hsla>
+pub fn yororen_ui_core::renderer::VariantStyle::disabled_opacity(&self) -> f32
+pub fn yororen_ui_core::renderer::VariantStyle::fg(&self, &yororen_ui_core::renderer::VariantState) -> gpui::color::Hsla
+impl yororen_ui_core::renderer::VariantStyle for yororen_ui_core::renderer::TokenVariantStyle
+pub fn yororen_ui_core::renderer::TokenVariantStyle::bg(&self, &yororen_ui_core::renderer::VariantState) -> gpui::color::Hsla
+pub fn yororen_ui_core::renderer::TokenVariantStyle::border(&self, &yororen_ui_core::renderer::VariantState) -> core::option::Option<gpui::color::Hsla>
+pub fn yororen_ui_core::renderer::TokenVariantStyle::disabled_opacity(&self) -> f32
+pub fn yororen_ui_core::renderer::TokenVariantStyle::fg(&self, &yororen_ui_core::renderer::VariantState) -> gpui::color::Hsla
 pub fn yororen_ui_core::renderer::init_renderer_registry(&mut gpui::app::App)
+pub fn yororen_ui_core::renderer::variant_compose(alloc::sync::Arc<dyn yororen_ui_core::renderer::VariantStyle>, &[(yororen_ui_core::renderer::VariantKey, alloc::sync::Arc<dyn yororen_ui_core::renderer::VariantStyle>)]) -> alloc::sync::Arc<dyn yororen_ui_core::renderer::VariantStyle>
 pub mod yororen_ui_core::rtl
 pub fn yororen_ui_core::rtl::corner_radius_end(&mut gpui::style::StyleRefinement, yororen_ui_core::i18n::locale::TextDirection, impl core::convert::Into<gpui::geometry::AbsoluteLength>)
 pub fn yororen_ui_core::rtl::corner_radius_end_none(&mut gpui::style::StyleRefinement, yororen_ui_core::i18n::locale::TextDirection)

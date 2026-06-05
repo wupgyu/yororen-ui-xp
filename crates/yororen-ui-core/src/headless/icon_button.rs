@@ -17,6 +17,7 @@ pub struct IconButtonProps {
     pub focus_handle: FocusHandle,
     pub on_click: Option<ClickCallback>,
     pub disabled: bool,
+    pub variant: crate::renderer::ActionVariantKind,
 }
 
 pub fn icon_button(id: impl Into<ElementId>, cx: &mut App) -> IconButtonProps {
@@ -25,6 +26,7 @@ pub fn icon_button(id: impl Into<ElementId>, cx: &mut App) -> IconButtonProps {
         focus_handle: cx.focus_handle(),
         on_click: None,
         disabled: false,
+        variant: crate::renderer::ActionVariantKind::default(),
     }
 }
 
@@ -44,6 +46,10 @@ impl IconButtonProps {
     }
     pub fn disabled(mut self, v: bool) -> Self {
         self.disabled = v;
+        self
+    }
+    pub fn variant(mut self, v: crate::renderer::ActionVariantKind) -> Self {
+        self.variant = v;
         self
     }
 

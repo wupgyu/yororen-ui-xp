@@ -10,6 +10,12 @@ pub struct ProgressBarProps {
     pub value: f32,
     pub max: f32,
     pub label: Option<String>,
+    /// `true` → renderer shows an animated indeterminate bar
+    /// (no `value` reading).
+    pub indeterminate: bool,
+    /// `true` → the caller supplied a custom height (renderer
+    /// reads it; otherwise falls back to the theme default).
+    pub has_custom_height: bool,
 }
 
 pub fn progress(id: impl Into<ElementId>, _cx: &mut App) -> ProgressBarProps {
@@ -18,6 +24,8 @@ pub fn progress(id: impl Into<ElementId>, _cx: &mut App) -> ProgressBarProps {
         value: 0.0,
         max: 1.0,
         label: None,
+        indeterminate: false,
+        has_custom_height: false,
     }
 }
 
@@ -32,6 +40,14 @@ impl ProgressBarProps {
     }
     pub fn label(mut self, l: impl Into<String>) -> Self {
         self.label = Some(l.into());
+        self
+    }
+    pub fn indeterminate(mut self, v: bool) -> Self {
+        self.indeterminate = v;
+        self
+    }
+    pub fn has_custom_height(mut self, v: bool) -> Self {
+        self.has_custom_height = v;
         self
     }
     pub fn apply(self, el: Div) -> Stateful<Div> {

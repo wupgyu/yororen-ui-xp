@@ -71,6 +71,12 @@ pub struct TooltipProps {
     pub id: ElementId,
     pub state: Entity<TooltipState>,
     pub text: String,
+    /// `true` if the caller supplied a custom background color
+    /// (consumed by `TooltipRenderer.has_custom_bg`).
+    pub has_custom_bg: bool,
+    /// `true` if the caller supplied a custom foreground color
+    /// (consumed by `TooltipRenderer.has_custom_fg`).
+    pub has_custom_fg: bool,
 }
 
 pub fn tooltip(
@@ -82,10 +88,20 @@ pub fn tooltip(
         id: id.into(),
         state,
         text: text.into(),
+        has_custom_bg: false,
+        has_custom_fg: false,
     }
 }
 
 impl TooltipProps {
+    pub fn has_custom_bg(mut self, v: bool) -> Self {
+        self.has_custom_bg = v;
+        self
+    }
+    pub fn has_custom_fg(mut self, v: bool) -> Self {
+        self.has_custom_fg = v;
+        self
+    }
     pub fn apply(self, el: Div) -> Stateful<Div> {
         el.id(self.id)
     }

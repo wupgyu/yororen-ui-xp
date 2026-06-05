@@ -39,7 +39,7 @@ fn main() {
 
         let options = WindowOptions {
             window_bounds: Some(WindowBounds::Windowed(
-                gpui::Bounds::centered(None, size(px(1200.0), px(500.0)), cx),
+                gpui::Bounds::centered(None, size(px(1500.0), px(500.0)), cx),
             )),
             ..Default::default()
         };

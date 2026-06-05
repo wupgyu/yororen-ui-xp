@@ -13,6 +13,13 @@ pub struct LabelRenderState {
     pub strong: bool,
     pub mono: bool,
     pub inherit_color: bool,
+    /// Single-line text gets an ellipsis when it overflows.
+    pub ellipsis: bool,
+    /// Allow text to wrap at the parent's width boundary.
+    pub wrap: bool,
+    /// Cap the visible line count to `Some(n)`. `None` means
+    /// unlimited (the default).
+    pub max_lines: Option<usize>,
 }
 
 pub trait LabelRenderer: Any + Send + Sync {
@@ -77,6 +84,9 @@ impl DefaultLabel for LabelProps {
             strong: self.strong,
             mono: self.mono,
             inherit_color: self.inherit_color,
+            ellipsis: self.ellipsis,
+            wrap: self.wrap,
+            max_lines: self.max_lines,
         };
         let color = r.color(&state, theme);
         let weight = r.strong_weight(&state, theme);
@@ -90,6 +100,18 @@ impl DefaultLabel for LabelProps {
         }
         if self.mono {
             el = el.font_family(family);
+        }
+        if self.ellipsis {
+            el = el.overflow_hidden().text_ellipsis().whitespace_nowrap();
+        }
+        if self.wrap {
+            el = el.whitespace_normal();
+        }
+        if let Some(n) = self.max_lines {
+            // gpui exposes `line_clamp` on `Styled`; it both
+            // truncates and disables wrapping. Pair with
+            // `overflow_hidden` for safety.
+            el = el.line_clamp(n).overflow_hidden();
         }
         el = el.child(self.text.clone());
         self.apply(el)

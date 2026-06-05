@@ -50,28 +50,9 @@ pub struct ButtonRenderState {
     pub custom_style: Option<Arc<dyn VariantStyle>>,
 }
 
-/// Logical kind of an action button. Maps to one of the three
-/// entries under `theme.action.*` in the JSON theme.
-#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
-pub enum ActionVariantKind {
-    #[default]
-    Neutral,
-    Primary,
-    Danger,
-}
-
-impl ActionVariantKind {
-    /// Lowercase key used to look up `action.<key>.<field>` paths
-    /// in the theme JSON. Stable, exposed for diagnostic
-    /// messages.
-    pub fn as_str(self) -> &'static str {
-        match self {
-            Self::Neutral => "neutral",
-            Self::Primary => "primary",
-            Self::Danger => "danger",
-        }
-    }
-}
+/// Re-exported from `yororen_ui_core::renderer`. The `TokenButtonRenderer`
+/// maps the kind to a `theme.action.<key>.*` palette path.
+pub use yororen_ui_core::renderer::ActionVariantKind;
 
 /// Renderer for the `Button` component. Implementations decide
 /// what the button looks like in every state.
@@ -334,7 +315,14 @@ impl DefaultButton for ButtonProps {
         let r: &Arc<dyn ButtonRenderer> = cx
             .renderer_arc::<ButtonMarker, dyn ButtonRenderer>()
             .expect("ButtonRenderer registered");
-        let state = ButtonRenderState::default();
+        let state = ButtonRenderState {
+            variant: self.variant,
+            disabled: self.disabled,
+            is_rtl: false,
+            has_custom_bg: false,
+            has_custom_hover_bg: false,
+            custom_style: None,
+        };
         let bg = r.bg(&state, theme);
         let fg = r.fg(&state, theme);
         let padding = r.padding(&state, theme);
