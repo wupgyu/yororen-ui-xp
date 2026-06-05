@@ -20,6 +20,7 @@ use gpui::{App, WindowAppearance};
 
 use yororen_ui_core::renderer::markers;
 use yororen_ui_core::renderer::RendererContext;
+use yororen_ui_core::theme::{install as install_theme, Theme};
 
 use crate::renderers::{
     TokenAvatarRenderer, TokenBadgeRenderer, TokenButtonRenderer, TokenCardRenderer,
@@ -33,7 +34,6 @@ use crate::renderers::{
     TokenSwitchRenderer, TokenTagRenderer, TokenTextAreaRenderer, TokenTextInputRenderer,
     TokenToastRenderer, TokenToggleButtonRenderer, TokenTooltipRenderer, TokenTreeItemRenderer,
 };
-use crate::theme::{GlobalTheme, Theme};
 
 /// Load `themes/system-light.json` as a `Theme`.
 pub fn system_light() -> Theme {
@@ -75,7 +75,7 @@ pub fn install(cx: &mut App, appearance: WindowAppearance) {
 /// Useful for tests and for apps that ship their own JSON
 /// theme.
 pub fn install_with(cx: &mut App, theme: Theme) {
-    cx.set_global(GlobalTheme::new(theme));
+    install_theme(cx, theme);
     register_default_renderers(cx);
 }
 

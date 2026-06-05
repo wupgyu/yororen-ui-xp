@@ -24,7 +24,6 @@
 #![warn(missing_docs)]
 
 pub mod renderers;
-pub mod theme;
 pub mod themes;
 
 pub use renderers::button::DefaultButton;
@@ -40,5 +39,13 @@ pub use renderers::{
     LabelRenderState, LabelRenderer, ToggleButtonRenderState, ToggleButtonRenderer,
 };
 
-pub use theme::{GlobalTheme, Theme};
+// Re-export the v0.3 core `Theme` (the JSON-backed, no-schema
+// value) under both the v0.3 `Theme` symbol and the
+// `renderer::Theme` alias for backward-compat imports.
+pub use yororen_ui_core::theme::Theme;
+pub mod theme {
+    pub use yororen_ui_core::theme::*;
+    pub use crate::renderers::button::ActionVariantKind;
+}
+
 pub use themes::{install, install_with, register_default_renderers, system_dark, system_for, system_light};

@@ -40,7 +40,7 @@ use std::sync::{Arc, RwLock};
 
 use gpui::{App, Global, Hsla};
 
-use crate::theme::ActionVariantKind;
+use crate::renderers::button::ActionVariantKind;
 
 /// A key identifying a custom variant. Built-in variants are referenced
 /// by their `ActionVariantKind` directly; custom variants use a
@@ -96,12 +96,32 @@ impl TokenVariantStyle {
     /// Build a `TokenVariantStyle` from an `ActionVariant` palette.
     /// The `disabled_*` colors come from the same variant's disabled
     /// slot; `disabled_opacity` is the standard 0.5.
-    pub fn from_action(v: &crate::theme::ActionVariant) -> Self {
+    pub fn from_action(v_kind: ActionVariantKind, theme: &crate::Theme) -> Self {
+        let (path_bg, path_fg, path_db, path_df) = match v_kind {
+            ActionVariantKind::Primary => (
+                "action.primary.bg",
+                "action.primary.fg",
+                "action.primary.disabled_bg",
+                "action.primary.disabled_fg",
+            ),
+            ActionVariantKind::Danger => (
+                "action.danger.bg",
+                "action.danger.fg",
+                "action.danger.disabled_bg",
+                "action.danger.disabled_fg",
+            ),
+            ActionVariantKind::Neutral => (
+                "action.neutral.bg",
+                "action.neutral.fg",
+                "action.neutral.disabled_bg",
+                "action.neutral.disabled_fg",
+            ),
+        };
         Self {
-            bg: v.bg,
-            fg: v.fg,
-            disabled_bg: v.disabled_bg,
-            disabled_fg: v.disabled_fg,
+            bg: theme.get_color(path_bg).unwrap_or_default(),
+            fg: theme.get_color(path_fg).unwrap_or_default(),
+            disabled_bg: theme.get_color(path_db).unwrap_or_default(),
+            disabled_fg: theme.get_color(path_df).unwrap_or_default(),
             disabled_opacity: 0.5,
         }
     }
@@ -206,25 +226,48 @@ impl VariantRegistry {
     /// companion to `with_defaults()`. Use this if your renderer
     /// wants `registry.builtin(Neutral)` to return a real
     /// `VariantStyle` derived from the theme's `action.neutral`.
-    pub fn with_defaults_for_theme(theme: &crate::theme::Theme) -> Self {
+    pub fn with_defaults_for_theme(theme: &crate::Theme) -> Self {
         let mut r = Self::empty();
+        let make = |v_kind: ActionVariantKind, key: BuiltinVariantKey| {
+            let path_bg = match v_kind {
+                ActionVariantKind::Primary => "action.primary.bg",
+                ActionVariantKind::Danger => "action.danger.bg",
+                ActionVariantKind::Neutral => "action.neutral.bg",
+            };
+            let path_fg = match v_kind {
+                ActionVariantKind::Primary => "action.primary.fg",
+                ActionVariantKind::Danger => "action.danger.fg",
+                ActionVariantKind::Neutral => "action.neutral.fg",
+            };
+            let path_disabled_bg = match v_kind {
+                ActionVariantKind::Primary => "action.primary.disabled_bg",
+                ActionVariantKind::Danger => "action.danger.disabled_bg",
+                ActionVariantKind::Neutral => "action.neutral.disabled_bg",
+            };
+            let path_disabled_fg = match v_kind {
+                ActionVariantKind::Primary => "action.primary.disabled_fg",
+                ActionVariantKind::Danger => "action.danger.disabled_fg",
+                ActionVariantKind::Neutral => "action.neutral.disabled_fg",
+            };
+            Arc::new(super::variant::TokenVariantStyle {
+                bg: theme.get_color(path_bg).unwrap_or_default(),
+                fg: theme.get_color(path_fg).unwrap_or_default(),
+                disabled_bg: theme.get_color(path_disabled_bg).unwrap_or_default(),
+                disabled_fg: theme.get_color(path_disabled_fg).unwrap_or_default(),
+                disabled_opacity: 0.5,
+            })
+        };
         r.builtins.insert(
             BuiltinVariantKey::Neutral,
-            Arc::new(super::variant::TokenVariantStyle::from_action(
-                &theme.action.neutral,
-            )),
+            make(ActionVariantKind::Neutral, BuiltinVariantKey::Neutral),
         );
         r.builtins.insert(
             BuiltinVariantKey::Primary,
-            Arc::new(super::variant::TokenVariantStyle::from_action(
-                &theme.action.primary,
-            )),
+            make(ActionVariantKind::Primary, BuiltinVariantKey::Primary),
         );
         r.builtins.insert(
             BuiltinVariantKey::Danger,
-            Arc::new(super::variant::TokenVariantStyle::from_action(
-                &theme.action.danger,
-            )),
+            make(ActionVariantKind::Danger, BuiltinVariantKey::Danger),
         );
         r
     }
