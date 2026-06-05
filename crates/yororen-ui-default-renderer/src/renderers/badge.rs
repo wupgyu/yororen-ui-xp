@@ -5,7 +5,7 @@ use std::sync::Arc;
 
 use gpui::{FontWeight, Hsla, Pixels};
 
-use crate::theme::Theme;
+use yororen_ui_core::theme::Theme;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct BadgeRenderState {
@@ -27,35 +27,35 @@ pub struct TokenBadgeRenderer;
 
 impl BadgeRenderer for TokenBadgeRenderer {
     fn bg(&self, _state: &BadgeRenderState, theme: &Theme) -> Hsla {
-        theme.status.info.bg
+        theme.get_color("status.info.bg").unwrap_or_default()
     }
 
     fn fg(&self, state: &BadgeRenderState, theme: &Theme) -> Hsla {
         if state.has_custom_tone {
-            theme.content.on_status
+            theme.get_color("content.on_status").unwrap_or_default()
         } else {
-            theme.status.info.fg
+            theme.get_color("status.info.fg").unwrap_or_default()
         }
     }
 
     fn padding_x(&self, _state: &BadgeRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.spacing.inset_sm
+        gpui::px(theme.get_number("tokens.spacing.inset_sm").unwrap_or(0.0) as f32)
     }
 
     fn height(&self, _state: &BadgeRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.control.badge.min_height
+        gpui::px(theme.get_number("tokens.control.badge.min_height").unwrap_or(0.0) as f32)
     }
 
     fn font_size(&self, _state: &BadgeRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.typography.font_size_xs
+        gpui::px(theme.get_number("tokens.typography.font_size_xs").unwrap_or(0.0) as f32)
     }
 
     fn font_weight(&self, _state: &BadgeRenderState, theme: &Theme) -> FontWeight {
-        theme.tokens.typography.weight_medium
+        FontWeight(theme.get_number("tokens.typography.weight_medium").unwrap_or(500.0) as f32)
     }
 
     fn border_radius(&self, _state: &BadgeRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.radii.pill
+        gpui::px(theme.get_number("tokens.radii.pill").unwrap_or(0.0) as f32)
     }
 }
 

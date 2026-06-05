@@ -5,7 +5,7 @@ use std::sync::Arc;
 
 use gpui::{Hsla, Pixels};
 
-use crate::theme::Theme;
+use yororen_ui_core::theme::Theme;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct PopoverRenderState {}
@@ -22,19 +22,19 @@ pub struct TokenPopoverRenderer;
 
 impl PopoverRenderer for TokenPopoverRenderer {
     fn bg(&self, _state: &PopoverRenderState, theme: &Theme) -> Hsla {
-        theme.surface.raised
+        theme.get_color("surface.raised").unwrap_or_default()
     }
     fn border(&self, _state: &PopoverRenderState, theme: &Theme) -> Hsla {
-        theme.border.muted
+        theme.get_color("border.muted").unwrap_or_default()
     }
     fn shadow_alpha(&self, _state: &PopoverRenderState, theme: &Theme) -> f32 {
-        theme.shadow.elevation_2.a
+        theme.get_color("shadow.elevation_2").unwrap_or_default().a
     }
     fn border_radius(&self, _state: &PopoverRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.radii.md
+        gpui::px(theme.get_number("tokens.radii.md").unwrap_or(0.0) as f32)
     }
     fn offset(&self, _state: &PopoverRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.control.popover.offset
+        gpui::px(theme.get_number("tokens.control.popover.offset").unwrap_or(0.0) as f32)
     }
 }
 

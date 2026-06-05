@@ -6,7 +6,7 @@ use std::sync::Arc;
 use gpui::{Hsla, Pixels};
 
 use crate::renderers::spec::Edges;
-use crate::theme::Theme;
+use yororen_ui_core::theme::Theme;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct KeybindingInputRenderState {
@@ -35,37 +35,37 @@ pub struct TokenKeybindingInputRenderer;
 
 impl KeybindingInputRenderer for TokenKeybindingInputRenderer {
     fn bg(&self, _state: &KeybindingInputRenderState, theme: &Theme) -> Hsla {
-        theme.surface.base
+        theme.get_color("surface.base").unwrap_or_default()
     }
     fn border(&self, _state: &KeybindingInputRenderState, theme: &Theme) -> Hsla {
-        theme.border.default
+        theme.get_color("border.default").unwrap_or_default()
     }
     fn focus_border(&self, _state: &KeybindingInputRenderState, theme: &Theme) -> Hsla {
-        theme.border.focus
+        theme.get_color("border.focus").unwrap_or_default()
     }
     fn kbd_bg(&self, _state: &KeybindingInputRenderState, theme: &Theme) -> Hsla {
-        theme.surface.hover
+        theme.get_color("surface.hover").unwrap_or_default()
     }
     fn kbd_fg(&self, _state: &KeybindingInputRenderState, theme: &Theme) -> Hsla {
-        theme.content.primary
+        theme.get_color("content.primary").unwrap_or_default()
     }
     fn kbd_padding(&self, _state: &KeybindingInputRenderState, theme: &Theme) -> Edges<Pixels> {
         Edges::symmetric(
-            theme.tokens.control.keybinding_input.kbd_padding_x,
-            theme.tokens.control.keybinding_input.kbd_padding_y,
+            gpui::px(theme.get_number("tokens.control.keybinding_input.kbd_padding_x").unwrap_or(0.0) as f32),
+            gpui::px(theme.get_number("tokens.control.keybinding_input.kbd_padding_y").unwrap_or(0.0) as f32),
         )
     }
     fn kbd_min_width(&self, _state: &KeybindingInputRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.control.keybinding_input.kbd_min_width
+        gpui::px(theme.get_number("tokens.control.keybinding_input.kbd_min_width").unwrap_or(0.0) as f32)
     }
     fn min_height(&self, _state: &KeybindingInputRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.control.input.min_height
+        gpui::px(theme.get_number("tokens.control.input.min_height").unwrap_or(0.0) as f32)
     }
     fn border_radius(&self, _state: &KeybindingInputRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.radii.md
+        gpui::px(theme.get_number("tokens.radii.md").unwrap_or(0.0) as f32)
     }
     fn icon_size(&self, _state: &KeybindingInputRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.control.keybinding_input.icon_size
+        gpui::px(theme.get_number("tokens.control.keybinding_input.icon_size").unwrap_or(0.0) as f32)
     }
 }
 

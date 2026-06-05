@@ -5,7 +5,8 @@ use std::sync::Arc;
 
 use gpui::{Hsla, Pixels};
 
-use crate::theme::{ActionVariantKind, Theme};
+use crate::theme::ActionVariantKind;
+use yororen_ui_core::theme::Theme;
 
 use super::variant::{VariantState, VariantStyle};
 
@@ -40,40 +41,40 @@ impl ToggleButtonRenderer for TokenToggleButtonRenderer {
             // look. When selected we keep mapping to theme.primary so
             // existing toggle semantics are preserved.
             if state.selected {
-                return theme.action.primary.bg;
+                return theme.get_color("action.primary.bg").unwrap_or_default();
             }
             return s.bg(&VariantState {
                 disabled: state.disabled,
             });
         }
         if state.disabled {
-            theme.action.neutral.disabled_bg
+            theme.get_color("action.neutral.disabled_bg").unwrap_or_default()
         } else if state.selected {
-            theme.action.primary.bg
+            theme.get_color("action.primary.bg").unwrap_or_default()
         } else {
-            theme.action.neutral.bg
+            theme.get_color("action.neutral.bg").unwrap_or_default()
         }
     }
     fn fg(&self, state: &ToggleButtonRenderState, theme: &Theme) -> Hsla {
         if let Some(s) = &state.custom_style {
             if state.selected {
-                return theme.action.primary.fg;
+                return theme.get_color("action.primary.fg").unwrap_or_default();
             }
             return s.fg(&VariantState {
                 disabled: state.disabled,
             });
         }
         if state.selected {
-            theme.action.primary.fg
+            theme.get_color("action.primary.fg").unwrap_or_default()
         } else {
-            theme.action.neutral.fg
+            theme.get_color("action.neutral.fg").unwrap_or_default()
         }
     }
     fn min_height(&self, _state: &ToggleButtonRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.control.toggle_button.min_height
+        gpui::px(theme.get_number("tokens.control.toggle_button.min_height").unwrap_or(0.0) as f32)
     }
     fn border_radius(&self, _state: &ToggleButtonRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.radii.md
+        gpui::px(theme.get_number("tokens.radii.md").unwrap_or(0.0) as f32)
     }
     fn disabled_opacity(&self, state: &ToggleButtonRenderState, _theme: &Theme) -> f32 {
         if let Some(s) = &state.custom_style {
@@ -93,8 +94,8 @@ pub fn arc_toggle_button<T: ToggleButtonRenderer + 'static>(r: T) -> Arc<dyn Tog
 
 use gpui::{prelude::FluentBuilder, div, App, Stateful, Styled};
 use yororen_ui_core::headless::toggle_button::ToggleButtonProps;
-
-use crate::theme::ActiveTheme;
+use yororen_ui_core::renderer::{markers, RendererContext};
+use yororen_ui_core::theme::ActiveTheme;
 
 pub trait DefaultToggleButton: Sized {
     fn default_render(self, cx: &App) -> Stateful<gpui::Div>;
@@ -103,9 +104,8 @@ pub trait DefaultToggleButton: Sized {
 impl DefaultToggleButton for ToggleButtonProps {
     fn default_render(self, cx: &App) -> Stateful<gpui::Div> {
         let theme = cx.theme();
-        let r: &dyn ToggleButtonRenderer = &**theme
-            .renderers
-            .get_toggle_button()
+        let r: &Arc<dyn ToggleButtonRenderer> = cx
+            .renderer_arc::<markers::ToggleButton, dyn ToggleButtonRenderer>()
             .expect("ToggleButtonRenderer registered");
         let state = ToggleButtonRenderState::default();
         let bg = r.bg(&state, theme);

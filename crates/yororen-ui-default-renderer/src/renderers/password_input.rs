@@ -6,7 +6,7 @@ use std::sync::Arc;
 use gpui::{Hsla, Pixels};
 
 use crate::renderers::spec::Edges;
-use crate::theme::Theme;
+use yororen_ui_core::theme::Theme;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct PasswordInputRenderState {
@@ -34,42 +34,50 @@ pub struct TokenPasswordInputRenderer;
 impl PasswordInputRenderer for TokenPasswordInputRenderer {
     fn bg(&self, state: &PasswordInputRenderState, theme: &Theme) -> Hsla {
         if state.disabled {
-            theme.surface.sunken
+            theme.get_color("surface.sunken").unwrap_or_default()
         } else {
-            state.custom_bg.unwrap_or(theme.surface.base)
+            state
+                .custom_bg
+                .unwrap_or_else(|| theme.get_color("surface.base").unwrap_or_default())
         }
     }
     fn border(&self, state: &PasswordInputRenderState, theme: &Theme) -> Hsla {
         if state.disabled {
-            theme.border.muted
+            theme.get_color("border.muted").unwrap_or_default()
         } else {
-            state.custom_border.unwrap_or(theme.border.default)
+            state
+                .custom_border
+                .unwrap_or_else(|| theme.get_color("border.default").unwrap_or_default())
         }
     }
     fn focus_border(&self, state: &PasswordInputRenderState, theme: &Theme) -> Hsla {
-        state.custom_focus_border.unwrap_or(theme.border.focus)
+        state
+            .custom_focus_border
+            .unwrap_or_else(|| theme.get_color("border.focus").unwrap_or_default())
     }
     fn fg(&self, state: &PasswordInputRenderState, theme: &Theme) -> Hsla {
         if state.disabled {
-            theme.content.disabled
+            theme.get_color("content.disabled").unwrap_or_default()
         } else {
-            state.custom_fg.unwrap_or(theme.content.primary)
+            state
+                .custom_fg
+                .unwrap_or_else(|| theme.get_color("content.primary").unwrap_or_default())
         }
     }
     fn min_height(&self, _state: &PasswordInputRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.control.input.min_height
+        gpui::px(theme.get_number("tokens.control.input.min_height").unwrap_or(0.0) as f32)
     }
     fn padding(&self, _state: &PasswordInputRenderState, theme: &Theme) -> Edges<Pixels> {
         Edges::symmetric(
-            theme.tokens.control.input.horizontal_padding,
-            theme.tokens.control.input.vertical_padding,
+            gpui::px(theme.get_number("tokens.control.input.horizontal_padding").unwrap_or(0.0) as f32),
+            gpui::px(theme.get_number("tokens.control.input.vertical_padding").unwrap_or(0.0) as f32),
         )
     }
     fn border_radius(&self, _state: &PasswordInputRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.radii.md
+        gpui::px(theme.get_number("tokens.radii.md").unwrap_or(0.0) as f32)
     }
     fn toggle_icon_size(&self, _state: &PasswordInputRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.sizes.icon_sm
+        gpui::px(theme.get_number("tokens.sizes.icon_sm").unwrap_or(0.0) as f32)
     }
 }
 

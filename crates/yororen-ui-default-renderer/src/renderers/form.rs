@@ -5,7 +5,7 @@ use std::sync::Arc;
 
 use gpui::{Hsla, Pixels};
 
-use crate::theme::Theme;
+use yororen_ui_core::theme::Theme;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct FormRenderState {}
@@ -21,16 +21,16 @@ pub struct TokenFormRenderer;
 
 impl FormRenderer for TokenFormRenderer {
     fn gap(&self, _state: &FormRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.control.form.field_gap
+        gpui::px(theme.get_number("tokens.control.form.field_gap").unwrap_or(0.0) as f32)
     }
     fn label_color(&self, _state: &FormRenderState, theme: &Theme) -> Hsla {
-        theme.content.secondary
+        theme.get_color("content.secondary").unwrap_or_default()
     }
     fn error_color(&self, _state: &FormRenderState, theme: &Theme) -> Hsla {
-        theme.status.error.bg
+        theme.get_color("status.error.bg").unwrap_or_default()
     }
     fn helper_color(&self, _state: &FormRenderState, theme: &Theme) -> Hsla {
-        theme.content.tertiary
+        theme.get_color("content.tertiary").unwrap_or_default()
     }
 }
 

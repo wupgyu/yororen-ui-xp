@@ -5,7 +5,7 @@ use std::sync::Arc;
 
 use gpui::{Hsla, Pixels};
 
-use crate::theme::Theme;
+use yororen_ui_core::theme::Theme;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct DividerRenderState {
@@ -21,11 +21,11 @@ pub struct TokenDividerRenderer;
 
 impl DividerRenderer for TokenDividerRenderer {
     fn color(&self, _state: &DividerRenderState, theme: &Theme) -> Hsla {
-        theme.border.divider
+        theme.get_color("border.divider").unwrap_or_default()
     }
 
     fn thickness(&self, _state: &DividerRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.control.divider.thickness
+        gpui::px(theme.get_number("tokens.control.divider.thickness").unwrap_or(0.0) as f32)
     }
 }
 

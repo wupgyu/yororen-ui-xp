@@ -5,7 +5,7 @@ use std::sync::Arc;
 
 use gpui::{Hsla, Pixels};
 
-use crate::theme::Theme;
+use yororen_ui_core::theme::Theme;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct FocusRingRenderState {
@@ -22,7 +22,7 @@ pub struct TokenFocusRingRenderer;
 
 impl FocusRingRenderer for TokenFocusRingRenderer {
     fn color(&self, _state: &FocusRingRenderState, theme: &Theme) -> Hsla {
-        theme.border.focus
+        theme.get_color("border.focus").unwrap_or_default()
     }
 
     fn width(&self, _state: &FocusRingRenderState, _theme: &Theme) -> Pixels {

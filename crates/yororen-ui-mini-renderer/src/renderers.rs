@@ -2,22 +2,21 @@
 //! the theme — typically 0 to 2 fields — and bakes the rest
 //! of the visual into Rust code.
 //!
-//! Note: `ButtonRenderer` was migrated to the v0.3 core `Theme`
-//! during W2; the other three renderers still use the
-//! `default-renderer::Theme` view populated from JSON. We keep
-//! the two `Theme` types in scope to satisfy both.
+//! All 4 mini renderer impls (Button / IconButton / ToggleButton /
+//! Label) take the v0.3 core `Theme` now that the default
+//! renderer's traits have been migrated to the path-based
+//! schema.
 
 use std::sync::Arc;
 
 use gpui::{Hsla, Pixels};
 
-use yororen_ui_core::theme::Theme as CoreTheme;
+use yororen_ui_core::theme::Theme;
 use yororen_ui_default_renderer::renderers::spec::{BorderSpec, Edges, ShadowSpec};
 use yororen_ui_default_renderer::renderers::{
     ButtonRenderState, ButtonRenderer, IconButtonRenderState, IconButtonRenderer,
     LabelRenderState, LabelRenderer, ToggleButtonRenderState, ToggleButtonRenderer,
 };
-use yororen_ui_default_renderer::Theme;
 
 /// The mini palette: just one `Hsla` reused everywhere.
 #[derive(Copy, Clone, Debug)]
@@ -26,12 +25,13 @@ pub struct MiniPalette {
 }
 
 impl MiniPalette {
+    /// Read the single `themeColor` field from the v0.3
+    /// JSON-backed theme. Returns a zeroed `Hsla` if the path
+    /// is missing.
     pub fn from_theme(theme: &Theme) -> Self {
-        // The mini theme lives in `theme.action.primary.bg` of
-        // the default Theme (which is populated from JSON via
-        // `from_json`). We just read it like any other renderer
-        // would; nothing magic.
-        Self { base: theme.action.primary.bg }
+        Self {
+            base: theme.get_color("themeColor").unwrap_or_default(),
+        }
     }
 }
 
@@ -63,7 +63,7 @@ pub struct MiniButtonRenderer {
 }
 
 impl ButtonRenderer for MiniButtonRenderer {
-    fn bg(&self, _state: &ButtonRenderState, _theme: &CoreTheme) -> Hsla {
+    fn bg(&self, _state: &ButtonRenderState, _theme: &Theme) -> Hsla {
         if _state.disabled {
             // A subtle grey, completely independent of the theme.
             gpui::hsla(0.0, 0.0, 0.5, 0.6)
@@ -71,31 +71,31 @@ impl ButtonRenderer for MiniButtonRenderer {
             self.base
         }
     }
-    fn fg(&self, _state: &ButtonRenderState, _theme: &CoreTheme) -> Hsla {
+    fn fg(&self, _state: &ButtonRenderState, _theme: &Theme) -> Hsla {
         gpui::hsla(0.0, 0.0, 1.0, 1.0)
     }
-    fn padding(&self, _state: &ButtonRenderState, _theme: &CoreTheme) -> Edges<Pixels> {
+    fn padding(&self, _state: &ButtonRenderState, _theme: &Theme) -> Edges<Pixels> {
         Edges::symmetric(pad_x(), pad_y())
     }
-    fn border_radius(&self, _state: &ButtonRenderState, _theme: &CoreTheme) -> Pixels {
+    fn border_radius(&self, _state: &ButtonRenderState, _theme: &Theme) -> Pixels {
         radius()
     }
-    fn border(&self, _state: &ButtonRenderState, _theme: &CoreTheme) -> Option<BorderSpec> {
+    fn border(&self, _state: &ButtonRenderState, _theme: &Theme) -> Option<BorderSpec> {
         None
     }
-    fn shadow(&self, _state: &ButtonRenderState, _theme: &CoreTheme) -> Option<ShadowSpec> {
+    fn shadow(&self, _state: &ButtonRenderState, _theme: &Theme) -> Option<ShadowSpec> {
         None
     }
-    fn min_height(&self, _state: &ButtonRenderState, _theme: &CoreTheme) -> Pixels {
+    fn min_height(&self, _state: &ButtonRenderState, _theme: &Theme) -> Pixels {
         min_h()
     }
-    fn disabled_opacity(&self, _state: &ButtonRenderState, _theme: &CoreTheme) -> f32 {
+    fn disabled_opacity(&self, _state: &ButtonRenderState, _theme: &Theme) -> f32 {
         1.0
     }
 }
 
 // =====================================================================
-// `IconButtonRenderer` — reuses the MiniButtonRenderer's bg/fg but
+// `IconButtonRenderer` — reuses the MiniButtonRenderer's bg but
 // with a square aspect.
 // =====================================================================
 
@@ -154,8 +154,6 @@ impl LabelRenderer for MiniLabelRenderer {
     }
 }
 
-// Suppress unused-import warning when only some impls are referenced
-// (e.g. in the install() entry point).
 #[allow(dead_code)]
 fn _force_imports(_: Arc<()>) {
     let _ = MiniPalette::from_theme;

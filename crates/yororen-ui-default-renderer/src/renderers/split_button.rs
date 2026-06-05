@@ -5,7 +5,7 @@ use std::sync::Arc;
 
 use gpui::{Hsla, Pixels};
 
-use crate::theme::Theme;
+use yororen_ui_core::theme::Theme;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct SplitButtonRenderState {
@@ -28,28 +28,28 @@ pub struct TokenSplitButtonRenderer;
 
 impl SplitButtonRenderer for TokenSplitButtonRenderer {
     fn primary_bg(&self, _state: &SplitButtonRenderState, theme: &Theme) -> Hsla {
-        theme.action.primary.bg
+        theme.get_color("action.primary.bg").unwrap_or_default()
     }
     fn primary_fg(&self, _state: &SplitButtonRenderState, theme: &Theme) -> Hsla {
-        theme.action.primary.fg
+        theme.get_color("action.primary.fg").unwrap_or_default()
     }
     fn chevron_bg(&self, _state: &SplitButtonRenderState, theme: &Theme) -> Hsla {
-        theme.action.neutral.bg
+        theme.get_color("action.neutral.bg").unwrap_or_default()
     }
     fn chevron_fg(&self, _state: &SplitButtonRenderState, theme: &Theme) -> Hsla {
-        theme.action.neutral.fg
+        theme.get_color("action.neutral.fg").unwrap_or_default()
     }
     fn chevron_hover_bg(&self, _state: &SplitButtonRenderState, theme: &Theme) -> Hsla {
-        theme.action.neutral.hover_bg
+        theme.get_color("action.neutral.hover_bg").unwrap_or_default()
     }
     fn min_height(&self, _state: &SplitButtonRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.control.split_button.min_height
+        gpui::px(theme.get_number("tokens.control.split_button.min_height").unwrap_or(0.0) as f32)
     }
     fn border_radius(&self, _state: &SplitButtonRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.radii.md
+        gpui::px(theme.get_number("tokens.radii.md").unwrap_or(0.0) as f32)
     }
     fn gap(&self, _state: &SplitButtonRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.control.split_button.separator_w
+        gpui::px(theme.get_number("tokens.control.split_button.separator_w").unwrap_or(0.0) as f32)
     }
 }
 

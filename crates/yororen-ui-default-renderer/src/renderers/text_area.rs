@@ -6,7 +6,7 @@ use std::sync::Arc;
 use gpui::{Hsla, Pixels};
 
 use crate::renderers::spec::Edges;
-use crate::theme::Theme;
+use yororen_ui_core::theme::Theme;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct TextAreaRenderState {
@@ -34,36 +34,46 @@ pub struct TokenTextAreaRenderer;
 impl TextAreaRenderer for TokenTextAreaRenderer {
     fn bg(&self, state: &TextAreaRenderState, theme: &Theme) -> Hsla {
         if state.disabled {
-            theme.surface.sunken
+            theme.get_color("surface.sunken").unwrap_or_default()
         } else {
-            state.custom_bg.unwrap_or(theme.surface.base)
+            state
+                .custom_bg
+                .unwrap_or_else(|| theme.get_color("surface.base").unwrap_or_default())
         }
     }
     fn border(&self, state: &TextAreaRenderState, theme: &Theme) -> Hsla {
         if state.disabled {
-            theme.border.muted
+            theme.get_color("border.muted").unwrap_or_default()
         } else {
-            state.custom_border.unwrap_or(theme.border.default)
+            state
+                .custom_border
+                .unwrap_or_else(|| theme.get_color("border.default").unwrap_or_default())
         }
     }
     fn focus_border(&self, state: &TextAreaRenderState, theme: &Theme) -> Hsla {
-        state.custom_focus_border.unwrap_or(theme.border.focus)
+        state
+            .custom_focus_border
+            .unwrap_or_else(|| theme.get_color("border.focus").unwrap_or_default())
     }
     fn text_color(&self, state: &TextAreaRenderState, theme: &Theme) -> Hsla {
         if state.disabled {
-            theme.content.disabled
+            theme.get_color("content.disabled").unwrap_or_default()
         } else {
-            state.custom_text_color.unwrap_or(theme.content.primary)
+            state
+                .custom_text_color
+                .unwrap_or_else(|| theme.get_color("content.primary").unwrap_or_default())
         }
     }
     fn min_height(&self, _state: &TextAreaRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.control.input.text_area_min_h
+        gpui::px(theme.get_number("tokens.control.input.text_area_min_h").unwrap_or(0.0) as f32)
     }
     fn padding(&self, _state: &TextAreaRenderState, theme: &Theme) -> Edges<Pixels> {
-        Edges::all(theme.tokens.control.input.vertical_padding)
+        Edges::all(gpui::px(
+            theme.get_number("tokens.control.input.vertical_padding").unwrap_or(0.0) as f32,
+        ))
     }
     fn border_radius(&self, _state: &TextAreaRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.radii.md
+        gpui::px(theme.get_number("tokens.radii.md").unwrap_or(0.0) as f32)
     }
 }
 

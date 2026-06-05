@@ -6,7 +6,7 @@ use std::sync::Arc;
 use gpui::{Hsla, Pixels};
 
 use crate::renderers::spec::Edges;
-use crate::theme::Theme;
+use yororen_ui_core::theme::Theme;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct SearchInputRenderState {
@@ -35,37 +35,37 @@ pub struct TokenSearchInputRenderer;
 
 impl SearchInputRenderer for TokenSearchInputRenderer {
     fn bg(&self, _state: &SearchInputRenderState, theme: &Theme) -> Hsla {
-        theme.surface.base
+        theme.get_color("surface.base").unwrap_or_default()
     }
     fn border(&self, _state: &SearchInputRenderState, theme: &Theme) -> Hsla {
-        theme.border.default
+        theme.get_color("border.default").unwrap_or_default()
     }
     fn focus_border(&self, _state: &SearchInputRenderState, theme: &Theme) -> Hsla {
-        theme.border.focus
+        theme.get_color("border.focus").unwrap_or_default()
     }
     fn icon_color(&self, _state: &SearchInputRenderState, theme: &Theme) -> Hsla {
-        theme.content.tertiary
+        theme.get_color("content.tertiary").unwrap_or_default()
     }
     fn fg(&self, _state: &SearchInputRenderState, theme: &Theme) -> Hsla {
-        theme.content.primary
+        theme.get_color("content.primary").unwrap_or_default()
     }
     fn min_height(&self, _state: &SearchInputRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.control.search_input.min_height
+        gpui::px(theme.get_number("tokens.control.search_input.min_height").unwrap_or(0.0) as f32)
     }
     fn padding(&self, _state: &SearchInputRenderState, theme: &Theme) -> Edges<Pixels> {
         Edges::symmetric(
-            theme.tokens.control.search_input.horizontal_padding,
-            theme.tokens.control.input.vertical_padding,
+            gpui::px(theme.get_number("tokens.control.search_input.horizontal_padding").unwrap_or(0.0) as f32),
+            gpui::px(theme.get_number("tokens.control.input.vertical_padding").unwrap_or(0.0) as f32),
         )
     }
     fn border_radius(&self, _state: &SearchInputRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.radii.md
+        gpui::px(theme.get_number("tokens.radii.md").unwrap_or(0.0) as f32)
     }
     fn input_gap(&self, _state: &SearchInputRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.control.search_input.input_gap
+        gpui::px(theme.get_number("tokens.control.search_input.input_gap").unwrap_or(0.0) as f32)
     }
     fn icon_size(&self, _state: &SearchInputRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.control.search_input.icon_size
+        gpui::px(theme.get_number("tokens.control.search_input.icon_size").unwrap_or(0.0) as f32)
     }
 }
 

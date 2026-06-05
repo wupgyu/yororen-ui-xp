@@ -5,7 +5,7 @@ use std::sync::Arc;
 
 use gpui::{Hsla, Pixels};
 
-use crate::theme::Theme;
+use yororen_ui_core::theme::Theme;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct DisclosureRenderState {
@@ -26,25 +26,25 @@ pub struct TokenDisclosureRenderer;
 
 impl DisclosureRenderer for TokenDisclosureRenderer {
     fn trigger_bg(&self, _state: &DisclosureRenderState, theme: &Theme) -> Hsla {
-        theme.action.neutral.bg
+        theme.get_color("action.neutral.bg").unwrap_or_default()
     }
     fn trigger_fg(&self, _state: &DisclosureRenderState, theme: &Theme) -> Hsla {
-        theme.action.neutral.fg
+        theme.get_color("action.neutral.fg").unwrap_or_default()
     }
     fn trigger_hover_bg(&self, _state: &DisclosureRenderState, theme: &Theme) -> Hsla {
-        theme.action.neutral.hover_bg
+        theme.get_color("action.neutral.hover_bg").unwrap_or_default()
     }
     fn min_height(&self, _state: &DisclosureRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.control.button.min_height
+        gpui::px(theme.get_number("tokens.control.button.min_height").unwrap_or(0.0) as f32)
     }
     fn border_radius(&self, _state: &DisclosureRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.radii.md
+        gpui::px(theme.get_number("tokens.radii.md").unwrap_or(0.0) as f32)
     }
     fn chevron_rotation(&self, state: &DisclosureRenderState, _theme: &Theme) -> f32 {
         if state.open { 90.0 } else { 0.0 }
     }
     fn body_padding(&self, _state: &DisclosureRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.spacing.inset_md
+        gpui::px(theme.get_number("tokens.spacing.inset_md").unwrap_or(0.0) as f32)
     }
 }
 

@@ -6,7 +6,7 @@ use std::sync::Arc;
 use gpui::{Hsla, Pixels};
 
 use crate::renderers::spec::Edges;
-use crate::theme::Theme;
+use yororen_ui_core::theme::Theme;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct TextInputRenderState {
@@ -41,52 +41,58 @@ pub struct TokenTextInputRenderer;
 impl TextInputRenderer for TokenTextInputRenderer {
     fn bg(&self, state: &TextInputRenderState, theme: &Theme) -> Hsla {
         if state.disabled {
-            theme.surface.sunken
+            theme.get_color("surface.sunken").unwrap_or_default()
         } else if state.has_custom_bg {
-            state.custom_bg.unwrap_or(theme.surface.base)
+            state
+                .custom_bg
+                .unwrap_or_else(|| theme.get_color("surface.base").unwrap_or_default())
         } else {
-            theme.surface.base
+            theme.get_color("surface.base").unwrap_or_default()
         }
     }
     fn border(&self, state: &TextInputRenderState, theme: &Theme) -> Hsla {
         if state.disabled {
-            theme.border.muted
+            theme.get_color("border.muted").unwrap_or_default()
         } else if state.has_custom_border {
-            state.custom_border.unwrap_or(theme.border.default)
+            state
+                .custom_border
+                .unwrap_or_else(|| theme.get_color("border.default").unwrap_or_default())
         } else {
-            theme.border.default
+            theme.get_color("border.default").unwrap_or_default()
         }
     }
     fn focus_border(&self, state: &TextInputRenderState, theme: &Theme) -> Hsla {
         if state.has_custom_focus_border {
-            state.custom_focus_border.unwrap_or(theme.border.focus)
+            state
+                .custom_focus_border
+                .unwrap_or_else(|| theme.get_color("border.focus").unwrap_or_default())
         } else {
-            theme.border.focus
+            theme.get_color("border.focus").unwrap_or_default()
         }
     }
     fn text_color(&self, state: &TextInputRenderState, theme: &Theme) -> Hsla {
         if state.disabled {
-            theme.content.disabled
+            theme.get_color("content.disabled").unwrap_or_default()
         } else if state.custom_text_color.is_some() {
             state.custom_text_color.unwrap()
         } else {
-            theme.content.primary
+            theme.get_color("content.primary").unwrap_or_default()
         }
     }
     fn hint_color(&self, _state: &TextInputRenderState, theme: &Theme) -> Hsla {
-        theme.content.tertiary
+        theme.get_color("content.tertiary").unwrap_or_default()
     }
     fn min_height(&self, _state: &TextInputRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.control.input.min_height
+        gpui::px(theme.get_number("tokens.control.input.min_height").unwrap_or(0.0) as f32)
     }
     fn padding(&self, _state: &TextInputRenderState, theme: &Theme) -> Edges<Pixels> {
         Edges::symmetric(
-            theme.tokens.control.input.horizontal_padding,
-            theme.tokens.control.input.vertical_padding,
+            gpui::px(theme.get_number("tokens.control.input.horizontal_padding").unwrap_or(0.0) as f32),
+            gpui::px(theme.get_number("tokens.control.input.vertical_padding").unwrap_or(0.0) as f32),
         )
     }
     fn border_radius(&self, _state: &TextInputRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.radii.md
+        gpui::px(theme.get_number("tokens.radii.md").unwrap_or(0.0) as f32)
     }
     fn disabled_opacity(&self, state: &TextInputRenderState, _theme: &Theme) -> f32 {
         if state.disabled { 0.6 } else { 1.0 }
@@ -103,8 +109,8 @@ pub fn arc_text_input<T: TextInputRenderer + 'static>(r: T) -> Arc<dyn TextInput
 
 use gpui::{prelude::FluentBuilder, div, App, ParentElement, Stateful, Styled};
 use yororen_ui_core::headless::text_input::TextInputProps;
-
-use crate::theme::ActiveTheme;
+use yororen_ui_core::renderer::{markers, RendererContext};
+use yororen_ui_core::theme::ActiveTheme;
 
 pub trait DefaultTextInput: Sized {
     fn default_render(self, cx: &App) -> Stateful<gpui::Div>;
@@ -113,9 +119,8 @@ pub trait DefaultTextInput: Sized {
 impl DefaultTextInput for TextInputProps {
     fn default_render(self, cx: &App) -> Stateful<gpui::Div> {
         let theme = cx.theme();
-        let r: &dyn TextInputRenderer = &**theme
-            .renderers
-            .get_text_input()
+        let r: &Arc<dyn TextInputRenderer> = cx
+            .renderer_arc::<markers::TextInput, dyn TextInputRenderer>()
             .expect("TextInputRenderer registered");
         let state = TextInputRenderState {
             disabled: self.disabled,

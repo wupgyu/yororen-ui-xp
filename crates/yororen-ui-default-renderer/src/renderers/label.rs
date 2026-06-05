@@ -5,7 +5,7 @@ use std::sync::Arc;
 
 use gpui::{FontWeight, Hsla, SharedString};
 
-use crate::theme::Theme;
+use yororen_ui_core::theme::Theme;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct LabelRenderState {
@@ -32,20 +32,24 @@ impl LabelRenderer for TokenLabelRenderer {
             // The cleanest way is to use the theme's content.primary as
             // a no-op color the caller detects by checking the bool.
             // For simplicity here, return the base content color.
-            theme.content.primary
+            theme.get_color("content.primary").unwrap_or_default()
         } else if state.muted {
-            theme.content.secondary
+            theme.get_color("content.secondary").unwrap_or_default()
         } else {
-            theme.content.primary
+            theme.get_color("content.primary").unwrap_or_default()
         }
     }
 
     fn strong_weight(&self, _state: &LabelRenderState, theme: &Theme) -> FontWeight {
-        theme.tokens.typography.weight_semibold
+        FontWeight(theme.get_number("tokens.typography.weight_semibold").unwrap_or(600.0) as f32)
     }
 
     fn family_mono(&self, _state: &LabelRenderState, theme: &Theme) -> SharedString {
-        theme.tokens.typography.family_mono.clone()
+        theme
+            .get_string("tokens.typography.family_mono")
+            .unwrap_or("ui-monospace")
+            .to_string()
+            .into()
     }
 }
 
@@ -59,8 +63,8 @@ pub fn arc_label<T: LabelRenderer + 'static>(r: T) -> Arc<dyn LabelRenderer> {
 
 use gpui::{prelude::FluentBuilder, div, App, ParentElement, Stateful, Styled};
 use yororen_ui_core::headless::label::LabelProps;
-
-use crate::theme::ActiveTheme;
+use yororen_ui_core::renderer::{markers, RendererContext};
+use yororen_ui_core::theme::ActiveTheme;
 
 pub trait DefaultLabel: Sized {
     fn default_render(self, cx: &App) -> Stateful<gpui::Div>;
@@ -69,9 +73,8 @@ pub trait DefaultLabel: Sized {
 impl DefaultLabel for LabelProps {
     fn default_render(self, cx: &App) -> Stateful<gpui::Div> {
         let theme = cx.theme();
-        let r: &dyn LabelRenderer = &**theme
-            .renderers
-            .get_label()
+        let r: &Arc<dyn LabelRenderer> = cx
+            .renderer_arc::<markers::Label, dyn LabelRenderer>()
             .expect("LabelRenderer registered");
         let state = LabelRenderState {
             muted: self.muted,

@@ -12,7 +12,7 @@ use std::sync::Arc;
 use gpui::{Hsla, Pixels};
 
 use crate::renderers::spec::Edges;
-use crate::theme::Theme;
+use yororen_ui_core::theme::Theme;
 
 /// State passed to a `PanelRenderer`. The flags indicate whether
 /// the caller supplied explicit overrides for each visual property;
@@ -42,19 +42,21 @@ impl PanelRenderer for TokenPanelRenderer {
         // The has_custom_bg flag is honoured by the Panel builder
         // which sets the explicit `.bg(...)`; here we always read
         // the default from the theme.
-        theme.surface.raised
+        theme.get_color("surface.raised").unwrap_or_default()
     }
     fn border(&self, _state: &PanelRenderState, theme: &Theme) -> Hsla {
-        theme.border.default
+        theme.get_color("border.default").unwrap_or_default()
     }
     fn padding(&self, _state: &PanelRenderState, theme: &Theme) -> Edges<Pixels> {
-        Edges::all(theme.tokens.spacing.inset_md)
+        Edges::all(gpui::px(
+            theme.get_number("tokens.spacing.inset_md").unwrap_or(0.0) as f32,
+        ))
     }
     fn border_radius(&self, _state: &PanelRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.radii.lg
+        gpui::px(theme.get_number("tokens.radii.lg").unwrap_or(0.0) as f32)
     }
     fn shadow_alpha(&self, _state: &PanelRenderState, theme: &Theme) -> f32 {
-        theme.shadow.elevation_2.a
+        theme.get_color("shadow.elevation_2").unwrap_or_default().a
     }
 }
 

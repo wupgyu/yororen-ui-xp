@@ -5,7 +5,7 @@ use std::sync::Arc;
 
 use gpui::{Hsla, Pixels};
 
-use crate::theme::Theme;
+use yororen_ui_core::theme::Theme;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct ProgressBarRenderState {
@@ -26,23 +26,23 @@ pub struct TokenProgressBarRenderer;
 
 impl ProgressBarRenderer for TokenProgressBarRenderer {
     fn track(&self, _state: &ProgressBarRenderState, theme: &Theme) -> Hsla {
-        theme.surface.hover
+        theme.get_color("surface.hover").unwrap_or_default()
     }
 
     fn fill(&self, _state: &ProgressBarRenderState, theme: &Theme) -> Hsla {
-        theme.action.primary.bg
+        theme.get_color("action.primary.bg").unwrap_or_default()
     }
 
     fn height(&self, _state: &ProgressBarRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.control.progress.bar_default_h
+        gpui::px(theme.get_number("tokens.control.progress.bar_default_h").unwrap_or(0.0) as f32)
     }
 
     fn border_color(&self, _state: &ProgressBarRenderState, theme: &Theme) -> Hsla {
-        theme.border.muted
+        theme.get_color("border.muted").unwrap_or_default()
     }
 
     fn border_radius(&self, _state: &ProgressBarRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.radii.pill
+        gpui::px(theme.get_number("tokens.radii.pill").unwrap_or(0.0) as f32)
     }
 }
 

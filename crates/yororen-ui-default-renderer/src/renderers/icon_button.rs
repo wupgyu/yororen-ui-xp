@@ -5,7 +5,8 @@ use std::sync::Arc;
 
 use gpui::{Hsla, Pixels};
 
-use crate::theme::{ActionVariantKind, Theme};
+use crate::theme::ActionVariantKind;
+use yororen_ui_core::theme::Theme;
 
 use super::variant::{VariantState, VariantStyle};
 
@@ -30,6 +31,14 @@ pub trait IconButtonRenderer: Any + Send + Sync {
 
 pub struct TokenIconButtonRenderer;
 
+fn action_variant_key(variant: ActionVariantKind) -> &'static str {
+    match variant {
+        ActionVariantKind::Neutral => "neutral",
+        ActionVariantKind::Primary => "primary",
+        ActionVariantKind::Danger => "danger",
+    }
+}
+
 impl IconButtonRenderer for TokenIconButtonRenderer {
     fn bg(&self, state: &IconButtonRenderState, theme: &Theme) -> Hsla {
         if let Some(s) = &state.custom_style {
@@ -37,8 +46,9 @@ impl IconButtonRenderer for TokenIconButtonRenderer {
                 disabled: state.disabled,
             });
         }
-        let v = theme.action_variant(state.variant);
-        if state.disabled { v.disabled_bg } else { v.bg }
+        let key = action_variant_key(state.variant);
+        let field = if state.disabled { "disabled_bg" } else { "bg" };
+        theme.get_color(&format!("action.{}.{}", key, field)).unwrap_or_default()
     }
     fn hover_bg(&self, state: &IconButtonRenderState, theme: &Theme) -> Hsla {
         if let Some(s) = &state.custom_style {
@@ -50,13 +60,14 @@ impl IconButtonRenderer for TokenIconButtonRenderer {
                 disabled: state.disabled,
             });
         }
-        theme.action_variant(state.variant).hover_bg
+        let key = action_variant_key(state.variant);
+        theme.get_color(&format!("action.{}.hover_bg", key)).unwrap_or_default()
     }
     fn size(&self, _state: &IconButtonRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.control.button.icon_button_min_size
+        gpui::px(theme.get_number("tokens.control.button.icon_button_min_size").unwrap_or(0.0) as f32)
     }
     fn border_radius(&self, _state: &IconButtonRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.radii.md
+        gpui::px(theme.get_number("tokens.radii.md").unwrap_or(0.0) as f32)
     }
     fn disabled_opacity(&self, state: &IconButtonRenderState, _theme: &Theme) -> f32 {
         if let Some(s) = &state.custom_style {
@@ -76,8 +87,8 @@ pub fn arc_icon_button<T: IconButtonRenderer + 'static>(r: T) -> Arc<dyn IconBut
 
 use gpui::{prelude::FluentBuilder, div, App, ParentElement, Stateful, Styled};
 use yororen_ui_core::headless::icon_button::IconButtonProps;
-
-use crate::theme::ActiveTheme;
+use yororen_ui_core::renderer::{markers, RendererContext};
+use yororen_ui_core::theme::ActiveTheme;
 
 pub trait DefaultIconButton: Sized {
     fn default_render(self, cx: &App) -> Stateful<gpui::Div>;
@@ -86,9 +97,8 @@ pub trait DefaultIconButton: Sized {
 impl DefaultIconButton for IconButtonProps {
     fn default_render(self, cx: &App) -> Stateful<gpui::Div> {
         let theme = cx.theme();
-        let r: &dyn IconButtonRenderer = &**theme
-            .renderers
-            .get_icon_button()
+        let r: &Arc<dyn IconButtonRenderer> = cx
+            .renderer_arc::<markers::IconButton, dyn IconButtonRenderer>()
             .expect("IconButtonRenderer registered");
         let state = IconButtonRenderState {
             variant: Default::default(),

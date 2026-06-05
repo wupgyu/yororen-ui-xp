@@ -6,7 +6,7 @@ use std::sync::Arc;
 use gpui::{Hsla, Pixels};
 
 use crate::renderers::spec::Edges;
-use crate::theme::Theme;
+use yororen_ui_core::theme::Theme;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct NotificationRenderState {}
@@ -23,19 +23,21 @@ pub struct TokenNotificationRenderer;
 
 impl NotificationRenderer for TokenNotificationRenderer {
     fn bg(&self, _state: &NotificationRenderState, theme: &Theme) -> Hsla {
-        theme.surface.raised
+        theme.get_color("surface.raised").unwrap_or_default()
     }
     fn border(&self, _state: &NotificationRenderState, theme: &Theme) -> Hsla {
-        theme.border.muted
+        theme.get_color("border.muted").unwrap_or_default()
     }
     fn padding(&self, _state: &NotificationRenderState, theme: &Theme) -> Edges<Pixels> {
-        Edges::all(theme.tokens.spacing.inset_md)
+        Edges::all(gpui::px(
+            theme.get_number("tokens.spacing.inset_md").unwrap_or(0.0) as f32,
+        ))
     }
     fn border_radius(&self, _state: &NotificationRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.radii.lg
+        gpui::px(theme.get_number("tokens.radii.lg").unwrap_or(0.0) as f32)
     }
     fn shadow_alpha(&self, _state: &NotificationRenderState, theme: &Theme) -> f32 {
-        theme.shadow.elevation_2.a
+        theme.get_color("shadow.elevation_2").unwrap_or_default().a
     }
 }
 

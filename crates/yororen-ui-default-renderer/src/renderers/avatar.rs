@@ -5,7 +5,7 @@ use std::sync::Arc;
 
 use gpui::{Hsla, Pixels};
 
-use crate::theme::Theme;
+use yororen_ui_core::theme::Theme;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct AvatarRenderState {
@@ -27,31 +27,31 @@ pub struct TokenAvatarRenderer;
 
 impl AvatarRenderer for TokenAvatarRenderer {
     fn default_bg(&self, _state: &AvatarRenderState, theme: &Theme) -> Hsla {
-        theme.surface.hover
+        theme.get_color("surface.hover").unwrap_or_default()
     }
 
     fn border_radius(&self, state: &AvatarRenderState, theme: &Theme) -> Pixels {
         if state.is_circle {
-            theme.tokens.radii.pill
+            gpui::px(theme.get_number("tokens.radii.pill").unwrap_or(0.0) as f32)
         } else {
-            theme.tokens.radii.md
+            gpui::px(theme.get_number("tokens.radii.md").unwrap_or(0.0) as f32)
         }
     }
 
     fn status_dot_size(&self, _state: &AvatarRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.control.avatar.status_dot_size
+        gpui::px(theme.get_number("tokens.control.avatar.status_dot_size").unwrap_or(0.0) as f32)
     }
 
     fn status_inset(&self, _state: &AvatarRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.control.avatar.status_inset
+        gpui::px(theme.get_number("tokens.control.avatar.status_inset").unwrap_or(0.0) as f32)
     }
 
     fn status_border_w(&self, _state: &AvatarRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.control.avatar.border_w
+        gpui::px(theme.get_number("tokens.control.avatar.border_w").unwrap_or(0.0) as f32)
     }
 
     fn status_border_color(&self, _state: &AvatarRenderState, theme: &Theme) -> Hsla {
-        theme.surface.base
+        theme.get_color("surface.base").unwrap_or_default()
     }
 }
 

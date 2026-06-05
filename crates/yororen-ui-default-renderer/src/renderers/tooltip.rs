@@ -6,7 +6,7 @@ use std::sync::Arc;
 use gpui::{Hsla, Pixels};
 
 use crate::renderers::spec::Edges;
-use crate::theme::Theme;
+use yororen_ui_core::theme::Theme;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct TooltipRenderState {
@@ -26,23 +26,26 @@ pub struct TokenTooltipRenderer;
 
 impl TooltipRenderer for TokenTooltipRenderer {
     fn bg(&self, _state: &TooltipRenderState, theme: &Theme) -> Hsla {
-        theme.action.neutral.bg
+        theme.get_color("action.neutral.bg").unwrap_or_default()
     }
 
     fn fg(&self, _state: &TooltipRenderState, theme: &Theme) -> Hsla {
-        theme.action.neutral.fg
+        theme.get_color("action.neutral.fg").unwrap_or_default()
     }
 
     fn padding(&self, _state: &TooltipRenderState, theme: &Theme) -> Edges<Pixels> {
-        Edges::symmetric(theme.tokens.spacing.inset_md, theme.tokens.spacing.inset_sm)
+        Edges::symmetric(
+            gpui::px(theme.get_number("tokens.spacing.inset_md").unwrap_or(0.0) as f32),
+            gpui::px(theme.get_number("tokens.spacing.inset_sm").unwrap_or(0.0) as f32),
+        )
     }
 
     fn font_size(&self, _state: &TooltipRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.typography.font_size_sm
+        gpui::px(theme.get_number("tokens.typography.font_size_sm").unwrap_or(0.0) as f32)
     }
 
     fn border_radius(&self, _state: &TooltipRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.radii.sm
+        gpui::px(theme.get_number("tokens.radii.sm").unwrap_or(0.0) as f32)
     }
 }
 

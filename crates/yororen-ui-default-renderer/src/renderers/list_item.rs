@@ -6,7 +6,7 @@ use std::sync::Arc;
 use gpui::{Hsla, Pixels};
 
 use crate::renderers::spec::Edges;
-use crate::theme::Theme;
+use yororen_ui_core::theme::Theme;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct ListItemRenderState {
@@ -29,31 +29,34 @@ pub struct TokenListItemRenderer;
 
 impl ListItemRenderer for TokenListItemRenderer {
     fn bg(&self, _state: &ListItemRenderState, theme: &Theme) -> Hsla {
-        theme.surface.base
+        theme.get_color("surface.base").unwrap_or_default()
     }
     fn hover_bg(&self, _state: &ListItemRenderState, theme: &Theme) -> Hsla {
-        theme.surface.hover
+        theme.get_color("surface.hover").unwrap_or_default()
     }
     fn selected_bg(&self, _state: &ListItemRenderState, theme: &Theme) -> Hsla {
-        theme.action.primary.bg
+        theme.get_color("action.primary.bg").unwrap_or_default()
     }
     fn fg(&self, state: &ListItemRenderState, theme: &Theme) -> Hsla {
         if state.disabled {
-            theme.content.disabled
+            theme.get_color("content.disabled").unwrap_or_default()
         } else if state.selected {
-            theme.action.primary.fg
+            theme.get_color("action.primary.fg").unwrap_or_default()
         } else {
-            theme.content.primary
+            theme.get_color("content.primary").unwrap_or_default()
         }
     }
     fn padding(&self, _state: &ListItemRenderState, theme: &Theme) -> Edges<Pixels> {
-        Edges::symmetric(theme.tokens.spacing.inset_sm, theme.tokens.spacing.inset_xs)
+        Edges::symmetric(
+            gpui::px(theme.get_number("tokens.spacing.inset_sm").unwrap_or(0.0) as f32),
+            gpui::px(theme.get_number("tokens.spacing.inset_xs").unwrap_or(0.0) as f32),
+        )
     }
     fn min_height(&self, _state: &ListItemRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.control.list_item.min_height
+        gpui::px(theme.get_number("tokens.control.list_item.min_height").unwrap_or(0.0) as f32)
     }
     fn border_radius(&self, _state: &ListItemRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.radii.sm
+        gpui::px(theme.get_number("tokens.radii.sm").unwrap_or(0.0) as f32)
     }
 }
 

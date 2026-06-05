@@ -5,7 +5,7 @@ use std::sync::Arc;
 
 use gpui::{FontWeight, Hsla, Pixels};
 
-use crate::theme::Theme;
+use yororen_ui_core::theme::Theme;
 use yororen_ui_core::headless::heading::HeadingLevel;
 
 #[derive(Clone, Copy, Debug)]
@@ -23,25 +23,27 @@ pub struct TokenHeadingRenderer;
 
 impl HeadingRenderer for TokenHeadingRenderer {
     fn size(&self, state: &HeadingRenderState, theme: &Theme) -> Pixels {
-        match state.level {
-            HeadingLevel::H1 => theme.tokens.typography.font_size_2xl,
-            HeadingLevel::H2 => theme.tokens.typography.font_size_xl,
-            HeadingLevel::H3 => theme.tokens.typography.font_size_lg,
-            HeadingLevel::H4 => theme.tokens.typography.font_size_md,
-            HeadingLevel::H5 => theme.tokens.typography.font_size_sm,
-            HeadingLevel::H6 => theme.tokens.typography.font_size_xs,
-        }
+        let path = match state.level {
+            HeadingLevel::H1 => "tokens.typography.font_size_2xl",
+            HeadingLevel::H2 => "tokens.typography.font_size_xl",
+            HeadingLevel::H3 => "tokens.typography.font_size_lg",
+            HeadingLevel::H4 => "tokens.typography.font_size_md",
+            HeadingLevel::H5 => "tokens.typography.font_size_sm",
+            HeadingLevel::H6 => "tokens.typography.font_size_xs",
+        };
+        gpui::px(theme.get_number(path).unwrap_or(0.0) as f32)
     }
 
     fn weight(&self, state: &HeadingRenderState, theme: &Theme) -> FontWeight {
-        match state.level {
-            HeadingLevel::H1 => theme.tokens.typography.weight_bold,
-            _ => theme.tokens.typography.weight_semibold,
-        }
+        let (path, default) = match state.level {
+            HeadingLevel::H1 => ("tokens.typography.weight_bold", 700.0),
+            _ => ("tokens.typography.weight_semibold", 600.0),
+        };
+        FontWeight(theme.get_number(path).unwrap_or(default) as f32)
     }
 
     fn color(&self, _state: &HeadingRenderState, theme: &Theme) -> Hsla {
-        theme.content.primary
+        theme.get_color("content.primary").unwrap_or_default()
     }
 }
 

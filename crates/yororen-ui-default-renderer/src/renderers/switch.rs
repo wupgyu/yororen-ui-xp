@@ -5,7 +5,7 @@ use std::sync::Arc;
 
 use gpui::{Hsla, Pixels};
 
-use crate::theme::Theme;
+use yororen_ui_core::theme::Theme;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct SwitchRenderState {
@@ -31,53 +31,52 @@ pub struct TokenSwitchRenderer;
 
 impl SwitchRenderer for TokenSwitchRenderer {
     fn track_w(&self, _state: &SwitchRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.control.switch.track_w
+        gpui::px(theme.get_number("tokens.control.switch.track_w").unwrap_or(0.0) as f32)
     }
     fn track_h(&self, _state: &SwitchRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.control.switch.track_h
+        gpui::px(theme.get_number("tokens.control.switch.track_h").unwrap_or(0.0) as f32)
     }
     fn knob_size(&self, _state: &SwitchRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.control.switch.knob_size
+        gpui::px(theme.get_number("tokens.control.switch.knob_size").unwrap_or(0.0) as f32)
     }
     fn padding(&self, _state: &SwitchRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.control.switch.padding
+        gpui::px(theme.get_number("tokens.control.switch.padding").unwrap_or(0.0) as f32)
     }
 
     fn track_bg(&self, state: &SwitchRenderState, theme: &Theme) -> Hsla {
-        let accent = theme.action.primary.bg;
         if state.disabled {
-            theme.surface.sunken
+            theme.get_color("surface.sunken").unwrap_or_default()
         } else if state.checked {
-            accent
+            theme.get_color("action.primary.bg").unwrap_or_default()
         } else {
-            theme.surface.hover
+            theme.get_color("surface.hover").unwrap_or_default()
         }
     }
     fn track_border(&self, state: &SwitchRenderState, theme: &Theme) -> Hsla {
         if state.checked {
-            theme.border.muted
+            theme.get_color("border.muted").unwrap_or_default()
         } else {
-            theme.border.default
+            theme.get_color("border.default").unwrap_or_default()
         }
     }
     fn track_hover_bg(&self, state: &SwitchRenderState, theme: &Theme) -> Hsla {
         if state.checked {
-            theme.action.primary.hover_bg
+            theme.get_color("action.primary.hover_bg").unwrap_or_default()
         } else {
-            theme.surface.base
+            theme.get_color("surface.base").unwrap_or_default()
         }
     }
     fn knob_bg(&self, state: &SwitchRenderState, theme: &Theme) -> Hsla {
         if state.disabled {
-            theme.content.disabled
+            theme.get_color("content.disabled").unwrap_or_default()
         } else if state.checked {
-            theme.action.primary.fg
+            theme.get_color("action.primary.fg").unwrap_or_default()
         } else {
-            theme.content.primary
+            theme.get_color("content.primary").unwrap_or_default()
         }
     }
     fn focus_color(&self, _state: &SwitchRenderState, theme: &Theme) -> Hsla {
-        theme.border.focus
+        theme.get_color("border.focus").unwrap_or_default()
     }
     fn disabled_opacity(&self, _state: &SwitchRenderState, _theme: &Theme) -> f32 {
         0.5
@@ -92,10 +91,10 @@ pub fn arc_switch<T: SwitchRenderer + 'static>(r: T) -> Arc<dyn SwitchRenderer> 
 // `DefaultSwitch` — `headless::SwitchProps` sugar.
 // =====================================================================
 
-use gpui::{prelude::FluentBuilder, div, App, ParentElement, Stateful, Styled, px};
+use gpui::{prelude::FluentBuilder, div, App, ParentElement, Stateful, Styled};
 use yororen_ui_core::headless::switch::SwitchProps;
-
-use crate::theme::ActiveTheme;
+use yororen_ui_core::renderer::{markers, RendererContext};
+use yororen_ui_core::theme::ActiveTheme;
 
 pub trait DefaultSwitch: Sized {
     fn default_render(self, cx: &App) -> Stateful<gpui::Div>;
@@ -104,9 +103,8 @@ pub trait DefaultSwitch: Sized {
 impl DefaultSwitch for SwitchProps {
     fn default_render(self, cx: &App) -> Stateful<gpui::Div> {
         let theme = cx.theme();
-        let r: &dyn SwitchRenderer = &**theme
-            .renderers
-            .get_switch()
+        let r: &Arc<dyn SwitchRenderer> = cx
+            .renderer_arc::<markers::Switch, dyn SwitchRenderer>()
             .expect("SwitchRenderer registered");
         let state = SwitchRenderState {
             checked: self.checked,
@@ -119,11 +117,12 @@ impl DefaultSwitch for SwitchProps {
         let h = r.track_h(&state, theme);
         let knob_size = r.knob_size(&state, theme);
         let pad = r.padding(&state, theme);
+        let pill_radius = gpui::px(theme.get_number("tokens.radii.pill").unwrap_or(0.0) as f32);
         let mut el = div()
             .bg(track)
             .w(w)
             .h(h)
-            .rounded(theme.tokens.radii.pill)
+            .rounded(pill_radius)
             .p(pad)
             .flex()
             .items_center();
@@ -132,12 +131,7 @@ impl DefaultSwitch for SwitchProps {
         } else {
             el = el.justify_start();
         }
-        el = el.child(
-            div()
-                .bg(knob)
-                .size(knob_size)
-                .rounded(theme.tokens.radii.pill),
-        );
+        el = el.child(div().bg(knob).size(knob_size).rounded(pill_radius));
         self.apply(el)
     }
 }

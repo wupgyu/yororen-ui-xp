@@ -6,7 +6,7 @@ use std::sync::Arc;
 use gpui::{Hsla, Pixels};
 
 use crate::renderers::spec::Edges;
-use crate::theme::Theme;
+use yororen_ui_core::theme::Theme;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct EmptyStateRenderState {}
@@ -24,22 +24,24 @@ pub struct TokenEmptyStateRenderer;
 
 impl EmptyStateRenderer for TokenEmptyStateRenderer {
     fn icon_color(&self, _state: &EmptyStateRenderState, theme: &Theme) -> Hsla {
-        theme.content.tertiary
+        theme.get_color("content.tertiary").unwrap_or_default()
     }
     fn title_color(&self, _state: &EmptyStateRenderState, theme: &Theme) -> Hsla {
-        theme.content.secondary
+        theme.get_color("content.secondary").unwrap_or_default()
     }
     fn body_color(&self, _state: &EmptyStateRenderState, theme: &Theme) -> Hsla {
-        theme.content.tertiary
+        theme.get_color("content.tertiary").unwrap_or_default()
     }
     fn padding(&self, _state: &EmptyStateRenderState, theme: &Theme) -> Edges<Pixels> {
-        Edges::all(theme.tokens.spacing.inset_lg)
+        Edges::all(gpui::px(
+            theme.get_number("tokens.spacing.inset_lg").unwrap_or(0.0) as f32,
+        ))
     }
     fn icon_size(&self, _state: &EmptyStateRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.sizes.icon_xl
+        gpui::px(theme.get_number("tokens.sizes.icon_xl").unwrap_or(0.0) as f32)
     }
     fn gap(&self, _state: &EmptyStateRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.spacing.inset_sm
+        gpui::px(theme.get_number("tokens.spacing.inset_sm").unwrap_or(0.0) as f32)
     }
 }
 

@@ -5,7 +5,7 @@ use std::sync::Arc;
 
 use gpui::{FontWeight, Hsla, Pixels};
 
-use crate::theme::Theme;
+use yororen_ui_core::theme::Theme;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct TagRenderState {
@@ -31,47 +31,47 @@ pub struct TokenTagRenderer;
 impl TagRenderer for TokenTagRenderer {
     fn bg(&self, state: &TagRenderState, theme: &Theme) -> Hsla {
         if state.selected {
-            theme.action.primary.bg
+            theme.get_color("action.primary.bg").unwrap_or_default()
         } else if state.has_custom_tone {
             // caller provides the tone; we use a placeholder.
             // Real impl: TokenTagRenderer reads the user's custom
             // Hsla from the component state, not here. For now we
             // return the neutral background; the component's render
             // branch overrides when has_custom_tone is set.
-            theme.action.neutral.bg
+            theme.get_color("action.neutral.bg").unwrap_or_default()
         } else {
-            theme.action.neutral.bg
+            theme.get_color("action.neutral.bg").unwrap_or_default()
         }
     }
 
     fn fg(&self, state: &TagRenderState, theme: &Theme) -> Hsla {
         if state.selected {
-            theme.action.primary.fg
+            theme.get_color("action.primary.fg").unwrap_or_default()
         } else if state.has_custom_tone {
-            theme.content.on_status
+            theme.get_color("content.on_status").unwrap_or_default()
         } else {
-            theme.action.neutral.fg
+            theme.get_color("action.neutral.fg").unwrap_or_default()
         }
     }
 
     fn min_height(&self, _state: &TagRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.control.tag.min_height
+        gpui::px(theme.get_number("tokens.control.tag.min_height").unwrap_or(0.0) as f32)
     }
 
     fn padding_x(&self, _state: &TagRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.spacing.inset_sm
+        gpui::px(theme.get_number("tokens.spacing.inset_sm").unwrap_or(0.0) as f32)
     }
 
     fn font_size(&self, _state: &TagRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.typography.font_size_xs
+        gpui::px(theme.get_number("tokens.typography.font_size_xs").unwrap_or(0.0) as f32)
     }
 
     fn font_weight(&self, _state: &TagRenderState, theme: &Theme) -> FontWeight {
-        theme.tokens.typography.weight_medium
+        FontWeight(theme.get_number("tokens.typography.weight_medium").unwrap_or(500.0) as f32)
     }
 
     fn border_radius(&self, _state: &TagRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.radii.pill
+        gpui::px(theme.get_number("tokens.radii.pill").unwrap_or(0.0) as f32)
     }
 
     fn close_size(&self, _state: &TagRenderState, _theme: &Theme) -> Pixels {
@@ -79,7 +79,7 @@ impl TagRenderer for TokenTagRenderer {
     }
 
     fn close_hover_bg(&self, _state: &TagRenderState, theme: &Theme) -> Hsla {
-        theme.action.neutral.hover_bg
+        theme.get_color("action.neutral.hover_bg").unwrap_or_default()
     }
 }
 
