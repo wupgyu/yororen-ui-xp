@@ -22,15 +22,14 @@ if ! command -v cargo-public-api >/dev/null 2>&1; then
     exit 0
 fi
 
-# Crate package name -> baseline filename. The 5 published crates
-# are listed here. Phase J crates (yororen-ui-{virtual,form,command,table})
+# Crate package name -> baseline filename. The published
+# crates are listed here. Phase J crates (yororen-ui-{virtual,form,command,table})
 # will be added when they ship.
 declare -A pkg_to_baseline=(
     [yororen_ui_core]="upstream/yororen_ui_core.api.txt"
     [yororen_ui]="upstream/yororen_ui.api.txt"
-    [yororen_ui_theme_system]="upstream/yororen_ui_theme_system.api.txt"
-    [yororen_ui_theme_catppuccin]="upstream/yororen_ui_theme_catppuccin.api.txt"
-    [yororen_ui_theme_material]="upstream/yororen_ui_theme_material.api.txt"
+    [yororen_ui_default_renderer]="upstream/yororen_ui_default_renderer.api.txt"
+    [yororen_ui_mini_renderer]="upstream/yororen_ui_mini_renderer.api.txt"
 )
 
 if [ "$#" -eq 0 ] || [ "$1" = "--all" ]; then
