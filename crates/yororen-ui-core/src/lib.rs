@@ -30,3 +30,4 @@ pub mod headless;
 pub mod i18n;
 pub mod notification;
 pub mod rtl;
+pub mod theme;
