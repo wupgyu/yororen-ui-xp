@@ -6802,6 +6802,7 @@ pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_toggle_button(
 pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_tooltip(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::tooltip::TooltipRenderer>>
 pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_tree_item(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::tree_item::TreeItemRenderer>>
 pub fn yororen_ui_core::renderer::registry::RendererRegistry::token_based() -> Self
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::validate(&self) -> core::result::Result<(), alloc::vec::Vec<&'static str>>
 pub fn yororen_ui_core::renderer::registry::RendererRegistry::with_avatar(self, alloc::sync::Arc<dyn yororen_ui_core::renderer::avatar::AvatarRenderer>) -> Self
 pub fn yororen_ui_core::renderer::registry::RendererRegistry::with_badge(self, alloc::sync::Arc<dyn yororen_ui_core::renderer::badge::BadgeRenderer>) -> Self
 pub fn yororen_ui_core::renderer::registry::RendererRegistry::with_button(self, alloc::sync::Arc<dyn yororen_ui_core::renderer::button::ButtonRenderer>) -> Self
@@ -8361,6 +8362,7 @@ pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_toggle_button(
 pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_tooltip(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::tooltip::TooltipRenderer>>
 pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_tree_item(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::tree_item::TreeItemRenderer>>
 pub fn yororen_ui_core::renderer::registry::RendererRegistry::token_based() -> Self
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::validate(&self) -> core::result::Result<(), alloc::vec::Vec<&'static str>>
 pub fn yororen_ui_core::renderer::registry::RendererRegistry::with_avatar(self, alloc::sync::Arc<dyn yororen_ui_core::renderer::avatar::AvatarRenderer>) -> Self
 pub fn yororen_ui_core::renderer::registry::RendererRegistry::with_badge(self, alloc::sync::Arc<dyn yororen_ui_core::renderer::badge::BadgeRenderer>) -> Self
 pub fn yororen_ui_core::renderer::registry::RendererRegistry::with_button(self, alloc::sync::Arc<dyn yororen_ui_core::renderer::button::ButtonRenderer>) -> Self
@@ -11159,6 +11161,7 @@ pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_toggle_button(
 pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_tooltip(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::tooltip::TooltipRenderer>>
 pub fn yororen_ui_core::renderer::registry::RendererRegistry::get_tree_item(&self) -> core::option::Option<&alloc::sync::Arc<dyn yororen_ui_core::renderer::tree_item::TreeItemRenderer>>
 pub fn yororen_ui_core::renderer::registry::RendererRegistry::token_based() -> Self
+pub fn yororen_ui_core::renderer::registry::RendererRegistry::validate(&self) -> core::result::Result<(), alloc::vec::Vec<&'static str>>
 pub fn yororen_ui_core::renderer::registry::RendererRegistry::with_avatar(self, alloc::sync::Arc<dyn yororen_ui_core::renderer::avatar::AvatarRenderer>) -> Self
 pub fn yororen_ui_core::renderer::registry::RendererRegistry::with_badge(self, alloc::sync::Arc<dyn yororen_ui_core::renderer::badge::BadgeRenderer>) -> Self
 pub fn yororen_ui_core::renderer::registry::RendererRegistry::with_button(self, alloc::sync::Arc<dyn yororen_ui_core::renderer::button::ButtonRenderer>) -> Self

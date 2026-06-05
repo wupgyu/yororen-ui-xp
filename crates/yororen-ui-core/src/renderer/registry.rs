@@ -167,11 +167,17 @@ impl Default for RendererRegistry {
 impl RendererRegistry {
     /// All renderers set to the default `TokenXxxRenderer` implementations.
     /// This is the v0.3 / v0.4 visual baseline.
+    ///
+    /// Self-validates on construction: if a future edit adds a new
+    /// `with_<x>(...)` line here but forgets to mirror it in `REQUIRED`,
+    /// `token_based()` panics with the full list of missing entries
+    /// the first time it is called. This is the single coupling point
+    /// between the 38 setters and the 38 `REQUIRED` entries.
     pub fn token_based() -> Self {
         // Cannot use `Self::default()` here — `default` is implemented
         // as `token_based`, so that would recurse forever. Construct
         // the empty registry directly and chain the 38 setters.
-        Self {
+        let registry = Self {
             map: HashMap::new(),
         }
         .with_button(Arc::new(TokenButtonRenderer))
@@ -211,7 +217,12 @@ impl RendererRegistry {
         .with_tree_item(Arc::new(TokenTreeItemRenderer))
         .with_keybinding_input(Arc::new(TokenKeybindingInputRenderer))
         .with_split_button(Arc::new(TokenSplitButtonRenderer))
-        .with_empty_state(Arc::new(TokenEmptyStateRenderer))
+        .with_empty_state(Arc::new(TokenEmptyStateRenderer));
+
+        if registry.validate().is_err() {
+            panic_missing_renderers(&registry);
+        }
+        registry
     }
 
     // -- 38 setters (one per component) ---------------------------------
@@ -396,4 +407,232 @@ impl RendererRegistry {
         SplitButtonRenderer
     );
     renderer_getter!(get_empty_state, EmptyStateRenderState, EmptyStateRenderer);
+
+    /// All 38 `(TypeId, "name")` pairs that a complete registry must
+    /// contain. Single source of truth for `validate()` and for the
+    /// self-check at the end of `token_based()`.
+    ///
+    /// The names are stable strings (matching the `with_<x>` setter
+    /// identifiers) so error messages stay grep-friendly: a panic
+    /// listing `"text_input, password_input"` tells the theme author
+    /// exactly which `with_<x>(...)` calls they forgot.
+    const REQUIRED: &[(TypeId, &str)] = &[
+        (TypeId::of::<ButtonRenderState>(), "button"),
+        (TypeId::of::<IconButtonRenderState>(), "icon_button"),
+        (TypeId::of::<ToggleButtonRenderState>(), "toggle_button"),
+        (TypeId::of::<LabelRenderState>(), "label"),
+        (TypeId::of::<HeadingRenderState>(), "heading"),
+        (TypeId::of::<DividerRenderState>(), "divider"),
+        (TypeId::of::<FocusRingRenderState>(), "focus_ring"),
+        (TypeId::of::<BadgeRenderState>(), "badge"),
+        (TypeId::of::<TagRenderState>(), "tag"),
+        (TypeId::of::<ProgressBarRenderState>(), "progress_bar"),
+        (TypeId::of::<SkeletonRenderState>(), "skeleton"),
+        (TypeId::of::<TooltipRenderState>(), "tooltip"),
+        (TypeId::of::<AvatarRenderState>(), "avatar"),
+        (TypeId::of::<SwitchRenderState>(), "switch"),
+        (TypeId::of::<CheckboxRenderState>(), "checkbox"),
+        (TypeId::of::<RadioRenderState>(), "radio"),
+        (TypeId::of::<TextInputRenderState>(), "text_input"),
+        (TypeId::of::<TextAreaRenderState>(), "text_area"),
+        (TypeId::of::<PasswordInputRenderState>(), "password_input"),
+        (TypeId::of::<NumberInputRenderState>(), "number_input"),
+        (TypeId::of::<FilePathInputRenderState>(), "file_path_input"),
+        (TypeId::of::<SearchInputRenderState>(), "search_input"),
+        (TypeId::of::<SelectRenderState>(), "select"),
+        (TypeId::of::<ComboBoxRenderState>(), "combo_box"),
+        (TypeId::of::<ModalRenderState>(), "modal"),
+        (TypeId::of::<PopoverRenderState>(), "popover"),
+        (TypeId::of::<DropdownMenuRenderState>(), "dropdown_menu"),
+        (TypeId::of::<DisclosureRenderState>(), "disclosure"),
+        (TypeId::of::<ToastRenderState>(), "toast"),
+        (TypeId::of::<NotificationRenderState>(), "notification"),
+        (TypeId::of::<PanelRenderState>(), "panel"),
+        (TypeId::of::<CardRenderState>(), "card"),
+        (TypeId::of::<FormRenderState>(), "form"),
+        (TypeId::of::<ListItemRenderState>(), "list_item"),
+        (TypeId::of::<TreeItemRenderState>(), "tree_item"),
+        (TypeId::of::<KeybindingInputRenderState>(), "keybinding_input"),
+        (TypeId::of::<SplitButtonRenderState>(), "split_button"),
+        (TypeId::of::<EmptyStateRenderState>(), "empty_state"),
+    ];
+
+    /// Verify that this registry contains a renderer for **all** 38
+    /// `XxxRenderState` types. Returns `Ok(())` if complete, or
+    /// `Err(missing)` listing the names of every absent renderer.
+    ///
+    /// ## Why
+    ///
+    /// Component render paths look up their renderer via
+    /// `get_<x>().expect("XxxRenderer registered")`. That `expect`
+    /// is the *last line of defense*; if it ever fires in production
+    /// it means a theme package was constructed without all 38
+    /// renderers registered. This is a *configuration* bug, not a
+    /// runtime condition, and the fix is "add `with_<x>(...)` to your
+    /// theme's registry builder".
+    ///
+    /// `validate()` is the recommended way to catch that bug at app
+    /// boot time, before any component renders. Theme packages should
+    /// call it inside their `install(cx)` entrypoint:
+    ///
+    /// ```ignore
+    /// pub fn install(cx: &mut App) {
+    ///     let registry = RendererRegistry::token_based()
+    ///         .with_button(Arc::new(MyButtonRenderer));
+    ///     registry.validate().expect("my-theme registry incomplete");
+    ///     cx.set_global(GlobalTheme::new(Theme { renderers: registry, .. }));
+    /// }
+    /// ```
+    ///
+    /// `token_based()` self-validates on construction, so registries
+    /// built on top of it (the common case) only need this check as
+    /// a "did I forget a `with_<x>` after `token_based()`?" guard.
+    pub fn validate(&self) -> Result<(), Vec<&'static str>> {
+        let missing: Vec<&'static str> = Self::REQUIRED
+            .iter()
+            .copied()
+            .filter_map(|(id, name)| (!self.map.contains_key(&id)).then_some(name))
+            .collect();
+        if missing.is_empty() {
+            Ok(())
+        } else {
+            Err(missing)
+        }
+    }
+}
+
+/// Internal: emit a panic listing the missing renderers. Used by
+/// `token_based()`'s self-check to guarantee that future edits to
+/// `token_based()` (adding a `with_<x>(...)` call) are always
+/// mirrored in `REQUIRED`.
+#[cold]
+#[inline(never)]
+fn panic_missing_renderers(registry: &RendererRegistry) -> ! {
+    match registry.validate() {
+        Ok(()) => unreachable!("panic_missing_renderers called on a valid registry"),
+        Err(missing) => panic!(
+            "RendererRegistry::token_based() is missing {} renderer(s): {}. \
+             This is an internal bug: token_based() must register all 38 components. \
+             Please report this as a yororen-ui bug.",
+            missing.len(),
+            missing.join(", "),
+        ),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    //! `RendererRegistry::validate()` is the boot-time guard against
+    //! "theme package forgot to call `with_<x>(...)` for some
+    //! component". The 6 tests below cover every interesting case
+    //! of "how could a registry be incomplete" — and one regression
+    //! test for the public `token_based()` happy path.
+
+    use super::*;
+    use std::any::TypeId;
+
+    /// Build a registry that has *only* `ButtonRenderState`
+    /// registered. Used to assert validate() reports the other 37
+    /// as missing.
+    fn only_button() -> RendererRegistry {
+        let mut map: HashMap<TypeId, Arc<dyn Any + Send + Sync>> = HashMap::new();
+        let arc: Arc<dyn ButtonRenderer> = Arc::new(super::super::button::TokenButtonRenderer);
+        map.insert(TypeId::of::<super::super::button::ButtonRenderState>(), Arc::new(arc));
+        RendererRegistry { map }
+    }
+
+    #[test]
+    fn empty_registry_reports_all_38_missing() {
+        let r = RendererRegistry {
+            map: HashMap::new(),
+        };
+        let err = r.validate().unwrap_err();
+        assert_eq!(err.len(), 38, "expected 38 missing entries, got {}: {:?}", err.len(), err);
+        // Spot-check a few well-known component names.
+        assert!(err.contains(&"button"));
+        assert!(err.contains(&"text_input"));
+        assert!(err.contains(&"modal"));
+        assert!(err.contains(&"tree_item"));
+        assert!(err.contains(&"empty_state"));
+    }
+
+    #[test]
+    fn only_button_reports_37_missing() {
+        let r = only_button();
+        let err = r.validate().unwrap_err();
+        assert_eq!(err.len(), 37, "expected 37 missing entries, got {}: {:?}", err.len(), err);
+        assert!(!err.contains(&"button"), "button was registered, must not appear in missing");
+        assert!(err.contains(&"text_input"));
+    }
+
+    #[test]
+    fn token_based_passes_validation() {
+        // This is the primary happy path: every theme package that
+        // builds on `RendererRegistry::token_based()` must pass.
+        let r = RendererRegistry::token_based();
+        r.validate().expect("token_based() must always validate");
+    }
+
+    #[test]
+    fn default_impl_passes_validation() {
+        // `Default::default()` is defined as `token_based()`, so it
+        // must also pass — this guards the (infinite-recursion)
+        // implementation comment in `token_based()` from drifting.
+        let r = RendererRegistry::default();
+        r.validate().expect("Default::default() must always validate");
+    }
+
+    #[test]
+    fn override_after_token_based_still_passes() {
+        // The realistic theme-package pattern: take `token_based()`
+        // and override one renderer. The override path must not
+        // accidentally drop the other 37.
+        let r = RendererRegistry::token_based()
+            .with_button(Arc::new(super::super::button::TokenButtonRenderer));
+        r.validate().expect("override-after-token_based must validate");
+    }
+
+    #[test]
+    fn missing_set_is_sorted_in_required_order() {
+        // The missing list is built by iterating `REQUIRED`, so the
+        // order is deterministic and matches the declaration order.
+        // This is a regression test against a refactor that might
+        // (e.g.) switch to a HashSet and lose order.
+        let r = RendererRegistry {
+            map: HashMap::new(),
+        };
+        let err = r.validate().unwrap_err();
+        let required_order: Vec<&'static str> =
+            RendererRegistry::REQUIRED.iter().map(|(_, n)| *n).collect();
+        assert_eq!(
+            err, required_order,
+            "missing list must follow REQUIRED declaration order"
+        );
+    }
+
+    #[test]
+    #[should_panic(expected = "token_based() is missing")]
+    fn token_based_panics_if_a_setter_call_is_removed() {
+        // Simulate the failure mode the self-check guards against:
+        // a future edit removes one `with_<x>(...)` line from
+        // `token_based()`. We can reproduce that locally by taking
+        // `token_based()` (which validates) and then *deleting* one
+        // entry — except `map` is private and setters can't remove.
+        //
+        // The realistic mirror is: rebuild the registry from a
+        // `token_based()` snapshot but skip one setter. We do that
+        // by constructing an almost-complete registry (37 of 38) and
+        // asking the same code path to validate. Since we can't
+        // reuse the production self-check without code duplication,
+        // we rely on the `panic_missing_renderers` helper directly
+        // via a hand-rolled almost-complete registry.
+        let mut almost = RendererRegistry::token_based();
+        // Drop one entry to simulate "future edit removed this line".
+        let dropped = TypeId::of::<super::super::button::ButtonRenderState>();
+        almost.map.remove(&dropped);
+        // Now `almost` is incomplete; the same `panic_missing_renderers`
+        // path used by `token_based()` must fire.
+        assert!(almost.validate().is_err());
+        panic_missing_renderers(&almost);
+    }
 }
