@@ -35,6 +35,10 @@ pub use renderers::radio::DefaultRadio;
 pub use renderers::switch::DefaultSwitch;
 pub use renderers::text_input::DefaultTextInput;
 pub use renderers::toggle_button::DefaultToggleButton;
+pub use renderers::{
+    ButtonRenderState, ButtonRenderer, IconButtonRenderState, IconButtonRenderer,
+    LabelRenderState, LabelRenderer, ToggleButtonRenderState, ToggleButtonRenderer,
+};
 
 pub use theme::{GlobalTheme, Theme};
 pub use themes::{install, install_with, register_default_renderers, system_dark, system_for, system_light};
