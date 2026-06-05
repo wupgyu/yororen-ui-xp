@@ -1,115 +1,134 @@
-//! Root component for the variant-showcase demo.
+//! yororen-ui Variant Showcase Demo
+//!
+//! Three side-by-side buttons, one per `ActionVariantKind`.
+//! The renderer reads `action.<variant>.<field>` paths from
+//! the theme JSON, so the only thing the variant changes
+//! here is the `ButtonRenderState.variant` field.
 
-use gpui::{Context, IntoElement, ParentElement, Render, Styled, Window, div, px};
+use gpui::{
+    Context, IntoElement, ParentElement, Render, Styled, Window, div, px,
+};
+use yororen_ui::headless::button::button;
+use yororen_ui::headless::label::label;
+use yororen_ui::renderer::{
+    DefaultButton, DefaultLabel, ButtonRenderState, ButtonRenderer,
+};
+use yororen_ui::Edges;
+use yororen_ui::RendererContext;
+use yororen_ui::ActiveTheme;
+use yororen_ui::markers::Button as ButtonMarker;
+use yororen_ui::Theme;
+use yororen_ui::ActionVariantKind;
+use gpui::div as gpui_div;
+use std::sync::Arc;
 
-use yororen_ui::component::{button, label};
-use yororen_ui::i18n::Translate;
-use yororen_ui::renderer::{ButtonVariant, GlobalVariantRegistry, VariantKey};
-use yororen_ui::theme::ActiveTheme;
+pub struct VariantApp;
 
-pub struct VariantShowcaseApp;
-
-impl VariantShowcaseApp {
-    pub fn new(_cx: &mut Context<Self>) -> Self {
+impl VariantApp {
+    pub fn new() -> Self {
         Self
     }
 }
 
-impl Render for VariantShowcaseApp {
+impl Render for VariantApp {
     fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        let theme = cx.theme();
-        let save_label = cx.t("common.save");
-        let cancel_label = cx.t("common.cancel");
+        let app: &mut gpui::App =
+            unsafe { &mut *(cx as *mut Context<Self> as *mut gpui::App) };
 
-        // Resolve the two custom variants from the global registry to
-        // prove they were registered correctly.
-        let reg = cx.global::<GlobalVariantRegistry>();
-        assert!(reg.0.resolve(&VariantKey::borrowed("ghost")).is_some());
-        assert!(reg.0.resolve(&VariantKey::borrowed("branded")).is_some());
-        let _ = cancel_label;
+        // Pull the registered ButtonRenderer + theme once, in
+        // the outer scope. We can't borrow `cx` from inside a
+        // closure without an unsafe lifetime extension, so
+        // build the per-variant buttons inline rather than via
+        // a helper closure.
+        let r: &Arc<dyn ButtonRenderer> = cx
+            .renderer_arc::<ButtonMarker, dyn ButtonRenderer>()
+            .expect("ButtonRenderer registered");
+        let theme: &Theme = cx.theme();
+
+        let primary_state = ButtonRenderState {
+            variant: ActionVariantKind::Primary,
+            ..Default::default()
+        };
+        let primary_bg = r.bg(&primary_state, theme);
+        let primary_fg = r.fg(&primary_state, theme);
+        let primary_pad = r.padding(&primary_state, theme);
+        let primary_radius = r.border_radius(&primary_state, theme);
+        let primary_min_h = r.min_height(&primary_state, theme);
+
+        let primary = button("primary-btn", app)
+            .on_click(|_, _, _| {})
+            .apply(
+                gpui_div()
+                    .bg(primary_bg)
+                    .text_color(primary_fg)
+                    .px(primary_pad.left)
+                    .py(primary_pad.top)
+                    .rounded(primary_radius)
+                    .min_h(primary_min_h)
+                    .child("Primary"),
+            );
+
+        let danger_state = ButtonRenderState {
+            variant: ActionVariantKind::Danger,
+            ..Default::default()
+        };
+        let danger_bg = r.bg(&danger_state, theme);
+        let danger_fg = r.fg(&danger_state, theme);
+        let danger_pad = r.padding(&danger_state, theme);
+        let danger_radius = r.border_radius(&danger_state, theme);
+        let danger_min_h = r.min_height(&danger_state, theme);
+
+        let danger = button("danger-btn", app)
+            .on_click(|_, _, _| {})
+            .apply(
+                gpui_div()
+                    .bg(danger_bg)
+                    .text_color(danger_fg)
+                    .px(danger_pad.left)
+                    .py(danger_pad.top)
+                    .rounded(danger_radius)
+                    .min_h(danger_min_h)
+                    .child("Danger"),
+            );
+
+        let neutral = button("neutral-btn", app)
+            .default_render(cx);
 
         div()
             .size_full()
-            .bg(theme.surface.base)
+            .p(px(24.))
             .flex()
             .flex_col()
-            .gap(px(20.))
-            .p(px(28.))
-            .child(label("Variant Showcase").strong(true).text_size(px(24.)))
-            .child(label(
-                "5 variants in 5 rows. The first 3 use the v0.4 builtin \
-                 variants (Neutral / Primary / Danger). The last 2 are \
-                 custom — 'ghost' and 'branded' — registered at startup via \
-                 VariantRegistry::register() and resolved through the new \
-                 ButtonVariant::Custom path.",
-            ))
-            .child(variant_row(
-                "Neutral (builtin)",
-                ButtonKind::BuiltinNeutral,
-                &save_label,
-            ))
-            .child(variant_row(
-                "Primary (builtin)",
-                ButtonKind::BuiltinPrimary,
-                &save_label,
-            ))
-            .child(variant_row(
-                "Danger (builtin)",
-                ButtonKind::BuiltinDanger,
-                &cancel_label,
-            ))
-            .child(variant_row(
-                "Ghost (custom)",
-                ButtonKind::CustomGhost,
-                &save_label,
-            ))
-            .child(variant_row(
-                "Branded (custom)",
-                ButtonKind::CustomBranded,
-                &save_label,
-            ))
+            .gap_3()
+            .child(label("title", "Variant showcase", app).default_render(cx))
+            .child(
+                label(
+                    "blurb",
+                    "Same headless::button, different ButtonRenderState.variant → different action.<key>.* paths from the JSON.",
+                    app,
+                )
+                .default_render(cx),
+            )
+            .child(
+                div()
+                    .flex()
+                    .gap_2()
+                    .child(label("n", "Neutral (default_render):", app).default_render(cx))
+                    .child(neutral),
+            )
+            .child(
+                div()
+                    .flex()
+                    .gap_2()
+                    .child(label("p", "Primary (hand-rolled apply):", app).default_render(cx))
+                    .child(primary),
+            )
+            .child(
+                div()
+                    .flex()
+                    .gap_2()
+                    .child(label("d", "Danger (hand-rolled apply):", app).default_render(cx))
+                    .child(danger),
+            )
     }
-}
-
-#[derive(Clone, Copy)]
-enum ButtonKind {
-    BuiltinNeutral,
-    BuiltinPrimary,
-    BuiltinDanger,
-    CustomGhost,
-    CustomBranded,
-}
-
-fn variant_row(title: &str, kind: ButtonKind, label_text: &str) -> impl IntoElement {
-    div()
-        .flex()
-        .items_center()
-        .gap(px(12.))
-        .child(label(title.to_string()).strong(true).min_w(px(180.0)))
-        .child(build_button(kind, label_text))
-}
-
-fn build_button(kind: ButtonKind, label_text: &str) -> gpui::AnyElement {
-    match kind {
-        ButtonKind::BuiltinNeutral => {
-            button("variant:builtin:neutral").child(label_text.to_string())
-        }
-        ButtonKind::BuiltinPrimary => button("variant:builtin:primary")
-            .variant(ButtonVariant::Builtin(
-                yororen_ui::theme::ActionVariantKind::Primary,
-            ))
-            .child(label_text.to_string()),
-        ButtonKind::BuiltinDanger => button("variant:builtin:danger")
-            .variant(ButtonVariant::Builtin(
-                yororen_ui::theme::ActionVariantKind::Danger,
-            ))
-            .child(label_text.to_string()),
-        ButtonKind::CustomGhost => button("variant:custom:ghost")
-            .variant(ButtonVariant::Custom(VariantKey::borrowed("ghost")))
-            .child(label_text.to_string()),
-        ButtonKind::CustomBranded => button("variant:custom:branded")
-            .variant(ButtonVariant::Custom(VariantKey::borrowed("branded")))
-            .child(label_text.to_string()),
-    }
-    .into_any_element()
 }

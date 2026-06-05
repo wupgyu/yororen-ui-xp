@@ -19,7 +19,7 @@
 
 use std::sync::Arc;
 
-use gpui::{App, Global};
+use gpui::{App, Context, Global};
 
 use super::Theme;
 
@@ -49,6 +49,18 @@ pub trait ActiveTheme {
 }
 
 impl ActiveTheme for App {
+    fn theme(&self) -> &Arc<Theme> {
+        &self.global::<GlobalTheme>().0
+    }
+}
+
+// `Context<T>` is the closure parameter passed to
+// `Render::render(&mut self, _: &mut Window, cx: &mut Context<Self>)`.
+// It derefs to `App` for global access, so the same
+// `cx.theme()` API works inside render closures. Without this
+// impl, render bodies would have to do
+// `&*cx as &App` casts just to read the theme.
+impl<'a, T> ActiveTheme for Context<'a, T> {
     fn theme(&self) -> &Arc<Theme> {
         &self.global::<GlobalTheme>().0
     }

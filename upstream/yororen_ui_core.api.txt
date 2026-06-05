@@ -6152,5 +6152,7 @@ pub trait yororen_ui_core::theme::ActiveTheme
 pub fn yororen_ui_core::theme::ActiveTheme::theme(&self) -> &alloc::sync::Arc<yororen_ui_core::theme::Theme>
 impl yororen_ui_core::theme::ActiveTheme for gpui::app::App
 pub fn gpui::app::App::theme(&self) -> &alloc::sync::Arc<yororen_ui_core::theme::Theme>
+impl<'a, T> yororen_ui_core::theme::ActiveTheme for gpui::app::context::Context<'a, T>
+pub fn gpui::app::context::Context<'a, T>::theme(&self) -> &alloc::sync::Arc<yororen_ui_core::theme::Theme>
 pub fn yororen_ui_core::theme::install(&mut gpui::app::App, yororen_ui_core::theme::Theme)
 pub fn yororen_ui_core::theme::value_to_hsla(&serde_json::value::Value) -> core::option::Option<gpui::color::Hsla>
