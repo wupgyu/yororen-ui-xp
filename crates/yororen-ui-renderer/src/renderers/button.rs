@@ -3,20 +3,34 @@
 //! One trait, one component. The other 37 component renderer
 //! traits follow the same shape.
 //!
-//! `DefaultButton::default_render` is defined at the bottom of this
-//! file — it's the `headless::ButtonProps`-flavoured sugar that
-//! reads this renderer and decorates a `Div` with its bg / fg /
-//! padding / radius / min_height.
+//! `DefaultButton::default_render` is defined at the bottom of
+//! this file — it's the `headless::ButtonProps`-flavoured sugar
+//! that reads this renderer and decorates a `Div` with its bg /
+//! fg / padding / radius / min_height.
+//!
+//! ## Theme access
+//!
+//! `Theme` here is the v0.3 JSON-backed theme from
+//! `yororen_ui_core::theme` — no fixed schema, just
+//! dot-separated paths. `TokenButtonRenderer` reads:
+//!
+//! - `action.{neutral,primary,danger}.{bg,fg,disabled_bg,disabled_fg}` for colors
+//! - `tokens.control.button.{min_height,horizontal_padding,radius}` for geometry
+//!
+//! The `default_render` sugar uses
+//! `cx.renderer_arc::<headless::Button, dyn ButtonRenderer>()`
+//! to fetch the registered renderer from the core registry.
 
-use std::any::Any;
 use std::sync::Arc;
 
 use gpui::{Hsla, Pixels};
 
-use crate::theme::{ActionVariantKind, Theme};
+use yororen_ui_core::headless::button::Button as ButtonMarker;
+use yororen_ui_core::theme::Theme;
 
 use super::spec::{BorderSpec, Edges, ShadowSpec};
 use super::variant::{VariantState, VariantStyle};
+use crate::renderers::theme_path::{self, action_color};
 
 /// State passed to a `ButtonRenderer`. Fields are deliberately minimal —
 /// a renderer can read more from the `Theme` if it needs to.
@@ -32,16 +46,41 @@ pub struct ButtonRenderState {
     /// Pre-resolved custom variant from the global `VariantRegistry`.
     /// When `Some`, the renderer should delegate color decisions
     /// (bg/fg/border/disabled_opacity) to the contained `VariantStyle`
-    /// instead of reading `theme.action_variant(variant)`. When `None`,
-    /// the renderer falls back to the built-in token path.
+    /// instead of reading `theme.get_color("action.<v>.<field>")`. When
+    /// `None`, the renderer falls back to the built-in token path.
     pub custom_style: Option<Arc<dyn VariantStyle>>,
 }
 
-/// Renderer for the `Button` component. Implementations decide what the
-/// button looks like in every state.
+/// Logical kind of an action button. Maps to one of the three
+/// entries under `theme.action.*` in the JSON theme.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub enum ActionVariantKind {
+    #[default]
+    Neutral,
+    Primary,
+    Danger,
+}
+
+impl ActionVariantKind {
+    /// Lowercase key used to look up `action.<key>.<field>` paths
+    /// in the theme JSON. Stable, exposed for diagnostic
+    /// messages.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Neutral => "neutral",
+            Self::Primary => "primary",
+            Self::Danger => "danger",
+        }
+    }
+}
+
+/// Renderer for the `Button` component. Implementations decide
+/// what the button looks like in every state.
 ///
-/// Default: [`TokenButtonRenderer`]. Theme packages override this through
-/// `Theme.renderers.button` to ship a "skin".
+/// Default: [`TokenButtonRenderer`]. Theme packages / renderer
+/// crates override this by registering their own
+/// `ButtonRenderer` impl via
+/// `cx.register_renderer_arc::<ButtonMarker, dyn ButtonRenderer>(…)`.
 pub trait ButtonRenderer: Any + Send + Sync {
     fn bg(&self, state: &ButtonRenderState, theme: &Theme) -> Hsla;
     fn fg(&self, state: &ButtonRenderState, theme: &Theme) -> Hsla;
@@ -53,13 +92,18 @@ pub trait ButtonRenderer: Any + Send + Sync {
     fn disabled_opacity(&self, state: &ButtonRenderState, theme: &Theme) -> f32;
 }
 
-/// Default implementation. Reads from `Theme.tokens().control.button.*` and
-/// `Theme.action_variant(variant)`. Equivalent to the v0.3 / v0.4 button.
+use std::any::Any;
+
+/// Default implementation. Reads color from
+/// `action.<variant>.<bg|fg|disabled_bg|disabled_fg>` and
+/// geometry from `tokens.control.button.*`. Equivalent to the
+/// v0.3 / v0.4 button.
 ///
-/// When `state.custom_style` is `Some`, color-related methods delegate to
-/// the registered `VariantStyle` (passing the current `disabled` flag
-/// through `VariantState`). Non-color properties (padding, radius, height)
-/// continue to come from the theme.
+/// When `state.custom_style` is `Some`, color-related methods
+/// delegate to the registered `VariantStyle` (passing the
+/// current `disabled` flag through `VariantState`).
+/// Non-color properties (padding, radius, height) continue to
+/// come from the theme.
 pub struct TokenButtonRenderer;
 
 impl ButtonRenderer for TokenButtonRenderer {
@@ -69,8 +113,8 @@ impl ButtonRenderer for TokenButtonRenderer {
                 disabled: state.disabled,
             });
         }
-        let v = theme.action_variant(state.variant);
-        if state.disabled { v.disabled_bg } else { v.bg }
+        let field = if state.disabled { "disabled_bg" } else { "bg" };
+        action_color(theme, state.variant, field)
     }
 
     fn fg(&self, state: &ButtonRenderState, theme: &Theme) -> Hsla {
@@ -79,24 +123,28 @@ impl ButtonRenderer for TokenButtonRenderer {
                 disabled: state.disabled,
             });
         }
-        let v = theme.action_variant(state.variant);
-        if state.disabled { v.disabled_fg } else { v.fg }
+        let field = if state.disabled { "disabled_fg" } else { "fg" };
+        action_color(theme, state.variant, field)
     }
 
     fn padding(&self, _state: &ButtonRenderState, theme: &Theme) -> Edges<Pixels> {
-        let t = &theme.tokens.control.button;
-        Edges::symmetric(t.horizontal_padding, t.horizontal_padding / 2.0)
+        let h = theme_path::control_button(theme, "horizontal_padding").unwrap_or(12.0);
+        let v = theme_path::control_button(theme, "vertical_padding").unwrap_or(h / 2.0);
+        Edges::symmetric(gpui::px(h as f32), gpui::px(v as f32))
     }
 
     fn border_radius(&self, _state: &ButtonRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.radii.md
+        theme_path::control_button(theme, "radius")
+            .or_else(|| theme_path::radii_md(theme))
+            .unwrap_or(6.0)
+            .into()
     }
 
     fn border(&self, _state: &ButtonRenderState, _theme: &Theme) -> Option<BorderSpec> {
-        // We do not bridge `VariantStyle::border` here on purpose: the
-        // default renderer does not draw a border at all (v0.3 / v0.4
-        // behavior), and a custom renderer that wants to consume a
-        // variant-supplied border can do so itself.
+        // We do not bridge `VariantStyle::border` here on purpose:
+        // the default renderer does not draw a border at all
+        // (v0.3 / v0.4 behavior), and a custom renderer that wants
+        // to consume a variant-supplied border can do so itself.
         None
     }
 
@@ -105,7 +153,9 @@ impl ButtonRenderer for TokenButtonRenderer {
     }
 
     fn min_height(&self, _state: &ButtonRenderState, theme: &Theme) -> Pixels {
-        theme.tokens.control.button.min_height
+        theme_path::control_button(theme, "min_height")
+            .unwrap_or(36.0)
+            .into()
     }
 
     fn disabled_opacity(&self, state: &ButtonRenderState, _theme: &Theme) -> f32 {
@@ -116,7 +166,8 @@ impl ButtonRenderer for TokenButtonRenderer {
     }
 }
 
-/// Convenience: build a registry entry that wraps the given renderer in an Arc.
+/// Convenience: build a registry entry that wraps the given
+/// renderer in an Arc.
 pub fn arc<T: ButtonRenderer + 'static>(r: T) -> Arc<dyn ButtonRenderer> {
     Arc::new(r)
 }
@@ -124,69 +175,132 @@ pub fn arc<T: ButtonRenderer + 'static>(r: T) -> Arc<dyn ButtonRenderer> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::theme::Theme;
-    use yororen_ui_core::i18n::TextDirection;
+    use crate::renderers::theme_path;
 
-    fn fixture_dark() -> Theme {
-        // delegate to the private fixture used by mod.rs
-        Theme {
-            surface: crate::theme::SurfaceTheme {
-                canvas: gpui::rgb(0x000000).into(),
-                base: gpui::rgb(0x111111).into(),
-                raised: gpui::rgb(0x222222).into(),
-                sunken: gpui::rgb(0x000000).into(),
-                hover: gpui::rgb(0x333333).into(),
-            },
-            content: Default::default(),
-            border: Default::default(),
-            action: Default::default(),
-            status: Default::default(),
-            shadow: Default::default(),
-            text_direction: TextDirection::Ltr,
-            tokens: Default::default(),
-            renderers: super::super::registry::RendererRegistry::token_based(),
-        }
+    fn fixture() -> Theme {
+        let json = include_str!("../../themes/system-dark.json");
+        Theme::from_json(json).expect("system-dark.json is valid")
     }
 
     #[test]
-    fn token_button_renderer_returns_dark_blue_for_primary() {
-        let theme = fixture_dark();
+    fn token_button_renderer_returns_primary_palette() {
+        let theme = fixture();
         let r = TokenButtonRenderer;
         let state = ButtonRenderState {
             variant: ActionVariantKind::Primary,
             disabled: false,
             ..Default::default()
         };
-        // We just assert bg and fg are equal to the underlying action variant
-        // (so behaviour is identical to v0.3's `compute_action_style`).
-        assert_eq!(r.bg(&state, &theme), theme.action.primary.bg);
-        assert_eq!(r.fg(&state, &theme), theme.action.primary.fg);
+        // bg should equal theme.action.primary.bg from JSON.
+        assert_eq!(
+            r.bg(&state, &theme),
+            theme.get_color("action.primary.bg").unwrap()
+        );
+        assert_eq!(
+            r.fg(&state, &theme),
+            theme.get_color("action.primary.fg").unwrap()
+        );
     }
 
     #[test]
     fn disabled_uses_disabled_palette() {
-        let theme = fixture_dark();
+        let theme = fixture();
         let r = TokenButtonRenderer;
         let state = ButtonRenderState {
             variant: ActionVariantKind::Primary,
             disabled: true,
             ..Default::default()
         };
-        assert_eq!(r.bg(&state, &theme), theme.action.primary.disabled_bg);
-        assert_eq!(r.fg(&state, &theme), theme.action.primary.disabled_fg);
+        assert_eq!(
+            r.bg(&state, &theme),
+            theme.get_color("action.primary.disabled_bg").unwrap()
+        );
+        assert_eq!(
+            r.fg(&state, &theme),
+            theme.get_color("action.primary.disabled_fg").unwrap()
+        );
+    }
+
+    #[test]
+    fn neutral_variant_picks_neutral_palette() {
+        let theme = fixture();
+        let r = TokenButtonRenderer;
+        let state = ButtonRenderState {
+            variant: ActionVariantKind::Neutral,
+            ..Default::default()
+        };
+        assert_eq!(
+            r.bg(&state, &theme),
+            theme.get_color("action.neutral.bg").unwrap()
+        );
+    }
+
+    #[test]
+    fn danger_variant_picks_danger_palette() {
+        let theme = fixture();
+        let r = TokenButtonRenderer;
+        let state = ButtonRenderState {
+            variant: ActionVariantKind::Danger,
+            ..Default::default()
+        };
+        assert_eq!(
+            r.bg(&state, &theme),
+            theme.get_color("action.danger.bg").unwrap()
+        );
+    }
+
+    #[test]
+    fn min_height_uses_control_button_token() {
+        let theme = fixture();
+        let r = TokenButtonRenderer;
+        let state = ButtonRenderState::default();
+        let expected = theme.get_number("tokens.control.button.min_height").unwrap() as f32;
+        // Pixels equality is f32-based; compare values.
+        assert_eq!(
+            r.min_height(&state, &theme),
+            gpui::px(expected),
+        );
+    }
+
+    #[test]
+    fn missing_path_yields_zero_color_doesnt_panic() {
+        // Theme with only one path — everything else returns None.
+        let theme = Theme::from_value(serde_json::json!({}));
+        let r = TokenButtonRenderer;
+        let state = ButtonRenderState {
+            variant: ActionVariantKind::Primary,
+            ..Default::default()
+        };
+        // Should not panic. Returns Hsla::default() (zeros).
+        let _ = r.bg(&state, &theme);
+        let _ = r.fg(&state, &theme);
+        let _ = r.padding(&state, &theme);
+        let _ = r.border_radius(&state, &theme);
+        let _ = r.min_height(&state, &theme);
+    }
+
+    // Smoke-test the path helpers used above.
+    #[test]
+    fn action_color_helper_reads_correct_path() {
+        let theme = fixture();
+        assert_eq!(
+            action_color(&theme, ActionVariantKind::Primary, "bg"),
+            theme.get_color("action.primary.bg").unwrap(),
+        );
+        let _ = theme_path::control_button(&theme, "min_height");
     }
 }
 
 // =====================================================================
 // `DefaultButton` — render a `headless::ButtonProps` with the
-// registered `ButtonRenderer`. Lives in this same file because it is
-// the `headless`-shaped entry point for *this* renderer.
+// registered `ButtonRenderer`. Lives in this same file because
+// it is the `headless`-shaped entry point for *this* renderer.
 // =====================================================================
 
 use gpui::{prelude::FluentBuilder, div, App, Stateful, Styled};
 use yororen_ui_core::headless::button::ButtonProps;
-
-use crate::theme::ActiveTheme;
+use yororen_ui_core::renderer::RendererContext;
+use yororen_ui_core::theme::ActiveTheme;
 
 /// Sugar trait. Add `use yororen_ui_renderer::renderers::button::DefaultButton;`
 /// to a file to unlock `.default_render(cx)` on every `ButtonProps`.
@@ -197,9 +311,8 @@ pub trait DefaultButton: Sized {
 impl DefaultButton for ButtonProps {
     fn default_render(self, cx: &App) -> Stateful<gpui::Div> {
         let theme = cx.theme();
-        let r: &dyn ButtonRenderer = &**theme
-            .renderers
-            .get_button()
+        let r: &Arc<dyn ButtonRenderer> = cx
+            .renderer_arc::<ButtonMarker, dyn ButtonRenderer>()
             .expect("ButtonRenderer registered");
         let state = ButtonRenderState::default();
         let bg = r.bg(&state, theme);

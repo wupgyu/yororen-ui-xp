@@ -1,0 +1,81 @@
+{
+  "surface": {
+    "base": "#151518",
+    "canvas": "#0F0F11",
+    "raised": "#1D1D21",
+    "sunken": "#111113",
+    "hover": "#232327"
+  },
+  "content": {
+    "primary": "#F2F2F3",
+    "secondary": "#C8C8CC",
+    "tertiary": "#9B9BA1",
+    "disabled": "#6F6F76",
+    "on_primary": "#0B0B0D",
+    "on_status": "#0B0B0D"
+  },
+  "border": {
+    "default": "#2A2A2F",
+    "muted": "#1E1E22",
+    "focus": "#8BB0FF",
+    "divider": "#1E1E22"
+  },
+  "action": {
+    "neutral": {
+      "bg": "#1D1D21",
+      "hover_bg": "#24242A",
+      "active_bg": "#2A2A31",
+      "fg": "#F2F2F3",
+      "disabled_bg": "#1A1A1D",
+      "disabled_fg": "#6F6F76"
+    },
+    "primary": {
+      "bg": "#F4F4F6",
+      "hover_bg": "#FFFFFF",
+      "active_bg": "#E9E9EC",
+      "fg": "#0B0B0D",
+      "disabled_bg": "#E0E0E4",
+      "disabled_fg": "#5B5B61"
+    },
+    "danger": {
+      "bg": "#FFB4AE",
+      "hover_bg": "#FFA099",
+      "active_bg": "#FF8A82",
+      "fg": "#0B0B0D",
+      "disabled_bg": "#E0B3AF",
+      "disabled_fg": "#5B5B61"
+    }
+  },
+  "status": {
+    "success": { "bg": "#B9F5C9", "fg": "#0B0B0D" },
+    "warning": { "bg": "#FFE1A6", "fg": "#0B0B0D" },
+    "error":   { "bg": "#FFB4AE", "fg": "#0B0B0D" },
+    "info":    { "bg": "#B6D9FF", "fg": "#0B0B0D" }
+  },
+  "shadow": {
+    "elevation_1": "rgba(0,0,0,0.30)",
+    "elevation_2": "rgba(0,0,0,0.45)"
+  },
+  "tokens": {
+    "control": {
+      "button":          { "min_height": 36, "horizontal_padding": 12, "vertical_padding": 6,  "radius": 6 },
+      "input":           { "min_height": 32, "horizontal_padding": 10, "vertical_padding": 6,  "radius": 4 },
+      "switch":          { "track_w": 36, "track_h": 20, "radius": 999, "knob_size": 16 },
+      "toggle_button":   { "min_height": 32, "radius": 6 },
+      "checkbox":        { "size": 16, "radius": 3 },
+      "radio":           { "size": 16 },
+      "select":          { "min_height": 32 },
+      "combo_box":       { "min_height": 32 },
+      "avatar":          { "size": 32, "radius": 999 },
+      "tag":             { "radius": 4 },
+      "badge":           { "radius": 999 }
+    },
+    "radii":      { "sm": 4, "md": 6, "lg": 8, "pill": 999 },
+    "typography": {
+      "font_size_xs": 11, "font_size_sm": 12, "font_size_md": 14, "font_size_lg": 16, "font_size_xl": 20, "font_size_2xl": 24,
+      "weight_normal": 400, "weight_medium": 500, "weight_semibold": 600, "weight_bold": 700
+    },
+    "spacing":    { "xs": 4, "sm": 8, "md": 12, "lg": 16, "xl": 24 },
+    "motion":     { "duration_fast": 100, "duration_normal": 200, "duration_slow": 300 }
+  }
+}

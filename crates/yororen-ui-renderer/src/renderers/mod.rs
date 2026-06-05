@@ -38,6 +38,7 @@ pub mod switch;
 pub mod tag;
 pub mod text_area;
 pub mod text_input;
+pub mod theme_path;
 pub mod toast;
 pub mod toggle_button;
 pub mod tooltip;
@@ -46,7 +47,7 @@ pub mod variant;
 
 pub use avatar::{AvatarRenderState, AvatarRenderer, TokenAvatarRenderer};
 pub use badge::{BadgeRenderState, BadgeRenderer, TokenBadgeRenderer};
-pub use button::{ButtonRenderState, ButtonRenderer, TokenButtonRenderer};
+pub use button::{ActionVariantKind, ButtonRenderState, ButtonRenderer, TokenButtonRenderer};
 pub use card::{CardRenderState, CardRenderer, TokenCardRenderer};
 pub use checkbox::{CheckboxRenderState, CheckboxRenderer, TokenCheckboxRenderer};
 pub use combo_box::{ComboBoxRenderState, ComboBoxRenderer, TokenComboBoxRenderer};
