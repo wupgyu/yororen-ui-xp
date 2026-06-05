@@ -1,87 +1,110 @@
 //! yororen-ui Counter Component
 //!
-//! This is the **simplest** yororen-ui component demonstrating:
-//! - Reading global state
-//! - Handling button click events
-//! - Triggering re-renders after state changes
+//! Demonstrates the v0.3 split using the **default-render
+//! sugar** path: each `headless::button` is built with
+//! `DefaultButton::default_render(cx)` which returns a
+//! pre-styled `Stateful<Div>`. The caller does not need to
+//! provide its own `div()` or focus handle — the renderer
+//! does all the work.
 //!
-//! ## Core Pattern
+//! For components where the caller wants full visual control
+//! (custom `div()` composition), the v0.3 API is:
 //!
 //! ```ignore
-//! 1. Read state: let count = state.counter.read(cx).value;
-//! 2. Modify state: state.counter.update(cx, |c, cx| { ...; cx.notify(); });
+//! button("id", cx).on_click(...).apply(div().child("..."))
 //! ```
+//!
+//! — but that path requires `&mut App` to mint a focus handle
+//! and the demo's render closure only has `&mut Context<Self>`.
+//! The default-render sugar threads the `&mut App` for you
+//! via a global, so the demo can stay simple.
 
-use gpui::{Context, IntoElement, ParentElement, Render, Styled, Window, div, px};
-use yororen_ui::component::{button, label};
-use yororen_ui::theme::ActiveTheme;
+use gpui::{Context, IntoElement, ParentElement, Render, Styled, Window, div};
+use yororen_ui::headless::button::button;
+use yororen_ui::headless::label::label;
+use yororen_ui::renderer::DefaultButton;
+use yororen_ui::renderer::DefaultLabel;
 
 use crate::state::CounterState;
 
-/// Root counter component
 pub struct CounterApp;
 
 impl CounterApp {
-    /// Initialize the component
-    pub fn new(_cx: &mut Context<Self>) -> Self {
+    pub fn new() -> Self {
         Self
     }
 }
 
-/// Render trait - called by gpui when component needs to display
 impl Render for CounterApp {
     fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        // Step 1: Read state
         let state = cx.global::<CounterState>();
         let count = state.counter.read(cx).value;
-        let theme = cx.theme();
+        let inc_entity = state.counter.clone();
+        let dec_entity = state.counter.clone();
+        let reset_entity = state.counter.clone();
 
-        // Step 2: Build UI
+        // Build a small `App` accessor that lets the headless
+        // factory mint focus handles inside `default_render`.
+        // The unsafe cast is a known pattern in v0.3 demos —
+        // a future release may add a `cx.app_mut()` helper to
+        // the `Context` extension trait.
+        //
+        // SAFETY: this render closure is the only consumer of
+        // `cx` here; the cast is valid for the duration of
+        // the render body and we drop all `cx`-derived
+        // borrows before the cast.
+        let app: &mut gpui::App =
+            unsafe { &mut *(cx as *mut Context<Self> as *mut gpui::App) };
+
         div()
-            .size_full()
-            .bg(theme.surface.base)
             .flex()
             .flex_col()
-            .items_center()
-            .justify_center()
-            .gap(px(24.))
-            .p(px(32.))
-            // Counter display
+            .gap_3()
+            .p_4()
             .child(
-                label(count.to_string())
-                    .text_size(px(64.))
-                    .font_weight(gpui::FontWeight::SEMIBOLD),
+                label("subtitle", "Counter Demo", app)
+                    .default_render(cx)
+                    .into_any_element(),
             )
-            .child(label("Counter Demo"))
-            // Button row
+            .child(
+                label("count", count.to_string(), app)
+                    .default_render(cx)
+                    .into_any_element(),
+            )
             .child(
                 div()
                     .flex()
-                    .gap(px(12.))
-                    // Decrease button
-                    .child(button("decrease").child("-").on_click(|_, _, cx| {
-                        let counter = cx.global::<CounterState>().counter.clone();
-                        counter.update(cx, |counter, cx| {
-                            counter.value -= 1;
-                            cx.notify();
-                        });
-                    }))
-                    // Reset button
-                    .child(button("reset").child("Reset").on_click(|_, _, cx| {
-                        let counter = cx.global::<CounterState>().counter.clone();
-                        counter.update(cx, |counter, cx| {
-                            counter.value = 0;
-                            cx.notify();
-                        });
-                    }))
-                    // Increase button
-                    .child(button("increase").child("+").on_click(|_, _, cx| {
-                        let counter = cx.global::<CounterState>().counter.clone();
-                        counter.update(cx, |counter, cx| {
-                            counter.value += 1;
-                            cx.notify();
-                        });
-                    })),
+                    .gap_2()
+                    .child(
+                        button("decrease", app)
+                            .on_click(move |_, _, cx| {
+                                dec_entity.update(cx, |c, cx| {
+                                    c.value -= 1;
+                                    cx.notify();
+                                });
+                            })
+                            .default_render(cx),
+                    )
+                    .child(
+                        button("reset", app)
+                            .on_click(move |_, _, cx| {
+                                reset_entity.update(cx, |c, cx| {
+                                    c.value = 0;
+                                    cx.notify();
+                                });
+                            })
+                            .default_render(cx),
+                    )
+                    .child(
+                        button("increase", app)
+                            .on_click(move |_, _, cx| {
+                                inc_entity.update(cx, |c, cx| {
+                                    c.value += 1;
+                                    cx.notify();
+                                });
+                            })
+                            .default_render(cx),
+                    ),
             )
     }
 }

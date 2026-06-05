@@ -13,46 +13,37 @@
 mod counter_app;
 mod state;
 
-// Gpui framework imports
-use gpui::{App, AppContext, Application, WindowOptions, px, size};
+use gpui::{App, AppContext, Application, WindowBounds, WindowOptions, px, size};
 
-// yororen-ui framework imports
 use yororen_ui::assets::UiAsset;
-use yororen_ui::component;
 use yororen_ui::locale_en;
 use yororen_ui::renderer;
 
-/// Application entry point
 fn main() {
-    // Create application instance with UI assets
     let app = Application::new().with_assets(UiAsset);
 
-    // Initialize application
     app.run(|cx: &mut App| {
-        // Initialize yororen-ui component library
-        // component::init no longer needed
-
-        // Set up theming (light/dark mode based on system)
+        // Install the default theme + 38 default renderers in
+        // one call. Replaces the old `theme_system::install` +
+        // `component::init` pair.
         renderer::install(cx, cx.window_appearance());
 
-        // Set up i18n with English translations from the bundled locale crate.
+        // Set up i18n with English translations.
         locale_en::install(cx);
 
-        // Set up counter state (stored in a GPUI Entity)
+        // Set up counter state.
         let counter_state = state::CounterState::new(cx);
         cx.set_global(counter_state);
 
-        // Create main window
+        // Open the main window.
         let options = WindowOptions {
-            window_bounds: Some(gpui::WindowBounds::Windowed(gpui::Bounds::centered(
-                None,
-                size(px(400.0), px(300.0)),
-                cx,
-            ))),
+            window_bounds: Some(WindowBounds::Windowed(
+                gpui::Bounds::centered(None, size(px(400.0), px(300.0)), cx),
+            )),
             ..Default::default()
         };
-
-        // Open window with counter component
-        let _ = cx.open_window(options, |_, cx| cx.new(counter_app::CounterApp::new));
+        let _ = cx.open_window(options, |_, cx| {
+            cx.new(|_cx| counter_app::CounterApp)
+        });
     });
 }
