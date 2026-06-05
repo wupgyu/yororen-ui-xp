@@ -7,7 +7,6 @@ use gpui::{
 };
 
 use crate::{
-    a11y::Role,
     component::{HeadingLevel, IconName, button, heading, icon, icon_button, label, panel},
     i18n::TextDirection,
     theme::{ActionVariantKind, ActiveTheme},
@@ -41,29 +40,23 @@ pub type ModalCloseCallback = Arc<dyn Fn(&mut gpui::Window, &mut gpui::App) + Se
 ///
 /// # Accessibility
 ///
+/// Yororen UI does **not** currently expose ARIA role / label /
+/// `aria-modal` on `Modal` (or any other component). The
+/// `gpui-ce 0.3.3` framework does not ship a public API to forward
+/// ARIA attributes to the OS accessibility tree, so a Modal built
+/// on top of it is invisible to screen readers beyond what
+/// `gpui-ce`'s own root window provides. The v0.4 / v1.0 work in
+/// the [Roadmap wiki][wiki-roadmap] covers the real a11y bridge.
 ///
-/// This component carries the following ARIA fields:
-/// - `role`: defaults to `Role::Dialog`, settable via `.role(...)`.
-/// - `aria-modal`: defaults to `true`, settable via `.aria_modal(false)`.
-/// - `aria-label`: optional, settable via `.aria_label(...)`.
-/// - `aria-labelledby`: optional, settable via `.aria_labelledby(...)`.
-/// - `aria-describedby`: optional, settable via `.described_by(...)`.
-///
-/// These fields are exposed via `get_*` accessors for parent
-/// components that want to forward the role to a wrapping
-/// element. The Modal itself does not currently emit the ARIA
-/// attributes into the rendered output (gpui-ce 0.3.3 does not
-/// expose arbitrary ARIA attributes), but downstream code can
-/// read the fields and emit them through alternative means
-/// (e.g. via a wrapping element's `data-*` attributes).
-///
-/// For full accessibility support, ensure:
+/// For application-level keyboard / pointer a11y today, ensure:
 /// - The modal is wrapped in an `Overlay` which provides scrim
 ///   click, Esc, and body scroll lock.
 /// - Focus is moved to the modal's first focusable element on
 ///   open (the [`FocusTrap`](crate::a11y::FocusTrap) helper is
 ///   the recommended way to do this).
 /// - Focus returns to the trigger element when the modal closes.
+///
+/// [wiki-roadmap]: https://github.com/MeowLynxSea/yororen-ui/wiki/Roadmap
 pub fn modal() -> Modal {
     Modal::new()
 }
@@ -80,17 +73,6 @@ pub struct Modal {
     border: Option<Hsla>,
     closable: bool,
     on_close: Option<ModalCloseCallback>,
-    /// Accessibility: ID of the element that describes this modal.
-    /// This is typically used to associate additional descriptive content.
-    described_by: Option<SharedString>,
-    /// ARIA role. Default: `Role::Dialog`. ARIA field.
-    role: Role,
-    /// ARIA label (short description). ARIA field.
-    aria_label: Option<SharedString>,
-    /// ARIA labelledby (ID of label element). ARIA field.
-    aria_labelledby: Option<SharedString>,
-    /// ARIA modal flag. Default: `true` for modals. ARIA field.
-    aria_modal: bool,
 }
 
 impl Default for Modal {
@@ -112,11 +94,6 @@ impl Modal {
             border: None,
             closable: false,
             on_close: None,
-            described_by: None,
-            role: Role::Dialog,
-            aria_label: None,
-            aria_labelledby: None,
-            aria_modal: true,
         }
     }
 
@@ -178,67 +155,6 @@ impl Modal {
     {
         self.on_close = Some(Arc::new(handler));
         self
-    }
-
-    /// Sets the accessibility description for this modal.
-    ///
-    /// This associates additional descriptive content with the modal dialog,
-    /// which helps screen reader users understand the dialog's purpose or content.
-    ///
-    /// The value should be the ID of an element that contains the description.
-    pub fn described_by(mut self, id: impl Into<SharedString>) -> Self {
-        self.described_by = Some(id.into());
-        self
-    }
-
-    /// Set the ARIA role. Default: `Role::Dialog`. ARIA field.
-    pub fn role(mut self, role: Role) -> Self {
-        self.role = role;
-        self
-    }
-
-    /// Set the ARIA label (short description for screen readers).
-    /// Modal a11y shell.
-    pub fn aria_label(mut self, label: impl Into<SharedString>) -> Self {
-        self.aria_label = Some(label.into());
-        self
-    }
-
-    /// Set the ARIA labelledby (ID of the labelling element).
-    /// Modal a11y shell.
-    pub fn aria_labelledby(mut self, id: impl Into<SharedString>) -> Self {
-        self.aria_labelledby = Some(id.into());
-        self
-    }
-
-    /// Set the ARIA modal flag. Default: `true` for modals.
-    /// Set to `false` for non-modal dialogs (e.g. permission prompts that
-    /// don't block background interaction).
-    pub fn aria_modal(mut self, modal: bool) -> Self {
-        self.aria_modal = modal;
-        self
-    }
-
-    /// Read-only accessor for the ARIA role. Useful for tests and
-    /// for parent components that want to forward the role to a
-    /// wrapping element. ARIA field.
-    pub fn get_role(&self) -> Role {
-        self.role
-    }
-
-    /// Read-only accessor for `aria-label`. ARIA field.
-    pub fn get_aria_label(&self) -> Option<&SharedString> {
-        self.aria_label.as_ref()
-    }
-
-    /// Read-only accessor for `aria-labelledby`. ARIA field.
-    pub fn get_aria_labelledby(&self) -> Option<&SharedString> {
-        self.aria_labelledby.as_ref()
-    }
-
-    /// Read-only accessor for `aria-modal`. ARIA field.
-    pub fn get_aria_modal(&self) -> bool {
-        self.aria_modal
     }
 }
 
@@ -385,31 +301,19 @@ mod tests {
     use super::*;
 
     #[test]
-    fn default_modal_has_dialog_role_and_aria_modal_true() {
+    fn default_modal_has_no_title_or_close_handler() {
         let m = Modal::new();
-        assert_eq!(m.get_role(), Role::Dialog);
-        assert!(m.get_aria_modal());
-        assert!(m.get_aria_label().is_none());
-        assert!(m.get_aria_labelledby().is_none());
+        assert!(m.title.is_none());
+        assert!(m.content.is_none());
+        assert!(m.actions.is_none());
+        assert!(!m.closable);
+        assert!(m.on_close.is_none());
     }
 
     #[test]
-    fn aria_setters_update_state() {
-        let m = Modal::new()
-            .role(Role::Dialog)
-            .aria_label("Delete file?")
-            .aria_labelledby("modal-title")
-            .aria_modal(false);
-        assert_eq!(m.get_role(), Role::Dialog);
-        assert_eq!(m.get_aria_label().unwrap().as_ref(), "Delete file?");
-        assert_eq!(m.get_aria_labelledby().unwrap().as_ref(), "modal-title");
-        assert!(!m.get_aria_modal());
-    }
-
-    #[test]
-    fn closable_flag_independent_of_aria_modal() {
-        let m = Modal::new().closable(true).aria_modal(false);
+    fn closable_flag_independent_of_callback() {
+        let m = Modal::new().closable(true);
         assert!(m.closable);
-        assert!(!m.get_aria_modal());
+        assert!(m.on_close.is_none());
     }
 }

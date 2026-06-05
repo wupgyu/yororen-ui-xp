@@ -1,13 +1,5 @@
 pub mod yororen_ui_core
 pub mod yororen_ui_core::a11y
-pub mod yororen_ui_core::a11y::combobox
-pub fn yororen_ui_core::a11y::combobox::attrs(bool, core::option::Option<&str>, core::option::Option<&str>) -> alloc::vec::Vec<(alloc::string::String, alloc::string::String)>
-pub mod yororen_ui_core::a11y::dialog
-pub fn yororen_ui_core::a11y::dialog::attrs(core::option::Option<&str>, core::option::Option<&str>) -> alloc::vec::Vec<(alloc::string::String, alloc::string::String)>
-pub mod yororen_ui_core::a11y::menuitem
-pub fn yororen_ui_core::a11y::menuitem::attrs(bool) -> alloc::vec::Vec<(alloc::string::String, alloc::string::String)>
-pub mod yororen_ui_core::a11y::option
-pub fn yororen_ui_core::a11y::option::attrs(bool, bool) -> alloc::vec::Vec<(alloc::string::String, alloc::string::String)>
 pub enum yororen_ui_core::a11y::FocusDirection
 pub enum yororen_ui_core::a11y::FocusDirection
 pub yororen_ui_core::a11y::FocusDirection::First
@@ -50,95 +42,9 @@ impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::a11y::FocusDir
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::a11y::FocusDirection
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::a11y::FocusDirection
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::a11y::FocusDirection
-pub enum yororen_ui_core::a11y::Role
-pub yororen_ui_core::a11y::Role::Alert
-pub yororen_ui_core::a11y::Role::Application
-pub yororen_ui_core::a11y::Role::Button
-pub yororen_ui_core::a11y::Role::Cell
-pub yororen_ui_core::a11y::Role::Checkbox
-pub yororen_ui_core::a11y::Role::Combobox
-pub yororen_ui_core::a11y::Role::Complementary
-pub yororen_ui_core::a11y::Role::Dialog
-pub yororen_ui_core::a11y::Role::Grid
-pub yororen_ui_core::a11y::Role::Group
-pub yororen_ui_core::a11y::Role::Listbox
-pub yororen_ui_core::a11y::Role::Menu
-pub yororen_ui_core::a11y::Role::MenuItem
-pub yororen_ui_core::a11y::Role::Navigation
-pub yororen_ui_core::a11y::Role::Option
-pub yororen_ui_core::a11y::Role::Presentation
-pub yororen_ui_core::a11y::Role::Progressbar
-pub yororen_ui_core::a11y::Role::Radio
-pub yororen_ui_core::a11y::Role::Region
-pub yororen_ui_core::a11y::Role::Row
-pub yororen_ui_core::a11y::Role::Scrollbar
-pub yororen_ui_core::a11y::Role::Slider
-pub yororen_ui_core::a11y::Role::Status
-pub yororen_ui_core::a11y::Role::Switch
-pub yororen_ui_core::a11y::Role::Tab
-pub yororen_ui_core::a11y::Role::TabList
-pub yororen_ui_core::a11y::Role::TabPanel
-pub yororen_ui_core::a11y::Role::Textbox
-pub yororen_ui_core::a11y::Role::Toolbar
-pub yororen_ui_core::a11y::Role::Tooltip
-pub yororen_ui_core::a11y::Role::Tree
-pub yororen_ui_core::a11y::Role::TreeItem
 impl yororen_ui_core::a11y::Role
-pub fn yororen_ui_core::a11y::Role::as_str(&self) -> &'static str
-impl core::clone::Clone for yororen_ui_core::a11y::Role
-pub fn yororen_ui_core::a11y::Role::clone(&self) -> yororen_ui_core::a11y::Role
-impl core::cmp::Eq for yororen_ui_core::a11y::Role
-impl core::cmp::PartialEq for yororen_ui_core::a11y::Role
-pub fn yororen_ui_core::a11y::Role::eq(&self, &yororen_ui_core::a11y::Role) -> bool
-impl core::fmt::Debug for yororen_ui_core::a11y::Role
-pub fn yororen_ui_core::a11y::Role::fmt(&self, &mut core::fmt::Formatter<'_>) -> core::fmt::Result
-impl core::marker::Copy for yororen_ui_core::a11y::Role
-impl core::marker::StructuralPartialEq for yororen_ui_core::a11y::Role
-impl core::marker::Freeze for yororen_ui_core::a11y::Role
-impl core::marker::Send for yororen_ui_core::a11y::Role
-impl core::marker::Sync for yororen_ui_core::a11y::Role
-impl core::marker::Unpin for yororen_ui_core::a11y::Role
-impl core::marker::UnsafeUnpin for yororen_ui_core::a11y::Role
-impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::a11y::Role
-impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::a11y::Role
 pub struct yororen_ui_core::a11y::AriaAttrs
 impl yororen_ui_core::a11y::AriaAttrs
-pub fn yororen_ui_core::a11y::AriaAttrs::aria_activedescendant(self, impl core::convert::Into<alloc::string::String>) -> Self
-pub fn yororen_ui_core::a11y::AriaAttrs::aria_autocomplete(self, &str) -> Self
-pub fn yororen_ui_core::a11y::AriaAttrs::aria_checked(self, bool) -> Self
-pub fn yororen_ui_core::a11y::AriaAttrs::aria_controls(self, impl core::convert::Into<alloc::string::String>) -> Self
-pub fn yororen_ui_core::a11y::AriaAttrs::aria_describedby(self, impl core::convert::Into<alloc::string::String>) -> Self
-pub fn yororen_ui_core::a11y::AriaAttrs::aria_disabled(self, bool) -> Self
-pub fn yororen_ui_core::a11y::AriaAttrs::aria_expanded(self, bool) -> Self
-pub fn yororen_ui_core::a11y::AriaAttrs::aria_haspopup(self, &str) -> Self
-pub fn yororen_ui_core::a11y::AriaAttrs::aria_hidden(self, bool) -> Self
-pub fn yororen_ui_core::a11y::AriaAttrs::aria_label(self, impl core::convert::Into<alloc::string::String>) -> Self
-pub fn yororen_ui_core::a11y::AriaAttrs::aria_labelledby(self, impl core::convert::Into<alloc::string::String>) -> Self
-pub fn yororen_ui_core::a11y::AriaAttrs::aria_level(self, i32) -> Self
-pub fn yororen_ui_core::a11y::AriaAttrs::aria_live(self, &str) -> Self
-pub fn yororen_ui_core::a11y::AriaAttrs::aria_modal(self, bool) -> Self
-pub fn yororen_ui_core::a11y::AriaAttrs::aria_orientation(self, &str) -> Self
-pub fn yororen_ui_core::a11y::AriaAttrs::aria_owns(self, impl core::convert::Into<alloc::string::String>) -> Self
-pub fn yororen_ui_core::a11y::AriaAttrs::aria_readonly(self, bool) -> Self
-pub fn yororen_ui_core::a11y::AriaAttrs::aria_required(self, bool) -> Self
-pub fn yororen_ui_core::a11y::AriaAttrs::aria_selected(self, bool) -> Self
-pub fn yororen_ui_core::a11y::AriaAttrs::aria_valuemax(self, f64) -> Self
-pub fn yororen_ui_core::a11y::AriaAttrs::aria_valuemin(self, f64) -> Self
-pub fn yororen_ui_core::a11y::AriaAttrs::aria_valuenow(self, f64) -> Self
-pub fn yororen_ui_core::a11y::AriaAttrs::aria_valuetext(self, impl core::convert::Into<alloc::string::String>) -> Self
-pub fn yororen_ui_core::a11y::AriaAttrs::build(self) -> alloc::vec::Vec<(alloc::string::String, alloc::string::String)>
-pub fn yororen_ui_core::a11y::AriaAttrs::new() -> Self
-pub fn yororen_ui_core::a11y::AriaAttrs::role(self, yororen_ui_core::a11y::Role) -> Self
-pub fn yororen_ui_core::a11y::AriaAttrs::tab_index(self, i32) -> Self
-impl core::default::Default for yororen_ui_core::a11y::AriaAttrs
-pub fn yororen_ui_core::a11y::AriaAttrs::default() -> Self
-impl core::marker::Freeze for yororen_ui_core::a11y::AriaAttrs
-impl core::marker::Send for yororen_ui_core::a11y::AriaAttrs
-impl core::marker::Sync for yororen_ui_core::a11y::AriaAttrs
-impl core::marker::Unpin for yororen_ui_core::a11y::AriaAttrs
-impl core::marker::UnsafeUnpin for yororen_ui_core::a11y::AriaAttrs
-impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::a11y::AriaAttrs
-impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::a11y::AriaAttrs
 pub struct yororen_ui_core::a11y::ClickOutsideCapture
 impl yororen_ui_core::a11y::ClickOutsideCapture
 pub fn yororen_ui_core::a11y::ClickOutsideCapture::new() -> Self
@@ -374,11 +280,8 @@ impl core::marker::Unpin for yororen_ui_core::a11y::ScrollLockGuard
 impl core::marker::UnsafeUnpin for yororen_ui_core::a11y::ScrollLockGuard
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::a11y::ScrollLockGuard
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::a11y::ScrollLockGuard
-pub trait yororen_ui_core::a11y::RoleExt
-pub fn yororen_ui_core::a11y::RoleExt::role(self, yororen_ui_core::a11y::Role) -> Self where Self: core::marker::Sized
 impl<E> yororen_ui_core::a11y::RoleExt for E
 pub fn E::role(self, yororen_ui_core::a11y::Role) -> Self where Self: core::marker::Sized
-pub fn yororen_ui_core::a11y::aria() -> yororen_ui_core::a11y::AriaAttrs
 pub fn yororen_ui_core::a11y::current_lock_count() -> usize
 pub fn yororen_ui_core::a11y::cycle_focus<'a>(&'a yororen_ui_core::a11y::FocusableList, &str, yororen_ui_core::a11y::FocusDirection) -> core::option::Option<&'a str>
 pub fn yororen_ui_core::a11y::focus_trap() -> yororen_ui_core::a11y::FocusTrap
@@ -1101,17 +1004,10 @@ pub mod yororen_ui_core::component::modal
 pub struct yororen_ui_core::component::modal::Modal
 impl yororen_ui_core::component::Modal
 pub fn yororen_ui_core::component::Modal::actions(self, impl gpui::element::IntoElement) -> Self
-pub fn yororen_ui_core::component::Modal::aria_label(self, impl core::convert::Into<gpui::shared_string::SharedString>) -> Self
-pub fn yororen_ui_core::component::Modal::aria_labelledby(self, impl core::convert::Into<gpui::shared_string::SharedString>) -> Self
-pub fn yororen_ui_core::component::Modal::aria_modal(self, bool) -> Self
 pub fn yororen_ui_core::component::Modal::bg(self, impl core::convert::Into<gpui::color::Hsla>) -> Self
 pub fn yororen_ui_core::component::Modal::border(self, impl core::convert::Into<gpui::color::Hsla>) -> Self
 pub fn yororen_ui_core::component::Modal::closable(self, bool) -> Self
 pub fn yororen_ui_core::component::Modal::content(self, impl gpui::element::IntoElement) -> Self
-pub fn yororen_ui_core::component::Modal::described_by(self, impl core::convert::Into<gpui::shared_string::SharedString>) -> Self
-pub fn yororen_ui_core::component::Modal::get_aria_label(&self) -> core::option::Option<&gpui::shared_string::SharedString>
-pub fn yororen_ui_core::component::Modal::get_aria_labelledby(&self) -> core::option::Option<&gpui::shared_string::SharedString>
-pub fn yororen_ui_core::component::Modal::get_aria_modal(&self) -> bool
 pub fn yororen_ui_core::component::Modal::get_role(&self) -> yororen_ui_core::a11y::Role
 pub fn yororen_ui_core::component::Modal::id(self, impl core::convert::Into<gpui::window::ElementId>) -> Self
 pub fn yororen_ui_core::component::Modal::new() -> Self
@@ -2575,17 +2471,10 @@ impl !core::panic::unwind_safe::UnwindSafe for yororen_ui_core::component::ListI
 pub struct yororen_ui_core::component::Modal
 impl yororen_ui_core::component::Modal
 pub fn yororen_ui_core::component::Modal::actions(self, impl gpui::element::IntoElement) -> Self
-pub fn yororen_ui_core::component::Modal::aria_label(self, impl core::convert::Into<gpui::shared_string::SharedString>) -> Self
-pub fn yororen_ui_core::component::Modal::aria_labelledby(self, impl core::convert::Into<gpui::shared_string::SharedString>) -> Self
-pub fn yororen_ui_core::component::Modal::aria_modal(self, bool) -> Self
 pub fn yororen_ui_core::component::Modal::bg(self, impl core::convert::Into<gpui::color::Hsla>) -> Self
 pub fn yororen_ui_core::component::Modal::border(self, impl core::convert::Into<gpui::color::Hsla>) -> Self
 pub fn yororen_ui_core::component::Modal::closable(self, bool) -> Self
 pub fn yororen_ui_core::component::Modal::content(self, impl gpui::element::IntoElement) -> Self
-pub fn yororen_ui_core::component::Modal::described_by(self, impl core::convert::Into<gpui::shared_string::SharedString>) -> Self
-pub fn yororen_ui_core::component::Modal::get_aria_label(&self) -> core::option::Option<&gpui::shared_string::SharedString>
-pub fn yororen_ui_core::component::Modal::get_aria_labelledby(&self) -> core::option::Option<&gpui::shared_string::SharedString>
-pub fn yororen_ui_core::component::Modal::get_aria_modal(&self) -> bool
 pub fn yororen_ui_core::component::Modal::get_role(&self) -> yororen_ui_core::a11y::Role
 pub fn yororen_ui_core::component::Modal::id(self, impl core::convert::Into<gpui::window::ElementId>) -> Self
 pub fn yororen_ui_core::component::Modal::new() -> Self

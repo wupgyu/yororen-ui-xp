@@ -85,10 +85,6 @@ pub struct FocusTrap {
     on_focus_next: Option<WindowAppCallback>,
     /// Callback fired when FocusPrev (Shift+Tab) is pressed.
     on_focus_prev: Option<WindowAppCallback>,
-    /// Whether to trap focus (default: true).
-    trap_focus: bool,
-    /// Initial focus element ID.
-    initial_focus: Option<ElementId>,
 }
 
 impl Default for FocusTrap {
@@ -106,8 +102,6 @@ impl FocusTrap {
             on_escape: None,
             on_focus_next: None,
             on_focus_prev: None,
-            trap_focus: true,
-            initial_focus: None,
         }
     }
 
@@ -143,18 +137,6 @@ impl FocusTrap {
         self.on_focus_prev = Some(Arc::new(handler));
         self
     }
-
-    /// Sets whether to trap focus.
-    pub fn trap_focus(mut self, trap: bool) -> Self {
-        self.trap_focus = trap;
-        self
-    }
-
-    /// Sets the initial focus element ID.
-    pub fn initial_focus(mut self, id: impl Into<ElementId>) -> Self {
-        self.initial_focus = Some(id.into());
-        self
-    }
 }
 
 impl ParentElement for FocusTrap {
@@ -183,8 +165,6 @@ impl RenderOnce for FocusTrap {
         let on_escape = self.on_escape;
         let on_focus_next = self.on_focus_next;
         let on_focus_prev = self.on_focus_prev;
-        let _ = self.trap_focus; // reserved for future use
-        let _ = self.initial_focus; // reserved for future use
 
         // Wire keyboard handlers onto the base div. The handlers
         // are installed via `capture_key_down` so they fire even
@@ -279,8 +259,6 @@ mod tests {
         assert!(ft.on_escape.is_none());
         assert!(ft.on_focus_next.is_none());
         assert!(ft.on_focus_prev.is_none());
-        assert!(ft.trap_focus);
-        assert!(ft.initial_focus.is_none());
     }
 
     #[test]
@@ -288,12 +266,10 @@ mod tests {
         let ft = FocusTrap::new()
             .on_escape(|_w, _c| {})
             .on_focus_next(|_w, _c| {})
-            .on_focus_prev(|_w, _c| {})
-            .trap_focus(false);
+            .on_focus_prev(|_w, _c| {});
         assert!(ft.on_escape.is_some());
         assert!(ft.on_focus_next.is_some());
         assert!(ft.on_focus_prev.is_some());
-        assert!(!ft.trap_focus);
     }
 
     #[test]
