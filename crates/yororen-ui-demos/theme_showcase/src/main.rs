@@ -29,7 +29,7 @@ use yororen_ui::renderer::{GlobalVariantRegistry, VariantRegistry};
 use yororen_ui_locale_en as locale_en;
 use yororen_ui_theme_catppuccin as catppuccin;
 use yororen_ui_theme_material as material;
-use yororen_ui_theme_system as theme_system;
+use yororen_ui::renderer;
 
 mod showcase_app;
 mod state;
@@ -40,10 +40,10 @@ fn main() {
     let app = Application::new().with_assets(UiAsset);
 
     app.run(|cx: &mut App| {
-        yororen_ui::component::init(cx);
+        yororen_ui::// component::init no longer needed
         // Default install uses theme-system. The right half of the
         // window overrides to the Catppuccin theme via `with_theme`.
-        theme_system::install(cx, cx.window_appearance());
+        renderer::install(cx, cx.window_appearance());
         locale_en::install(cx);
 
         // Register the 3 Catppuccin custom variants so the gallery

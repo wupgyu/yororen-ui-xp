@@ -20,7 +20,7 @@ use gpui::{App, AppContext, Application, WindowBounds, WindowOptions, px, size};
 use yororen_ui::assets::UiAsset;
 
 use yororen_ui_locale_en as locale_en;
-use yororen_ui_theme_system as theme_system;
+use yororen_ui::renderer;
 
 mod a11y_app;
 mod state;
@@ -31,8 +31,8 @@ fn main() {
     let app = Application::new().with_assets(UiAsset);
 
     app.run(|cx: &mut App| {
-        yororen_ui::component::init(cx);
-        theme_system::install(cx, cx.window_appearance());
+        yororen_ui::// component::init no longer needed
+        renderer::install(cx, cx.window_appearance());
         locale_en::install(cx);
 
         let st = ModalA11yState::new(cx);

@@ -39,7 +39,7 @@ use yororen_ui::theme::Theme;
 use yororen_ui_locale_en as locale_en;
 use yororen_ui_theme_catppuccin as catppuccin;
 use yororen_ui_theme_material as material;
-use yororen_ui_theme_system as theme_system;
+use yororen_ui::renderer;
 
 mod flavor_gallery_app;
 mod state;
@@ -51,11 +51,11 @@ fn main() {
     let app = Application::new().with_assets(UiAsset);
 
     app.run(|cx: &mut App| {
-        yororen_ui::component::init(cx);
+        yororen_ui::// component::init no longer needed
 
         // Start with the system theme as the default; the user
         // picks a flavor via the buttons in the top bar.
-        theme_system::install(cx, cx.window_appearance());
+        renderer::install(cx, cx.window_appearance());
         locale_en::install(cx);
 
         // Register the Catppuccin custom variants so Catppuccin

@@ -21,14 +21,14 @@ use gpui::{App, AppContext, Application, WindowOptions, px, size};
 use yororen_ui::assets::UiAsset;
 use yororen_ui::component;
 use yororen_ui::locale_en;
-use yororen_ui_theme_system as theme_system;
+use yororen_ui::renderer;
 
 fn main() {
     let app = Application::new().with_assets(UiAsset);
 
     app.run(|cx: &mut App| {
-        component::init(cx);
-        theme_system::install(cx, cx.window_appearance());
+        // component::init no longer needed
+        renderer::install(cx, cx.window_appearance());
         locale_en::install(cx);
 
         let options = WindowOptions {

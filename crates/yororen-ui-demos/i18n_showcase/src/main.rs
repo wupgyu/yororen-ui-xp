@@ -24,7 +24,7 @@ use yororen_ui::theme::GlobalTheme;
 use yororen_ui_locale_ar as locale_ar;
 use yororen_ui_locale_en as locale_en;
 use yororen_ui_locale_zh_cn as locale_zh_cn;
-use yororen_ui_theme_system as theme_system;
+use yororen_ui::renderer;
 
 mod i18n_app;
 mod state;
@@ -35,8 +35,8 @@ fn main() {
     let app = Application::new().with_assets(UiAsset);
 
     app.run(|cx: &mut App| {
-        yororen_ui::component::init(cx);
-        theme_system::install(cx, cx.window_appearance());
+        yororen_ui::// component::init no longer needed
+        renderer::install(cx, cx.window_appearance());
         cx.set_global(GlobalPlaceholderResolver(Arc::new(I18nPlaceholderResolver)));
         locale_en::install(cx);
 

@@ -20,7 +20,7 @@ use gpui::{App, AppContext, Application, WindowOptions, px, size};
 use yororen_ui::assets::UiAsset;
 use yororen_ui::component;
 use yororen_ui::locale_en;
-use yororen_ui_theme_system as theme_system;
+use yororen_ui::renderer;
 
 /// Application entry point
 fn main() {
@@ -30,10 +30,10 @@ fn main() {
     // Initialize application
     app.run(|cx: &mut App| {
         // Initialize yororen-ui component library
-        component::init(cx);
+        // component::init no longer needed
 
         // Set up theming (light/dark mode based on system)
-        theme_system::install(cx, cx.window_appearance());
+        renderer::install(cx, cx.window_appearance());
 
         // Set up i18n with English translations from the bundled locale crate.
         locale_en::install(cx);

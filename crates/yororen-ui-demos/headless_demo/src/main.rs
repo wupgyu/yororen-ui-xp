@@ -30,7 +30,7 @@ use yororen_ui::hooks::{
 use yororen_ui::locale_en;
 use yororen_ui::theme::ActiveTheme;
 
-use yororen_ui_theme_system as theme_system;
+use yororen_ui::renderer;
 
 /// Window/App callback shared between composite column layout and
 /// the modal close path. (`OverlayCloseCallback` and
@@ -783,7 +783,7 @@ fn main() {
     let app = Application::new().with_assets(UiAsset);
     app.run(|cx: &mut App| {
         init_component(cx);
-        theme_system::install(cx, cx.window_appearance());
+        renderer::install(cx, cx.window_appearance());
         locale_en::install(cx);
 
         let options = WindowOptions {

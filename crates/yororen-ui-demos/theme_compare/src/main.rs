@@ -23,8 +23,8 @@ use gpui::{App, AppContext, Application, WindowAppearance, WindowBounds, WindowO
 use yororen_ui::assets::UiAsset;
 
 use yororen_ui::theme::Theme;
-use yororen_ui_theme_mini as theme_mini;
-use yororen_ui_theme_system as theme_system;
+use yororen_ui::renderer;
+use yororen_ui::renderer;
 
 mod compare_app;
 mod state;
@@ -35,10 +35,10 @@ fn main() {
     let app = Application::new().with_assets(UiAsset);
 
     app.run(|cx: &mut App| {
-        yororen_ui::component::init(cx);
+        yororen_ui::// component::init no longer needed
         // Default install uses theme-system; the right half of the
         // window overrides to the mini registry on the first render.
-        theme_system::install(cx, cx.window_appearance());
+        renderer::install(cx, cx.window_appearance());
 
         let st = ThemeCompareState::new(cx);
         cx.set_global(st);
