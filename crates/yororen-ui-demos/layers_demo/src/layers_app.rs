@@ -9,11 +9,13 @@
 //! 2. **Headless + default-renderer** — same `headless::button`,
 //!    but `.default_render(cx)` reads the registered
 //!    `TokenButtonRenderer` and applies the default look.
-//! 3. **Headless + mini-renderer override** — same `headless::button`,
-//!    but a custom `MiniButtonRenderer` is installed on top
-//!    of the default; the button picks up the mini's `themeColor`
-//!    while the surrounding label / div still come from
-//!    default-renderer.
+//! 3. **Headless + caller custom (Material ripple)** — same
+//!    `headless::button` factory, but the caller paints a
+//!    Material-Design-style teal background and a custom
+//!    `RippleElement` paints an opaque circle that expands from
+//!    each click point while its color lerps back to the teal
+//!    background (the circle "dissolves" into the button over
+//!    450ms). Driven by `window.request_animation_frame`.
 
 use gpui::{
     Context, InteractiveElement, IntoElement, ParentElement, Render, StatefulInteractiveElement,
@@ -24,6 +26,8 @@ use yororen_ui::headless::button::button;
 use yororen_ui::headless::label::label;
 use yororen_ui::renderer::DefaultButton;
 use yororen_ui::renderer::DefaultLabel;
+
+use crate::material_button::material_button;
 
 pub struct LayersApp;
 
@@ -62,34 +66,27 @@ impl Render for LayersApp {
             .default_render(cx)
             .child("Click me");
 
-        // Column 3: headless + caller fully custom. The
-        // caller paints its own background, border, padding
-        // and radius — and owns the hover/active styling too
-        // (panel 1 has none; this panel wires both). The
-        // caller's hover/active overrides go *after* the
-        // `apply(el)` call so they take precedence.
-        let custom_btn = button("custom", cx)
-            .variant(ActionVariantKind::Danger)
-            .apply(
-                div()
-                    .bg(gpui::hsla(0.0, 0.0, 1.0, 1.0))
-                    .border_1()
-                    .border_color(gpui::hsla(0.0, 0.0, 0.1, 1.0))
-                    .px(px(16.))
-                    .py(px(8.))
-                    .rounded(px(8.))
-                    .text_color(gpui::hsla(0.0, 0.0, 0.05, 1.0))
-                    .cursor(gpui::CursorStyle::PointingHand)
-                    .child("Click me"),
-            )
-            .hover(|s| {
-                s.bg(gpui::hsla(0.0, 0.0, 0.92, 1.0))
-                    .border_color(gpui::hsla(0.0, 0.0, 0.0, 1.0))
-            })
-            .active(|s| {
-                s.bg(gpui::hsla(0.0, 0.0, 0.85, 1.0))
-                    .border_color(gpui::hsla(0.0, 0.0, 0.0, 1.0))
-            });
+        // Column 3: headless + caller fully custom. The caller
+        // paints its own Material-Design-style background, radius,
+        // typography, and the click ripple animation. The
+        // ripple is a custom `gpui::Element` that uses
+        // `PathBuilder` to construct a circular path and
+        // `window.paint_path` to draw it as a true circle (not
+        // a square — `paint_quad` would fill a square, which
+        // shows up as a block of color at full radius). The
+        // circle starts small at the click point, grows to
+        // cover the button over 450ms (ease-out cubic), and
+        // its alpha fades linearly from 0.20 to 0. The
+        // button's `overflow: hidden` clips each ripple to
+        // the rounded shape. `material_button` is the demo's
+        // bespoke headless-button renderer; the headless
+        // layer (focus + click) is still provided by `apply`.
+        let custom_btn = material_button(
+            "material-custom",
+            "Click me".into(),
+            &mut **cx,
+            window,
+        );
 
         div()
             .id("layers-scroll")
@@ -123,14 +120,14 @@ impl Render for LayersApp {
                 cx,
             ))
             .child(panel_body(
-                "3. + Caller custom (caller paints hover/active)",
-                "Same headless factory as panel 1, but the caller paints the hover/active state explicitly with `.hover().active()`. The interactive feedback you see (bg lightens on hover, deepens on press) is 100% caller-supplied — the headless layer contributes nothing visual.",
+                "3. + Caller custom (Material Design + ripple)",
+                "Same headless factory as panel 1, but the caller paints the entire look: M2 raised-button teal background, 4px radius, 14px medium-weight label, hover lightens the fill. On click, a 20%-alpha white circle expands from the click point over 450ms (ease-out cubic) and fades to 0 alpha — the classic Material ripple. The ripple is a custom `gpui::Element` (built with `PathBuilder` so the painted shape is a true circle, not a square) and the animation is driven by `window.request_animation_frame`; try clicking different parts of the button to see each ripple emanate from that point.",
                 div()
                     .flex()
                     .flex_col()
                     .gap_2()
                     .child(custom_btn)
-                    .child(label("caption", "custom caption", cx).default_render(cx)),
+                    .child(label("caption", "material caption", cx).default_render(cx)),
                 cx,
             ))
             .child({

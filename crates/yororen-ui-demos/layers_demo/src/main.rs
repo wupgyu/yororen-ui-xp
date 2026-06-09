@@ -42,6 +42,7 @@ use yororen_ui_default_renderer as default_renderer;
 use yororen_ui_default_renderer::Theme;
 
 mod layers_app;
+mod material_button;
 
 // Modern black/white/grey theme for the layers demo. The
 // palette is monochrome — no hues — with consistent
