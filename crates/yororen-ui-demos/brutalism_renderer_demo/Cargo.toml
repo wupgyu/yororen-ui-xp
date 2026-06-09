@@ -1,0 +1,11 @@
+[package]
+name = "brutalism-renderer-demo"
+version = "0.1.0"
+edition.workspace = true
+
+[dependencies]
+gpui = { package = "gpui-ce", version = "0.3" }
+yororen-ui = { package = "yororen_ui", path = "../../yororen-ui" }
+yororen-ui-default-renderer = { package = "yororen_ui_default_renderer", path = "../../yororen-ui-default-renderer" }
+yororen-ui-brutalism-renderer = { package = "yororen_ui_brutalism_renderer", path = "../../yororen-ui-brutalism-renderer" }
+yororen-ui-locale-en = { package = "yororen_ui_locale_en", path = "../../yororen-ui-locale-en" }
