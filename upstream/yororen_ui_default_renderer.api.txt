@@ -1890,6 +1890,48 @@ pub fn yororen_ui_default_renderer::renderers::tag::TokenTagRenderer::min_height
 pub fn yororen_ui_default_renderer::renderers::tag::TokenTagRenderer::padding_x(&self, &yororen_ui_default_renderer::renderers::tag::TagRenderState, &yororen_ui_core::theme::Theme) -> gpui::geometry::Pixels
 pub fn yororen_ui_default_renderer::renderers::tag::arc_tag<T: yororen_ui_default_renderer::renderers::tag::TagRenderer + 'static>(T) -> alloc::sync::Arc<dyn yororen_ui_default_renderer::renderers::tag::TagRenderer>
 pub mod yororen_ui_default_renderer::renderers::text_area
+pub struct yororen_ui_default_renderer::renderers::text_area::TextAreaElement
+pub yororen_ui_default_renderer::renderers::text_area::TextAreaElement::cursor_color: gpui::color::Hsla
+pub yororen_ui_default_renderer::renderers::text_area::TextAreaElement::disabled: bool
+pub yororen_ui_default_renderer::renderers::text_area::TextAreaElement::focus_handle: gpui::window::FocusHandle
+pub yororen_ui_default_renderer::renderers::text_area::TextAreaElement::hint_color: gpui::color::Hsla
+pub yororen_ui_default_renderer::renderers::text_area::TextAreaElement::min_h: gpui::geometry::Pixels
+pub yororen_ui_default_renderer::renderers::text_area::TextAreaElement::placeholder: gpui::shared_string::SharedString
+pub yororen_ui_default_renderer::renderers::text_area::TextAreaElement::selection_color: gpui::color::Hsla
+pub yororen_ui_default_renderer::renderers::text_area::TextAreaElement::state: gpui::app::entity_map::Entity<yororen_ui_core::headless::text_input::TextInputState>
+pub yororen_ui_default_renderer::renderers::text_area::TextAreaElement::text_color: gpui::color::Hsla
+impl gpui::element::Element for yororen_ui_default_renderer::renderers::text_area::TextAreaElement
+pub type yororen_ui_default_renderer::renderers::text_area::TextAreaElement::PrepaintState = yororen_ui_default_renderer::renderers::text_area::TextAreaPrepaintState
+pub type yororen_ui_default_renderer::renderers::text_area::TextAreaElement::RequestLayoutState = ()
+pub fn yororen_ui_default_renderer::renderers::text_area::TextAreaElement::id(&self) -> core::option::Option<gpui::window::ElementId>
+pub fn yororen_ui_default_renderer::renderers::text_area::TextAreaElement::paint(&mut self, core::option::Option<&gpui::element::GlobalElementId>, core::option::Option<&gpui::inspector::InspectorElementId>, gpui::geometry::Bounds<gpui::geometry::Pixels>, &mut Self::RequestLayoutState, &mut Self::PrepaintState, &mut gpui::window::Window, &mut gpui::app::App)
+pub fn yororen_ui_default_renderer::renderers::text_area::TextAreaElement::prepaint(&mut self, core::option::Option<&gpui::element::GlobalElementId>, core::option::Option<&gpui::inspector::InspectorElementId>, gpui::geometry::Bounds<gpui::geometry::Pixels>, &mut Self::RequestLayoutState, &mut gpui::window::Window, &mut gpui::app::App) -> Self::PrepaintState
+pub fn yororen_ui_default_renderer::renderers::text_area::TextAreaElement::request_layout(&mut self, core::option::Option<&gpui::element::GlobalElementId>, core::option::Option<&gpui::inspector::InspectorElementId>, &mut gpui::window::Window, &mut gpui::app::App) -> (gpui::taffy::LayoutId, Self::RequestLayoutState)
+pub fn yororen_ui_default_renderer::renderers::text_area::TextAreaElement::source_location(&self) -> core::option::Option<&'static core::panic::location::Location<'static>>
+impl gpui::element::IntoElement for yororen_ui_default_renderer::renderers::text_area::TextAreaElement
+pub type yororen_ui_default_renderer::renderers::text_area::TextAreaElement::Element = yororen_ui_default_renderer::renderers::text_area::TextAreaElement
+pub fn yororen_ui_default_renderer::renderers::text_area::TextAreaElement::into_element(self) -> Self::Element
+impl core::marker::Freeze for yororen_ui_default_renderer::renderers::text_area::TextAreaElement
+impl core::marker::Send for yororen_ui_default_renderer::renderers::text_area::TextAreaElement
+impl core::marker::Sync for yororen_ui_default_renderer::renderers::text_area::TextAreaElement
+impl core::marker::Unpin for yororen_ui_default_renderer::renderers::text_area::TextAreaElement
+impl core::marker::UnsafeUnpin for yororen_ui_default_renderer::renderers::text_area::TextAreaElement
+impl !core::panic::unwind_safe::RefUnwindSafe for yororen_ui_default_renderer::renderers::text_area::TextAreaElement
+impl !core::panic::unwind_safe::UnwindSafe for yororen_ui_default_renderer::renderers::text_area::TextAreaElement
+pub struct yororen_ui_default_renderer::renderers::text_area::TextAreaPrepaintState
+pub yororen_ui_default_renderer::renderers::text_area::TextAreaPrepaintState::cursor: core::option::Option<gpui::window::PaintQuad>
+pub yororen_ui_default_renderer::renderers::text_area::TextAreaPrepaintState::cursor_visible: bool
+pub yororen_ui_default_renderer::renderers::text_area::TextAreaPrepaintState::line_byte_ranges: alloc::vec::Vec<core::ops::range::Range<usize>>
+pub yororen_ui_default_renderer::renderers::text_area::TextAreaPrepaintState::lines: alloc::vec::Vec<gpui::text_system::line::ShapedLine>
+pub yororen_ui_default_renderer::renderers::text_area::TextAreaPrepaintState::scroll_x: gpui::geometry::Pixels
+pub yororen_ui_default_renderer::renderers::text_area::TextAreaPrepaintState::selection_quads: alloc::vec::Vec<gpui::window::PaintQuad>
+impl core::marker::Freeze for yororen_ui_default_renderer::renderers::text_area::TextAreaPrepaintState
+impl core::marker::Send for yororen_ui_default_renderer::renderers::text_area::TextAreaPrepaintState
+impl core::marker::Sync for yororen_ui_default_renderer::renderers::text_area::TextAreaPrepaintState
+impl core::marker::Unpin for yororen_ui_default_renderer::renderers::text_area::TextAreaPrepaintState
+impl core::marker::UnsafeUnpin for yororen_ui_default_renderer::renderers::text_area::TextAreaPrepaintState
+impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_default_renderer::renderers::text_area::TextAreaPrepaintState
+impl core::panic::unwind_safe::UnwindSafe for yororen_ui_default_renderer::renderers::text_area::TextAreaPrepaintState
 pub struct yororen_ui_default_renderer::renderers::text_area::TextAreaRenderState
 pub yororen_ui_default_renderer::renderers::text_area::TextAreaRenderState::custom_bg: core::option::Option<gpui::color::Hsla>
 pub yororen_ui_default_renderer::renderers::text_area::TextAreaRenderState::custom_border: core::option::Option<gpui::color::Hsla>
@@ -1898,6 +1940,7 @@ pub yororen_ui_default_renderer::renderers::text_area::TextAreaRenderState::cust
 pub yororen_ui_default_renderer::renderers::text_area::TextAreaRenderState::disabled: bool
 pub yororen_ui_default_renderer::renderers::text_area::TextAreaRenderState::focused: bool
 pub yororen_ui_default_renderer::renderers::text_area::TextAreaRenderState::has_custom_bg: bool
+pub yororen_ui_default_renderer::renderers::text_area::TextAreaRenderState::has_custom_focus_border: bool
 impl core::clone::Clone for yororen_ui_default_renderer::renderers::text_area::TextAreaRenderState
 pub fn yororen_ui_default_renderer::renderers::text_area::TextAreaRenderState::clone(&self) -> yororen_ui_default_renderer::renderers::text_area::TextAreaRenderState
 impl core::default::Default for yororen_ui_default_renderer::renderers::text_area::TextAreaRenderState
@@ -3057,6 +3100,7 @@ pub yororen_ui_default_renderer::renderers::TextAreaRenderState::custom_text_col
 pub yororen_ui_default_renderer::renderers::TextAreaRenderState::disabled: bool
 pub yororen_ui_default_renderer::renderers::TextAreaRenderState::focused: bool
 pub yororen_ui_default_renderer::renderers::TextAreaRenderState::has_custom_bg: bool
+pub yororen_ui_default_renderer::renderers::TextAreaRenderState::has_custom_focus_border: bool
 impl core::clone::Clone for yororen_ui_default_renderer::renderers::text_area::TextAreaRenderState
 pub fn yororen_ui_default_renderer::renderers::text_area::TextAreaRenderState::clone(&self) -> yororen_ui_default_renderer::renderers::text_area::TextAreaRenderState
 impl core::default::Default for yororen_ui_default_renderer::renderers::text_area::TextAreaRenderState

@@ -149,6 +149,25 @@ pub struct TextInputState {
     /// The bounds of the text area, in window coordinates. Cached
     /// by the renderer's `paint` for the same reason.
     pub last_bounds: Option<Bounds<Pixels>>,
+    /// Per-line shaped layouts from the renderer's last paint.
+    /// **Empty** for single-line inputs (text_input, search_input,
+    /// password_input, etc.). Populated by `TextAreaElement::paint`
+    /// for multi-line rendering. When non-empty, the IME's
+    /// `bounds_for_range` / `character_index_for_point` use this
+    /// for multi-row lookups (find the row from Y, then the
+    /// column from X).
+    pub last_line_layouts: Vec<ShapedLine>,
+    /// Byte range in `value` for each row in `last_line_layouts`.
+    /// Length matches `last_line_layouts`. The i-th range is
+    /// `line_i_start..line_i_end`; for non-final rows the end
+    /// includes the trailing `'\n'` so the next row's start is
+    /// `end`. The last row's end is `value.len()` (or the
+    /// position right after a trailing `'\n'`).
+    pub last_line_byte_ranges: Vec<Range<usize>>,
+    /// Line height in pixels, captured by the renderer at paint
+    /// time. Used by `character_index_for_point_inner` to find
+    /// the row from the click's Y coordinate.
+    pub last_line_height: Option<Pixels>,
     /// `true` while the user is drag-selecting with the mouse.
     /// Toggled by `MouseDown` / `MouseUp` handlers.
     pub is_selecting: bool,
@@ -182,6 +201,11 @@ pub struct TextInputState {
     /// Fired on Enter. The renderer sets this once and the
     /// `Enter` action handler invokes it.
     pub on_submit: Option<TextChangeCallback>,
+    /// When `true`, `paste` keeps `'\n'` in the pasted text.
+    /// `false` (the default) replaces `'\n'` with `' '` — the
+    /// single-line input convention. `text_area`'s renderer
+    /// sets this to `true` so multi-line paste works.
+    pub paste_newlines: bool,
     /// Focus handle minted in `new`. Private — external callers
     /// go through `Focusable::focus_handle`.
     focus_handle: FocusHandle,
@@ -200,6 +224,9 @@ impl TextInputState {
             scroll_x: Pixels::ZERO,
             last_layout: None,
             last_bounds: None,
+            last_line_layouts: Vec::new(),
+            last_line_byte_ranges: Vec::new(),
+            last_line_height: None,
             is_selecting: false,
             cursor_visible: true,
             cursor_blink_epoch: 0,
@@ -207,6 +234,7 @@ impl TextInputState {
             max_length: None,
             on_change: None,
             on_submit: None,
+            paste_newlines: false,
             focus_handle: cx.focus_handle(),
         }
     }
@@ -519,6 +547,60 @@ impl TextInputState {
         range_utf16: Range<usize>,
         element_bounds: Bounds<Pixels>,
     ) -> Option<Bounds<Pixels>> {
+        if !self.last_line_layouts.is_empty() {
+            // Multi-line path: find every row the range touches
+            // and union the pixel bounds. The returned Bounds
+            // covers `[min_x, max_x] x [min_y, max_y]`, where
+            // the y-range may span multiple rows.
+            let range_bytes = self.range_from_utf16(&range_utf16);
+            let line_height = self.last_line_height?;
+            let mut min_x = Pixels::from(f32::INFINITY);
+            let mut max_x = Pixels::from(f32::NEG_INFINITY);
+            let mut min_y = Pixels::from(f32::INFINITY);
+            let mut max_y = Pixels::from(f32::NEG_INFINITY);
+            let mut any = false;
+            for (i, line) in self.last_line_layouts.iter().enumerate() {
+                let line_range = &self.last_line_byte_ranges[i];
+                // The i-th row's text occupies
+                // `[line_range.start, line_range.end)` in
+                // `value`. The last row's end is the value
+                // length; non-last rows include a trailing
+                // '\n'. For the *display* of the line itself,
+                // we want to clip the selection to
+                // `[line_range.start, line_range.end)` (the
+                // '\n' is not selectable as a visible glyph
+                // on this row).
+                let sel_start = range_bytes.start.max(line_range.start).min(line_range.end);
+                let sel_end = range_bytes.end.max(line_range.start).min(line_range.end);
+                if sel_start < sel_end {
+                    any = true;
+                    let col_start = sel_start - line_range.start;
+                    let col_end = sel_end - line_range.start;
+                    let start_x = line.x_for_index(col_start);
+                    let end_x = line.x_for_index(col_end);
+                    let y_top = (i as f32) * line_height;
+                    let y_bottom = y_top + line_height;
+                    min_x = min_x.min(start_x.min(end_x));
+                    max_x = max_x.max(start_x.max(end_x));
+                    min_y = min_y.min(y_top);
+                    max_y = max_y.max(y_bottom);
+                }
+            }
+            if !any {
+                return None;
+            }
+            return Some(Bounds::from_corners(
+                point(
+                    element_bounds.left() + min_x - self.scroll_x,
+                    element_bounds.top() + min_y,
+                ),
+                point(
+                    element_bounds.left() + max_x - self.scroll_x,
+                    element_bounds.top() + max_y,
+                ),
+            ));
+        }
+
         let line = self.last_layout.as_ref()?;
         let range_bytes = self.range_from_utf16(&range_utf16);
         let start_x = line.x_for_index(range_bytes.start);
@@ -543,12 +625,39 @@ impl TextInputState {
         if self.value.is_empty() {
             return Some(0);
         }
-        let line = self.last_layout.as_ref()?;
+
         let bounds = self.last_bounds.as_ref()?;
         let local = bounds.localize(&point)?;
-        // `index_for_x` returns the closest glyph index for a
-        // given x in *line-local* coordinates. Add `scroll_x`
-        // back so we hit the right glyph after horizontal scroll.
+
+        if !self.last_line_layouts.is_empty() {
+            // Multi-line: figure out the row from the Y
+            // coordinate (clamped to the last row if past the
+            // bottom), then the column within that row from X.
+            let line_height = self.last_line_height?;
+            let row_count = self.last_line_layouts.len();
+            let row = ((local.y / line_height).floor() as i64)
+                .max(0)
+                .min((row_count - 1) as i64) as usize;
+            let line = &self.last_line_layouts[row];
+            // `index_for_x` returns the closest glyph *byte*
+            // index for the given x. Add `scroll_x` back so
+            // horizontal scroll is transparent.
+            let col_bytes = line
+                .index_for_x(local.x + self.scroll_x)
+                .unwrap_or(line.len());
+            // Translate (row, col) to a byte offset in `value`.
+            // The col is a byte offset *within the row's text*;
+            // adding the row's start byte gives the absolute
+            // offset. The row's last `byte_range.end` is the
+            // value's byte just past the last char of the row
+            // (for the last row, that's the value length; for
+            // other rows, it's the position of the '\n').
+            let row_start = self.last_line_byte_ranges[row].start;
+            let byte_in_value = row_start + col_bytes;
+            return Some(self.offset_to_utf16(byte_in_value));
+        }
+
+        let line = self.last_layout.as_ref()?;
         let utf8_index = line
             .index_for_x(local.x + self.scroll_x)
             .unwrap_or(line.len());
@@ -803,10 +912,17 @@ impl TextInputState {
         if let Some(item) = cx.read_from_clipboard()
             && let Some(text) = item.text()
         {
-            // Newlines become spaces in a single-line input.
-            let sanitised = text.replace('\n', " ");
+            // Single-line inputs collapse newlines to spaces so
+            // pasted multi-line text doesn't break the layout.
+            // Multi-line inputs (text_area) keep them by
+            // setting `paste_newlines = true` in the renderer.
+            let text = if self.paste_newlines {
+                text.to_string()
+            } else {
+                text.replace('\n', " ")
+            };
             let before = self.value.clone();
-            self.replace_text_in_range_bytes(None, &sanitised);
+            self.replace_text_in_range_bytes(None, &text);
             self.marked_range = None;
             if self.value != before
                 && let Some(cb) = self.on_change.as_ref()
