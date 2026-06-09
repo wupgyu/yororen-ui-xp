@@ -30,6 +30,8 @@ fi
 declare -A dir_to_pkg=(
     [yororen-ui-core]=yororen_ui_core
     [yororen-ui]=yororen_ui
+    [yororen-ui-default-renderer]=yororen_ui_default_renderer
+    [yororen-ui-brutalism-renderer]=yororen_ui_brutalism_renderer
     [yororen-ui-theme-system]=yororen_ui_theme_system
     [yororen-ui-theme-catppuccin]=yororen_ui_theme_catppuccin
     [yororen-ui-theme-material]=yororen_ui_theme_material
@@ -69,11 +71,13 @@ echo "[pre-commit] regenerating public-api baselines for: ${packages[*]}"
 to_add=()
 for pkg in "${packages[@]}"; do
     case "$pkg" in
-        yororen_ui_core)              f="upstream/yororen_ui_core.api.txt" ;;
-        yororen_ui)                   f="upstream/yororen_ui.api.txt" ;;
-        yororen_ui_theme_system)      f="upstream/yororen_ui_theme_system.api.txt" ;;
-        yororen_ui_theme_catppuccin)  f="upstream/yororen_ui_theme_catppuccin.api.txt" ;;
-        yororen_ui_theme_material)    f="upstream/yororen_ui_theme_material.api.txt" ;;
+        yororen_ui_core)                  f="upstream/yororen_ui_core.api.txt" ;;
+        yororen_ui)                       f="upstream/yororen_ui.api.txt" ;;
+        yororen_ui_default_renderer)      f="upstream/yororen_ui_default_renderer.api.txt" ;;
+        yororen_ui_brutalism_renderer)    f="upstream/yororen_ui_brutalism_renderer.api.txt" ;;
+        yororen_ui_theme_system)          f="upstream/yororen_ui_theme_system.api.txt" ;;
+        yororen_ui_theme_catppuccin)      f="upstream/yororen_ui_theme_catppuccin.api.txt" ;;
+        yororen_ui_theme_material)        f="upstream/yororen_ui_theme_material.api.txt" ;;
         *) continue ;;
     esac
     if ! git diff --quiet -- "$f" 2>/dev/null; then

@@ -31,7 +31,7 @@ use std::time::{Duration, Instant};
 
 use gpui::{
     AbsoluteLength, App, Bounds, DefiniteLength, Div, Edges, Element, ElementId, Entity,
-    GlobalElementId, Hsla, InspectorElementId, IntoElement, InteractiveElement, LayoutId, Length,
+    GlobalElementId, Hsla, InspectorElementId, InteractiveElement, IntoElement, LayoutId, Length,
     MouseButton, MouseDownEvent, ParentElement, Path, PathBuilder, Pixels, Point, Position,
     SharedString, Stateful, Style, Styled, Window, div, hsla, point, px,
 };
@@ -56,8 +56,9 @@ const MD_RIPPLE_PEAK_ALPHA: f32 = 0.20;
 /// A zero-length `Length` for `Edges::all`. Used to pin an
 /// absolutely-positioned element to all four sides of its
 /// containing block (the "fill the parent" pattern).
-const ZERO_LENGTH: Length =
-    Length::Definite(DefiniteLength::Absolute(AbsoluteLength::Pixels(gpui::px(0.))));
+const ZERO_LENGTH: Length = Length::Definite(DefiniteLength::Absolute(AbsoluteLength::Pixels(
+    gpui::px(0.),
+)));
 
 /// One click's worth of ripple. `center` is the click point in
 /// **window coordinates** — the same space as the bounds
@@ -237,10 +238,7 @@ impl Element for RippleElement {
             // alpha that gives the "ripple dissolving" effect.
             let alpha = MD_RIPPLE_PEAK_ALPHA * (1.0 - t);
             paints.push(RipplePaint {
-                path: circle_path(
-                    point(ripple.center.x, ripple.center.y),
-                    radius_px,
-                ),
+                path: circle_path(point(ripple.center.x, ripple.center.y), radius_px),
                 color: hsla(self.color.h, self.color.s, self.color.l, alpha),
             });
         }
@@ -293,11 +291,8 @@ pub fn material_button(
     // render. It also installs an observer that re-renders the
     // current view when the entity is mutated — that's how a
     // click triggers a re-paint with the new ripple.
-    let state: Entity<RippleState> = window.use_keyed_state(
-        id_el.clone(),
-        cx,
-        |_window, _cx| RippleState::default(),
-    );
+    let state: Entity<RippleState> =
+        window.use_keyed_state(id_el.clone(), cx, |_window, _cx| RippleState::default());
 
     // M2 Raised Button palette: Teal 500.
     let bg = hsla(174.0 / 360.0, 1.0, 0.30, 1.0);

@@ -133,7 +133,44 @@ use the `cx.renderer_arc` API.
 
 ---
 
-## 5. Removed: `yororen-ui-theme-system` etc.
+## 5. Optional: brutalism renderer
+
+A complete alternative to the default renderer is bundled
+under the `brutalism` feature. It implements **all 38**
+`XxxRenderer` traits with a neo-brutalism style: sharp
+corners, thick black borders, hard offset shadows, monospace
+typography, and high-contrast solid colors.
+
+```toml
+[dependencies]
+yororen-ui = { version = "0.3", features = ["brutalism"] }
+```
+
+```rust
+use yororen_ui::brutalism_renderer as brutalism;
+
+// After the headless init, install the brutalism theme +
+// all 38 renderer impls.
+brutalism::install_with_default_theme(cx);
+// or, to follow the system appearance:
+brutalism::install(cx);
+```
+
+The renderer overrides every component — buttons, inputs,
+modals, lists, etc. — so the same `headless::Xxx` factory
+emits a completely different visual. The two bundled
+themes (`brutalism-light.json` / `brutalism-dark.json`) ship
+inside the crate and are loaded via
+`brutalism_renderer::install_with_default_theme` /
+`brutalism_renderer::install_with`.
+
+This is the replacement for the (now-removed) `mini`
+renderer feature. The brutalism renderer is a full
+alternative, not a 4-component demo.
+
+---
+
+## 6. Removed: `yororen-ui-theme-system` etc.
 
 The 4 separate theme crates are gone. The default system
 theme is now `themes/system-light.json` /
@@ -149,7 +186,7 @@ yororen_ui::renderer::install_with(cx, theme);
 
 ---
 
-## 6. Headless API is unchanged
+## 7. Headless API is unchanged
 
 `headless::button("id", cx).on_click(...).default_render(cx)`
 still works — `default_render` is provided by the
@@ -177,7 +214,7 @@ the headless core no longer injects any visual feedback.
 
 ---
 
-## 7. Summary checklist
+## 8. Summary checklist
 
 - [ ] Bump `yororen-ui` to `0.3` in your `Cargo.toml`
 - [ ] Drop the `yororen-ui-theme-*` deps

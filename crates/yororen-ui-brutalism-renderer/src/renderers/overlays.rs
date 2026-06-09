@@ -26,9 +26,7 @@ impl ModalRenderer for BrutalModalRenderer {
         }
     }
     fn panel_bg(&self, _: &ModalRenderState, theme: &Theme) -> Hsla {
-        theme
-            .get_color("surface.raised")
-            .unwrap_or(BRUTAL_BORDER)
+        theme.get_color("surface.raised").unwrap_or(BRUTAL_BORDER)
     }
     fn panel_border(&self, _: &ModalRenderState, theme: &Theme) -> Hsla {
         brutal_border_color(theme)
@@ -57,9 +55,7 @@ pub struct BrutalPopoverRenderer;
 
 impl PopoverRenderer for BrutalPopoverRenderer {
     fn bg(&self, _: &PopoverRenderState, theme: &Theme) -> Hsla {
-        theme
-            .get_color("surface.raised")
-            .unwrap_or(BRUTAL_BORDER)
+        theme.get_color("surface.raised").unwrap_or(BRUTAL_BORDER)
     }
     fn border(&self, _: &PopoverRenderState, theme: &Theme) -> Hsla {
         brutal_border_color(theme)
@@ -71,11 +67,9 @@ impl PopoverRenderer for BrutalPopoverRenderer {
         px(BRUTAL_RADIUS)
     }
     fn offset(&self, _: &PopoverRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.control.popover.offset")
-                .unwrap_or(8.0) as f32,
-        )
+        px(theme
+            .get_number("tokens.control.popover.offset")
+            .unwrap_or(8.0) as f32)
     }
 }
 
@@ -106,11 +100,9 @@ impl DropdownMenuRenderer for BrutalDropdownMenuRenderer {
             .unwrap_or(BRUTAL_BORDER)
     }
     fn min_height(&self, _: &DropdownMenuRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.control.dropdown_menu.min_height")
-                .unwrap_or(44.0) as f32,
-        )
+        px(theme
+            .get_number("tokens.control.dropdown_menu.min_height")
+            .unwrap_or(44.0) as f32)
     }
     fn border_radius(&self, _: &DropdownMenuRenderState, _: &Theme) -> Pixels {
         px(BRUTAL_RADIUS)
@@ -147,11 +139,9 @@ impl DisclosureRenderer for BrutalDisclosureRenderer {
             .unwrap_or(BRUTAL_BORDER)
     }
     fn min_height(&self, _: &DisclosureRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.control.disclosure.min_height")
-                .unwrap_or(44.0) as f32,
-        )
+        px(theme
+            .get_number("tokens.control.disclosure.min_height")
+            .unwrap_or(44.0) as f32)
     }
     fn border_radius(&self, _: &DisclosureRenderState, _: &Theme) -> Pixels {
         px(BRUTAL_RADIUS)
@@ -160,10 +150,8 @@ impl DisclosureRenderer for BrutalDisclosureRenderer {
         if state.open { 90.0 } else { 0.0 }
     }
     fn body_padding(&self, _: &DisclosureRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.control.disclosure.padding")
-                .unwrap_or(12.0) as f32,
-        )
+        px(theme
+            .get_number("tokens.control.disclosure.padding")
+            .unwrap_or(12.0) as f32)
     }
 }

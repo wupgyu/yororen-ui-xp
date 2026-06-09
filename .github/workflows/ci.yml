@@ -96,7 +96,7 @@ jobs:
       - name: Build the workspace
         # We need the public-api crate to exist on disk before
         # `cargo public-api` can scan it.
-        run: cargo build -p yororen_ui_core -p yororen_ui_theme_system -p yororen_ui_theme_catppuccin -p yororen_ui_theme_material -p yororen_ui
+        run: cargo build -p yororen_ui_core -p yororen_ui_default_renderer -p yororen_ui_brutalism_renderer -p yororen_ui
       - name: Diff public-api vs upstream baselines
         # For each tracked crate, regenerate the simplified
         # public API and `diff` it against the committed
@@ -107,9 +107,8 @@ jobs:
           failed=0
           for pair in \
               "yororen_ui_core:yororen_ui_core" \
-              "yororen_ui_theme_system:yororen_ui_theme_system" \
-              "yororen_ui_theme_catppuccin:yororen_ui_theme_catppuccin" \
-              "yororen_ui_theme_material:yororen_ui_theme_material" \
+              "yororen_ui_default_renderer:yororen_ui_default_renderer" \
+              "yororen_ui_brutalism_renderer:yororen_ui_brutalism_renderer" \
               "yororen_ui:yororen_ui"; do
             crate="${pair%%:*}"
             crate_dash="${pair##*:}"

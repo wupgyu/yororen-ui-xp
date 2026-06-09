@@ -157,8 +157,7 @@ impl Render for ThemeApp {
                 .default_render(cx),
             )
             .child(
-                label("blurb", format!("Currently: {} — {}", name, blurb), cx)
-                    .default_render(cx),
+                label("blurb", format!("Currently: {} — {}", name, blurb), cx).default_render(cx),
             )
             .child(next_btn)
     }

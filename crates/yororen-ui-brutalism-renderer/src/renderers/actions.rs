@@ -16,16 +16,16 @@ use crate::style::{
 // Button
 // =====================================================================
 
-pub use yororen_ui_default_renderer::renderers::button::{
-    ButtonRenderState, ButtonRenderer,
-};
+pub use yororen_ui_default_renderer::renderers::button::{ButtonRenderState, ButtonRenderer};
 
 pub struct BrutalButtonRenderer;
 
 impl ButtonRenderer for BrutalButtonRenderer {
     fn bg(&self, state: &ButtonRenderState, theme: &Theme) -> Hsla {
         if let Some(s) = &state.custom_style {
-            return s.bg(&VariantState { disabled: state.disabled });
+            return s.bg(&VariantState {
+                disabled: state.disabled,
+            });
         }
         let field = if state.disabled { "disabled_bg" } else { "bg" };
         theme
@@ -35,7 +35,9 @@ impl ButtonRenderer for BrutalButtonRenderer {
 
     fn fg(&self, state: &ButtonRenderState, theme: &Theme) -> Hsla {
         if let Some(s) = &state.custom_style {
-            return s.fg(&VariantState { disabled: state.disabled });
+            return s.fg(&VariantState {
+                disabled: state.disabled,
+            });
         }
         let field = if state.disabled { "disabled_fg" } else { "fg" };
         theme
@@ -69,11 +71,9 @@ impl ButtonRenderer for BrutalButtonRenderer {
     }
 
     fn min_height(&self, _: &ButtonRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.control.button.min_height")
-                .unwrap_or(44.0) as f32,
-        )
+        px(theme
+            .get_number("tokens.control.button.min_height")
+            .unwrap_or(44.0) as f32)
     }
 
     fn disabled_opacity(&self, state: &ButtonRenderState, _: &Theme) -> f32 {
@@ -85,9 +85,15 @@ impl ButtonRenderer for BrutalButtonRenderer {
 
     fn hover_bg(&self, state: &ButtonRenderState, theme: &Theme) -> Hsla {
         if let Some(s) = &state.custom_style {
-            return s.bg(&VariantState { disabled: state.disabled });
+            return s.bg(&VariantState {
+                disabled: state.disabled,
+            });
         }
-        let field = if state.disabled { "disabled_bg" } else { "hover_bg" };
+        let field = if state.disabled {
+            "disabled_bg"
+        } else {
+            "hover_bg"
+        };
         theme
             .get_color(&format!("action.{}.{}", state.variant.as_str(), field))
             .unwrap_or(BRUTAL_BORDER)
@@ -95,9 +101,15 @@ impl ButtonRenderer for BrutalButtonRenderer {
 
     fn active_bg(&self, state: &ButtonRenderState, theme: &Theme) -> Hsla {
         if let Some(s) = &state.custom_style {
-            return s.bg(&VariantState { disabled: state.disabled });
+            return s.bg(&VariantState {
+                disabled: state.disabled,
+            });
         }
-        let field = if state.disabled { "disabled_bg" } else { "active_bg" };
+        let field = if state.disabled {
+            "disabled_bg"
+        } else {
+            "active_bg"
+        };
         theme
             .get_color(&format!("action.{}.{}", state.variant.as_str(), field))
             .unwrap_or(BRUTAL_BORDER)
@@ -125,7 +137,9 @@ pub struct BrutalIconButtonRenderer;
 impl IconButtonRenderer for BrutalIconButtonRenderer {
     fn bg(&self, state: &IconButtonRenderState, theme: &Theme) -> Hsla {
         if let Some(s) = &state.custom_style {
-            return s.bg(&VariantState { disabled: state.disabled });
+            return s.bg(&VariantState {
+                disabled: state.disabled,
+            });
         }
         let key = action_variant_key(state.variant);
         let field = if state.disabled { "disabled_bg" } else { "bg" };
@@ -136,7 +150,9 @@ impl IconButtonRenderer for BrutalIconButtonRenderer {
 
     fn hover_bg(&self, state: &IconButtonRenderState, theme: &Theme) -> Hsla {
         if let Some(s) = &state.custom_style {
-            return s.bg(&VariantState { disabled: state.disabled });
+            return s.bg(&VariantState {
+                disabled: state.disabled,
+            });
         }
         let key = action_variant_key(state.variant);
         theme
@@ -146,7 +162,9 @@ impl IconButtonRenderer for BrutalIconButtonRenderer {
 
     fn active_bg(&self, state: &IconButtonRenderState, theme: &Theme) -> Hsla {
         if let Some(s) = &state.custom_style {
-            return s.bg(&VariantState { disabled: state.disabled });
+            return s.bg(&VariantState {
+                disabled: state.disabled,
+            });
         }
         let key = action_variant_key(state.variant);
         theme
@@ -155,11 +173,9 @@ impl IconButtonRenderer for BrutalIconButtonRenderer {
     }
 
     fn size(&self, _: &IconButtonRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.control.icon_button.size")
-                .unwrap_or(44.0) as f32,
-        )
+        px(theme
+            .get_number("tokens.control.icon_button.size")
+            .unwrap_or(44.0) as f32)
     }
 
     fn border_radius(&self, _: &IconButtonRenderState, _: &Theme) -> Pixels {
@@ -192,7 +208,9 @@ impl ToggleButtonRenderer for BrutalToggleButtonRenderer {
                     .get_color("action.primary.bg")
                     .unwrap_or(BRUTAL_BORDER);
             }
-            return s.bg(&VariantState { disabled: state.disabled });
+            return s.bg(&VariantState {
+                disabled: state.disabled,
+            });
         }
         if state.disabled {
             theme
@@ -216,7 +234,9 @@ impl ToggleButtonRenderer for BrutalToggleButtonRenderer {
                     .get_color("action.primary.fg")
                     .unwrap_or(BRUTAL_BORDER);
             }
-            return s.fg(&VariantState { disabled: state.disabled });
+            return s.fg(&VariantState {
+                disabled: state.disabled,
+            });
         }
         if state.selected {
             theme
@@ -264,11 +284,9 @@ impl ToggleButtonRenderer for BrutalToggleButtonRenderer {
     }
 
     fn min_height(&self, _: &ToggleButtonRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.control.toggle_button.min_height")
-                .unwrap_or(44.0) as f32,
-        )
+        px(theme
+            .get_number("tokens.control.toggle_button.min_height")
+            .unwrap_or(44.0) as f32)
     }
 
     fn border_radius(&self, _: &ToggleButtonRenderState, _: &Theme) -> Pixels {
@@ -320,20 +338,16 @@ impl SplitButtonRenderer for BrutalSplitButtonRenderer {
             .unwrap_or(BRUTAL_BORDER)
     }
     fn min_height(&self, _: &SplitButtonRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.control.split_button.min_height")
-                .unwrap_or(44.0) as f32,
-        )
+        px(theme
+            .get_number("tokens.control.split_button.min_height")
+            .unwrap_or(44.0) as f32)
     }
     fn border_radius(&self, _: &SplitButtonRenderState, _: &Theme) -> Pixels {
         px(BRUTAL_RADIUS)
     }
     fn gap(&self, _: &SplitButtonRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.control.split_button.separator_w")
-                .unwrap_or(3.0) as f32,
-        )
+        px(theme
+            .get_number("tokens.control.split_button.separator_w")
+            .unwrap_or(3.0) as f32)
     }
 }

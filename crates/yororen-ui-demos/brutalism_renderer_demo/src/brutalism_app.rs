@@ -8,17 +8,22 @@
 //! point of the demo is that the renderer alone defines the
 //! visual vocabulary.
 
-use gpui::{
-    Context, IntoElement, ParentElement, Render, Styled, Window, div, px,
-};
+use gpui::{Context, IntoElement, ParentElement, Render, Styled, Window, div, px};
 use yororen_ui::ActionVariantKind;
 use yororen_ui::headless::{
-    button::button, checkbox::checkbox, heading::{HeadingLevel, heading}, icon_button::icon_button,
-    label::label, radio::radio, switch::switch, text_input::text_input, toggle_button::toggle_button,
+    button::button,
+    checkbox::checkbox,
+    heading::{HeadingLevel, heading},
+    icon_button::icon_button,
+    label::label,
+    radio::radio,
+    switch::switch,
+    text_input::text_input,
+    toggle_button::toggle_button,
 };
 use yororen_ui::renderer::{
-    DefaultButton, DefaultCheckbox, DefaultIconButton, DefaultLabel, DefaultRadio,
-    DefaultSwitch, DefaultTextInput, DefaultToggleButton,
+    DefaultButton, DefaultCheckbox, DefaultIconButton, DefaultLabel, DefaultRadio, DefaultSwitch,
+    DefaultTextInput, DefaultToggleButton,
 };
 
 pub struct BrutalismApp;

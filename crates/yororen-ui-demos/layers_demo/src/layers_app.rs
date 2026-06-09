@@ -81,12 +81,7 @@ impl Render for LayersApp {
         // the rounded shape. `material_button` is the demo's
         // bespoke headless-button renderer; the headless
         // layer (focus + click) is still provided by `apply`.
-        let custom_btn = material_button(
-            "material-custom",
-            "Click me".into(),
-            &mut **cx,
-            window,
-        );
+        let custom_btn = material_button("material-custom", "Click me".into(), &mut **cx, window);
 
         div()
             .id("layers-scroll")

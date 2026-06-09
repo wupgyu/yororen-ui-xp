@@ -113,9 +113,7 @@ pub fn register_brutal_renderers(cx: &mut App) {
     ));
     cx.register_renderer_arc::<m::Badge, dyn BadgeRenderer>(Arc::new(BrutalBadgeRenderer));
     cx.register_renderer_arc::<m::Tag, dyn TagRenderer>(Arc::new(BrutalTagRenderer));
-    cx.register_renderer_arc::<m::Skeleton, dyn SkeletonRenderer>(Arc::new(
-        BrutalSkeletonRenderer,
-    ));
+    cx.register_renderer_arc::<m::Skeleton, dyn SkeletonRenderer>(Arc::new(BrutalSkeletonRenderer));
     cx.register_renderer_arc::<m::ProgressBar, dyn ProgressBarRenderer>(Arc::new(
         BrutalProgressBarRenderer,
     ));
@@ -133,9 +131,7 @@ pub fn register_brutal_renderers(cx: &mut App) {
     cx.register_renderer_arc::<m::TextInput, dyn TextInputRenderer>(Arc::new(
         BrutalTextInputRenderer,
     ));
-    cx.register_renderer_arc::<m::TextArea, dyn TextAreaRenderer>(Arc::new(
-        BrutalTextAreaRenderer,
-    ));
+    cx.register_renderer_arc::<m::TextArea, dyn TextAreaRenderer>(Arc::new(BrutalTextAreaRenderer));
     cx.register_renderer_arc::<m::PasswordInput, dyn PasswordInputRenderer>(Arc::new(
         BrutalPasswordInputRenderer,
     ));
@@ -149,18 +145,14 @@ pub fn register_brutal_renderers(cx: &mut App) {
         BrutalSearchInputRenderer,
     ));
     cx.register_renderer_arc::<m::Select, dyn SelectRenderer>(Arc::new(BrutalSelectRenderer));
-    cx.register_renderer_arc::<m::ComboBox, dyn ComboBoxRenderer>(Arc::new(
-        BrutalComboBoxRenderer,
-    ));
+    cx.register_renderer_arc::<m::ComboBox, dyn ComboBoxRenderer>(Arc::new(BrutalComboBoxRenderer));
     cx.register_renderer_arc::<m::KeybindingInput, dyn KeybindingInputRenderer>(Arc::new(
         BrutalKeybindingInputRenderer,
     ));
 
     // Controls (3)
     cx.register_renderer_arc::<m::Switch, dyn SwitchRenderer>(Arc::new(BrutalSwitchRenderer));
-    cx.register_renderer_arc::<m::Checkbox, dyn CheckboxRenderer>(Arc::new(
-        BrutalCheckboxRenderer,
-    ));
+    cx.register_renderer_arc::<m::Checkbox, dyn CheckboxRenderer>(Arc::new(BrutalCheckboxRenderer));
     cx.register_renderer_arc::<m::Radio, dyn RadioRenderer>(Arc::new(BrutalRadioRenderer));
 
     // Overlays (4)
@@ -180,11 +172,7 @@ pub fn register_brutal_renderers(cx: &mut App) {
     ));
 
     // Lists (3)
-    cx.register_renderer_arc::<m::ListItem, dyn ListItemRenderer>(Arc::new(
-        BrutalListItemRenderer,
-    ));
-    cx.register_renderer_arc::<m::TreeItem, dyn TreeItemRenderer>(Arc::new(
-        BrutalTreeItemRenderer,
-    ));
+    cx.register_renderer_arc::<m::ListItem, dyn ListItemRenderer>(Arc::new(BrutalListItemRenderer));
+    cx.register_renderer_arc::<m::TreeItem, dyn TreeItemRenderer>(Arc::new(BrutalTreeItemRenderer));
     cx.register_renderer_arc::<m::Form, dyn FormRenderer>(Arc::new(BrutalFormRenderer));
 }

@@ -16,14 +16,10 @@ pub struct BrutalToastRenderer;
 
 impl ToastRenderer for BrutalToastRenderer {
     fn bg(&self, _: &ToastRenderState, theme: &Theme) -> Hsla {
-        theme
-            .get_color("surface.raised")
-            .unwrap_or(BRUTAL_BORDER)
+        theme.get_color("surface.raised").unwrap_or(BRUTAL_BORDER)
     }
     fn fg(&self, _: &ToastRenderState, theme: &Theme) -> Hsla {
-        theme
-            .get_color("content.primary")
-            .unwrap_or(BRUTAL_BORDER)
+        theme.get_color("content.primary").unwrap_or(BRUTAL_BORDER)
     }
     fn padding(&self, _: &ToastRenderState, theme: &Theme) -> Edges<Pixels> {
         let p = theme
@@ -54,9 +50,7 @@ pub struct BrutalNotificationRenderer;
 
 impl NotificationRenderer for BrutalNotificationRenderer {
     fn bg(&self, _: &NotificationRenderState, theme: &Theme) -> Hsla {
-        theme
-            .get_color("surface.raised")
-            .unwrap_or(BRUTAL_BORDER)
+        theme.get_color("surface.raised").unwrap_or(BRUTAL_BORDER)
     }
     fn border(&self, _: &NotificationRenderState, theme: &Theme) -> Hsla {
         brutal_border_color(theme)

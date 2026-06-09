@@ -8,8 +8,7 @@ use yororen_ui_core::theme::Theme;
 use yororen_ui_default_renderer::renderers::spec::Edges;
 
 use crate::style::{
-    BRUTAL_BORDER, BRUTAL_BORDER_WIDTH, BRUTAL_FONT_FAMILY, BRUTAL_RADIUS,
-    brutal_border_color,
+    BRUTAL_BORDER, BRUTAL_BORDER_WIDTH, BRUTAL_FONT_FAMILY, BRUTAL_RADIUS, brutal_border_color,
 };
 
 // =====================================================================
@@ -27,13 +26,9 @@ impl LabelRenderer for BrutalLabelRenderer {
                 .get_color("content.secondary")
                 .unwrap_or(BRUTAL_BORDER)
         } else if state.inherit_color {
-            theme
-                .get_color("content.primary")
-                .unwrap_or(BRUTAL_BORDER)
+            theme.get_color("content.primary").unwrap_or(BRUTAL_BORDER)
         } else {
-            theme
-                .get_color("content.primary")
-                .unwrap_or(BRUTAL_BORDER)
+            theme.get_color("content.primary").unwrap_or(BRUTAL_BORDER)
         }
     }
 
@@ -91,9 +86,7 @@ impl HeadingRenderer for BrutalHeadingRenderer {
     }
 
     fn color(&self, _: &HeadingRenderState, theme: &Theme) -> Hsla {
-        theme
-            .get_color("content.primary")
-            .unwrap_or(BRUTAL_BORDER)
+        theme.get_color("content.primary").unwrap_or(BRUTAL_BORDER)
     }
 }
 
@@ -107,17 +100,13 @@ pub struct BrutalDividerRenderer;
 
 impl DividerRenderer for BrutalDividerRenderer {
     fn color(&self, _: &DividerRenderState, theme: &Theme) -> Hsla {
-        theme
-            .get_color("border.divider")
-            .unwrap_or(BRUTAL_BORDER)
+        theme.get_color("border.divider").unwrap_or(BRUTAL_BORDER)
     }
 
     fn thickness(&self, _: &DividerRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.control.divider.thickness")
-                .unwrap_or(BRUTAL_BORDER_WIDTH as f64) as f32,
-        )
+        px(theme
+            .get_number("tokens.control.divider.thickness")
+            .unwrap_or(BRUTAL_BORDER_WIDTH as f64) as f32)
     }
 }
 
@@ -133,17 +122,13 @@ pub struct BrutalFocusRingRenderer;
 
 impl FocusRingRenderer for BrutalFocusRingRenderer {
     fn color(&self, _: &FocusRingRenderState, theme: &Theme) -> Hsla {
-        theme
-            .get_color("border.focus")
-            .unwrap_or(BRUTAL_BORDER)
+        theme.get_color("border.focus").unwrap_or(BRUTAL_BORDER)
     }
 
     fn width(&self, _: &FocusRingRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.control.focus_ring.width")
-                .unwrap_or(BRUTAL_BORDER_WIDTH as f64) as f32,
-        )
+        px(theme
+            .get_number("tokens.control.focus_ring.width")
+            .unwrap_or(BRUTAL_BORDER_WIDTH as f64) as f32)
     }
 }
 
@@ -183,27 +168,21 @@ impl BadgeRenderer for BrutalBadgeRenderer {
     }
 
     fn padding_x(&self, _: &BadgeRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.control.badge.horizontal_padding")
-                .unwrap_or(8.0) as f32,
-        )
+        px(theme
+            .get_number("tokens.control.badge.horizontal_padding")
+            .unwrap_or(8.0) as f32)
     }
 
     fn height(&self, _: &BadgeRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.control.badge.min_height")
-                .unwrap_or(22.0) as f32,
-        )
+        px(theme
+            .get_number("tokens.control.badge.min_height")
+            .unwrap_or(22.0) as f32)
     }
 
     fn font_size(&self, _: &BadgeRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.control.badge.font_size")
-                .unwrap_or(11.0) as f32,
-        )
+        px(theme
+            .get_number("tokens.control.badge.font_size")
+            .unwrap_or(11.0) as f32)
     }
 
     fn font_weight(&self, _: &BadgeRenderState, theme: &Theme) -> FontWeight {
@@ -262,27 +241,21 @@ impl TagRenderer for BrutalTagRenderer {
     }
 
     fn min_height(&self, _: &TagRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.control.tag.min_height")
-                .unwrap_or(28.0) as f32,
-        )
+        px(theme
+            .get_number("tokens.control.tag.min_height")
+            .unwrap_or(28.0) as f32)
     }
 
     fn padding_x(&self, _: &TagRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.control.tag.horizontal_padding")
-                .unwrap_or(12.0) as f32,
-        )
+        px(theme
+            .get_number("tokens.control.tag.horizontal_padding")
+            .unwrap_or(12.0) as f32)
     }
 
     fn font_size(&self, _: &TagRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.typography.font_size_xs")
-                .unwrap_or(12.0) as f32,
-        )
+        px(theme
+            .get_number("tokens.typography.font_size_xs")
+            .unwrap_or(12.0) as f32)
     }
 
     fn font_weight(&self, _: &TagRenderState, theme: &Theme) -> FontWeight {
@@ -312,32 +285,24 @@ impl TagRenderer for BrutalTagRenderer {
 // Skeleton
 // =====================================================================
 
-pub use yororen_ui_default_renderer::renderers::skeleton::{
-    SkeletonRenderState, SkeletonRenderer,
-};
+pub use yororen_ui_default_renderer::renderers::skeleton::{SkeletonRenderState, SkeletonRenderer};
 
 pub struct BrutalSkeletonRenderer;
 
 impl SkeletonRenderer for BrutalSkeletonRenderer {
     fn bg(&self, _: &SkeletonRenderState, theme: &Theme) -> Hsla {
-        theme
-            .get_color("surface.hover")
-            .unwrap_or(BRUTAL_BORDER)
+        theme.get_color("surface.hover").unwrap_or(BRUTAL_BORDER)
     }
 
     fn min_height(&self, state: &SkeletonRenderState, theme: &Theme) -> Pixels {
         if state.block {
-            px(
-                theme
-                    .get_number("tokens.control.skeleton.block_min_h")
-                    .unwrap_or(48.0) as f32,
-            )
+            px(theme
+                .get_number("tokens.control.skeleton.block_min_h")
+                .unwrap_or(48.0) as f32)
         } else {
-            px(
-                theme
-                    .get_number("tokens.control.skeleton.line_h")
-                    .unwrap_or(16.0) as f32,
-            )
+            px(theme
+                .get_number("tokens.control.skeleton.line_h")
+                .unwrap_or(16.0) as f32)
         }
     }
 
@@ -358,9 +323,7 @@ pub struct BrutalProgressBarRenderer;
 
 impl ProgressBarRenderer for BrutalProgressBarRenderer {
     fn track(&self, _: &ProgressBarRenderState, theme: &Theme) -> Hsla {
-        theme
-            .get_color("surface.hover")
-            .unwrap_or(BRUTAL_BORDER)
+        theme.get_color("surface.hover").unwrap_or(BRUTAL_BORDER)
     }
 
     fn fill(&self, _: &ProgressBarRenderState, theme: &Theme) -> Hsla {
@@ -370,11 +333,9 @@ impl ProgressBarRenderer for BrutalProgressBarRenderer {
     }
 
     fn height(&self, _: &ProgressBarRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.control.progress.height")
-                .unwrap_or(28.0) as f32,
-        )
+        px(theme
+            .get_number("tokens.control.progress.height")
+            .unwrap_or(28.0) as f32)
     }
 
     fn border_color(&self, _: &ProgressBarRenderState, theme: &Theme) -> Hsla {
@@ -398,14 +359,10 @@ pub struct BrutalEmptyStateRenderer;
 
 impl EmptyStateRenderer for BrutalEmptyStateRenderer {
     fn icon_color(&self, _: &EmptyStateRenderState, theme: &Theme) -> Hsla {
-        theme
-            .get_color("content.tertiary")
-            .unwrap_or(BRUTAL_BORDER)
+        theme.get_color("content.tertiary").unwrap_or(BRUTAL_BORDER)
     }
     fn title_color(&self, _: &EmptyStateRenderState, theme: &Theme) -> Hsla {
-        theme
-            .get_color("content.primary")
-            .unwrap_or(BRUTAL_BORDER)
+        theme.get_color("content.primary").unwrap_or(BRUTAL_BORDER)
     }
     fn body_color(&self, _: &EmptyStateRenderState, theme: &Theme) -> Hsla {
         theme
@@ -422,11 +379,7 @@ impl EmptyStateRenderer for BrutalEmptyStateRenderer {
         px(48.0)
     }
     fn gap(&self, _: &EmptyStateRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.spacing.loose")
-                .unwrap_or(16.0) as f32,
-        )
+        px(theme.get_number("tokens.spacing.loose").unwrap_or(16.0) as f32)
     }
 }
 

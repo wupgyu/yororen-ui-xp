@@ -18,13 +18,9 @@ use crate::style::{BRUTAL_BORDER, BRUTAL_RADIUS, brutal_border_color};
 
 fn brutal_input_bg(disabled: bool, theme: &Theme) -> Hsla {
     if disabled {
-        theme
-            .get_color("surface.sunken")
-            .unwrap_or(BRUTAL_BORDER)
+        theme.get_color("surface.sunken").unwrap_or(BRUTAL_BORDER)
     } else {
-        theme
-            .get_color("surface.base")
-            .unwrap_or(BRUTAL_BORDER)
+        theme.get_color("surface.base").unwrap_or(BRUTAL_BORDER)
     }
 }
 
@@ -39,35 +35,25 @@ fn brutal_input_border(disabled: bool, theme: &Theme) -> Hsla {
 }
 
 fn brutal_input_focus_border(theme: &Theme) -> Hsla {
-    theme
-        .get_color("border.focus")
-        .unwrap_or(BRUTAL_BORDER)
+    theme.get_color("border.focus").unwrap_or(BRUTAL_BORDER)
 }
 
 fn brutal_input_text_color(disabled: bool, theme: &Theme) -> Hsla {
     if disabled {
-        theme
-            .get_color("content.disabled")
-            .unwrap_or(BRUTAL_BORDER)
+        theme.get_color("content.disabled").unwrap_or(BRUTAL_BORDER)
     } else {
-        theme
-            .get_color("content.primary")
-            .unwrap_or(BRUTAL_BORDER)
+        theme.get_color("content.primary").unwrap_or(BRUTAL_BORDER)
     }
 }
 
 fn brutal_input_hint_color(theme: &Theme) -> Hsla {
-    theme
-        .get_color("content.tertiary")
-        .unwrap_or(BRUTAL_BORDER)
+    theme.get_color("content.tertiary").unwrap_or(BRUTAL_BORDER)
 }
 
 fn brutal_input_min_height(theme: &Theme) -> Pixels {
-    px(
-        theme
-            .get_number("tokens.control.input.min_height")
-            .unwrap_or(42.0) as f32,
-    )
+    px(theme
+        .get_number("tokens.control.input.min_height")
+        .unwrap_or(42.0) as f32)
 }
 
 fn brutal_input_padding(theme: &Theme) -> Edges<Pixels> {
@@ -165,11 +151,9 @@ impl TextAreaRenderer for BrutalTextAreaRenderer {
         brutal_input_text_color(state.disabled, theme)
     }
     fn min_height(&self, _: &TextAreaRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.control.text_area.min_height")
-                .unwrap_or(90.0) as f32,
-        )
+        px(theme
+            .get_number("tokens.control.text_area.min_height")
+            .unwrap_or(90.0) as f32)
     }
     fn padding(&self, _: &TextAreaRenderState, theme: &Theme) -> Edges<Pixels> {
         let p = theme
@@ -249,11 +233,9 @@ impl NumberInputRenderer for BrutalNumberInputRenderer {
         brutal_input_focus_border(theme)
     }
     fn min_height(&self, _: &NumberInputRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.control.number_input.min_height")
-                .unwrap_or(42.0) as f32,
-        )
+        px(theme
+            .get_number("tokens.control.number_input.min_height")
+            .unwrap_or(42.0) as f32)
     }
     fn padding(&self, _: &NumberInputRenderState, theme: &Theme) -> Edges<Pixels> {
         let h = theme
@@ -265,11 +247,9 @@ impl NumberInputRenderer for BrutalNumberInputRenderer {
         Edges::symmetric(px(h), px(v))
     }
     fn stepper_button_size(&self, _: &NumberInputRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.control.number_input.stepper_button_size")
-                .unwrap_or(32.0) as f32,
-        )
+        px(theme
+            .get_number("tokens.control.number_input.stepper_button_size")
+            .unwrap_or(32.0) as f32)
     }
     fn border_radius(&self, _: &NumberInputRenderState, _: &Theme) -> Pixels {
         px(BRUTAL_RADIUS)
@@ -318,11 +298,9 @@ impl FilePathInputRenderer for BrutalFilePathInputRenderer {
             .unwrap_or(BRUTAL_BORDER)
     }
     fn min_height(&self, _: &FilePathInputRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.control.file_path_input.min_height")
-                .unwrap_or(42.0) as f32,
-        )
+        px(theme
+            .get_number("tokens.control.file_path_input.min_height")
+            .unwrap_or(42.0) as f32)
     }
     fn padding(&self, _: &FilePathInputRenderState, theme: &Theme) -> Edges<Pixels> {
         let h = theme
@@ -334,21 +312,17 @@ impl FilePathInputRenderer for BrutalFilePathInputRenderer {
         Edges::symmetric(px(h), px(v))
     }
     fn action_gap(&self, _: &FilePathInputRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.control.file_path_input.action_gap")
-                .unwrap_or(8.0) as f32,
-        )
+        px(theme
+            .get_number("tokens.control.file_path_input.action_gap")
+            .unwrap_or(8.0) as f32)
     }
     fn border_radius(&self, _: &FilePathInputRenderState, _: &Theme) -> Pixels {
         px(BRUTAL_RADIUS)
     }
     fn icon_size(&self, _: &FilePathInputRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.control.file_path_input.icon_size")
-                .unwrap_or(20.0) as f32,
-        )
+        px(theme
+            .get_number("tokens.control.file_path_input.icon_size")
+            .unwrap_or(20.0) as f32)
     }
 }
 
@@ -385,11 +359,9 @@ impl SearchInputRenderer for BrutalSearchInputRenderer {
         brutal_input_text_color(false, theme)
     }
     fn min_height(&self, _: &SearchInputRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.control.search_input.min_height")
-                .unwrap_or(42.0) as f32,
-        )
+        px(theme
+            .get_number("tokens.control.search_input.min_height")
+            .unwrap_or(42.0) as f32)
     }
     fn padding(&self, _: &SearchInputRenderState, theme: &Theme) -> Edges<Pixels> {
         let h = theme
@@ -404,18 +376,14 @@ impl SearchInputRenderer for BrutalSearchInputRenderer {
         px(BRUTAL_RADIUS)
     }
     fn input_gap(&self, _: &SearchInputRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.control.search_input.input_gap")
-                .unwrap_or(8.0) as f32,
-        )
+        px(theme
+            .get_number("tokens.control.search_input.input_gap")
+            .unwrap_or(8.0) as f32)
     }
     fn icon_size(&self, _: &SearchInputRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.control.search_input.icon_size")
-                .unwrap_or(20.0) as f32,
-        )
+        px(theme
+            .get_number("tokens.control.search_input.icon_size")
+            .unwrap_or(20.0) as f32)
     }
 }
 
@@ -439,36 +407,26 @@ impl SelectRenderer for BrutalSelectRenderer {
     }
     fn fg(&self, state: &SelectRenderState, theme: &Theme) -> Hsla {
         if state.disabled {
-            theme
-                .get_color("content.disabled")
-                .unwrap_or(BRUTAL_BORDER)
+            theme.get_color("content.disabled").unwrap_or(BRUTAL_BORDER)
         } else if state.has_value {
-            theme
-                .get_color("content.primary")
-                .unwrap_or(BRUTAL_BORDER)
+            theme.get_color("content.primary").unwrap_or(BRUTAL_BORDER)
         } else {
-            theme
-                .get_color("content.tertiary")
-                .unwrap_or(BRUTAL_BORDER)
+            theme.get_color("content.tertiary").unwrap_or(BRUTAL_BORDER)
         }
     }
     fn hint_color(&self, _: &SelectRenderState, theme: &Theme) -> Hsla {
         brutal_input_hint_color(theme)
     }
     fn min_height(&self, _: &SelectRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.control.select.min_height")
-                .unwrap_or(42.0) as f32,
-        )
+        px(theme
+            .get_number("tokens.control.select.min_height")
+            .unwrap_or(42.0) as f32)
     }
     fn padding(&self, _: &SelectRenderState, theme: &Theme) -> Edges<Pixels> {
         let h = theme
             .get_number("tokens.control.select.horizontal_padding")
             .unwrap_or(12.0) as f32;
-        let v = theme
-            .get_number("tokens.spacing.tight")
-            .unwrap_or(4.0) as f32;
+        let v = theme.get_number("tokens.spacing.tight").unwrap_or(4.0) as f32;
         Edges::symmetric(px(h), px(v))
     }
     fn border_radius(&self, _: &SelectRenderState, _: &Theme) -> Pixels {
@@ -501,38 +459,26 @@ impl ComboBoxRenderer for BrutalComboBoxRenderer {
     }
     fn fg(&self, state: &ComboBoxRenderState, theme: &Theme) -> Hsla {
         if state.disabled {
-            theme
-                .get_color("content.disabled")
-                .unwrap_or(BRUTAL_BORDER)
+            theme.get_color("content.disabled").unwrap_or(BRUTAL_BORDER)
         } else if state.has_value {
-            theme
-                .get_color("content.primary")
-                .unwrap_or(BRUTAL_BORDER)
+            theme.get_color("content.primary").unwrap_or(BRUTAL_BORDER)
         } else {
-            theme
-                .get_color("content.tertiary")
-                .unwrap_or(BRUTAL_BORDER)
+            theme.get_color("content.tertiary").unwrap_or(BRUTAL_BORDER)
         }
     }
     fn search_bg(&self, _: &ComboBoxRenderState, theme: &Theme) -> Hsla {
-        theme
-            .get_color("surface.base")
-            .unwrap_or(BRUTAL_BORDER)
+        theme.get_color("surface.base").unwrap_or(BRUTAL_BORDER)
     }
     fn min_height(&self, _: &ComboBoxRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.control.combo_box.min_height")
-                .unwrap_or(42.0) as f32,
-        )
+        px(theme
+            .get_number("tokens.control.combo_box.min_height")
+            .unwrap_or(42.0) as f32)
     }
     fn padding(&self, _: &ComboBoxRenderState, theme: &Theme) -> Edges<Pixels> {
         let h = theme
             .get_number("tokens.control.combo_box.horizontal_padding")
             .unwrap_or(12.0) as f32;
-        let v = theme
-            .get_number("tokens.spacing.tight")
-            .unwrap_or(4.0) as f32;
+        let v = theme.get_number("tokens.spacing.tight").unwrap_or(4.0) as f32;
         Edges::symmetric(px(h), px(v))
     }
     fn border_radius(&self, _: &ComboBoxRenderState, _: &Theme) -> Pixels {
@@ -567,14 +513,10 @@ impl KeybindingInputRenderer for BrutalKeybindingInputRenderer {
         brutal_input_focus_border(theme)
     }
     fn kbd_bg(&self, _: &KeybindingInputRenderState, theme: &Theme) -> Hsla {
-        theme
-            .get_color("surface.hover")
-            .unwrap_or(BRUTAL_BORDER)
+        theme.get_color("surface.hover").unwrap_or(BRUTAL_BORDER)
     }
     fn kbd_fg(&self, _: &KeybindingInputRenderState, theme: &Theme) -> Hsla {
-        theme
-            .get_color("content.primary")
-            .unwrap_or(BRUTAL_BORDER)
+        theme.get_color("content.primary").unwrap_or(BRUTAL_BORDER)
     }
     fn min_height(&self, _: &KeybindingInputRenderState, theme: &Theme) -> Pixels {
         brutal_input_min_height(theme)

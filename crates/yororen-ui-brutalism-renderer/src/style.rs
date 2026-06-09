@@ -6,11 +6,21 @@
 //! stylistic lockstep.
 
 use gpui::{Hsla, px};
-use yororen_ui_default_renderer::renderers::spec::ShadowSpec;
 use yororen_ui_core::theme::Theme;
+use yororen_ui_default_renderer::renderers::spec::ShadowSpec;
 
-pub const BRUTAL_BORDER: Hsla = Hsla { h: 0.0, s: 0.0, l: 0.0, a: 1.0 };
-pub const BRUTAL_BORDER_WHITE: Hsla = Hsla { h: 0.0, s: 0.0, l: 1.0, a: 1.0 };
+pub const BRUTAL_BORDER: Hsla = Hsla {
+    h: 0.0,
+    s: 0.0,
+    l: 0.0,
+    a: 1.0,
+};
+pub const BRUTAL_BORDER_WHITE: Hsla = Hsla {
+    h: 0.0,
+    s: 0.0,
+    l: 1.0,
+    a: 1.0,
+};
 
 pub const BRUTAL_BORDER_WIDTH: f32 = 3.0;
 pub const BRUTAL_SMALL_BORDER_WIDTH: f32 = 2.0;
@@ -34,9 +44,7 @@ pub fn brutal_border_color(theme: &Theme) -> Hsla {
 /// (The current `ShadowSpec` only supports a single Y offset, not
 /// both X and Y, so the shadow is downward-only.)
 pub fn brutal_shadow(theme: &Theme) -> ShadowSpec {
-    let offset_y = theme
-        .get_number("shadow.default.offset_y")
-        .unwrap_or(4.0) as f32;
+    let offset_y = theme.get_number("shadow.default.offset_y").unwrap_or(4.0) as f32;
     let color = theme
         .get_color("shadow.default.color")
         .unwrap_or(BRUTAL_BORDER);
@@ -49,9 +57,7 @@ pub fn brutal_shadow(theme: &Theme) -> ShadowSpec {
 
 /// Larger Y offset shadow for raised surfaces (cards, panels).
 pub fn brutal_shadow_raised(theme: &Theme) -> ShadowSpec {
-    let offset_y = theme
-        .get_number("shadow.raised.offset_y")
-        .unwrap_or(6.0) as f32;
+    let offset_y = theme.get_number("shadow.raised.offset_y").unwrap_or(6.0) as f32;
     let color = theme
         .get_color("shadow.raised.color")
         .unwrap_or(BRUTAL_BORDER);
@@ -64,9 +70,7 @@ pub fn brutal_shadow_raised(theme: &Theme) -> ShadowSpec {
 
 /// Largest Y offset shadow for overlays (modals, popovers).
 pub fn brutal_shadow_overlay(theme: &Theme) -> ShadowSpec {
-    let offset_y = theme
-        .get_number("shadow.overlay.offset_y")
-        .unwrap_or(8.0) as f32;
+    let offset_y = theme.get_number("shadow.overlay.offset_y").unwrap_or(8.0) as f32;
     let color = theme
         .get_color("shadow.overlay.color")
         .unwrap_or(BRUTAL_BORDER);

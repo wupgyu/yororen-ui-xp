@@ -11,9 +11,7 @@ use crate::style::{BRUTAL_BORDER, BRUTAL_RADIUS, BRUTAL_SMALL_BORDER_WIDTH, brut
 // Tooltip
 // =====================================================================
 
-pub use yororen_ui_default_renderer::renderers::tooltip::{
-    TooltipRenderState, TooltipRenderer,
-};
+pub use yororen_ui_default_renderer::renderers::tooltip::{TooltipRenderState, TooltipRenderer};
 
 pub struct BrutalTooltipRenderer;
 
@@ -41,11 +39,9 @@ impl TooltipRenderer for BrutalTooltipRenderer {
     }
 
     fn font_size(&self, _: &TooltipRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.control.tooltip.font_size")
-                .unwrap_or(12.0) as f32,
-        )
+        px(theme
+            .get_number("tokens.control.tooltip.font_size")
+            .unwrap_or(12.0) as f32)
     }
 
     fn border_radius(&self, _: &TooltipRenderState, _: &Theme) -> Pixels {
@@ -57,17 +53,13 @@ impl TooltipRenderer for BrutalTooltipRenderer {
 // Avatar
 // =====================================================================
 
-pub use yororen_ui_default_renderer::renderers::avatar::{
-    AvatarRenderState, AvatarRenderer,
-};
+pub use yororen_ui_default_renderer::renderers::avatar::{AvatarRenderState, AvatarRenderer};
 
 pub struct BrutalAvatarRenderer;
 
 impl AvatarRenderer for BrutalAvatarRenderer {
     fn default_bg(&self, _: &AvatarRenderState, theme: &Theme) -> Hsla {
-        theme
-            .get_color("surface.hover")
-            .unwrap_or(BRUTAL_BORDER)
+        theme.get_color("surface.hover").unwrap_or(BRUTAL_BORDER)
     }
 
     fn border_radius(&self, _: &AvatarRenderState, _: &Theme) -> Pixels {
@@ -76,27 +68,21 @@ impl AvatarRenderer for BrutalAvatarRenderer {
     }
 
     fn status_dot_size(&self, _: &AvatarRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.control.avatar.status_dot_size")
-                .unwrap_or(12.0) as f32,
-        )
+        px(theme
+            .get_number("tokens.control.avatar.status_dot_size")
+            .unwrap_or(12.0) as f32)
     }
 
     fn status_inset(&self, _: &AvatarRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.control.avatar.status_inset")
-                .unwrap_or(2.0) as f32,
-        )
+        px(theme
+            .get_number("tokens.control.avatar.status_inset")
+            .unwrap_or(2.0) as f32)
     }
 
     fn status_border_w(&self, _: &AvatarRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.control.avatar.border_w")
-                .unwrap_or(BRUTAL_SMALL_BORDER_WIDTH as f64) as f32,
-        )
+        px(theme
+            .get_number("tokens.control.avatar.border_w")
+            .unwrap_or(BRUTAL_SMALL_BORDER_WIDTH as f64) as f32)
     }
 
     fn status_border_color(&self, _: &AvatarRenderState, theme: &Theme) -> Hsla {
@@ -114,9 +100,7 @@ pub struct BrutalPanelRenderer;
 
 impl PanelRenderer for BrutalPanelRenderer {
     fn bg(&self, _: &PanelRenderState, theme: &Theme) -> Hsla {
-        theme
-            .get_color("surface.raised")
-            .unwrap_or(BRUTAL_BORDER)
+        theme.get_color("surface.raised").unwrap_or(BRUTAL_BORDER)
     }
 
     fn border(&self, _: &PanelRenderState, theme: &Theme) -> Hsla {
@@ -152,9 +136,7 @@ pub struct BrutalCardRenderer;
 
 impl CardRenderer for BrutalCardRenderer {
     fn bg(&self, _: &CardRenderState, theme: &Theme) -> Hsla {
-        theme
-            .get_color("surface.base")
-            .unwrap_or(BRUTAL_BORDER)
+        theme.get_color("surface.base").unwrap_or(BRUTAL_BORDER)
     }
 
     fn border(&self, _: &CardRenderState, theme: &Theme) -> Hsla {
