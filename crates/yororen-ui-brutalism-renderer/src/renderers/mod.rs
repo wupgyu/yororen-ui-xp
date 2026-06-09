@@ -13,4 +13,7 @@ pub mod actions;
 pub mod controls;
 pub mod display;
 pub mod inputs;
+pub mod lists;
+pub mod notifications;
+pub mod overlays;
 pub mod surfaces;

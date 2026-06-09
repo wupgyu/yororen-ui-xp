@@ -3,9 +3,10 @@
 //! Implements all 38 `XxxRenderer` traits with sharp corners, thick
 //! black borders, hard offset shadows, and monospace typography.
 //!
-//! Two bundled themes: `brutalism-light.json` and `brutalism-dark.json`.
-//! Use [`install_with_default_theme`] to get the light theme, or
-//! [`install`] to pick light/dark by system appearance.
+//! Two bundled themes: `brutalism-light.json` and
+//! `brutalism-dark.json`. Use [`install_with_default_theme`] to
+//! get the light theme, or [`install`] to pick light/dark by
+//! system appearance.
 //!
 //! ```ignore
 //! use yororen_ui_brutalism_renderer as brutalism;
@@ -21,8 +22,40 @@ mod style;
 
 pub mod renderers;
 
+use std::sync::Arc;
+
 use gpui::{App, WindowAppearance};
+use yororen_ui_core::renderer::{RendererContext, markers as m};
 use yororen_ui_core::theme::{Theme, install as install_theme};
+
+use yororen_ui_default_renderer::renderers::*;
+
+use crate::renderers::{
+    actions::{
+        BrutalButtonRenderer, BrutalIconButtonRenderer, BrutalSplitButtonRenderer,
+        BrutalToggleButtonRenderer,
+    },
+    controls::{BrutalCheckboxRenderer, BrutalRadioRenderer, BrutalSwitchRenderer},
+    display::{
+        BrutalBadgeRenderer, BrutalDividerRenderer, BrutalEmptyStateRenderer,
+        BrutalFocusRingRenderer, BrutalHeadingRenderer, BrutalLabelRenderer,
+        BrutalProgressBarRenderer, BrutalSkeletonRenderer, BrutalTagRenderer,
+    },
+    inputs::{
+        BrutalComboBoxRenderer, BrutalFilePathInputRenderer, BrutalKeybindingInputRenderer,
+        BrutalNumberInputRenderer, BrutalPasswordInputRenderer, BrutalSearchInputRenderer,
+        BrutalSelectRenderer, BrutalTextAreaRenderer, BrutalTextInputRenderer,
+    },
+    lists::{BrutalFormRenderer, BrutalListItemRenderer, BrutalTreeItemRenderer},
+    notifications::{BrutalNotificationRenderer, BrutalToastRenderer},
+    overlays::{
+        BrutalDisclosureRenderer, BrutalDropdownMenuRenderer, BrutalModalRenderer,
+        BrutalPopoverRenderer,
+    },
+    surfaces::{
+        BrutalAvatarRenderer, BrutalCardRenderer, BrutalPanelRenderer, BrutalTooltipRenderer,
+    },
+};
 
 const BRUTAL_LIGHT: &str = include_str!("../themes/brutalism-light.json");
 const BRUTAL_DARK: &str = include_str!("../themes/brutalism-dark.json");
@@ -54,10 +87,104 @@ fn brutal_theme_for(appearance: WindowAppearance) -> Theme {
     Theme::from_json(json).expect("brutalism theme json is valid")
 }
 
-fn register_brutal_renderers(_cx: &mut App) {
-    // Renderers are registered in subsequent commits.
-    // Currently the brutalism crate is a skeleton — install() above
-    // sets the theme but registers no component renderers, so the
-    // default-renderer's `TokenXxxRenderer` impls are still in
-    // effect for every component.
+/// Register all 38 brutalist `XxxRenderer` impls against the core
+/// `RendererRegistry`. Public so a caller who already installed
+/// the theme (e.g. for tests) can still wire up the brutalist
+/// look without re-installing the theme.
+pub fn register_brutal_renderers(cx: &mut App) {
+    // Actions (4)
+    cx.register_renderer_arc::<m::Button, dyn ButtonRenderer>(Arc::new(BrutalButtonRenderer));
+    cx.register_renderer_arc::<m::IconButton, dyn IconButtonRenderer>(Arc::new(
+        BrutalIconButtonRenderer,
+    ));
+    cx.register_renderer_arc::<m::ToggleButton, dyn ToggleButtonRenderer>(Arc::new(
+        BrutalToggleButtonRenderer,
+    ));
+    cx.register_renderer_arc::<m::SplitButton, dyn SplitButtonRenderer>(Arc::new(
+        BrutalSplitButtonRenderer,
+    ));
+
+    // Display (9)
+    cx.register_renderer_arc::<m::Label, dyn LabelRenderer>(Arc::new(BrutalLabelRenderer));
+    cx.register_renderer_arc::<m::Heading, dyn HeadingRenderer>(Arc::new(BrutalHeadingRenderer));
+    cx.register_renderer_arc::<m::Divider, dyn DividerRenderer>(Arc::new(BrutalDividerRenderer));
+    cx.register_renderer_arc::<m::FocusRing, dyn FocusRingRenderer>(Arc::new(
+        BrutalFocusRingRenderer,
+    ));
+    cx.register_renderer_arc::<m::Badge, dyn BadgeRenderer>(Arc::new(BrutalBadgeRenderer));
+    cx.register_renderer_arc::<m::Tag, dyn TagRenderer>(Arc::new(BrutalTagRenderer));
+    cx.register_renderer_arc::<m::Skeleton, dyn SkeletonRenderer>(Arc::new(
+        BrutalSkeletonRenderer,
+    ));
+    cx.register_renderer_arc::<m::ProgressBar, dyn ProgressBarRenderer>(Arc::new(
+        BrutalProgressBarRenderer,
+    ));
+    cx.register_renderer_arc::<m::EmptyState, dyn EmptyStateRenderer>(Arc::new(
+        BrutalEmptyStateRenderer,
+    ));
+
+    // Surfaces (4)
+    cx.register_renderer_arc::<m::Tooltip, dyn TooltipRenderer>(Arc::new(BrutalTooltipRenderer));
+    cx.register_renderer_arc::<m::Avatar, dyn AvatarRenderer>(Arc::new(BrutalAvatarRenderer));
+    cx.register_renderer_arc::<m::Panel, dyn PanelRenderer>(Arc::new(BrutalPanelRenderer));
+    cx.register_renderer_arc::<m::Card, dyn CardRenderer>(Arc::new(BrutalCardRenderer));
+
+    // Inputs (9)
+    cx.register_renderer_arc::<m::TextInput, dyn TextInputRenderer>(Arc::new(
+        BrutalTextInputRenderer,
+    ));
+    cx.register_renderer_arc::<m::TextArea, dyn TextAreaRenderer>(Arc::new(
+        BrutalTextAreaRenderer,
+    ));
+    cx.register_renderer_arc::<m::PasswordInput, dyn PasswordInputRenderer>(Arc::new(
+        BrutalPasswordInputRenderer,
+    ));
+    cx.register_renderer_arc::<m::NumberInput, dyn NumberInputRenderer>(Arc::new(
+        BrutalNumberInputRenderer,
+    ));
+    cx.register_renderer_arc::<m::FilePathInput, dyn FilePathInputRenderer>(Arc::new(
+        BrutalFilePathInputRenderer,
+    ));
+    cx.register_renderer_arc::<m::SearchInput, dyn SearchInputRenderer>(Arc::new(
+        BrutalSearchInputRenderer,
+    ));
+    cx.register_renderer_arc::<m::Select, dyn SelectRenderer>(Arc::new(BrutalSelectRenderer));
+    cx.register_renderer_arc::<m::ComboBox, dyn ComboBoxRenderer>(Arc::new(
+        BrutalComboBoxRenderer,
+    ));
+    cx.register_renderer_arc::<m::KeybindingInput, dyn KeybindingInputRenderer>(Arc::new(
+        BrutalKeybindingInputRenderer,
+    ));
+
+    // Controls (3)
+    cx.register_renderer_arc::<m::Switch, dyn SwitchRenderer>(Arc::new(BrutalSwitchRenderer));
+    cx.register_renderer_arc::<m::Checkbox, dyn CheckboxRenderer>(Arc::new(
+        BrutalCheckboxRenderer,
+    ));
+    cx.register_renderer_arc::<m::Radio, dyn RadioRenderer>(Arc::new(BrutalRadioRenderer));
+
+    // Overlays (4)
+    cx.register_renderer_arc::<m::Modal, dyn ModalRenderer>(Arc::new(BrutalModalRenderer));
+    cx.register_renderer_arc::<m::Popover, dyn PopoverRenderer>(Arc::new(BrutalPopoverRenderer));
+    cx.register_renderer_arc::<m::DropdownMenu, dyn DropdownMenuRenderer>(Arc::new(
+        BrutalDropdownMenuRenderer,
+    ));
+    cx.register_renderer_arc::<m::Disclosure, dyn DisclosureRenderer>(Arc::new(
+        BrutalDisclosureRenderer,
+    ));
+
+    // Notifications (2)
+    cx.register_renderer_arc::<m::Toast, dyn ToastRenderer>(Arc::new(BrutalToastRenderer));
+    cx.register_renderer_arc::<m::Notification, dyn NotificationRenderer>(Arc::new(
+        BrutalNotificationRenderer,
+    ));
+
+    // Lists (3)
+    cx.register_renderer_arc::<m::ListItem, dyn ListItemRenderer>(Arc::new(
+        BrutalListItemRenderer,
+    ));
+    cx.register_renderer_arc::<m::TreeItem, dyn TreeItemRenderer>(Arc::new(
+        BrutalTreeItemRenderer,
+    ));
+    cx.register_renderer_arc::<m::Form, dyn FormRenderer>(Arc::new(BrutalFormRenderer));
 }
