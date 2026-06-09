@@ -177,21 +177,11 @@ impl DefaultPasswordInput for PasswordInputProps {
             state.update(cx, |s, _cx| s.cursor_visible = true);
         }
 
-        // Compute masked display value once.
+        // Compute masked display value once. The state's
+        // `value` holds the *real* password; the `TextInputElement`
+        // uses `value_override` to display the mask instead.
         let value_len = state.read(cx).value.chars().count();
         let masked: String = std::iter::repeat(mask_char).take(value_len).collect();
-
-        // The inner element: we use the *masked* string as the
-        // value, but we also push the real value into the state
-        // for the IME / action pipeline to read.
-        // To make this work without diverging, we set the state's
-        // value placeholder field to the mask and let the
-        // TextInputElement shape the masked line. (The state.value
-        // is still the real text — the element just displays the
-        // placeholder-text-equivalent of the mask.)
-        state.update(cx, |s, _cx| {
-            s.placeholder = gpui::SharedString::from(masked);
-        });
 
         let inner = TextInputElement {
             state: state.clone(),
@@ -202,6 +192,7 @@ impl DefaultPasswordInput for PasswordInputProps {
             cursor_color: text_color,
             selection_color: text_color,
             placeholder: state.read(cx).placeholder.clone(),
+            value_override: Some(masked),
         };
 
         let base: Stateful<Div> = div()

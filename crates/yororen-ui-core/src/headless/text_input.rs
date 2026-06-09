@@ -160,6 +160,14 @@ pub struct TextInputState {
     /// each tick and exits if the epoch has changed (so we never
     /// have two blink tasks racing).
     pub cursor_blink_epoch: usize,
+    /// Active IME composition range, in **UTF-8 bytes**. `Some`
+    /// when the platform IME is composing (e.g. typing Chinese
+    /// pinyin) — the renderer uses this to highlight the marked
+    /// span. The platform calls
+    /// `replace_and_mark_text_in_range` to start / update a
+    /// composition and `replace_text_in_range` (with this
+    /// range) to commit it.
+    pub marked_range: Option<Range<usize>>,
     /// Hard cap on `value.len()`. `None` = unlimited. The
     /// `replace_text_in_range_bytes` method (used by every
     /// action method and the platform's `EntityInputHandler`)
@@ -195,6 +203,7 @@ impl TextInputState {
             is_selecting: false,
             cursor_visible: true,
             cursor_blink_epoch: 0,
+            marked_range: None,
             max_length: None,
             on_change: None,
             on_submit: None,
@@ -361,52 +370,123 @@ impl TextInputState {
     }
 
     /// Apply a `Range<usize>` (UTF-8) replacement. Used by the
-    /// platform IME / clipboard via `EntityInputHandler`.
-    ///
-    /// If `max_length` is set and the resulting length would
-    /// exceed it, the new text is truncated to fit. Returns
-    /// `true` if the value actually changed (so callers can
-    /// skip `on_change` otherwise).
+    /// platform IME / clipboard via `EntityInputHandler`. A
+    /// commit (a non-`replace_and_mark_text_in_range` call
+    /// that targets the marked range) implicitly clears the
+    /// composition.
     pub fn replace_text_in_range_bytes(
         &mut self,
         range: Option<Range<usize>>,
         new_text: &str,
     ) -> bool {
         let before = self.value.clone();
+        // Lookup order: IME-sent range → active marked range
+        // (IME commit with no `replacementRange` still needs to
+        // find the pinyin) → active selection. The marked
+        // range wins over the selection because the caret sits
+        // at the end of the marked text — falling back to the
+        // selection would insert *after* the pinyin.
+        let resolved = range
+            .or_else(|| self.marked_range.clone())
+            .or_else(|| {
+                if !self.selected_range().is_empty() {
+                    Some(self.selected_range())
+                } else {
+                    None
+                }
+            });
         // Decide the effective new text up front (honouring
         // `max_length`). This avoids the "apply, then truncate"
         // path which would leave the caret past the end.
         let effective = if let Some(cap) = self.max_length {
-            let existing_len = match &range {
+            let existing_len = match &resolved {
                 Some(r) => self.value.len() - (r.end - r.start),
-                None => self.value.len() - (self.selection_end - self.selection_start),
+                None => self.value.len(),
             };
             let room = cap.saturating_sub(existing_len);
             &new_text[..new_text.len().min(room)]
         } else {
             new_text
         };
-        match &range {
+        match &resolved {
             Some(r) => self.replace_text(r.start, r.end, effective),
-            None => self.replace_text(self.selection_start, self.selection_end, effective),
+            None => self.replace_text(self.caret, self.caret, effective),
         }
+        // A `replace_text_in_range` outside of an active
+        // composition context ends any pending IME mark. The
+        // platform's commit call always lands here, so this is
+        // what actually clears the pinyin.
+        self.marked_range = None;
         self.value != before
     }
 
     /// Compose (IME marked text). Replaces the active selection
-    /// with `new_text` and records the marked range so the
-    /// renderer can underline it.
+    /// with `new_text` and records the marked range as the
+    /// **span of the just-inserted text** (not the IME's
+    /// `new_selected_range`, which is the cursor selection
+    /// *within* the marked text). This matches v0.2's
+    /// `TextEdit::replace_and_mark_text_in_range` semantics:
+    /// after a `setMarkedText("ni", …, replacementRange)` call,
+    /// the marked range is `replacementRange.start..start +
+    /// new_text.len()`. The eventual commit
+    /// (`insertText(text, replacementRange)`) sends
+    /// `replacementRange` = the marked range, so the commit
+    /// replaces the pinyin with the final text.
     pub fn replace_and_mark_text_in_range_bytes(
         &mut self,
         range: Option<Range<usize>>,
         new_text: &str,
-        _new_selected_range: Option<Range<usize>>,
+        new_selected_range: Option<Range<usize>>,
     ) {
-        // v0.3: no persistent marked-text buffer (the visual
-        // underline is gated on `last_layout` having a marked run;
-        // we don't track it separately). Just apply the
-        // replacement.
-        self.replace_text_in_range_bytes(range, new_text);
+        // The actual range we replace follows the v0.2 lookup,
+        // with one extra priority: an active IME composition
+        // (marked range) wins over the active selection. The
+        // IME on macOS sends `replacementRange = NSNotFound`
+        // (None) when updating the *existing* composition —
+        // in that case the new text must replace the marked
+        // range, not be inserted at the caret (the caret is
+        // already at the end of the marked text, so falling
+        // back to the active selection would *append* the
+        // new pinyin after the existing composition and
+        // produce "sas" / "sa's" artefacts).
+        let range = range
+            .or_else(|| self.marked_range.clone())
+            .unwrap_or_else(|| self.selected_range());
+        let range_start = range.start.min(self.value.len());
+        let range_end = range.end.max(range_start).min(self.value.len());
+
+        // Apply the replacement. The just-inserted text
+        // occupies `[range_start, range_start + new_text.len())`
+        // in byte space — that's the new marked range.
+        self.value
+            .replace_range(range_start..range_end, new_text);
+        let marked_start = range_start;
+        let marked_end = range_start + new_text.len();
+        self.caret = marked_end;
+        if !new_text.is_empty() {
+            self.marked_range = Some(marked_start..marked_end);
+        } else {
+            // Empty marked text (e.g. the IME sent an empty
+            // composition to clear) — no composition.
+            self.marked_range = None;
+        }
+
+        // The IME also tells us the cursor selection *within*
+        // the new marked text. Translate it from UTF-16 to
+        // bytes and offset by the marked start. If the IME
+        // didn't provide one, the caret sits at the end of
+        // the marked text.
+        if let Some(sel_utf16) = new_selected_range {
+            let start_in_marked = self.utf16_to_offset(sel_utf16.start).saturating_sub(marked_start);
+            let end_in_marked = self.utf16_to_offset(sel_utf16.end).saturating_sub(marked_start);
+            let sel_start = (marked_start + start_in_marked).min(marked_end);
+            let sel_end = (marked_start + end_in_marked).min(marked_end);
+            self.selection_start = sel_start;
+            self.selection_end = sel_end;
+        } else {
+            self.selection_start = marked_end;
+            self.selection_end = marked_end;
+        }
     }
 
     // -- `EntityInputHandler` body methods (not the trait impl) -----
@@ -510,13 +590,22 @@ impl EntityInputHandler for TextInputState {
         _window: &mut Window,
         _cx: &mut Context<Self>,
     ) -> Option<Range<usize>> {
-        // v0.3: no IME composition buffer. The platform can still
-        // ask (it always does); we answer "no marked text".
-        None
+        // Return the UTF-16 of the active IME marked range.
+        // The platform uses this to know where the composition
+        // is when committing (or to query / replace it).
+        self.marked_range
+            .as_ref()
+            .map(|r| self.range_to_utf16(r))
     }
 
     fn unmark_text(&mut self, _window: &mut Window, _cx: &mut Context<Self>) {
-        // No-op — there's no marked text to commit.
+        // The platform is telling us to drop the composition
+        // (e.g. focus lost, or the user pressed Escape mid-IME).
+        // Clear the marked range and the selection; keep the
+        // value as-is so the partially-typed pinyin is
+        // preserved (the caller can decide to revert if it
+        // wants).
+        self.marked_range = None;
     }
 
     fn replace_text_in_range(
@@ -527,8 +616,22 @@ impl EntityInputHandler for TextInputState {
         cx: &mut Context<Self>,
     ) {
         let before = self.value.clone();
-        let range = range_utf16.map(|r| self.range_from_utf16(&r));
+        // On commit, the IME either passes the marked range
+        // explicitly or we use our tracked one. If neither
+        // is available, fall back to the active selection.
+        let range = range_utf16
+            .map(|r| self.range_from_utf16(&r))
+            .or_else(|| self.marked_range.clone())
+            .or_else(|| {
+                if !self.selected_range().is_empty() {
+                    Some(self.selected_range())
+                } else {
+                    None
+                }
+            });
         self.replace_text_in_range_bytes(range, new_text);
+        // A commit clears the composition.
+        self.marked_range = None;
         if self.value != before
             && let Some(cb) = self.on_change.as_ref()
         {
@@ -667,6 +770,9 @@ impl TextInputState {
             let prev = self.prev_boundary(self.caret);
             self.replace_text(prev, self.caret, "");
         }
+        // A direct keyboard backspace (not via the IME
+        // pipeline) cancels any active composition.
+        self.marked_range = None;
         if self.value != before
             && let Some(cb) = self.on_change.as_ref()
         {
@@ -684,6 +790,7 @@ impl TextInputState {
             let next = self.next_boundary(self.caret);
             self.replace_text(self.caret, next, "");
         }
+        self.marked_range = None;
         if self.value != before
             && let Some(cb) = self.on_change.as_ref()
         {
@@ -700,6 +807,7 @@ impl TextInputState {
             let sanitised = text.replace('\n', " ");
             let before = self.value.clone();
             self.replace_text_in_range_bytes(None, &sanitised);
+            self.marked_range = None;
             if self.value != before
                 && let Some(cb) = self.on_change.as_ref()
             {
@@ -1007,5 +1115,84 @@ mod tests {
         assert_eq!(s.caret, 5);
         assert_eq!(s.selection_start, 0);
         assert_eq!(s.selection_end, 0);
+    }
+
+    #[test]
+    fn ime_marked_range_round_trip() {
+        // Simulate the IME pipeline:
+        //   1. `replace_and_mark_text_in_range` marks "ni" as
+        //      composition. The marked range is the byte span
+        //      of the just-inserted text — `replacementRange`
+        //      start..start + new_text.len() (NOT the IME's
+        //      `new_selected_range`, which is the cursor
+        //      selection *within* the marked text).
+        //   2. `marked_text_range` returns the UTF-16 span so
+        //      the platform can drive the commit.
+        //   3. Commit via `replace_text_in_range` with the
+        //      marked range — the pinyin is replaced.
+        let s = &mut *test_state("");
+        s.caret = 0;
+        // IME: insert "ni" at position 0, mark 0..2 as composition.
+        s.replace_and_mark_text_in_range_bytes(Some(0..0), "ni", None);
+        assert_eq!(s.value, "ni");
+        assert_eq!(s.marked_range.as_ref().unwrap().clone(), 0..2);
+        // The IME's commit: `insertText(0..2, "你")` →
+        // `replace_text_in_range(Some(0..2), "你")`.
+        s.replace_text_in_range_bytes(Some(0..2), "你");
+        assert_eq!(s.value, "你");
+        assert!(s.marked_range.is_none());
+    }
+
+    #[test]
+    fn ime_marked_range_uses_insertion_span_not_selection() {
+        // Regression test: the IME sends a `new_selected_range`
+        // that is the cursor position WITHIN the marked text
+        // (typically `0..0` when the user just inserted pinyin).
+        // The marked range itself must be the byte span of
+        // the inserted text — using the IME's selection as
+        // the marked range would result in a zero-width mark
+        // and the commit would fail to replace the pinyin.
+        let s = &mut *test_state("");
+        // IME inserts "你好" at 0..0 and tells us the
+        // selection within the new text is also 0..0
+        // (cursor at the start of the marked text).
+        s.replace_and_mark_text_in_range_bytes(Some(0..0), "你好", Some(0..0));
+        assert_eq!(s.value, "你好");
+        assert_eq!(s.marked_range.as_ref().unwrap().clone(), 0..6);
+        assert_eq!(s.selection_start, 0);
+        assert_eq!(s.selection_end, 0);
+        // Commit replaces the marked span (0..6 bytes).
+        s.replace_text_in_range_bytes(Some(0..6), "X");
+        assert_eq!(s.value, "X");
+    }
+
+    #[test]
+    fn ime_extending_composition_replaces_marked_not_appends() {
+        // Regression test: when the IME updates an existing
+        // composition (e.g. user types "s" then "a" while the
+        // IME has "s" marked), it sends `setMarkedText` with
+        // `replacementRange = NSNotFound` (None) to mean
+        // "update the existing composition". Falling back to
+        // the active selection would *append* the new pinyin
+        // after the existing one (giving "ssa" or "sas"),
+        // because the caret sits at the end of the marked
+        // text. The fix: prefer `marked_range` over the
+        // active selection when `replacementRange` is None.
+        let s = &mut *test_state("");
+        // Step 1: user types 's'. IME: setMarkedText("s", …,
+        // replacementRange: 0..0). value = "s", marked = 0..1.
+        s.replace_and_mark_text_in_range_bytes(Some(0..0), "s", Some(0..0));
+        assert_eq!(s.value, "s");
+        assert_eq!(s.marked_range.as_ref().unwrap().clone(), 0..1);
+        // Step 2: user types 'a'. IME: setMarkedText("sa", …,
+        // replacementRange: NSNotFound). The IME expects the
+        // existing marked "s" to be REPLACED by "sa", not
+        // appended after.
+        s.replace_and_mark_text_in_range_bytes(None, "sa", Some(0..0));
+        assert_eq!(s.value, "sa");
+        assert_eq!(s.marked_range.as_ref().unwrap().clone(), 0..2);
+        // Commit.
+        s.replace_text_in_range_bytes(Some(0..2), "X");
+        assert_eq!(s.value, "X");
     }
 }

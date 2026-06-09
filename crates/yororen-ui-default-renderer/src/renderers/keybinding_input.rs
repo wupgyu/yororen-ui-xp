@@ -169,6 +169,7 @@ impl DefaultKeybindingInput for KeybindingInputProps {
             cursor_color: kbd_fg,
             selection_color: kbd_fg,
             placeholder: state.read(cx).placeholder.clone(),
+            value_override: None,
         };
 
         let base: Stateful<Div> = div()

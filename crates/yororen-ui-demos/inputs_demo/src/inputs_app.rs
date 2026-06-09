@@ -108,7 +108,7 @@ impl Render for InputsApp {
                     .min(0.0)
                     .max(100.0)
                     .step(1.0)
-                    .value(0.0)
+                    .value(self.number_value)
                     .on_change({
                         let entity = cx.entity();
                         move |new: f64, _window, cx| {

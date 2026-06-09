@@ -173,6 +173,13 @@ pub struct TextInputElement {
     pub cursor_color: Hsla,
     pub selection_color: Hsla,
     pub placeholder: SharedString,
+    /// When `Some`, used as the **display** text instead of
+    /// `state.value` (for `password_input`'s mask). The state's
+    /// real value still drives the caret, selection, IME and
+    /// `on_change` — only the visual line is overridden. The
+    /// override must have the same char-count as
+    /// `state.value` so byte indices line up.
+    pub value_override: Option<String>,
 }
 
 pub struct PrepaintState {
@@ -232,11 +239,44 @@ impl Element for TextInputElement {
         let scroll_x_input = input.scroll_x;
         let cursor_visible = input.cursor_visible;
 
+        // Pick the display text. If `value_override` is set
+        // (e.g. `password_input`'s mask), use it instead of
+        // `value` for the visual line — the state's real value
+        // still drives the caret / selection / IME / on_change.
         let is_empty = value.is_empty();
         let (display_text, run_color) = if is_empty {
             (placeholder, self.hint_color)
+        } else if let Some(override_text) = &self.value_override {
+            (SharedString::from(override_text.clone()), self.text_color)
         } else {
-            (SharedString::from(value), self.text_color)
+            (SharedString::from(value.clone()), self.text_color)
+        };
+
+        // Map the real-value caret (in UTF-8 bytes) to the
+        // display-text byte position. For `value_override`
+        // (the password mask), the display is `mask_char`
+        // repeated N times where N = `value.chars().count()`.
+        // **Important**: the mask char itself may be multi-byte
+        // (e.g. `•` is 3 bytes, `●` is 3 bytes) — so the
+        // display byte index for real-value char `n` is
+        // `n * mask_char.len_utf8()`, NOT just `n`.
+        let mask_char_bytes = self
+            .value_override
+            .as_ref()
+            .and_then(|s| s.chars().next())
+            .map(|c| c.len_utf8())
+            .unwrap_or(1);
+        let (caret_disp, selection_disp) = if self.value_override.is_some() {
+            let real_value_caret = caret.min(value.len());
+            let caret_chars = value[..real_value_caret].chars().count();
+            let start_chars = value[..selection.start.min(value.len())].chars().count();
+            let end_chars = value[..selection.end.min(value.len())].chars().count();
+            (
+                caret_chars * mask_char_bytes,
+                (start_chars * mask_char_bytes)..(end_chars * mask_char_bytes),
+            )
+        } else {
+            (caret, selection)
         };
 
         let style = window.text_style();
@@ -253,7 +293,7 @@ impl Element for TextInputElement {
             .text_system()
             .shape_line(display_text.clone(), font_size, &[run], None);
 
-        let caret_x_line = line.x_for_index(caret);
+        let caret_x_line = line.x_for_index(caret_disp);
         let cursor_thickness = px(2.0);
         let max_cursor_x = (bounds.size.width - cursor_thickness).max(Pixels::ZERO);
         let max_scroll_x = (line.width - max_cursor_x).max(Pixels::ZERO);
@@ -265,9 +305,9 @@ impl Element for TextInputElement {
         }
         scroll_x = scroll_x.clamp(Pixels::ZERO, max_scroll_x);
 
-        let (selection_quad, cursor_quad) = if !selection.is_empty() && !is_empty {
-            let start_x = line.x_for_index(selection.start);
-            let end_x = line.x_for_index(selection.end);
+        let (selection_quad, cursor_quad) = if !selection_disp.is_empty() && !is_empty {
+            let start_x = line.x_for_index(selection_disp.start);
+            let end_x = line.x_for_index(selection_disp.end);
             let quad = fill(
                 Bounds::from_corners(
                     point(
@@ -559,6 +599,7 @@ impl DefaultTextInput for TextInputProps {
             cursor_color,
             selection_color,
             placeholder: placeholder_for_element,
+            value_override: None,
         };
 
         // Build the wrapper div. The chain is:

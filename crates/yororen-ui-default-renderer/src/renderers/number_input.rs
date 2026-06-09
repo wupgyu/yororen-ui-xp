@@ -100,6 +100,9 @@ impl DefaultNumberInput for NumberInputProps {
         let placeholder_str = self.placeholder.clone();
         let disabled = self.disabled;
         let on_change = self.on_change.clone();
+        let on_change_for_state = on_change.clone();
+        let on_change_for_dec = on_change.clone();
+        let on_change_for_inc = on_change.clone();
         let on_increment = self.on_increment.clone();
         let on_decrement = self.on_decrement.clone();
         let value = self.value;
@@ -121,7 +124,7 @@ impl DefaultNumberInput for NumberInputProps {
         state.update(cx, |s, _cx| {
             s.placeholder = gpui::SharedString::from(placeholder_str);
             s.on_change = Some(Arc::new(move |new_value: &str, window: &mut gpui::Window, cx: &mut gpui::App| {
-                if let Some(cb) = on_change.as_ref() {
+                if let Some(cb) = on_change_for_state.as_ref() {
                     let parsed = new_value.parse::<f64>().unwrap_or(value);
                     cb(parsed, window, cx);
                 }
@@ -166,6 +169,7 @@ impl DefaultNumberInput for NumberInputProps {
             cursor_color: text_color,
             selection_color: text_color,
             placeholder: state.read(cx).placeholder.clone(),
+            value_override: None,
         };
 
         let base: Stateful<Div> = div()
@@ -201,6 +205,14 @@ impl DefaultNumberInput for NumberInputProps {
 
         let on_inc_clone = on_increment.clone();
         let on_dec_clone = on_decrement.clone();
+        // The steppers mutate the live `state.value` first, then
+        // fire `on_change` with the new value, then call
+        // `on_increment` / `on_decrement` for the caller to do
+        // extra work (e.g. update an external state). Without
+        // the live `state.value` write, the input would still
+        // display the old value after the click.
+        let state_for_dec = state.clone();
+        let state_for_inc = state.clone();
         let final_div = keyed
             .hover(|s| s.border_color(hover_border))
             .active(|s| s.border_color(active_border))
@@ -218,6 +230,17 @@ impl DefaultNumberInput for NumberInputProps {
                             Some(m) => next.max(m),
                             None => next,
                         };
+                        let new_text = format!("{}", clamped);
+                        state_for_dec.update(cx, |s, cx| {
+                            s.value = new_text.clone();
+                            s.caret = new_text.len();
+                            s.selection_start = new_text.len();
+                            s.selection_end = new_text.len();
+                            cx.notify();
+                        });
+                        if let Some(cb) = on_change_for_dec.as_ref() {
+                            cb(clamped, window, cx);
+                        }
                         if let Some(cb) = on_dec_clone.as_ref() {
                             cb(clamped, window, cx);
                         }
@@ -236,6 +259,17 @@ impl DefaultNumberInput for NumberInputProps {
                             Some(m) => next.min(m),
                             None => next,
                         };
+                        let new_text = format!("{}", clamped);
+                        state_for_inc.update(cx, |s, cx| {
+                            s.value = new_text.clone();
+                            s.caret = new_text.len();
+                            s.selection_start = new_text.len();
+                            s.selection_end = new_text.len();
+                            cx.notify();
+                        });
+                        if let Some(cb) = on_change_for_inc.as_ref() {
+                            cb(clamped, window, cx);
+                        }
                         if let Some(cb) = on_inc_clone.as_ref() {
                             cb(clamped, window, cx);
                         }

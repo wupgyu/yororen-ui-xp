@@ -165,6 +165,7 @@ impl DefaultSearchInput for SearchInputProps {
             cursor_color: text_color,
             selection_color: text_color,
             placeholder: state.read(cx).placeholder.clone(),
+            value_override: None,
         };
 
         let base: Stateful<Div> = div()
@@ -218,6 +219,7 @@ impl DefaultSearchInput for SearchInputProps {
 
         // Compose children: search icon, inner element, clear button.
         let state_for_clear = state.clone();
+        let on_change_for_clear = on_change.clone();
         let on_clear_clone = on_clear.clone();
         let final_div = keyed
             .hover(|s| s.border_color(hover_border))
@@ -234,6 +236,23 @@ impl DefaultSearchInput for SearchInputProps {
                         .text_color(icon_color)
                         .child("×")
                         .on_mouse_down(MouseButton::Left, move |_ev, window, cx| {
+                            // The × clears the live `state.value`
+                            // first (so the input visually empties
+                            // and the `×` disappears via the
+                            // `.when(...)` re-eval), then fires
+                            // `on_change` with "", then
+                            // `on_clear` for the caller to do
+                            // extra work.
+                            state_for_clear.update(cx, |s, cx| {
+                                s.value.clear();
+                                s.caret = 0;
+                                s.selection_start = 0;
+                                s.selection_end = 0;
+                                cx.notify();
+                            });
+                            if let Some(cb) = on_change_for_clear.as_ref() {
+                                cb("", window, cx);
+                            }
                             if let Some(cb) = on_clear_clone.as_ref() {
                                 cb(window, cx);
                             }

@@ -166,6 +166,7 @@ impl DefaultFilePathInput for FilePathInputProps {
             cursor_color: text_color,
             selection_color: text_color,
             placeholder: state.read(cx).placeholder.clone(),
+            value_override: None,
         };
 
         let base: Stateful<Div> = div()

@@ -3744,6 +3744,7 @@ pub yororen_ui_core::headless::text_input::TextInputState::cursor_visible: bool
 pub yororen_ui_core::headless::text_input::TextInputState::is_selecting: bool
 pub yororen_ui_core::headless::text_input::TextInputState::last_bounds: core::option::Option<gpui::geometry::Bounds<gpui::geometry::Pixels>>
 pub yororen_ui_core::headless::text_input::TextInputState::last_layout: core::option::Option<gpui::text_system::line::ShapedLine>
+pub yororen_ui_core::headless::text_input::TextInputState::marked_range: core::option::Option<core::ops::range::Range<usize>>
 pub yororen_ui_core::headless::text_input::TextInputState::max_length: core::option::Option<usize>
 pub yororen_ui_core::headless::text_input::TextInputState::on_change: core::option::Option<yororen_ui_core::headless::text_input::TextChangeCallback>
 pub yororen_ui_core::headless::text_input::TextInputState::on_submit: core::option::Option<yororen_ui_core::headless::text_input::TextChangeCallback>
