@@ -1,28 +1,21 @@
 //! `PasswordInputRenderer` — visual side of `PasswordInput`.
 //!
-//! v0.3 implementation: reuses `TextInputElement` (the inner
-//! painter) but the renderer shows the `mask_char` repeated for
-//! the value's char count instead of the raw value. The real
-//! value lives in `TextInputState.value`; only the *display* is
-//! masked.
+//! The text input / keymap / IME pipeline lives in
+//! `yororen-ui-core/src/headless/text_input_element.rs`. This
+//! module only provides the `TokenPasswordInputRenderer` default
+//! impl. The headless `PasswordInputProps::render` masks the
+//! displayed value with `mask_char` while the underlying
+//! `TextInputState.value` keeps the real text.
 
-use std::any::Any;
 use std::sync::Arc;
 
-use gpui::{
-    AnyElement, App, Div, Hsla, InteractiveElement, IntoElement, ParentElement, Pixels, Stateful,
-    StatefulInteractiveElement, Styled, Window, div, px,
-};
-use yororen_ui_core::headless::password_input::PasswordInputProps;
-use yororen_ui_core::headless::text_input::TextInputState;
-use yororen_ui_core::renderer::{RendererContext, markers};
-use yororen_ui_core::theme::{ActiveTheme, Theme};
+use gpui::{Hsla, Pixels, px};
 
-use crate::renderers::text_input::{TextInputElement, start_cursor_blink, wire_input_keyboard};
-pub use yororen_ui_core::renderer::password_input::{
+use yororen_ui_core::renderer::password_input::{
     PasswordInputRenderState, PasswordInputRenderer,
 };
 use yororen_ui_core::renderer::spec::Edges;
+use yororen_ui_core::theme::Theme;
 
 pub struct TokenPasswordInputRenderer;
 

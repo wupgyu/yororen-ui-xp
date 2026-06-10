@@ -1,31 +1,20 @@
 //! `FilePathInputRenderer` — visual side of `FilePathInput`.
 //!
-//! v0.3 implementation: reuses `TextInputElement` plus a folder
-//! icon at the leading edge and a "browse" button at the
-//! trailing edge. Clicking the browse button opens a native
-//! file dialog via `App::prompt_for_paths`; the chosen path
-//! is written to the state and fired through `on_change`.
-//! The user's `on_browse` becomes a post-pick hook that
-//! receives the selected path (empty string on cancel).
+//! The text input / keymap / IME pipeline plus the leading
+//! folder icon and trailing browse-button layout live in
+//! `yororen-ui-core/src/headless/file_path_input.rs` (and the
+//! shared helpers in `text_input_element.rs`). This module
+//! only provides the `TokenFilePathInputRenderer` default impl.
 
-use std::any::Any;
 use std::sync::Arc;
 
-use gpui::{
-    AnyElement, App, AppContext, Div, Hsla, InteractiveElement, IntoElement, MouseButton,
-    ParentElement, Pixels, Stateful, StatefulInteractiveElement, Styled, Window, div, px,
-};
-use yororen_ui_core::headless::file_path_input::FilePathInputProps;
-use yororen_ui_core::headless::icon::{IconSource, icon};
-use yororen_ui_core::headless::text_input::TextInputState;
-use yororen_ui_core::renderer::{RendererContext, markers};
-use yororen_ui_core::theme::{ActiveTheme, Theme};
+use gpui::{Hsla, Pixels, px};
 
-use crate::renderers::text_input::{TextInputElement, start_cursor_blink, wire_input_keyboard};
-pub use yororen_ui_core::renderer::file_path_input::{
+use yororen_ui_core::renderer::file_path_input::{
     FilePathInputRenderState, FilePathInputRenderer,
 };
 use yororen_ui_core::renderer::spec::Edges;
+use yororen_ui_core::theme::Theme;
 
 pub struct TokenFilePathInputRenderer;
 
@@ -46,16 +35,11 @@ impl FilePathInputRenderer for TokenFilePathInputRenderer {
         theme.get_color("border.default").unwrap_or_default()
     }
     fn button_bg(&self, _state: &FilePathInputRenderState, theme: &Theme) -> Hsla {
-        // The browse button is a small affordance inside the
-        // input, not a primary action. Match the input surface
-        // (white in light, dark gray in dark) so the icon
-        // doesn't compete with the typed path.
+        // Match the input surface so the icon doesn't compete
+        // with the typed path.
         theme.get_color("surface.base").unwrap_or_default()
     }
     fn button_fg(&self, _state: &FilePathInputRenderState, theme: &Theme) -> Hsla {
-        // Use the same color as the typed text. On hover, the
-        // theme can override via `custom_button_fg` or by
-        // registering a custom `FilePathInputRenderer`.
         theme.get_color("content.primary").unwrap_or_default()
     }
     fn button_hover_bg(&self, _state: &FilePathInputRenderState, theme: &Theme) -> Hsla {

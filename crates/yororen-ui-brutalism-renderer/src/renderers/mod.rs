@@ -6,7 +6,7 @@
 //! monospace typography, and high-contrast solid colors.
 //!
 //! Colors are read from the theme (so light/dark variants work);
-//! geometry is hardcoded in the [`style`] module so the 38
+//! geometry is hardcoded in the `style` module so the 38
 //! renderers stay in stylistic lockstep.
 
 pub mod actions;

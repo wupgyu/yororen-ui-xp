@@ -51,7 +51,7 @@ impl Render for BrutalismApp {
 
         // Build children. Each headless factory + default_render
         // must run in its own block so the `&mut App` borrow
-        // from `&mut **cx` is released before the next one.
+        // from `cx` is released before the next one.
         let mut children: Vec<gpui::AnyElement> = Vec::new();
 
         // --- Title (built by hand; see header note) ---
@@ -67,7 +67,7 @@ impl Render for BrutalismApp {
             label(
                 "brutalism-subtitle",
                 "Neo-brutalism — sharp corners, 3px black borders, hard offset shadows, monospace.",
-                &mut **cx,
+                cx,
             )
             .render(cx)
             .into_any_element(),
@@ -79,28 +79,28 @@ impl Render for BrutalismApp {
                 .flex()
                 .gap(px(12.0))
                 .child(
-                    button("btn-neutral", &mut **cx)
+                    button("btn-neutral", cx)
                         .variant(ActionVariantKind::Neutral)
                         .on_click(|_, _, _| {})
                         .render(cx)
                         .child("NEUTRAL"),
                 )
                 .child(
-                    button("btn-primary", &mut **cx)
+                    button("btn-primary", cx)
                         .variant(ActionVariantKind::Primary)
                         .on_click(|_, _, _| {})
                         .render(cx)
                         .child("PRIMARY"),
                 )
                 .child(
-                    button("btn-danger", &mut **cx)
+                    button("btn-danger", cx)
                         .variant(ActionVariantKind::Danger)
                         .on_click(|_, _, _| {})
                         .render(cx)
                         .child("DANGER"),
                 )
                 .child(
-                    button("btn-disabled", &mut **cx)
+                    button("btn-disabled", cx)
                         .variant(ActionVariantKind::Primary)
                         .disabled(true)
                         .on_click(|_, _, _| {})
@@ -117,20 +117,20 @@ impl Render for BrutalismApp {
                 .gap(px(12.0))
                 .items_center()
                 .child(
-                    icon_button("ibtn-1", &mut **cx)
+                    icon_button("ibtn-1", cx)
                         .on_click(|_, _, _| {})
                         .render(cx)
                         .child("◆"),
                 )
                 .child(
-                    toggle_button("tbtn-1", &mut **cx)
+                    toggle_button("tbtn-1", cx)
                         .selected(true)
                         .on_toggle(|_, _, _, _| {})
                         .render(cx)
                         .child("TOGGLED ON"),
                 )
                 .child(
-                    toggle_button("tbtn-2", &mut **cx)
+                    toggle_button("tbtn-2", cx)
                         .selected(false)
                         .on_toggle(|_, _, _, _| {})
                         .render(cx)
@@ -153,13 +153,13 @@ impl Render for BrutalismApp {
                 .gap(px(8.0))
                 .items_center()
                 .child(
-                    switch("sw-on", &mut **cx)
+                    switch("sw-on", cx)
                         .checked(true)
                         .on_toggle(|_, _, _, _| {})
                         .render(cx),
                 )
                 .child(
-                    label("lbl-sw-on", "Switch ON", &mut **cx)
+                    label("lbl-sw-on", "Switch ON", cx)
                         .render(cx)
                         .into_any_element(),
                 )
@@ -171,13 +171,13 @@ impl Render for BrutalismApp {
                 .gap(px(8.0))
                 .items_center()
                 .child(
-                    switch("sw-off", &mut **cx)
+                    switch("sw-off", cx)
                         .checked(false)
                         .on_toggle(|_, _, _, _| {})
                         .render(cx),
                 )
                 .child(
-                    label("lbl-sw-off", "Switch OFF", &mut **cx)
+                    label("lbl-sw-off", "Switch OFF", cx)
                         .render(cx)
                         .into_any_element(),
                 )
@@ -189,13 +189,13 @@ impl Render for BrutalismApp {
                 .gap(px(8.0))
                 .items_center()
                 .child(
-                    checkbox("cb-1", &mut **cx)
+                    checkbox("cb-1", cx)
                         .checked(true)
                         .on_toggle(|_, _, _, _| {})
                         .render(cx),
                 )
                 .child(
-                    label("lbl-cb-1", "Checkbox", &mut **cx)
+                    label("lbl-cb-1", "Checkbox", cx)
                         .render(cx)
                         .into_any_element(),
                 )
@@ -207,13 +207,13 @@ impl Render for BrutalismApp {
                 .gap(px(8.0))
                 .items_center()
                 .child(
-                    radio("rd-1", &mut **cx)
+                    radio("rd-1", cx)
                         .checked(true)
                         .on_toggle(|_, _, _, _| {})
                         .render(cx),
                 )
                 .child(
-                    label("lbl-rd-1", "Radio A", &mut **cx)
+                    label("lbl-rd-1", "Radio A", cx)
                         .render(cx)
                         .into_any_element(),
                 )

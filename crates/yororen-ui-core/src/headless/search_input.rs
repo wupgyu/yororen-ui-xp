@@ -266,7 +266,7 @@ impl SearchInputProps {
                 )
                 .size(icon_size)
                 .color(text_color)
-                .render(cx),
+                .render(),
             )
             .child(div().flex_1().min_w(px(0.)).child(inner))
             .when(!state_for_clear.read(cx).value.is_empty(), |d| {
@@ -301,7 +301,7 @@ impl SearchInputProps {
                             )
                             .size(icon_size)
                             .color(icon_color)
-                            .render(cx),
+                            .render(),
                         ),
                 )
             })

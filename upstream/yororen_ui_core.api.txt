@@ -1481,7 +1481,7 @@ pub yororen_ui_core::headless::icon::IconProps::source: yororen_ui_core::headles
 impl yororen_ui_core::headless::icon::IconProps
 pub fn yororen_ui_core::headless::icon::IconProps::apply(self, gpui::elements::div::Div) -> gpui::elements::div::Stateful<gpui::elements::div::Div>
 pub fn yororen_ui_core::headless::icon::IconProps::color(self, impl core::convert::Into<gpui::color::Hsla>) -> Self
-pub fn yororen_ui_core::headless::icon::IconProps::render(self, &mut gpui::app::App) -> gpui::element::AnyElement
+pub fn yororen_ui_core::headless::icon::IconProps::render(self) -> gpui::element::AnyElement
 pub fn yororen_ui_core::headless::icon::IconProps::size(self, impl core::convert::Into<gpui::geometry::Pixels>) -> Self
 impl core::clone::Clone for yororen_ui_core::headless::icon::IconProps
 pub fn yororen_ui_core::headless::icon::IconProps::clone(&self) -> yororen_ui_core::headless::icon::IconProps

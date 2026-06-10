@@ -111,7 +111,7 @@ impl TextAreaProps {
         use crate::theme::ActiveTheme;
         use gpui::{
             CursorStyle, InteractiveElement, IntoElement, MouseButton, MouseDownEvent,
-            MouseMoveEvent, ParentElement, Stateful, StatefulInteractiveElement, Styled, div, px,
+            MouseMoveEvent, ParentElement, Stateful, StatefulInteractiveElement, Styled, div,
         };
         use std::sync::Arc;
 

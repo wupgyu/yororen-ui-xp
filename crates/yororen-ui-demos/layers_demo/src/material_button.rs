@@ -167,14 +167,16 @@ impl Element for RippleElement {
         window: &mut Window,
         cx: &mut App,
     ) -> (LayoutId, Self::RequestLayoutState) {
-        let mut style = Style::default();
-        style.position = Position::Absolute;
+        let style = Style {
+            position: Position::Absolute,
+            inset: Edges::all(ZERO_LENGTH),
+            ..Default::default()
+        };
         // `inset: 0` on all four sides pins the element to the
         // padding box of its nearest positioned ancestor (the
         // button), with implicit size = parent's content size.
         // We don't set `size` — that's the whole point of the
         // inset pattern.
-        style.inset = Edges::all(ZERO_LENGTH);
         (window.request_layout(style, [], cx), ())
     }
 
@@ -244,7 +246,7 @@ impl Element for RippleElement {
         }
 
         // Drop any ripples that have finished animating.
-        let _ = self.state.update(cx, |s, _cx| s.cleanup());
+        self.state.update(cx, |s, _cx| s.cleanup());
 
         paints
     }
@@ -335,7 +337,7 @@ pub fn material_button(
                         // `event.position` is in window coords.
                         // We store it as-is and let `prepaint`
                         // do the (trivial) window-space math.
-                        let _ = state.update(cx, |s, _cx| s.push(event.position));
+                        state.update(cx, |s, _cx| s.push(event.position));
                     }
                 })
                 .child(label)

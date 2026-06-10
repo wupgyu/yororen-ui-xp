@@ -126,7 +126,7 @@ impl KeybindingInputProps {
         use crate::headless::keybinding_input::KeybindingInputMode;
         use crate::headless::text_input::TextInputState;
         use crate::headless::text_input_element::{
-            TextInputElement, start_cursor_blink, wire_input_keyboard,
+            start_cursor_blink, wire_input_keyboard,
         };
         use crate::renderer::RendererContext;
         use crate::renderer::keybinding_input::{
@@ -190,18 +190,6 @@ impl KeybindingInputProps {
         } else {
             state.update(cx, |s, _cx| s.cursor_visible = true);
         }
-
-        let inner = TextInputElement {
-            state: state.clone(),
-            focus_handle: focus_handle.clone(),
-            disabled,
-            text_color: kbd_fg,
-            hint_color: theme.get_color("content.tertiary").unwrap_or_default(),
-            cursor_color: kbd_fg,
-            selection_color: kbd_fg,
-            placeholder: state.read(cx).placeholder.clone(),
-            value_override: None,
-        };
 
         let base: Stateful<gpui::Div> = div()
             .id(id.clone())

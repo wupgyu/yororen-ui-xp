@@ -1,6 +1,5 @@
 //! `LabelRenderer` — the visual side of `Label`.
 
-use std::any::Any;
 use std::sync::Arc;
 
 use gpui::{FontWeight, Hsla, SharedString};
@@ -44,15 +43,6 @@ impl LabelRenderer for TokenLabelRenderer {
 pub fn arc_label<T: LabelRenderer + 'static>(r: T) -> Arc<dyn LabelRenderer> {
     Arc::new(r)
 }
-
-// =====================================================================
-// `DefaultLabel` — `headless::LabelProps` sugar.
-// =====================================================================
-
-use gpui::{App, ParentElement, Stateful, Styled, div};
-use yororen_ui_core::headless::label::LabelProps;
-use yororen_ui_core::renderer::{RendererContext, markers};
-use yororen_ui_core::theme::ActiveTheme;
 
 #[cfg(test)]
 mod tests {

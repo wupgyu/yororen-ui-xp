@@ -1,6 +1,5 @@
 //! `NotificationRenderer` — visual side of the notification host.
 
-use std::any::Any;
 use std::sync::Arc;
 
 use gpui::{Hsla, Pixels};

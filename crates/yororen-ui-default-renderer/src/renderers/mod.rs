@@ -21,7 +21,6 @@ pub mod file_path_input;
 pub mod focus_ring;
 pub mod form;
 pub mod heading;
-pub mod icon;
 pub mod icon_button;
 pub mod keybinding_input;
 pub mod label;

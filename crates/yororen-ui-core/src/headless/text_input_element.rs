@@ -11,17 +11,16 @@
 use std::time::Duration;
 
 use gpui::{
-    App, Bounds, CursorStyle, Div, Element, ElementId, ElementInputHandler, FocusHandle,
-    GlobalElementId, Hsla, InteractiveElement, IntoElement, LayoutId, MouseButton, MouseDownEvent,
-    MouseMoveEvent, MouseUpEvent, PaintQuad, ParentElement, Pixels, ShapedLine, SharedString,
-    Stateful, StatefulInteractiveElement, Style, Styled, TextRun, Window, fill, hsla, point, px,
-    relative, size,
+    App, Bounds, Div, Element, ElementId, ElementInputHandler, FocusHandle, GlobalElementId, Hsla,
+    InteractiveElement, IntoElement, LayoutId, MouseButton, MouseDownEvent, MouseMoveEvent,
+    MouseUpEvent, PaintQuad, Pixels, ShapedLine, SharedString, Stateful, Style, TextRun, Window,
+    fill, hsla, point, px, relative, size,
 };
 
 use crate::action_handler;
 use crate::headless::text_input::{
-    Backspace, Copy, Cut, Delete, End, Enter, Escape, Home, Left, Paste, Right, SelectAll,
-    SelectLeft, SelectRight, ShowCharacterPalette, TextInputState,
+    Backspace, Copy, Cut, Delete, End, Enter, Home, Left, Paste, Right, SelectAll, SelectLeft,
+    SelectRight, ShowCharacterPalette, TextInputState,
 };
 
 /// How often the caret blinks while focused. 500ms matches the

@@ -1,14 +1,12 @@
 //! `ToggleButtonRenderer` — visual side of `ToggleButton`.
 
-use std::any::Any;
 use std::sync::Arc;
 
 use gpui::{Hsla, Pixels};
 
-use yororen_ui_core::renderer::variant::ActionVariantKind;
 use yororen_ui_core::theme::Theme;
 
-use yororen_ui_core::renderer::variant::{VariantState, VariantStyle};
+use yororen_ui_core::renderer::variant::VariantState;
 
 pub use yororen_ui_core::renderer::toggle_button::{ToggleButtonRenderState, ToggleButtonRenderer};
 
@@ -106,12 +104,3 @@ impl ToggleButtonRenderer for TokenToggleButtonRenderer {
 pub fn arc_toggle_button<T: ToggleButtonRenderer + 'static>(r: T) -> Arc<dyn ToggleButtonRenderer> {
     Arc::new(r)
 }
-
-// =====================================================================
-// `DefaultToggleButton` — `headless::ToggleButtonProps` sugar.
-// =====================================================================
-
-use gpui::{App, InteractiveElement, Stateful, StatefulInteractiveElement, Styled, div};
-use yororen_ui_core::headless::toggle_button::ToggleButtonProps;
-use yororen_ui_core::renderer::{RendererContext, markers};
-use yororen_ui_core::theme::ActiveTheme;

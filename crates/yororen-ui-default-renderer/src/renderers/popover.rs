@@ -1,6 +1,5 @@
 //! `PopoverRenderer` — visual side of `Popover`.
 
-use std::any::Any;
 use std::sync::Arc;
 
 use gpui::{Hsla, Pixels};

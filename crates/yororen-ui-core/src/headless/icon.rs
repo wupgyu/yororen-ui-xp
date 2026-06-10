@@ -49,7 +49,7 @@ impl IconProps {
     /// `source` resolves through the application's `AssetSource`
     /// (builtin names map to `icons/<name>.svg`; resources pass
     /// through).
-    pub fn render(self, cx: &mut gpui::App) -> gpui::AnyElement {
+    pub fn render(self) -> gpui::AnyElement {
         let path = match &self.source {
             IconSource::Builtin(name) => gpui::SharedString::from(format!("icons/{}.svg", name)),
             IconSource::Resource(path) => path.clone(),

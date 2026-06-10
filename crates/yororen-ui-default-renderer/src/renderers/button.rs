@@ -21,7 +21,6 @@ use std::sync::Arc;
 
 use gpui::{Hsla, Pixels};
 
-use yororen_ui_core::headless::button::Button as ButtonMarker;
 use yororen_ui_core::renderer::spec::{BorderSpec, Edges, ShadowSpec};
 use yororen_ui_core::renderer::variant::VariantState;
 use yororen_ui_core::theme::Theme;

@@ -1,6 +1,5 @@
 //! `ToastRenderer` — visual side of `Toast`.
 
-use std::any::Any;
 use std::sync::Arc;
 
 use gpui::{Hsla, Pixels};

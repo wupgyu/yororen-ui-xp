@@ -1,6 +1,5 @@
 //! `FocusRingRenderer` — the visual side of `FocusRing`.
 
-use std::any::Any;
 use std::sync::Arc;
 
 use gpui::{Hsla, Pixels};

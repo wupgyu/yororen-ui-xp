@@ -1,31 +1,20 @@
 //! `KeybindingInputRenderer` — visual side of `KeybindingInput`.
 //!
-//! v0.3 implementation: reuses `TextInputElement` (the inner
-//! painter). In `Idle` mode the wrapper has the standard
-//! `key_context("UITextInput")` + 14 on_action handlers and
-//! acts like a regular text input. In `Capturing` mode the
-//! wrapper does NOT register the IME handler (so typing doesn't
-//! insert text); instead, the next keystroke is captured as a
-//! keybinding combo string (e.g. "ctrl-shift-p") and written
-//! to the state value. Escape cancels capture.
+//! The text input / keymap / IME pipeline plus the Idle /
+//! Capturing mode layout live in
+//! `yororen-ui-core/src/headless/keybinding_input.rs` (and the
+//! shared helpers in `text_input_element.rs`). This module
+//! only provides the `TokenKeybindingInputRenderer` default
+//! impl.
 
-use std::any::Any;
 use std::sync::Arc;
 
-use gpui::{
-    AnyElement, App, CursorStyle, Div, Hsla, InteractiveElement, IntoElement, KeyDownEvent,
-    MouseButton, ParentElement, Pixels, Stateful, StatefulInteractiveElement, Styled, Window, div,
-    px,
-};
-use yororen_ui_core::headless::keybinding_input::{KeybindingInputMode, KeybindingInputProps};
-use yororen_ui_core::headless::text_input::TextInputState;
-use yororen_ui_core::renderer::{RendererContext, markers};
-use yororen_ui_core::theme::{ActiveTheme, Theme};
+use gpui::{Hsla, Pixels, px};
 
-use crate::renderers::text_input::{TextInputElement, start_cursor_blink, wire_input_keyboard};
-pub use yororen_ui_core::renderer::keybinding_input::{
+use yororen_ui_core::renderer::keybinding_input::{
     KeybindingInputRenderState, KeybindingInputRenderer,
 };
+use yororen_ui_core::theme::Theme;
 
 pub struct TokenKeybindingInputRenderer;
 

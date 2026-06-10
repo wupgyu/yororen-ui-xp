@@ -234,7 +234,7 @@ impl FilePathInputProps {
                 )
                 .size(icon_size)
                 .color(text_color)
-                .render(cx),
+                .render(),
             )
             .child(div().flex_1().min_w(px(0.)).child(inner))
             .child(
@@ -299,7 +299,7 @@ impl FilePathInputProps {
                         )
                         .size(icon_size)
                         .color(button_fg)
-                        .render(cx),
+                        .render(),
                     ),
             )
             .into_any_element()

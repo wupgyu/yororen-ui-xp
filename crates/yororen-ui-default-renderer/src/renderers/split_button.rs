@@ -1,6 +1,5 @@
 //! `SplitButtonRenderer` — visual side of `SplitButton`.
 
-use std::any::Any;
 use std::sync::Arc;
 
 use gpui::{Hsla, Pixels};

@@ -1,6 +1,5 @@
 //! `SwitchRenderer` — the visual side of `Switch`.
 
-use std::any::Any;
 use std::sync::Arc;
 
 use gpui::{Hsla, Pixels};
@@ -99,17 +98,6 @@ impl SwitchRenderer for TokenSwitchRenderer {
 pub fn arc_switch<T: SwitchRenderer + 'static>(r: T) -> Arc<dyn SwitchRenderer> {
     Arc::new(r)
 }
-
-// =====================================================================
-// `DefaultSwitch` — `headless::SwitchProps` sugar.
-// =====================================================================
-
-use gpui::{
-    App, InteractiveElement, ParentElement, Stateful, StatefulInteractiveElement, Styled, div,
-};
-use yororen_ui_core::headless::switch::SwitchProps;
-use yororen_ui_core::renderer::{RendererContext, markers};
-use yororen_ui_core::theme::ActiveTheme;
 
 #[cfg(test)]
 mod tests {

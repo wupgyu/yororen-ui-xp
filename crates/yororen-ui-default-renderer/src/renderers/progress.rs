@@ -1,6 +1,5 @@
 //! `ProgressBarRenderer` — the visual side of `ProgressBar`.
 
-use std::any::Any;
 use std::sync::Arc;
 
 use gpui::{Hsla, Pixels};

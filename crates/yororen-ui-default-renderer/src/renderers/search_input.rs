@@ -1,27 +1,18 @@
 //! `SearchInputRenderer` — visual side of `SearchInput`.
 //!
-//! v0.3 implementation: reuses `TextInputElement` (the inner
-//! painter) plus a search icon at the leading edge and a
-//! clear-button at the trailing edge. Escape key clears the
-//! value.
+//! The text input / keymap / IME pipeline plus the leading
+//! search icon and trailing clear button layout live in
+//! `yororen-ui-core/src/headless/search_input.rs` (and the
+//! shared helpers in `text_input_element.rs`). This module
+//! only provides the `TokenSearchInputRenderer` default impl.
 
-use std::any::Any;
 use std::sync::Arc;
 
-use gpui::prelude::FluentBuilder;
-use gpui::{
-    AnyElement, App, Div, Hsla, InteractiveElement, IntoElement, MouseButton, ParentElement,
-    Pixels, Stateful, StatefulInteractiveElement, Styled, Window, div, px,
-};
-use yororen_ui_core::headless::icon::{IconSource, icon};
-use yororen_ui_core::headless::search_input::SearchInputProps;
-use yororen_ui_core::headless::text_input::{Escape, TextInputState};
-use yororen_ui_core::renderer::{RendererContext, markers};
-use yororen_ui_core::theme::{ActiveTheme, Theme};
+use gpui::{Hsla, Pixels, px};
 
-use crate::renderers::text_input::{TextInputElement, start_cursor_blink, wire_input_keyboard};
-pub use yororen_ui_core::renderer::search_input::{SearchInputRenderState, SearchInputRenderer};
+use yororen_ui_core::renderer::search_input::{SearchInputRenderState, SearchInputRenderer};
 use yororen_ui_core::renderer::spec::Edges;
+use yororen_ui_core::theme::Theme;
 
 pub struct TokenSearchInputRenderer;
 

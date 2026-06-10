@@ -1,6 +1,5 @@
 //! `CheckboxRenderer` — the visual side of `Checkbox`.
 
-use std::any::Any;
 use std::sync::Arc;
 
 use gpui::{Hsla, Pixels};
@@ -82,17 +81,6 @@ impl CheckboxRenderer for TokenCheckboxRenderer {
 pub fn arc_checkbox<T: CheckboxRenderer + 'static>(r: T) -> Arc<dyn CheckboxRenderer> {
     Arc::new(r)
 }
-
-// =====================================================================
-// `DefaultCheckbox` — `headless::CheckboxProps` sugar.
-// =====================================================================
-
-use gpui::{
-    App, InteractiveElement, ParentElement, Stateful, StatefulInteractiveElement, Styled, div, px,
-};
-use yororen_ui_core::headless::checkbox::CheckboxProps;
-use yororen_ui_core::renderer::{RendererContext, markers};
-use yororen_ui_core::theme::ActiveTheme;
 
 #[cfg(test)]
 mod tests {

@@ -1,6 +1,5 @@
 //! `AvatarRenderer` — the visual side of `Avatar`.
 
-use std::any::Any;
 use std::sync::Arc;
 
 use gpui::{Hsla, Pixels};

@@ -1,26 +1,18 @@
 //! `NumberInputRenderer` — visual side of `NumberInput`.
 //!
-//! v0.3 implementation: reuses `TextInputElement` (the inner
-//! painter). The caller owns the canonical numeric value; the
-//! renderer's on_change fires with the parsed `f64` (or the
-//! current value if parsing fails). `-` / `+` stepper buttons
-//! at the trailing edge call `on_decrement` / `on_increment`.
+//! The text input / keymap / IME pipeline and the +/- stepper
+//! button layout live in
+//! `yororen-ui-core/src/headless/number_input.rs` (and the
+//! shared helpers in `text_input_element.rs`). This module
+//! only provides the `TokenNumberInputRenderer` default impl.
 
-use std::any::Any;
 use std::sync::Arc;
 
-use gpui::{
-    AnyElement, App, Div, Hsla, InteractiveElement, IntoElement, MouseButton, ParentElement,
-    Pixels, Stateful, StatefulInteractiveElement, Styled, Window, div, px,
-};
-use yororen_ui_core::headless::number_input::NumberInputProps;
-use yororen_ui_core::headless::text_input::TextInputState;
-use yororen_ui_core::renderer::{RendererContext, markers};
-use yororen_ui_core::theme::{ActiveTheme, Theme};
+use gpui::{Hsla, Pixels, px};
 
-use crate::renderers::text_input::{TextInputElement, start_cursor_blink, wire_input_keyboard};
-pub use yororen_ui_core::renderer::number_input::{NumberInputRenderState, NumberInputRenderer};
+use yororen_ui_core::renderer::number_input::{NumberInputRenderState, NumberInputRenderer};
 use yororen_ui_core::renderer::spec::Edges;
+use yororen_ui_core::theme::Theme;
 
 pub struct TokenNumberInputRenderer;
 

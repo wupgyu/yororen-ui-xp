@@ -1,12 +1,11 @@
 //! `PanelRenderer` — the visual side of `Panel`.
 //!
-//! The `Panel` component (defined here) supplies bg, border, radius,
-//! in `yororen_ui_core::component::panel`) is the visual "card"
-//! primitive that [`Modal`](crate::component::modal::Modal) and
-//! other dialog components compose. It carries a renderer trait
-//! that themes override via the `RendererRegistry`.
+//! The `Panel` component (defined in
+//! `yororen_ui_core::headless::panel`) is the visual "card"
+//! primitive that [`Modal`](yororen_ui_core::headless::modal::ModalProps)
+//! and other dialog components compose. It carries a renderer
+//! trait that themes override via the `RendererRegistry`.
 
-use std::any::Any;
 use std::sync::Arc;
 
 use gpui::{Hsla, Pixels};

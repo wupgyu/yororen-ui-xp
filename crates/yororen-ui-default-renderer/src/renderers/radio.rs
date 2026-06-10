@@ -1,6 +1,5 @@
 //! `RadioRenderer` — the visual side of `Radio`.
 
-use std::any::Any;
 use std::sync::Arc;
 
 use gpui::{Hsla, Pixels};
@@ -68,17 +67,6 @@ impl RadioRenderer for TokenRadioRenderer {
 pub fn arc_radio<T: RadioRenderer + 'static>(r: T) -> Arc<dyn RadioRenderer> {
     Arc::new(r)
 }
-
-// =====================================================================
-// `DefaultRadio` — `headless::RadioProps` sugar.
-// =====================================================================
-
-use gpui::{
-    App, InteractiveElement, ParentElement, Stateful, StatefulInteractiveElement, Styled, div,
-};
-use yororen_ui_core::headless::radio::RadioProps;
-use yororen_ui_core::renderer::{RendererContext, markers};
-use yororen_ui_core::theme::ActiveTheme;
 
 #[cfg(test)]
 mod tests {

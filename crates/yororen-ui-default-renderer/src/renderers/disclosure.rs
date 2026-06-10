@@ -1,6 +1,5 @@
 //! `DisclosureRenderer` — visual side of `Disclosure`.
 
-use std::any::Any;
 use std::sync::Arc;
 
 use gpui::{Hsla, Pixels};

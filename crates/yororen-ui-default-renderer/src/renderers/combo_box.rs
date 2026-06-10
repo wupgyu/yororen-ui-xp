@@ -1,6 +1,5 @@
 //! `ComboBoxRenderer` — visual side of `ComboBox`.
 
-use std::any::Any;
 use std::sync::Arc;
 
 use gpui::{Hsla, Pixels};

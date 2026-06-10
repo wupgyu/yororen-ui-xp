@@ -1,6 +1,5 @@
 //! `ModalRenderer` — visual side of `Modal`.
 
-use std::any::Any;
 use std::sync::Arc;
 
 use gpui::{Hsla, Pixels};

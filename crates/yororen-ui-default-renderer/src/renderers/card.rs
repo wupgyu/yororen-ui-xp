@@ -1,6 +1,5 @@
 //! `CardRenderer` — visual side of `Card`.
 
-use std::any::Any;
 use std::sync::Arc;
 
 use gpui::{Hsla, Pixels};

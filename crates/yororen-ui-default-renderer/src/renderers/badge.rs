@@ -1,6 +1,5 @@
 //! `BadgeRenderer` — the visual side of `Badge`.
 
-use std::any::Any;
 use std::sync::Arc;
 
 use gpui::{FontWeight, Hsla, Pixels};

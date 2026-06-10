@@ -25,8 +25,6 @@ impl LabelRenderer for BrutalLabelRenderer {
             theme
                 .get_color("content.secondary")
                 .unwrap_or(BRUTAL_BORDER)
-        } else if state.inherit_color {
-            theme.get_color("content.primary").unwrap_or(BRUTAL_BORDER)
         } else {
             theme.get_color("content.primary").unwrap_or(BRUTAL_BORDER)
         }

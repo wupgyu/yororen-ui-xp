@@ -1,6 +1,5 @@
 //! `TreeItemRenderer` — visual side of `TreeItem`.
 
-use std::any::Any;
 use std::sync::Arc;
 
 use gpui::{Hsla, Pixels};

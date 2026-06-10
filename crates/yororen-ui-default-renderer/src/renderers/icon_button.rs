@@ -1,6 +1,5 @@
 //! `IconButtonRenderer` — visual side of `IconButton`.
 
-use std::any::Any;
 use std::sync::Arc;
 
 use gpui::{Hsla, Pixels};
@@ -8,7 +7,7 @@ use gpui::{Hsla, Pixels};
 use yororen_ui_core::renderer::variant::ActionVariantKind;
 use yororen_ui_core::theme::Theme;
 
-use yororen_ui_core::renderer::variant::{VariantState, VariantStyle};
+use yororen_ui_core::renderer::variant::VariantState;
 
 pub use yororen_ui_core::renderer::icon_button::{IconButtonRenderState, IconButtonRenderer};
 
@@ -82,12 +81,3 @@ impl IconButtonRenderer for TokenIconButtonRenderer {
 pub fn arc_icon_button<T: IconButtonRenderer + 'static>(r: T) -> Arc<dyn IconButtonRenderer> {
     Arc::new(r)
 }
-
-// =====================================================================
-// `DefaultIconButton` — `headless::IconButtonProps` sugar.
-// =====================================================================
-
-use gpui::{App, InteractiveElement, Stateful, StatefulInteractiveElement, Styled, div};
-use yororen_ui_core::headless::icon_button::IconButtonProps;
-use yororen_ui_core::renderer::{RendererContext, markers};
-use yororen_ui_core::theme::ActiveTheme;

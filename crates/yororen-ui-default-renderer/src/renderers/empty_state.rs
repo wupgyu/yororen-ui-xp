@@ -1,6 +1,5 @@
 //! `EmptyStateRenderer` — visual side of `EmptyState`.
 
-use std::any::Any;
 use std::sync::Arc;
 
 use gpui::{Hsla, Pixels};

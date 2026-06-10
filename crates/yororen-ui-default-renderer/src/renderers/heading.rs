@@ -1,6 +1,5 @@
 //! `HeadingRenderer` — the visual side of `Heading`.
 
-use std::any::Any;
 use std::sync::Arc;
 
 use gpui::{FontWeight, Hsla, Pixels};
