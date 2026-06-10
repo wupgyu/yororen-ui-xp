@@ -29,6 +29,47 @@
     "edit": "تعديل",
     "loading": "جارٍ التحميل…"
   },
+  "button": {
+    "neutral": "محايد",
+    "primary": "رئيسي",
+    "danger": "خطر",
+    "disabled": "معطّل"
+  },
+  "toggle": {
+    "press_me": "اضغطني"
+  },
+  "input": {
+    "text": "إدخال نص",
+    "password": "إدخال كلمة مرور",
+    "number": "إدخال رقم",
+    "search": "إدخال بحث",
+    "file_path": "إدخال مسار ملف",
+    "keybinding": "إدخال ربط مفتاح",
+    "text_area": "منطقة نص",
+    "select": "قائمة منسدلة",
+    "combo": "مربع تركيبي"
+  },
+  "tooltip": {
+    "text": "تلميح — شرح موجز عن هذا العنصر."
+  },
+  "disclosure": {
+    "title": "إظهار التفاصيل",
+    "body": "المحتوى الموسّع. انقر على العنوان للطي."
+  },
+  "notification": {
+    "click_buttons": "انقر على زر \"Show toast\" أو \"Show notification\" في شريط الأدوات لعرضها هنا.",
+    "empty": "لا توجد إشعارات بعد."
+  },
+  "form": {
+    "email": "البريد الإلكتروني",
+    "email_placeholder": "you@example.com",
+    "click_submit": "انقر على النموذج لإرساله (لم يتم توصيل زر حقيقي هنا)."
+  },
+  "gallery": {
+    "footer": {
+      "live_counters": "عدادات الحالة المباشرة"
+    }
+  },
   "validation": {
     "required": "هذا الحقل مطلوب",
     "invalid_email": "عنوان البريد الإلكتروني غير صالح",
@@ -49,4 +90,3 @@
     "page": "الصفحة {page} من {total}"
   }
 }
-

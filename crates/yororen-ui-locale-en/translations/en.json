@@ -29,6 +29,47 @@
     "edit": "Edit",
     "loading": "Loading…"
   },
+  "button": {
+    "neutral": "Neutral",
+    "primary": "Primary",
+    "danger": "Danger",
+    "disabled": "Disabled"
+  },
+  "toggle": {
+    "press_me": "Press me"
+  },
+  "input": {
+    "text": "Text input",
+    "password": "Password input",
+    "number": "Number input",
+    "search": "Search input",
+    "file_path": "File path input",
+    "keybinding": "Keybinding input",
+    "text_area": "Text area",
+    "select": "Select",
+    "combo": "Combo box"
+  },
+  "tooltip": {
+    "text": "Tooltip — a brief hint about this element."
+  },
+  "disclosure": {
+    "title": "Show details",
+    "body": "Disclosed content. Click the title to collapse."
+  },
+  "notification": {
+    "click_buttons": "Click the toolbar's \"Show toast\" or \"Show notification\" to see them appear here.",
+    "empty": "No notifications yet."
+  },
+  "form": {
+    "email": "Email",
+    "email_placeholder": "you@example.com",
+    "click_submit": "Click the form to submit (no real button wired here)."
+  },
+  "gallery": {
+    "footer": {
+      "live_counters": "Live state counters"
+    }
+  },
   "validation": {
     "required": "This field is required",
     "invalid_email": "Invalid email address",
