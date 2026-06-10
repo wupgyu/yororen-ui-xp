@@ -8,6 +8,7 @@
 use gpui::{Context, Div, ParentElement, Styled, div, px};
 
 use yororen_ui::ActionVariantKind;
+use yororen_ui::ActiveTheme;
 use yororen_ui::headless::button::button;
 use yororen_ui::headless::button_group::button_group;
 use yororen_ui::headless::icon::icon;
@@ -35,14 +36,25 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
         .child(cell("button / Disabled", button("btn-disabled", cx).disabled(true).on_click(|_, _, _| {}).render(cx).child("Disabled"), cx));
 
     // --- icon_button with a builtin "check" SVG ---
+    //     The icon colour is read from the active theme's
+    //     `action.<variant>.fg` so it stays readable on both
+    //     Neutral (light bg) and Primary (dark bg).
+    let check_color = cx
+        .theme()
+        .get_color("action.neutral.fg")
+        .unwrap_or(gpui::rgb(0x141416).into());
+    let primary_color = cx
+        .theme()
+        .get_color("action.primary.fg")
+        .unwrap_or(gpui::rgb(0xFFFFFF).into());
     let row_icon_button = div()
         .flex()
         .flex_row()
         .flex_wrap()
         .items_center()
         .gap(px(12.))
-        .child(cell("icon_button (check)", icon_button("icon-btn-check", cx).on_click(|_, _, _| {}).render(cx).child(icon("icon-check-inside", yororen_ui::headless::icon::IconSource::Builtin("check".into()), cx).size(px(16.)).color(gpui::rgb(0xFFFFFF)).render()), cx))
-        .child(cell("icon_button / Primary (circle)", icon_button("icon-btn-circle", cx).variant(ActionVariantKind::Primary).on_click(|_, _, _| {}).render(cx).child(icon("icon-circle-inside", yororen_ui::headless::icon::IconSource::Builtin("circle".into()), cx).size(px(16.)).color(gpui::rgb(0xFFFFFF)).render()), cx));
+        .child(cell("icon_button (check)", icon_button("icon-btn-check", cx).on_click(|_, _, _| {}).render(cx).child(icon("icon-check-inside", yororen_ui::headless::icon::IconSource::Builtin("check".into()), cx).size(px(16.)).color(check_color).render()), cx))
+        .child(cell("icon_button / Primary (circle)", icon_button("icon-btn-circle", cx).variant(ActionVariantKind::Primary).on_click(|_, _, _| {}).render(cx).child(icon("icon-circle-inside", yororen_ui::headless::icon::IconSource::Builtin("circle".into()), cx).size(px(16.)).color(primary_color).render()), cx));
 
     // --- toggle_button ---
     let entity_for_tb = entity.clone();
