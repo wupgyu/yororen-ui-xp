@@ -57,11 +57,11 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
         .flex_wrap()
         .items_center()
         .gap(px(8.))
-        .child(cell("badge / Neutral", badge("bd-n", "Neutral", cx).variant(BadgeVariant::Neutral).apply(div().px(px(8.)).py(px(2.)).rounded(px(4.))), cx))
-        .child(cell("badge / Success", badge("bd-s", "Success", cx).variant(BadgeVariant::Success).apply(div().px(px(8.)).py(px(2.)).rounded(px(4.))), cx))
-        .child(cell("badge / Warning", badge("bd-w", "Warning", cx).variant(BadgeVariant::Warning).apply(div().px(px(8.)).py(px(2.)).rounded(px(4.))), cx))
-        .child(cell("badge / Danger", badge("bd-d", "Danger", cx).variant(BadgeVariant::Danger).apply(div().px(px(8.)).py(px(2.)).rounded(px(4.))), cx))
-        .child(cell("badge / Info", badge("bd-i", "Info", cx).variant(BadgeVariant::Info).apply(div().px(px(8.)).py(px(2.)).rounded(px(4.))), cx));
+        .child(cell("badge / Neutral", badge("bd-n", "Neutral", cx).variant(BadgeVariant::Neutral).render(cx), cx))
+        .child(cell("badge / Success", badge("bd-s", "Success", cx).variant(BadgeVariant::Success).render(cx), cx))
+        .child(cell("badge / Warning", badge("bd-w", "Warning", cx).variant(BadgeVariant::Warning).render(cx), cx))
+        .child(cell("badge / Danger", badge("bd-d", "Danger", cx).variant(BadgeVariant::Danger).render(cx), cx))
+        .child(cell("badge / Info", badge("bd-i", "Info", cx).variant(BadgeVariant::Info).render(cx), cx));
 
     // --- tag: selected + closable ---
     let entity_for_tag_click = cx.entity().clone();
@@ -82,7 +82,7 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
                         s.tag_selected = !s.tag_selected;
                     });
                 })
-                .apply(div().px(px(8.)).py(px(2.)).rounded(px(4.))),
+                .render(cx),
             cx,
         ))
         .child(cell(
@@ -94,7 +94,7 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
                         s.tag_closable_count += 1;
                     });
                 })
-                .apply(div().px(px(8.)).py(px(2.)).rounded(px(4.))),
+                .render(cx),
             cx,
         ))
         .child(
@@ -112,17 +112,17 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
         .flex()
         .flex_col()
         .gap(px(8.))
-        .child(cell("skeleton / line", skeleton("sk-line", cx).apply(div().w(px(180.)).h(px(12.)).rounded(px(4.))), cx))
-        .child(cell("skeleton / block", skeleton("sk-block", cx).block(true).apply(div().w(px(180.)).h(px(60.)).rounded(px(4.))), cx))
-        .child(cell("skeleton / block sharp", skeleton("sk-block-sharp", cx).block(true).block_sharp(true).apply(div().w(px(180.)).h(px(40.))), cx));
+        .child(cell("skeleton / line", skeleton("sk-line", cx).render(cx).w(px(180.)).h(px(12.)), cx))
+        .child(cell("skeleton / block", skeleton("sk-block", cx).block(true).render(cx).w(px(180.)).h(px(60.)), cx))
+        .child(cell("skeleton / block sharp", skeleton("sk-block-sharp", cx).block(true).block_sharp(true).render(cx).w(px(180.)).h(px(40.)), cx));
 
     // --- progress ---
     let progress_row = div()
         .flex()
         .flex_col()
         .gap(px(8.))
-        .child(cell("progress (determinate)", progress("prg-1", cx).value(app.progress_value).max(1.0).label("Loading…").apply(div().w(px(220.)).h(px(8.)).rounded(px(4.))), cx))
-        .child(cell("progress (indeterminate)", progress("prg-indet", cx).indeterminate(true).apply(div().w(px(220.)).h(px(8.)).rounded(px(4.))), cx));
+        .child(cell("progress (determinate)", progress("prg-1", cx).value(app.progress_value).max(1.0).label("Loading…").render(cx), cx))
+        .child(cell("progress (indeterminate)", progress("prg-indet", cx).indeterminate(true).render(cx), cx));
 
     // --- text + icon ---
     let text_row = div()

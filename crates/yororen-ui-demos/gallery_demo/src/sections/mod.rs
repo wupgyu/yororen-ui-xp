@@ -32,6 +32,7 @@ pub fn cell(
     div()
         .flex()
         .flex_col()
+        .items_start()
         .gap(px(2.))
         .p(px(8.))
         .rounded(px(6.))

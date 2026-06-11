@@ -48,10 +48,12 @@
     }
   },
   "status": {
-    "success": { "bg": "#B9F5C9", "fg": "#0B0B0D" },
-    "warning": { "bg": "#FFE1A6", "fg": "#0B0B0D" },
-    "error":   { "bg": "#FFB4AE", "fg": "#0B0B0D" },
-    "info":    { "bg": "#B6D9FF", "fg": "#0B0B0D" }
+    "neutral":  { "bg": "#E7E7EA", "fg": "#0B0B0D" },
+    "success":  { "bg": "#B9F5C9", "fg": "#0B0B0D" },
+    "warning":  { "bg": "#FFE1A6", "fg": "#0B0B0D" },
+    "danger":   { "bg": "#FFB4AE", "fg": "#0B0B0D" },
+    "error":    { "bg": "#FFB4AE", "fg": "#0B0B0D" },
+    "info":     { "bg": "#B6D9FF", "fg": "#0B0B0D" }
   },
   "shadow": {
     "elevation_1": "rgba(0,0,0,0.18)",

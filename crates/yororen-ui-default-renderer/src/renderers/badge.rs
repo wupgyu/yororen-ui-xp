@@ -94,6 +94,7 @@ impl BadgeRenderer for TokenBadgeRenderer {
         div()
             .flex()
             .items_center()
+            .justify_center()
             .bg(bg)
             .text_color(fg)
             .px(px_v)
