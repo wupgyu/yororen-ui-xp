@@ -1,6 +1,6 @@
 //! Headless `text` — a typed text span. No state.
 
-use gpui::{Div, ElementId, InteractiveElement, SharedString, Stateful};
+use gpui::{Div, ElementId, InteractiveElement, ParentElement, SharedString, Stateful, Styled};
 
 #[derive(Clone, Debug)]
 pub struct TextProps {
@@ -28,5 +28,18 @@ impl TextProps {
     }
     pub fn apply(self, el: Div) -> Stateful<Div> {
         el.id(self.id)
+    }
+
+    /// Render the text span as a `Stateful<Div>` with the element
+    /// id, the text as a child, and the optional `size` applied.
+    /// Use this when you don't need to layer additional styles on
+    /// top of the renderer output — the same shape as
+    /// `IconProps::render` / `BadgeProps::render`.
+    pub fn render(self) -> Stateful<Div> {
+        let mut el = gpui::div().id(self.id).child(self.text.clone());
+        if let Some(size) = self.size {
+            el = el.text_size(size);
+        }
+        el
     }
 }

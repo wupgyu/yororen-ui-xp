@@ -3316,6 +3316,7 @@ pub yororen_ui_core::headless::text::TextProps::size: core::option::Option<gpui:
 pub yororen_ui_core::headless::text::TextProps::text: gpui::shared_string::SharedString
 impl yororen_ui_core::headless::text::TextProps
 pub fn yororen_ui_core::headless::text::TextProps::apply(self, gpui::elements::div::Div) -> gpui::elements::div::Stateful<gpui::elements::div::Div>
+pub fn yororen_ui_core::headless::text::TextProps::render(self) -> gpui::elements::div::Stateful<gpui::elements::div::Div>
 pub fn yororen_ui_core::headless::text::TextProps::size(self, impl core::convert::Into<gpui::geometry::Pixels>) -> Self
 impl core::clone::Clone for yororen_ui_core::headless::text::TextProps
 pub fn yororen_ui_core::headless::text::TextProps::clone(&self) -> yororen_ui_core::headless::text::TextProps
