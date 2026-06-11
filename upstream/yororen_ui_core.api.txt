@@ -1441,29 +1441,34 @@ pub struct yororen_ui_core::headless::form::FormProps
 pub yororen_ui_core::headless::form::FormProps::errors: std::collections::hash::map::HashMap<gpui::shared_string::SharedString, alloc::string::String>
 pub yororen_ui_core::headless::form::FormProps::id: gpui::window::ElementId
 pub yororen_ui_core::headless::form::FormProps::on_submit: core::option::Option<yororen_ui_core::headless::form::FormSubmitCallback>
+pub yororen_ui_core::headless::form::FormProps::submit_label: core::option::Option<gpui::shared_string::SharedString>
 pub yororen_ui_core::headless::form::FormProps::values: std::collections::hash::map::HashMap<gpui::shared_string::SharedString, alloc::string::String>
 impl yororen_ui_core::headless::form::FormProps
 pub fn yororen_ui_core::headless::form::FormProps::apply(self, gpui::elements::div::Div) -> gpui::elements::div::Stateful<gpui::elements::div::Div>
 pub fn yororen_ui_core::headless::form::FormProps::error(self, impl core::convert::Into<gpui::shared_string::SharedString>, impl core::convert::Into<alloc::string::String>) -> Self
 pub fn yororen_ui_core::headless::form::FormProps::on_submit<F>(self, F) -> Self where F: 'static + core::marker::Send + core::marker::Sync + core::ops::function::Fn(std::collections::hash::map::HashMap<gpui::shared_string::SharedString, alloc::string::String>, &mut gpui::window::Window, &mut gpui::app::App)
 pub fn yororen_ui_core::headless::form::FormProps::render(self, &gpui::app::App) -> gpui::elements::div::Stateful<gpui::elements::div::Div>
+pub fn yororen_ui_core::headless::form::FormProps::submit(self, impl core::convert::Into<gpui::shared_string::SharedString>) -> Self
+pub fn yororen_ui_core::headless::form::FormProps::submit_button(&self, &mut gpui::app::App) -> core::option::Option<gpui::element::AnyElement>
+pub fn yororen_ui_core::headless::form::FormProps::trigger_submit(&self, &mut gpui::window::Window, &mut gpui::app::App)
 pub fn yororen_ui_core::headless::form::FormProps::value(self, impl core::convert::Into<gpui::shared_string::SharedString>, impl core::convert::Into<alloc::string::String>) -> Self
 impl core::clone::Clone for yororen_ui_core::headless::form::FormProps
 pub fn yororen_ui_core::headless::form::FormProps::clone(&self) -> yororen_ui_core::headless::form::FormProps
 impl core::marker::Freeze for yororen_ui_core::headless::form::FormProps
-impl !core::marker::Send for yororen_ui_core::headless::form::FormProps
-impl !core::marker::Sync for yororen_ui_core::headless::form::FormProps
+impl core::marker::Send for yororen_ui_core::headless::form::FormProps
+impl core::marker::Sync for yororen_ui_core::headless::form::FormProps
 impl core::marker::Unpin for yororen_ui_core::headless::form::FormProps
 impl core::marker::UnsafeUnpin for yororen_ui_core::headless::form::FormProps
 impl !core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::headless::form::FormProps
 impl !core::panic::unwind_safe::UnwindSafe for yororen_ui_core::headless::form::FormProps
 pub fn yororen_ui_core::headless::form::form(impl core::convert::Into<gpui::window::ElementId>, &mut gpui::app::App) -> yororen_ui_core::headless::form::FormProps
-pub type yororen_ui_core::headless::form::FormSubmitCallback = alloc::sync::Arc<dyn core::ops::function::Fn(std::collections::hash::map::HashMap<gpui::shared_string::SharedString, alloc::string::String>, &mut gpui::window::Window, &mut gpui::app::App)>
+pub type yororen_ui_core::headless::form::FormSubmitCallback = alloc::sync::Arc<(dyn core::ops::function::Fn(std::collections::hash::map::HashMap<gpui::shared_string::SharedString, alloc::string::String>, &mut gpui::window::Window, &mut gpui::app::App) + core::marker::Send + core::marker::Sync)>
 pub mod yororen_ui_core::headless::form_field
 pub struct yororen_ui_core::headless::form_field::FormFieldProps
 pub yororen_ui_core::headless::form_field::FormFieldProps::error: core::option::Option<gpui::shared_string::SharedString>
 pub yororen_ui_core::headless::form_field::FormFieldProps::help: core::option::Option<gpui::shared_string::SharedString>
 pub yororen_ui_core::headless::form_field::FormFieldProps::id: gpui::window::ElementId
+pub yororen_ui_core::headless::form_field::FormFieldProps::input: core::option::Option<gpui::element::AnyElement>
 pub yororen_ui_core::headless::form_field::FormFieldProps::label: core::option::Option<gpui::shared_string::SharedString>
 pub yororen_ui_core::headless::form_field::FormFieldProps::name: gpui::shared_string::SharedString
 pub yororen_ui_core::headless::form_field::FormFieldProps::required: bool
@@ -1471,20 +1476,19 @@ impl yororen_ui_core::headless::form_field::FormFieldProps
 pub fn yororen_ui_core::headless::form_field::FormFieldProps::apply(self, gpui::elements::div::Div) -> gpui::elements::div::Stateful<gpui::elements::div::Div>
 pub fn yororen_ui_core::headless::form_field::FormFieldProps::error(self, impl core::convert::Into<gpui::shared_string::SharedString>) -> Self
 pub fn yororen_ui_core::headless::form_field::FormFieldProps::help(self, impl core::convert::Into<gpui::shared_string::SharedString>) -> Self
+pub fn yororen_ui_core::headless::form_field::FormFieldProps::input(self, impl gpui::element::IntoElement) -> Self
 pub fn yororen_ui_core::headless::form_field::FormFieldProps::label(self, impl core::convert::Into<gpui::shared_string::SharedString>) -> Self
 pub fn yororen_ui_core::headless::form_field::FormFieldProps::render(self, &gpui::app::App) -> gpui::elements::div::Stateful<gpui::elements::div::Div>
 pub fn yororen_ui_core::headless::form_field::FormFieldProps::required(self, bool) -> Self
-impl core::clone::Clone for yororen_ui_core::headless::form_field::FormFieldProps
-pub fn yororen_ui_core::headless::form_field::FormFieldProps::clone(&self) -> yororen_ui_core::headless::form_field::FormFieldProps
 impl core::fmt::Debug for yororen_ui_core::headless::form_field::FormFieldProps
 pub fn yororen_ui_core::headless::form_field::FormFieldProps::fmt(&self, &mut core::fmt::Formatter<'_>) -> core::fmt::Result
 impl core::marker::Freeze for yororen_ui_core::headless::form_field::FormFieldProps
-impl core::marker::Send for yororen_ui_core::headless::form_field::FormFieldProps
-impl core::marker::Sync for yororen_ui_core::headless::form_field::FormFieldProps
+impl !core::marker::Send for yororen_ui_core::headless::form_field::FormFieldProps
+impl !core::marker::Sync for yororen_ui_core::headless::form_field::FormFieldProps
 impl core::marker::Unpin for yororen_ui_core::headless::form_field::FormFieldProps
 impl core::marker::UnsafeUnpin for yororen_ui_core::headless::form_field::FormFieldProps
-impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::headless::form_field::FormFieldProps
-impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::headless::form_field::FormFieldProps
+impl !core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::headless::form_field::FormFieldProps
+impl !core::panic::unwind_safe::UnwindSafe for yororen_ui_core::headless::form_field::FormFieldProps
 pub fn yororen_ui_core::headless::form_field::form_field(impl core::convert::Into<gpui::window::ElementId>, impl core::convert::Into<gpui::shared_string::SharedString>, &mut gpui::app::App) -> yororen_ui_core::headless::form_field::FormFieldProps
 pub mod yororen_ui_core::headless::heading
 pub enum yororen_ui_core::headless::heading::HeadingLevel
@@ -6445,7 +6449,7 @@ impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::form_field::FormFi
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::form_field::FormFieldRenderState
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::form_field::FormFieldRenderState
 pub trait yororen_ui_core::renderer::form_field::FormFieldRenderer: core::any::Any + core::marker::Send + core::marker::Sync
-pub fn yororen_ui_core::renderer::form_field::FormFieldRenderer::compose(&self, &yororen_ui_core::headless::form_field::FormFieldProps, &gpui::app::App) -> gpui::elements::div::Stateful<gpui::elements::div::Div>
+pub fn yororen_ui_core::renderer::form_field::FormFieldRenderer::compose(&self, &mut yororen_ui_core::headless::form_field::FormFieldProps, &gpui::app::App) -> gpui::elements::div::Stateful<gpui::elements::div::Div>
 pub mod yororen_ui_core::renderer::heading
 pub struct yororen_ui_core::renderer::heading::HeadingRenderState
 pub yororen_ui_core::renderer::heading::HeadingRenderState::level: yororen_ui_core::headless::heading::HeadingLevel

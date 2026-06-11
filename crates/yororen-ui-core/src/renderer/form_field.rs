@@ -1,8 +1,9 @@
 //! `FormFieldRenderer` — visual contract for `FormField`.
 //!
 //! Trait surface is just `compose`. The renderer lays out the
-//! label, required indicator, help text, error text, and the
-//! caller-supplied input child.
+//! label, required indicator, the caller-supplied input element
+//! (taken out of `props.input`), and the help / error text — in
+//! that vertical order.
 
 use std::any::Any;
 
@@ -17,7 +18,8 @@ pub struct FormFieldRenderState {
 }
 
 pub trait FormFieldRenderer: Any + Send + Sync {
-    /// Build the full `Stateful<Div>` for the form field. The input
-    /// element is added by the caller as a child after `.render(cx)`.
-    fn compose(&self, props: &FormFieldProps, cx: &App) -> Stateful<Div>;
+    /// Build the full `Stateful<Div>` for the form field. Takes
+    /// `&mut props` so the renderer can move the caller-supplied
+    /// input element (`props.input`, an `AnyElement`) into place.
+    fn compose(&self, props: &mut FormFieldProps, cx: &App) -> Stateful<Div>;
 }

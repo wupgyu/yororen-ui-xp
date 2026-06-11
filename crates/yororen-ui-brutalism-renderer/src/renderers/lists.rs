@@ -1,6 +1,6 @@
 //! Brutalist list renderers: `ListItem`, `TreeItem`, `Form`.
 
-use gpui::{App, Div, Hsla, ParentElement, Pixels, Styled, px};
+use gpui::{App, Div, ElementId, Hsla, InteractiveElement, IntoElement, ParentElement, Pixels, SharedString, StatefulInteractiveElement, Styled, Stateful, prelude::FluentBuilder, px};
 use yororen_ui_core::renderer::spec::Edges;
 use yororen_ui_core::theme::Theme;
 
@@ -81,7 +81,8 @@ impl ListItemRenderer for BrutalListItemRenderer {
             .items_center()
             .bg(bg)
             .text_color(fg)
-            .p(pad.top)
+            .px(pad.left)
+            .py(pad.top)
             .min_h(h)
             .rounded(r)
             .child(props.title.to_string())
@@ -165,14 +166,50 @@ impl TreeItemRenderer for BrutalTreeItemRenderer {
         let pad = self.padding(&state, theme);
         let h = self.min_height(&state, theme);
         let indent = self.indent(&state, theme);
+        let chevron_size = self.chevron_size(&state, theme);
+        let gap = px(theme.get_number("tokens.spacing.gap_1").unwrap_or(4.0) as f32);
+
+        let chevron_slot = if props.has_children {
+            let glyph: SharedString = if props.expanded { "▼".into() } else { "▶".into() };
+            let chevron_id: ElementId =
+                format!("{:?}-chevron", props.id).into();
+            let toggle_cb = props.on_toggle.clone();
+            let disabled = props.disabled;
+            gpui::div()
+                .id(chevron_id)
+                .w(chevron_size)
+                .h(chevron_size)
+                .flex()
+                .items_center()
+                .justify_center()
+                .text_color(fg)
+                .when(!disabled, |s: Stateful<Div>| s.cursor_pointer())
+                .occlude()
+                .child(glyph)
+                .on_click(move |ev, window, cx| {
+                    if disabled {
+                        return;
+                    }
+                    if let Some(cb) = toggle_cb.as_ref() {
+                        cb(ev, window, cx);
+                    }
+                })
+                .into_any_element()
+        } else {
+            gpui::div().w(chevron_size).h(chevron_size).into_any_element()
+        };
+
         gpui::div()
             .flex()
             .items_center()
+            .gap(gap)
             .bg(bg)
             .text_color(fg)
             .pl(indent + pad.left)
             .pr(pad.right)
+            .py(pad.top)
             .min_h(h)
+            .child(chevron_slot)
             .child(props.label.clone())
     }
 }

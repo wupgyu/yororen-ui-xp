@@ -137,7 +137,7 @@ pub fn overlays(
 
 pub fn lists(
     app: &mut GalleryApp,
-    _window: &mut Window,
+    window: &mut Window,
     cx: &mut Context<GalleryApp>,
 ) -> impl IntoElement {
     div()
@@ -145,5 +145,5 @@ pub fn lists(
         .flex_col()
         .gap(px(12.))
         .child(section_title("lists-title", "7. Lists, Tables, Trees, Forms", cx))
-        .child(lists::render(app, cx))
+        .child(lists::render(app, window, cx))
 }

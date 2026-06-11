@@ -1,8 +1,4 @@
 //! `TokenFormFieldRenderer` — default `FormFieldRenderer` impl.
-//!
-//! Stacks label (with required indicator), the caller-supplied input
-//! child, helper text, and error text vertically with theme-derived
-//! gaps and colours.
 
 use std::sync::Arc;
 
@@ -34,7 +30,7 @@ impl TokenFormFieldRenderer {
 }
 
 impl FormFieldRenderer for TokenFormFieldRenderer {
-    fn compose(&self, props: &FormFieldProps, cx: &App) -> Stateful<Div> {
+    fn compose(&self, props: &mut FormFieldProps, cx: &App) -> Stateful<Div> {
         let theme = cx.theme();
         let state = FormFieldRenderState {
             has_error: props.error.is_some(),
@@ -52,12 +48,13 @@ impl FormFieldRenderer for TokenFormFieldRenderer {
             .flex_col()
             .gap(gap);
 
-        // Label row
+        // 1. Label row (with required indicator).
         if let Some(label) = &props.label {
-            let mut label_text = SharedString::from(label.clone());
-            if props.required {
-                label_text = SharedString::from(format!("{} *", label));
-            }
+            let label_text: SharedString = if props.required {
+                SharedString::from(format!("{} *", label))
+            } else {
+                SharedString::from(label.clone())
+            };
             wrapper = wrapper.child(
                 div()
                     .text_size(font_size)
@@ -66,9 +63,12 @@ impl FormFieldRenderer for TokenFormFieldRenderer {
             );
         }
 
-        // Input child will be appended by caller after .render(cx)
+        // 2. Input — taken out of the props so the renderer owns it.
+        if let Some(input) = props.input.take() {
+            wrapper = wrapper.child(input);
+        }
 
-        // Error text
+        // 3. Error text (above help text — errors are more urgent).
         if let Some(error) = &props.error {
             wrapper = wrapper.child(
                 div()
@@ -78,7 +78,7 @@ impl FormFieldRenderer for TokenFormFieldRenderer {
             );
         }
 
-        // Help text
+        // 4. Help text.
         if let Some(help) = &props.help {
             wrapper = wrapper.child(
                 div()

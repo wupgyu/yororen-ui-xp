@@ -33,9 +33,16 @@ impl TokenListItemRenderer {
         }
     }
     pub fn padding(&self, _state: &ListItemRenderState, theme: &Theme) -> Edges<Pixels> {
+        // Horizontal uses the list_item-specific token (default 12);
+        // vertical falls back to the small inset (default 4).
         Edges::symmetric(
-            gpui::px(theme.get_number("tokens.spacing.inset_sm").unwrap_or(0.0) as f32),
-            gpui::px(theme.get_number("tokens.spacing.inset_xs").unwrap_or(0.0) as f32),
+            gpui::px(
+                theme
+                    .get_number("tokens.control.list_item.horizontal_padding")
+                    .unwrap_or_else(|| theme.get_number("tokens.spacing.inset_sm").unwrap_or(8.0))
+                    as f32,
+            ),
+            gpui::px(theme.get_number("tokens.spacing.inset_xs").unwrap_or(4.0) as f32),
         )
     }
     pub fn min_height(&self, _state: &ListItemRenderState, theme: &Theme) -> Pixels {
@@ -73,7 +80,8 @@ impl ListItemRenderer for TokenListItemRenderer {
             .items_center()
             .bg(bg)
             .text_color(fg)
-            .p(pad.top)
+            .px(pad.left)
+            .py(pad.top)
             .min_h(h)
             .rounded(r)
             .child(props.title.to_string())

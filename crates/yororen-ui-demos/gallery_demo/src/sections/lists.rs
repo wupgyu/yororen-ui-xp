@@ -4,7 +4,7 @@
 
 use std::collections::BTreeSet;
 
-use gpui::{Context, Div, ParentElement, Styled, div, px};
+use gpui::{Context, Div, ParentElement, Styled, Window, div, px};
 
 use yororen_ui::headless::form::form;
 use yororen_ui::headless::form_field::form_field;
@@ -14,6 +14,7 @@ use yororen_ui::headless::radio_group::radio_group;
 use yororen_ui::headless::spacer::spacer;
 use yororen_ui::headless::table::TableColumn;
 use yororen_ui::headless::table::table;
+use yororen_ui::headless::text_input::text_input;
 use yororen_ui::headless::tree::TreeData;
 use yororen_ui::headless::tree::node_id;
 use yororen_ui::headless::tree::tree;
@@ -30,7 +31,7 @@ const LIST_ITEMS: &[(&str, &str)] = &[
     ("li-3", "Third item"),
 ];
 
-pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
+pub fn render(app: &mut GalleryApp, window: &mut Window, cx: &mut Context<GalleryApp>) -> Div {
     // --- list_item: 3 selectable rows ---
     let mut list_col = div().flex().flex_col().gap(px(4.)).w(px(220.));
     for (i, (id, title)) in LIST_ITEMS.iter().enumerate() {
@@ -42,9 +43,23 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
     }
     let list_wrapped = cell("list_item (3 rows; selected via props)", list_col, cx);
 
-    // --- form + form_field ---
+    // --- form + form_field (with a real text_input + submit button) ---
     let entity_form = cx.entity().clone();
-    let form_el = form("lists-form", cx)
+    let entity_text = cx.entity().clone();
+    let email_input_el = text_input("lists-ff-email-input")
+        .placeholder(cx.t("form.email_placeholder"))
+        .on_change(move |new: &str, _w, cx| {
+            entity_text.update(cx, |s, _cx| s.form_email_value = new.to_string());
+        })
+        .render(&mut **cx, window);
+
+    let form_field_el = form_field("lists-ff-email", "email", cx)
+        .label(cx.t("form.email"))
+        .required(true)
+        .input(email_input_el)
+        .render(cx);
+
+    let form_props = form("lists-form", cx)
         .value("email", app.form_email_value.clone())
         .on_submit(move |vals, _w, cx| {
             entity_form.update(cx, |s, _cx| {
@@ -59,41 +74,25 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
                 }
             });
         })
+        .submit("Submit");
+
+    let submit_btn_el = form_props
+        .submit_button(&mut **cx)
+        .expect("submit_label was set");
+
+    let form_el = form_props
         .render(cx)
         .w(px(300.))
+        .child(form_field_el)
+        .child(submit_btn_el)
         .child(
-            form_field("lists-ff-email", "email", cx)
-                .label(cx.t("form.email"))
-                .required(true)
-                .render(cx)
-                .child(
-                    div()
-                        .p(px(6.))
-                        .border_1()
-                        .rounded(px(4.))
-                        .child(
-                            label(
-                                "form-email-display",
-                                if app.form_email_value.is_empty() {
-                                    cx.t("form.email_placeholder").to_string()
-                                } else {
-                                    app.form_email_value.clone()
-                                },
-                                cx,
-                            )
-                            .muted(app.form_email_value.is_empty())
-                            .render(cx),
-                        ),
-                ),
-        )
-        .child(
-            div()
-                .flex()
-                .flex_row()
-                .gap(px(8.))
-                .items_center()
-                .child(label("form-submit-count", format!("submitted: {}", app.form_submit_count), cx).muted(true).render(cx))
-                .child(label("form-submit-hint", cx.t("form.click_submit"), cx).muted(true).render(cx)),
+            label(
+                "form-submit-count",
+                format!("submitted: {} | last error: {:?}", app.form_submit_count, app.form_email_error),
+                cx,
+            )
+            .muted(true)
+            .render(cx),
         );
     let form_wrapped = cell("form + form_field (email validation)", form_el, cx);
 
