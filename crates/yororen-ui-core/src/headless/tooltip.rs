@@ -3,8 +3,8 @@
 use std::sync::Arc;
 
 use gpui::{
-    App, AppContext, Bounds, Div, ElementId, Entity, InteractiveElement, Pixels, Size, Stateful,
-    Window,
+    App, AppContext, AnyElement, Bounds, Div, ElementId, Entity, InteractiveElement, Pixels, Size,
+    Stateful, Window,
 };
 
 pub type TooltipCloseCallback = Arc<dyn Fn(&mut Window, &mut App) + Send + Sync>;
@@ -68,7 +68,6 @@ impl TooltipState {
     }
 }
 
-#[derive(Clone)]
 pub struct TooltipProps {
     pub id: ElementId,
     pub state: Entity<TooltipState>,
@@ -79,6 +78,10 @@ pub struct TooltipProps {
     /// `true` if the caller supplied a custom foreground color
     /// (consumed by `TooltipRenderer.has_custom_fg`).
     pub has_custom_fg: bool,
+    /// Caller-supplied trigger element. Rendered in normal
+    /// flow; the caller's hover/focus handlers on the trigger
+    /// are expected to drive `state.open()` / `state.close()`.
+    pub trigger: Option<AnyElement>,
 }
 
 pub fn tooltip(
@@ -92,6 +95,7 @@ pub fn tooltip(
         text: text.into(),
         has_custom_bg: false,
         has_custom_fg: false,
+        trigger: None,
     }
 }
 
@@ -104,6 +108,13 @@ impl TooltipProps {
         self.has_custom_fg = v;
         self
     }
+    /// Set the trigger element. The trigger stays visible
+    /// always; the tooltip text floats over it via
+    /// `gpui::deferred` when `state.is_open()`.
+    pub fn trigger(mut self, t: AnyElement) -> Self {
+        self.trigger = Some(t);
+        self
+    }
     pub fn apply(self, el: Div) -> Stateful<Div> {
         el.id(self.id)
     }
@@ -111,7 +122,7 @@ impl TooltipProps {
     /// Render the tooltip using the registered `TooltipRenderer`.
     /// The renderer reads `state` to decide visibility; the headless
     /// layer only attaches the element id.
-    pub fn render(self, cx: &gpui::App) -> Stateful<Div> {
+    pub fn render(mut self, cx: &gpui::App) -> Stateful<Div> {
         use crate::renderer::RendererContext;
         use crate::renderer::tooltip::TooltipRenderer;
         use crate::renderer::markers::Tooltip as TooltipMarker;
@@ -119,7 +130,7 @@ impl TooltipProps {
         let r: &Arc<dyn TooltipRenderer> = cx
             .renderer_arc::<TooltipMarker, dyn TooltipRenderer>()
             .expect("TooltipRenderer registered");
-        let div = r.compose(&self, cx);
+        let div = r.compose(&mut self, cx);
         self.apply(div)
     }
 }

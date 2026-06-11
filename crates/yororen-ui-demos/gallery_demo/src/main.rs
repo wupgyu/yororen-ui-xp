@@ -23,6 +23,7 @@ use yororen_ui::assets::UiAsset;
 use yororen_ui::notification::center::NotificationCenter;
 
 mod gallery_app;
+mod notifications_host;
 mod sections;
 mod state;
 mod theme_switcher;

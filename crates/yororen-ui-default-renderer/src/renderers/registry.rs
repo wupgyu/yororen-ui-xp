@@ -727,8 +727,8 @@ mod tests {
         let err = r.validate().unwrap_err();
         assert_eq!(
             err.len(),
-            54,
-            "expected 54 missing entries, got {}: {:?}",
+            53,
+            "expected 53 missing entries, got {}: {:?}",
             err.len(),
             err
         );
@@ -749,8 +749,8 @@ mod tests {
         let err = r.validate().unwrap_err();
         assert_eq!(
             err.len(),
-            53,
-            "expected 53 missing entries, got {}: {:?}",
+            52,
+            "expected 52 missing entries, got {}: {:?}",
             err.len(),
             err
         );

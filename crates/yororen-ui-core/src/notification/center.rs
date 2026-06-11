@@ -97,8 +97,15 @@ pub struct Notification {
     /// Optional label for the action that occurs on click.
     pub action_label: Option<SharedString>,
 
-    /// If true, the notification is retained across persistence loads.
-    /// Useful for long-running tasks or important messages.
+    /// If true, the notification is **retained until the user
+    /// dismisses it explicitly** and is also persisted across
+    /// process restarts. The builder method [`Notification::sticky`]
+    /// automatically upgrades the [`DismissStrategy`] to
+    /// [`DismissStrategy::Manual`] when set to `true`, so the
+    /// common "important, do not auto-dismiss" intent is a
+    /// single flag. Useful for long-running tasks, error
+    /// messages that need acknowledgement, and notifications
+    /// that should survive an app restart.
     pub sticky: bool,
 }
 
@@ -142,8 +149,29 @@ impl Notification {
         self
     }
 
+    /// Mark the notification as sticky. A sticky notification is
+    /// retained until the user dismisses it explicitly (no
+    /// auto-dismiss timer is scheduled) AND is also included in
+    /// the persisted snapshot for cross-restart survival.
+    ///
+    /// For convenience, calling `.sticky(true)` automatically
+    /// upgrades [`DismissStrategy`] to
+    /// [`DismissStrategy::Manual`], so callers only need this
+    /// single flag to express "this toast must not auto-dismiss".
+    /// The auto-dismiss scheduler in
+    /// [`NotificationCenter::maybe_schedule_auto_dismiss`] also
+    /// re-checks the `sticky` flag as a defensive guard, so even
+    /// a hand-built `Notification` with `sticky: true` and
+    /// `dismiss: After { .. }` will not auto-dismiss.
     pub fn sticky(mut self, sticky: bool) -> Self {
         self.sticky = sticky;
+        if sticky {
+            // Mirror the user's intent on the dismiss strategy so
+            // the auto-dismiss scheduler takes the early-return
+            // branch in `maybe_schedule_auto_dismiss` without
+            // having to inspect the `sticky` flag.
+            self.dismiss = DismissStrategy::Manual;
+        }
         self
     }
 }
@@ -387,21 +415,32 @@ impl NotificationCenter {
     }
 
     fn maybe_schedule_auto_dismiss(&self, id: NotificationId, cx: &mut gpui::App) {
-        let (dismiss, host_window, already_scheduled) = {
+        let (dismiss, is_sticky, host_window, already_scheduled) = {
             let mut state = self.state.lock().unwrap();
             let Some(n) = state.queue.iter().find(|n| n.id == id) else {
                 return;
             };
             let dismiss = n.dismiss.clone();
+            let is_sticky = n.sticky;
             let host = state.host_window;
             let already = state.scheduled_auto_dismiss.contains(&id);
             if !already {
                 state.scheduled_auto_dismiss.insert(id);
             }
-            (dismiss, host, already)
+            (dismiss, is_sticky, host, already)
         };
 
         if already_scheduled {
+            return;
+        }
+
+        // Defensive: a sticky notification is retained until the
+        // user dismisses it explicitly, regardless of whatever
+        // `DismissStrategy` the caller set. The `Notification::sticky`
+        // builder already upgrades the strategy to `Manual`, but
+        // a hand-built `Notification` could set them
+        // independently — `sticky` always wins here.
+        if is_sticky {
             return;
         }
 
@@ -510,5 +549,33 @@ mod tests {
         assert_eq!(items.len(), 2);
         assert_eq!(items[0].message.as_str(), "2");
         assert_eq!(items[1].message.as_str(), "3");
+    }
+
+    #[test]
+    fn sticky_true_upgrades_dismiss_to_manual() {
+        // `.sticky(true)` is the user-facing shorthand for
+        // "retain until dismissed". It must also force
+        // `DismissStrategy::Manual` so the auto-dismiss
+        // scheduler takes its early-return branch.
+        let n = Notification::new("important").sticky(true);
+        assert!(n.sticky);
+        assert_eq!(n.dismiss, DismissStrategy::Manual);
+
+        // `.sticky(false)` (and the default) must NOT clobber a
+        // caller-set strategy.
+        let n = Notification::new("transient")
+            .dismiss(DismissStrategy::After { duration_ms: 1000 })
+            .sticky(false);
+        assert!(!n.sticky);
+        assert_eq!(n.dismiss, DismissStrategy::After { duration_ms: 1000 });
+
+        // Sticky after a dismiss call must still upgrade to
+        // manual — the user-set strategy is treated as
+        // "the default if sticky does not apply".
+        let n = Notification::new("important")
+            .dismiss(DismissStrategy::After { duration_ms: 1000 })
+            .sticky(true);
+        assert!(n.sticky);
+        assert_eq!(n.dismiss, DismissStrategy::Manual);
     }
 }

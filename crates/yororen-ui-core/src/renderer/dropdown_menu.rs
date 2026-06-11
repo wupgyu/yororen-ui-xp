@@ -4,6 +4,10 @@
 //! (trigger_bg / trigger_hover_bg / trigger_fg /
 //! min_height / border_radius / chevron_rotation)
 //! stay on the concrete renderer type.
+//!
+//! `compose` takes `&mut DropdownMenuProps` so the renderer
+//! can `take()` the stored `trigger` and `content`
+//! `AnyElement`s (single-use).
 
 use std::any::Any;
 
@@ -17,5 +21,5 @@ pub struct DropdownMenuRenderState {
 }
 
 pub trait DropdownMenuRenderer: Any + Send + Sync {
-    fn compose(&self, props: &DropdownMenuProps, cx: &App) -> Div;
+    fn compose(&self, props: &mut DropdownMenuProps, cx: &App) -> Div;
 }

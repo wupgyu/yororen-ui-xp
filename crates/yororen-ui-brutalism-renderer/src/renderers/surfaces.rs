@@ -52,7 +52,7 @@ impl BrutalTooltipRenderer {
 impl TooltipRenderer for BrutalTooltipRenderer {
     fn compose(
         &self,
-        props: &yororen_ui_core::headless::tooltip::TooltipProps,
+        props: &mut yororen_ui_core::headless::tooltip::TooltipProps,
         cx: &App,
     ) -> Div {
         use yororen_ui_core::theme::ActiveTheme;
@@ -67,19 +67,35 @@ impl TooltipRenderer for BrutalTooltipRenderer {
         let fs = self.font_size(&state, theme);
         let r = self.border_radius(&state, theme);
         let open = props.state.read(cx).is_open();
-        let mut el = gpui::div()
-            .flex()
-            .items_center()
-            .bg(bg)
-            .text_color(fg)
-            .p(pad.top)
-            .text_size(fs)
-            .rounded(r)
-            .child(props.text.clone());
-        if !open {
-            el = el.invisible();
+
+        // Outer container is `relative` so the absolute tooltip
+        // below is positioned relative to it.
+        let mut outer = gpui::div().relative();
+
+        // 1) Trigger — always rendered in normal flow.
+        if let Some(t) = props.trigger.take() {
+            outer = outer.child(t);
         }
-        el
+
+        // 2) Tooltip text — only when open, floated with
+        //    `gpui::deferred` so it paints over subsequent
+        //    sibling cells in the gallery.
+        if open {
+            let text = props.text.clone();
+            let panel: Div = gpui::div()
+                .absolute()
+                .top(gpui::px(0.))
+                .left_0()
+                .bg(bg)
+                .text_color(fg)
+                .p(pad.top)
+                .text_size(fs)
+                .rounded(r)
+                .child(text);
+            outer = outer.child(gpui::deferred(panel).with_priority(1));
+        }
+
+        outer
     }
 }
 

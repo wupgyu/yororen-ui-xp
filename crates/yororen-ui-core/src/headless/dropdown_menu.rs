@@ -3,7 +3,10 @@
 
 use std::sync::Arc;
 
-use gpui::{App, AppContext, Div, ElementId, Entity, InteractiveElement, SharedString, Stateful};
+use gpui::{
+    App, AppContext, AnyElement, Div, ElementId, Entity, InteractiveElement, SharedString,
+    Stateful,
+};
 
 #[derive(Clone, Debug)]
 pub enum DropdownItem {
@@ -146,10 +149,18 @@ impl DropdownMenuState {
     }
 }
 
-#[derive(Clone)]
 pub struct DropdownMenuProps {
     pub id: ElementId,
     pub state: Entity<DropdownMenuState>,
+    /// Caller-supplied trigger element. Rendered in normal
+    /// flow; the caller's click handler is expected to call
+    /// `state.toggle()`.
+    pub trigger: Option<AnyElement>,
+    /// Caller-supplied dropdown body element. Floated next
+    /// to the trigger via `gpui::deferred` + absolute
+    /// positioning by the registered `DropdownMenuRenderer`
+    /// when `state.is_open()` is true.
+    pub content: Option<AnyElement>,
 }
 
 pub fn dropdown_menu(
@@ -159,10 +170,22 @@ pub fn dropdown_menu(
     DropdownMenuProps {
         id: id.into(),
         state,
+        trigger: None,
+        content: None,
     }
 }
 
 impl DropdownMenuProps {
+    /// Set the trigger element.
+    pub fn trigger(mut self, t: AnyElement) -> Self {
+        self.trigger = Some(t);
+        self
+    }
+    /// Set the dropdown content element.
+    pub fn content(mut self, c: AnyElement) -> Self {
+        self.content = Some(c);
+        self
+    }
     pub fn apply(self, el: Div) -> Stateful<Div> {
         el.id(self.id)
     }
@@ -171,7 +194,7 @@ impl DropdownMenuProps {
     /// `DropdownMenuRenderer`. Returns a `Stateful<Div>` with
     /// the element id. The renderer decides trigger bg / fg /
     /// chevron based on the `state` entity.
-    pub fn render(self, cx: &gpui::App) -> Stateful<Div> {
+    pub fn render(mut self, cx: &gpui::App) -> Stateful<Div> {
         use crate::renderer::RendererContext;
         use crate::renderer::dropdown_menu::DropdownMenuRenderer;
         use crate::renderer::markers::DropdownMenu as DropdownMenuMarker;
@@ -179,7 +202,7 @@ impl DropdownMenuProps {
         let r: &Arc<dyn DropdownMenuRenderer> = cx
             .renderer_arc::<DropdownMenuMarker, dyn DropdownMenuRenderer>()
             .expect("DropdownMenuRenderer registered");
-        let div = r.compose(&self, cx);
+        let div = r.compose(&mut self, cx);
         self.apply(div)
     }
 }

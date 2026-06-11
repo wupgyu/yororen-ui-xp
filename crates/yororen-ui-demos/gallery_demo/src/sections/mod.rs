@@ -6,7 +6,6 @@ mod controls;
 mod display;
 mod inputs;
 mod lists;
-mod notifications;
 mod overlays;
 mod surfaces;
 
@@ -32,6 +31,7 @@ pub fn cell(
     cx: &mut Context<GalleryApp>,
 ) -> Div {
     div()
+        .relative()
         .flex()
         .flex_col()
         .items_start()
@@ -135,19 +135,6 @@ pub fn overlays(
         .child(overlays::render(app, cx))
 }
 
-pub fn notifications(
-    _app: &mut GalleryApp,
-    _window: &mut Window,
-    cx: &mut Context<GalleryApp>,
-) -> impl IntoElement {
-    div()
-        .flex()
-        .flex_col()
-        .gap(px(12.))
-        .child(section_title("notifications-title", "7. Notifications", cx))
-        .child(notifications::render(cx))
-}
-
 pub fn lists(
     app: &mut GalleryApp,
     _window: &mut Window,
@@ -157,6 +144,6 @@ pub fn lists(
         .flex()
         .flex_col()
         .gap(px(12.))
-        .child(section_title("lists-title", "8. Lists, Tables, Trees, Forms", cx))
+        .child(section_title("lists-title", "7. Lists, Tables, Trees, Forms", cx))
         .child(lists::render(app, cx))
 }

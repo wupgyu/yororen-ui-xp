@@ -1,14 +1,21 @@
 //! `TokenMenuRenderer` — default `MenuRenderer` impl.
 //!
 //! Paints a rounded panel with a border and subtle shadow — the
-//! typical dropdown / context-menu shell.
+//! typical dropdown / context-menu shell. Iterates
+//! `props.state.items` to render each item, separator, or
+//! group; clicking an item fires `state.on_select` and
+//! closes the menu via `state.select_highlighted` semantics
+//! (or just `on_select` for menus without highlight tracking).
 
 use std::sync::Arc;
 
-use gpui::{InteractiveElement, App, Div, Hsla, Pixels, Stateful, Styled, div};
-
+use gpui::{
+    App, Div, ElementId, Hsla, InteractiveElement, ParentElement, Pixels, Stateful,
+    StatefulInteractiveElement, Styled, div, px,
+};
+use yororen_ui_core::headless::dropdown_menu::DropdownItem;
 use yororen_ui_core::headless::menu::MenuProps;
-use yororen_ui_core::theme::{ActiveTheme, Theme};
+use yororen_ui_core::theme::Theme;
 
 pub use yororen_ui_core::renderer::menu::{MenuRenderState, MenuRenderer};
 
@@ -22,18 +29,22 @@ impl TokenMenuRenderer {
         theme.get_color("border.default").unwrap_or_default()
     }
     pub fn border_radius(&self, _state: &MenuRenderState, theme: &Theme) -> Pixels {
-        gpui::px(theme.get_number("tokens.radii.md").unwrap_or(6.0) as f32)
+        px(theme.get_number("tokens.radii.md").unwrap_or(6.0) as f32)
     }
     pub fn padding(&self, _state: &MenuRenderState, theme: &Theme) -> Pixels {
-        gpui::px(theme.get_number("tokens.spacing.inset_sm").unwrap_or(4.0) as f32)
+        px(theme.get_number("tokens.spacing.inset_sm").unwrap_or(4.0) as f32)
     }
     pub fn shadow_alpha(&self, _state: &MenuRenderState, _theme: &Theme) -> f32 {
         0.12
+    }
+    pub fn item_hover_bg(&self, _state: &MenuRenderState, theme: &Theme) -> Hsla {
+        theme.get_color("surface.hover").unwrap_or_default()
     }
 }
 
 impl MenuRenderer for TokenMenuRenderer {
     fn compose(&self, props: &MenuProps, cx: &App) -> Stateful<Div> {
+        use yororen_ui_core::theme::ActiveTheme;
         let theme = cx.theme();
         let state = MenuRenderState {};
         let bg = self.bg(&state, theme);
@@ -41,6 +52,69 @@ impl MenuRenderer for TokenMenuRenderer {
         let radius = self.border_radius(&state, theme);
         let pad = self.padding(&state, theme);
         let alpha = self.shadow_alpha(&state, theme);
+        let item_hover = self.item_hover_bg(&state, theme);
+
+        let items = props.state.read(cx).items.clone();
+        let highlighted = props.state.read(cx).highlighted_index;
+
+        // Build the menu body (flex column) with one row per item.
+        let mut body: Div = div().flex().flex_col().gap(px(2.0));
+
+        for (i, item) in items.iter().enumerate() {
+            match item {
+                DropdownItem::Item(menu_item) => {
+                    let is_highlighted = highlighted == Some(i);
+                    let state_for_pick = props.state.clone();
+                    let id = menu_item.id.clone();
+                    let label = menu_item.label.to_string();
+                    let row_bg = if is_highlighted {
+                        item_hover
+                    } else {
+                        theme
+                            .get_color("surface.base")
+                            .unwrap_or_default()
+                    };
+                    let mut row: Stateful<Div> = div()
+                        .id(ElementId::Name(format!("menu-item-{}", i).into()))
+                        .px(px(8.0))
+                        .py(px(6.0))
+                        .rounded(px(4.0))
+                        .bg(row_bg)
+                        .hover(move |s| s.bg(item_hover))
+                        .child(label);
+                    row = row.on_click(move |_ev, window, cx| {
+                        // Fire `on_select` directly. The menu
+                        // also exposes `select_highlighted` for
+                        // keyboard navigation; the click path
+                        // bypasses the highlight index.
+                        let cb = state_for_pick.read(cx).on_select().cloned();
+                        if let Some(f) = cb {
+                            f(id.clone(), window, cx);
+                        }
+                    });
+                    body = body.child(row);
+                }
+                DropdownItem::Separator => {
+                    let sep = div()
+                        .id(ElementId::Name(format!("menu-sep-{}", i).into()))
+                        .h(px(1.0))
+                        .my(px(2.0))
+                        .bg(border);
+                    body = body.child(sep);
+                }
+                DropdownItem::Group(group) => {
+                    let group_label = group.label.to_string();
+                    let header = div()
+                        .id(ElementId::Name(format!("menu-group-{}", i).into()))
+                        .px(px(8.0))
+                        .py(px(4.0))
+                        .text_color(theme.get_color("content.tertiary").unwrap_or_default())
+                        .text_size(px(11.0))
+                        .child(group_label);
+                    body = body.child(header);
+                }
+            }
+        }
 
         div()
             .id(props.id.clone())
@@ -51,11 +125,14 @@ impl MenuRenderer for TokenMenuRenderer {
             .p(pad)
             .shadow(vec![gpui::BoxShadow {
                 color: gpui::hsla(0.0, 0.0, 0.0, alpha),
-                blur_radius: gpui::px(12.0),
-                spread_radius: gpui::px(0.0),
-                offset: gpui::Point { x: gpui::px(0.0), y: gpui::px(4.0) },
-                
+                blur_radius: px(12.0),
+                spread_radius: px(0.0),
+                offset: gpui::Point {
+                    x: px(0.0),
+                    y: px(4.0),
+                },
             }])
+            .child(body)
     }
 }
 

@@ -1,8 +1,13 @@
 //! `TokenPopoverRenderer` — default `PopoverRenderer` impl.
+//!
+//! Composes the popover shell: trigger in normal flow, then
+//! (when `state.is_open()`) the content floated with
+//! `gpui::deferred` + absolute positioning so it paints on
+//! top of subsequent sibling cells in the gallery.
 
 use std::sync::Arc;
 
-use gpui::{App, Div, Hsla, Pixels, Styled, div};
+use gpui::{App, Div, Hsla, InteractiveElement, ParentElement, Pixels, Styled, div};
 
 use yororen_ui_core::headless::popover::PopoverProps;
 use yororen_ui_core::theme::Theme;
@@ -35,14 +40,68 @@ impl TokenPopoverRenderer {
 }
 
 impl PopoverRenderer for TokenPopoverRenderer {
-    fn compose(&self, _props: &PopoverProps, cx: &App) -> Div {
+    fn compose(&self, props: &mut PopoverProps, cx: &App) -> Div {
         use yororen_ui_core::theme::ActiveTheme;
         let theme = cx.theme();
         let state = PopoverRenderState {};
         let bg = self.bg(&state, theme);
         let border = self.border(&state, theme);
         let r = self.border_radius(&state, theme);
-        div().bg(bg).border_color(border).rounded(r)
+        let alpha = self.shadow_alpha(&state, theme);
+        let open = props.state.read(cx).is_open();
+        let offset_px = self.offset(&state, theme);
+
+        // Outer container is `relative` so the absolute panel
+        // below is positioned relative to it.
+        let mut outer = div().relative();
+
+        // 1) Trigger — always rendered in normal flow.
+        //    Clicking the trigger also closes the popover when
+        //    it is already open (the trigger button toggles
+        //    state; the next render with `open=true` lets
+        //    outside-click close it).
+        if let Some(t) = props.trigger.take() {
+            outer = outer.child(t);
+        }
+
+        // 2) Content — only when open, floated with
+        //    `gpui::deferred` so it paints after the
+        //    subsequent sibling cells in the gallery.
+        if open
+            && let Some(c) = props.content.take()
+        {
+            // The outer container captures outside-clicks and
+            // closes the popover; the floating panel calls
+            // `.occlude()` to swallow hits for elements behind
+            // it, so an outside-click only fires when the user
+            // actually clicks outside the panel.
+            let state_for_close = props.state.clone();
+            outer = outer.on_mouse_down_out(move |_ev, _window, cx| {
+                state_for_close.update(cx, |s, _cx| s.close());
+            });
+            let panel: Div = div()
+                .absolute()
+                .top(offset_px)
+                .left_0()
+                .bg(bg)
+                .border_1()
+                .border_color(border)
+                .rounded(r)
+                .shadow(vec![gpui::BoxShadow {
+                    color: gpui::hsla(0.0, 0.0, 0.0, alpha),
+                    blur_radius: gpui::px(12.0),
+                    spread_radius: gpui::px(0.0),
+                    offset: gpui::Point {
+                        x: gpui::px(0.0),
+                        y: gpui::px(4.0),
+                    },
+                }])
+                .occlude()
+                .child(c);
+            outer = outer.child(gpui::deferred(panel).with_priority(1));
+        }
+
+        outer
     }
 }
 

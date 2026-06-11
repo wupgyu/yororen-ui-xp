@@ -31,6 +31,7 @@ use yororen_ui_core::theme::{Theme, install as install_theme};
 use yororen_ui_default_renderer::renderers::*;
 use yororen_ui_core::renderer::image::ImageRenderer;
 use yororen_ui_core::renderer::keybinding_display::KeybindingDisplayRenderer;
+use yororen_ui_core::renderer::overlay::OverlayRenderer;
 use yororen_ui_core::renderer::shortcut_hint::ShortcutHintRenderer;
 
 use crate::renderers::{
@@ -54,7 +55,7 @@ use crate::renderers::{
     notifications::{BrutalNotificationRenderer, BrutalToastRenderer},
     overlays::{
         BrutalDisclosureRenderer, BrutalDropdownMenuRenderer, BrutalModalRenderer,
-        BrutalPopoverRenderer,
+        BrutalOverlayRenderer, BrutalPopoverRenderer,
     },
     surfaces::{
         BrutalAvatarRenderer, BrutalCardRenderer, BrutalImageRenderer, BrutalPanelRenderer,
@@ -167,7 +168,7 @@ pub fn register_brutal_renderers(cx: &mut App) {
     cx.register_renderer_arc::<m::Checkbox, dyn CheckboxRenderer>(Arc::new(BrutalCheckboxRenderer));
     cx.register_renderer_arc::<m::Radio, dyn RadioRenderer>(Arc::new(BrutalRadioRenderer));
 
-    // Overlays (4)
+    // Overlays (5)
     cx.register_renderer_arc::<m::Modal, dyn ModalRenderer>(Arc::new(BrutalModalRenderer));
     cx.register_renderer_arc::<m::Popover, dyn PopoverRenderer>(Arc::new(BrutalPopoverRenderer));
     cx.register_renderer_arc::<m::DropdownMenu, dyn DropdownMenuRenderer>(Arc::new(
@@ -176,6 +177,7 @@ pub fn register_brutal_renderers(cx: &mut App) {
     cx.register_renderer_arc::<m::Disclosure, dyn DisclosureRenderer>(Arc::new(
         BrutalDisclosureRenderer,
     ));
+    cx.register_renderer_arc::<m::Overlay, dyn OverlayRenderer>(Arc::new(BrutalOverlayRenderer));
 
     // Notifications (2)
     cx.register_renderer_arc::<m::Toast, dyn ToastRenderer>(Arc::new(BrutalToastRenderer));

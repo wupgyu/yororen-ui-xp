@@ -1307,16 +1307,18 @@ impl core::marker::UnsafeUnpin for yororen_ui_core::headless::dropdown_menu::Dro
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::headless::dropdown_menu::DropdownMenuItem
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::headless::dropdown_menu::DropdownMenuItem
 pub struct yororen_ui_core::headless::dropdown_menu::DropdownMenuProps
+pub yororen_ui_core::headless::dropdown_menu::DropdownMenuProps::content: core::option::Option<gpui::element::AnyElement>
 pub yororen_ui_core::headless::dropdown_menu::DropdownMenuProps::id: gpui::window::ElementId
 pub yororen_ui_core::headless::dropdown_menu::DropdownMenuProps::state: gpui::app::entity_map::Entity<yororen_ui_core::headless::dropdown_menu::DropdownMenuState>
+pub yororen_ui_core::headless::dropdown_menu::DropdownMenuProps::trigger: core::option::Option<gpui::element::AnyElement>
 impl yororen_ui_core::headless::dropdown_menu::DropdownMenuProps
 pub fn yororen_ui_core::headless::dropdown_menu::DropdownMenuProps::apply(self, gpui::elements::div::Div) -> gpui::elements::div::Stateful<gpui::elements::div::Div>
+pub fn yororen_ui_core::headless::dropdown_menu::DropdownMenuProps::content(self, gpui::element::AnyElement) -> Self
 pub fn yororen_ui_core::headless::dropdown_menu::DropdownMenuProps::render(self, &gpui::app::App) -> gpui::elements::div::Stateful<gpui::elements::div::Div>
-impl core::clone::Clone for yororen_ui_core::headless::dropdown_menu::DropdownMenuProps
-pub fn yororen_ui_core::headless::dropdown_menu::DropdownMenuProps::clone(&self) -> yororen_ui_core::headless::dropdown_menu::DropdownMenuProps
+pub fn yororen_ui_core::headless::dropdown_menu::DropdownMenuProps::trigger(self, gpui::element::AnyElement) -> Self
 impl core::marker::Freeze for yororen_ui_core::headless::dropdown_menu::DropdownMenuProps
-impl core::marker::Send for yororen_ui_core::headless::dropdown_menu::DropdownMenuProps
-impl core::marker::Sync for yororen_ui_core::headless::dropdown_menu::DropdownMenuProps
+impl !core::marker::Send for yororen_ui_core::headless::dropdown_menu::DropdownMenuProps
+impl !core::marker::Sync for yororen_ui_core::headless::dropdown_menu::DropdownMenuProps
 impl core::marker::Unpin for yororen_ui_core::headless::dropdown_menu::DropdownMenuProps
 impl core::marker::UnsafeUnpin for yororen_ui_core::headless::dropdown_menu::DropdownMenuProps
 impl !core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::headless::dropdown_menu::DropdownMenuProps
@@ -2917,6 +2919,7 @@ impl yororen_ui_core::headless::menu::MenuState
 pub fn yororen_ui_core::headless::menu::MenuState::highlight_next(&mut self)
 pub fn yororen_ui_core::headless::menu::MenuState::highlight_prev(&mut self)
 pub fn yororen_ui_core::headless::menu::MenuState::new(&mut gpui::app::App) -> gpui::app::entity_map::Entity<Self>
+pub fn yororen_ui_core::headless::menu::MenuState::on_select(&self) -> core::option::Option<&yororen_ui_core::headless::dropdown_menu::DropdownSelectCallback>
 pub fn yororen_ui_core::headless::menu::MenuState::select_highlighted(&mut self, &mut gpui::window::Window, &mut gpui::app::App)
 pub fn yororen_ui_core::headless::menu::MenuState::set_items(&mut self, alloc::vec::Vec<yororen_ui_core::headless::dropdown_menu::DropdownItem>)
 pub fn yororen_ui_core::headless::menu::MenuState::set_on_select<F>(&mut self, F) where F: 'static + core::marker::Send + core::marker::Sync + core::ops::function::Fn(gpui::shared_string::SharedString, &mut gpui::window::Window, &mut gpui::app::App)
@@ -3188,16 +3191,18 @@ impl core::marker::UnsafeUnpin for yororen_ui_core::headless::popover::PopoverPl
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::headless::popover::PopoverPlacement
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::headless::popover::PopoverPlacement
 pub struct yororen_ui_core::headless::popover::PopoverProps
+pub yororen_ui_core::headless::popover::PopoverProps::content: core::option::Option<gpui::element::AnyElement>
 pub yororen_ui_core::headless::popover::PopoverProps::id: gpui::window::ElementId
 pub yororen_ui_core::headless::popover::PopoverProps::state: gpui::app::entity_map::Entity<yororen_ui_core::headless::popover::PopoverState>
+pub yororen_ui_core::headless::popover::PopoverProps::trigger: core::option::Option<gpui::element::AnyElement>
 impl yororen_ui_core::headless::popover::PopoverProps
 pub fn yororen_ui_core::headless::popover::PopoverProps::apply(self, gpui::elements::div::Div) -> gpui::elements::div::Stateful<gpui::elements::div::Div>
+pub fn yororen_ui_core::headless::popover::PopoverProps::content(self, gpui::element::AnyElement) -> Self
 pub fn yororen_ui_core::headless::popover::PopoverProps::render(self, &gpui::app::App) -> gpui::elements::div::Stateful<gpui::elements::div::Div>
-impl core::clone::Clone for yororen_ui_core::headless::popover::PopoverProps
-pub fn yororen_ui_core::headless::popover::PopoverProps::clone(&self) -> yororen_ui_core::headless::popover::PopoverProps
+pub fn yororen_ui_core::headless::popover::PopoverProps::trigger(self, gpui::element::AnyElement) -> Self
 impl core::marker::Freeze for yororen_ui_core::headless::popover::PopoverProps
-impl core::marker::Send for yororen_ui_core::headless::popover::PopoverProps
-impl core::marker::Sync for yororen_ui_core::headless::popover::PopoverProps
+impl !core::marker::Send for yororen_ui_core::headless::popover::PopoverProps
+impl !core::marker::Sync for yororen_ui_core::headless::popover::PopoverProps
 impl core::marker::Unpin for yororen_ui_core::headless::popover::PopoverProps
 impl core::marker::UnsafeUnpin for yororen_ui_core::headless::popover::PopoverProps
 impl !core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::headless::popover::PopoverProps
@@ -4649,16 +4654,16 @@ pub yororen_ui_core::headless::tooltip::TooltipProps::has_custom_fg: bool
 pub yororen_ui_core::headless::tooltip::TooltipProps::id: gpui::window::ElementId
 pub yororen_ui_core::headless::tooltip::TooltipProps::state: gpui::app::entity_map::Entity<yororen_ui_core::headless::tooltip::TooltipState>
 pub yororen_ui_core::headless::tooltip::TooltipProps::text: alloc::string::String
+pub yororen_ui_core::headless::tooltip::TooltipProps::trigger: core::option::Option<gpui::element::AnyElement>
 impl yororen_ui_core::headless::tooltip::TooltipProps
 pub fn yororen_ui_core::headless::tooltip::TooltipProps::apply(self, gpui::elements::div::Div) -> gpui::elements::div::Stateful<gpui::elements::div::Div>
 pub fn yororen_ui_core::headless::tooltip::TooltipProps::has_custom_bg(self, bool) -> Self
 pub fn yororen_ui_core::headless::tooltip::TooltipProps::has_custom_fg(self, bool) -> Self
 pub fn yororen_ui_core::headless::tooltip::TooltipProps::render(self, &gpui::app::App) -> gpui::elements::div::Stateful<gpui::elements::div::Div>
-impl core::clone::Clone for yororen_ui_core::headless::tooltip::TooltipProps
-pub fn yororen_ui_core::headless::tooltip::TooltipProps::clone(&self) -> yororen_ui_core::headless::tooltip::TooltipProps
+pub fn yororen_ui_core::headless::tooltip::TooltipProps::trigger(self, gpui::element::AnyElement) -> Self
 impl core::marker::Freeze for yororen_ui_core::headless::tooltip::TooltipProps
-impl core::marker::Send for yororen_ui_core::headless::tooltip::TooltipProps
-impl core::marker::Sync for yororen_ui_core::headless::tooltip::TooltipProps
+impl !core::marker::Send for yororen_ui_core::headless::tooltip::TooltipProps
+impl !core::marker::Sync for yororen_ui_core::headless::tooltip::TooltipProps
 impl core::marker::Unpin for yororen_ui_core::headless::tooltip::TooltipProps
 impl core::marker::UnsafeUnpin for yororen_ui_core::headless::tooltip::TooltipProps
 impl !core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::headless::tooltip::TooltipProps
@@ -6341,7 +6346,7 @@ impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::dropdown_menu::Dro
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::dropdown_menu::DropdownMenuRenderState
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::dropdown_menu::DropdownMenuRenderState
 pub trait yororen_ui_core::renderer::dropdown_menu::DropdownMenuRenderer: core::any::Any + core::marker::Send + core::marker::Sync
-pub fn yororen_ui_core::renderer::dropdown_menu::DropdownMenuRenderer::compose(&self, &yororen_ui_core::headless::dropdown_menu::DropdownMenuProps, &gpui::app::App) -> gpui::elements::div::Div
+pub fn yororen_ui_core::renderer::dropdown_menu::DropdownMenuRenderer::compose(&self, &mut yororen_ui_core::headless::dropdown_menu::DropdownMenuProps, &gpui::app::App) -> gpui::elements::div::Div
 pub mod yororen_ui_core::renderer::empty_state
 pub struct yororen_ui_core::renderer::empty_state::EmptyStateRenderState
 impl core::clone::Clone for yororen_ui_core::renderer::empty_state::EmptyStateRenderState
@@ -7833,7 +7838,7 @@ impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::popover::PopoverRe
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::popover::PopoverRenderState
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::popover::PopoverRenderState
 pub trait yororen_ui_core::renderer::popover::PopoverRenderer: core::any::Any + core::marker::Send + core::marker::Sync
-pub fn yororen_ui_core::renderer::popover::PopoverRenderer::compose(&self, &yororen_ui_core::headless::popover::PopoverProps, &gpui::app::App) -> gpui::elements::div::Div
+pub fn yororen_ui_core::renderer::popover::PopoverRenderer::compose(&self, &mut yororen_ui_core::headless::popover::PopoverProps, &gpui::app::App) -> gpui::elements::div::Div
 pub mod yororen_ui_core::renderer::progress
 pub struct yororen_ui_core::renderer::progress::ProgressBarRenderState
 pub yororen_ui_core::renderer::progress::ProgressBarRenderState::has_custom_height: bool
@@ -8334,7 +8339,7 @@ impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::tooltip::TooltipRe
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::tooltip::TooltipRenderState
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::tooltip::TooltipRenderState
 pub trait yororen_ui_core::renderer::tooltip::TooltipRenderer: core::any::Any + core::marker::Send + core::marker::Sync
-pub fn yororen_ui_core::renderer::tooltip::TooltipRenderer::compose(&self, &yororen_ui_core::headless::tooltip::TooltipProps, &gpui::app::App) -> gpui::elements::div::Div
+pub fn yororen_ui_core::renderer::tooltip::TooltipRenderer::compose(&self, &mut yororen_ui_core::headless::tooltip::TooltipProps, &gpui::app::App) -> gpui::elements::div::Div
 pub mod yororen_ui_core::renderer::tree
 pub struct yororen_ui_core::renderer::tree::TreeRenderState
 pub yororen_ui_core::renderer::tree::TreeRenderState::has_selection: bool

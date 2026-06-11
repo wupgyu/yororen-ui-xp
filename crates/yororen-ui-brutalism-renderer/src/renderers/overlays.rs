@@ -1,11 +1,14 @@
 //! Brutalist overlay renderers: `Modal`, `Popover`,
 //! `DropdownMenu`, `Disclosure`.
 
-use gpui::{App, Div, Hsla, ParentElement, Pixels, Styled, div, px};
+use gpui::prelude::FluentBuilder;
+use gpui::{
+    App, Div, Hsla, InteractiveElement, ParentElement, Pixels, Stateful, Styled, div, px,
+};
 use yororen_ui_core::renderer::spec::Edges;
 use yororen_ui_core::theme::Theme;
 
-use crate::style::{BRUTAL_BORDER, BRUTAL_RADIUS, brutal_border_color};
+use crate::style::{BRUTAL_BORDER, BRUTAL_RADIUS, brutal_border_color, brutal_shadow_overlay};
 
 // =====================================================================
 // Modal
@@ -58,19 +61,27 @@ impl ModalRenderer for BrutalModalRenderer {
         let panel_border = self.panel_border(&state, theme);
         let pad = self.panel_padding(&state, theme);
         let r = self.panel_border_radius(&state, theme);
+        let shadow = brutal_shadow_overlay(theme);
+        // Brutalism Modal renderer paints *only* the panel
+        // (bg / border / padding / radius / hard offset shadow).
+        // The scrim and centering are the caller's responsibility
+        // — same contract as `TokenModalRenderer` in the default
+        // renderer.
         gpui::div()
-            .flex()
-            .items_center()
-            .justify_center()
-            .size_full()
-            .bg(self.scrim(&state, theme))
-            .child(
-                gpui::div()
-                    .bg(panel_bg)
-                    .border_color(panel_border)
-                    .p(pad.top)
-                    .rounded(r),
-            )
+            .bg(panel_bg)
+            .border_color(panel_border)
+            .border_2()
+            .p(pad.top)
+            .rounded(r)
+            .shadow(vec![gpui::BoxShadow {
+                color: shadow.color,
+                blur_radius: shadow.blur,
+                spread_radius: gpui::px(0.0),
+                offset: gpui::Point {
+                    x: gpui::px(0.0),
+                    y: shadow.offset_y,
+                },
+            }])
     }
 }
 
@@ -106,7 +117,7 @@ impl BrutalPopoverRenderer {
 impl PopoverRenderer for BrutalPopoverRenderer {
     fn compose(
         &self,
-        _props: &yororen_ui_core::headless::popover::PopoverProps,
+        props: &mut yororen_ui_core::headless::popover::PopoverProps,
         cx: &App,
     ) -> Div {
         use yororen_ui_core::theme::ActiveTheme;
@@ -115,7 +126,48 @@ impl PopoverRenderer for BrutalPopoverRenderer {
         let bg = self.bg(&state, theme);
         let border = self.border(&state, theme);
         let r = self.border_radius(&state, theme);
-        gpui::div().bg(bg).border_color(border).rounded(r)
+        let alpha = self.shadow_alpha(&state, theme);
+        let open = props.state.read(cx).is_open();
+        let offset_px = self.offset(&state, theme);
+
+        let mut outer = gpui::div().relative();
+
+        if let Some(t) = props.trigger.take() {
+            outer = outer.child(t);
+        }
+
+        if open
+            && let Some(c) = props.content.take()
+        {
+            // Capture outside-clicks to close the popover.
+            let state_for_close = props.state.clone();
+            outer = outer.on_mouse_down_out(move |_ev, _window, cx| {
+                state_for_close.update(cx, |s, _cx| s.close());
+            });
+            let shadow = crate::style::brutal_shadow_overlay(theme);
+            let panel: Div = gpui::div()
+                .absolute()
+                .top(offset_px)
+                .left_0()
+                .bg(bg)
+                .border_color(border)
+                .border_2()
+                .rounded(r)
+                .shadow(vec![gpui::BoxShadow {
+                    color: gpui::hsla(0.0, 0.0, 0.0, alpha),
+                    blur_radius: gpui::px(0.0),
+                    spread_radius: gpui::px(0.0),
+                    offset: gpui::Point {
+                        x: gpui::px(0.0),
+                        y: shadow.offset_y,
+                    },
+                }])
+                .occlude()
+                .child(c);
+            outer = outer.child(gpui::deferred(panel).with_priority(1));
+        }
+
+        outer
     }
 }
 
@@ -160,7 +212,7 @@ impl BrutalDropdownMenuRenderer {
 impl DropdownMenuRenderer for BrutalDropdownMenuRenderer {
     fn compose(
         &self,
-        props: &yororen_ui_core::headless::dropdown_menu::DropdownMenuProps,
+        props: &mut yororen_ui_core::headless::dropdown_menu::DropdownMenuProps,
         cx: &App,
     ) -> Div {
         use yororen_ui_core::theme::ActiveTheme;
@@ -168,18 +220,55 @@ impl DropdownMenuRenderer for BrutalDropdownMenuRenderer {
         let state = DropdownMenuRenderState {
             open: props.state.read(cx).is_open(),
         };
-        let bg = self.trigger_bg(&state, theme);
-        let fg = self.trigger_fg(&state, theme);
-        let h = self.min_height(&state, theme);
+        let _border = self.trigger_bg(&state, theme);
+        let _fg = self.trigger_fg(&state, theme);
         let r = self.border_radius(&state, theme);
-        gpui::div()
-            .flex()
-            .items_center()
-            .bg(bg)
-            .text_color(fg)
-            .min_h(h)
-            .rounded(r)
-            .child("▼")
+
+        // Outer container is `relative` so the absolute panel
+        // below is positioned relative to it.
+        let mut outer = gpui::div().relative();
+
+        // 1) Trigger — always rendered in normal flow.
+        if let Some(t) = props.trigger.take() {
+            outer = outer.child(t);
+        }
+
+        // 2) Body — only when open, floated with
+        //    `gpui::deferred` so it paints over subsequent
+        //    sibling cells in the gallery.
+        if state.open
+            && let Some(c) = props.content.take()
+        {
+            let shadow = crate::style::brutal_shadow_overlay(theme);
+            let state_for_close = props.state.clone();
+            // The body is a `menu` element which already paints
+            // its own border + bg; the brutalism dropdown panel
+            // only adds the brutalist hard offset shadow and
+            // the click-outside dismissal. Avoid double borders
+            // by NOT setting `border_2` / `border_color` here.
+            let panel: Div = gpui::div()
+                .absolute()
+                .top(gpui::px(4.0))
+                .left_0()
+                .rounded(r)
+                .shadow(vec![gpui::BoxShadow {
+                    color: gpui::hsla(0.0, 0.0, 0.0, 1.0),
+                    blur_radius: gpui::px(0.0),
+                    spread_radius: gpui::px(0.0),
+                    offset: gpui::Point {
+                        x: gpui::px(0.0),
+                        y: shadow.offset_y,
+                    },
+                }])
+                .occlude()
+                .on_mouse_down_out(move |_ev, _window, cx| {
+                    state_for_close.update(cx, |s, _cx| s.close());
+                })
+                .child(c);
+            outer = outer.child(gpui::deferred(panel).with_priority(1));
+        }
+
+        outer
     }
 }
 
@@ -235,21 +324,72 @@ impl DisclosureRenderer for BrutalDisclosureRenderer {
         use yororen_ui_core::theme::ActiveTheme;
         let theme = cx.theme();
         let state = DisclosureRenderState { open: props.open };
-        let bg = self.trigger_bg(&state, theme);
         let fg = self.trigger_fg(&state, theme);
-        let h = self.min_height(&state, theme);
-        let r = self.border_radius(&state, theme);
         let chev_str = if props.open { "▼" } else { "▶" };
+        // Lightweight trigger: chevron + title, no button-like
+        // background / min-height / radius. Matches the default
+        // renderer (a normal-weight flex row) so disclosure cells
+        // look consistent with button / popover / dropdown cells.
         div()
             .flex()
-            .items_center()
-            .gap(px(8.0))
-            .bg(bg)
+            .flex_col()
+            .gap(px(4.0))
             .text_color(fg)
-            .min_h(h)
-            .rounded(r)
-            .px(px(12.0))
-            .child(chev_str)
-            .child(props.title.clone())
+            .child(
+                div()
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(6.0))
+                    .child(chev_str)
+                    .child(props.title.clone()),
+            )
+    }
+}
+
+// =====================================================================
+// Overlay
+// =====================================================================
+
+pub use yororen_ui_core::renderer::overlay::{OverlayRenderState, OverlayRenderer};
+
+pub struct BrutalOverlayRenderer;
+
+impl BrutalOverlayRenderer {
+    pub fn scrim_color(&self, _state: &OverlayRenderState, theme: &Theme) -> Hsla {
+        // Same fallback as the default renderer (50% black) so the
+        // gallery shows a visible scrim even if the theme omits the
+        // `surface.scrim` key.
+        theme
+            .get_color("surface.scrim")
+            .unwrap_or_else(|| Hsla {
+                h: 0.0,
+                s: 0.0,
+                l: 0.0,
+                a: 0.5,
+            })
+    }
+}
+
+impl OverlayRenderer for BrutalOverlayRenderer {
+    fn compose(
+        &self,
+        props: &yororen_ui_core::headless::overlay::OverlayProps,
+        cx: &App,
+    ) -> gpui::Stateful<Div> {
+        use yororen_ui_core::theme::ActiveTheme;
+        let theme = cx.theme();
+        let state = OverlayRenderState { open: props.open };
+        let scrim = self.scrim_color(&state, theme);
+        // `relative().size_full()` keeps the scrim within the
+        // cell's box (the cell is now `position: relative`, see
+        // `sections/mod.rs::cell`). The brutalism flavor is just
+        // the scrim color — the overlay has no border / radius.
+        div()
+            .id(props.id.clone())
+            .relative()
+            .size_full()
+            .bg(scrim)
+            .when(!props.open, |el: Stateful<Div>| el.invisible())
     }
 }

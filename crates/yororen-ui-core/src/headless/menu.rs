@@ -63,6 +63,12 @@ impl MenuState {
     {
         self.on_select = Some(Arc::new(f));
     }
+    /// Read-only access to the stored `on_select` callback.
+    /// Renderers use this to fire selection from each menu
+    /// row's click handler.
+    pub fn on_select(&self) -> Option<&DropdownSelectCallback> {
+        self.on_select.as_ref()
+    }
     pub fn select_highlighted(&mut self, window: &mut gpui::Window, cx: &mut App) {
         if let Some(i) = self.highlighted_index
             && let Some(DropdownItem::Item(DropdownMenuItem { id, .. })) = self.items.get(i)

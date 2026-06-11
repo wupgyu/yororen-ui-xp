@@ -1,7 +1,13 @@
 //! `TokenOverlayRenderer` — default `OverlayRenderer` impl.
 //!
-//! Paints a full-screen scrim. The headless `OverlayProps::render(cx)`
+//! Paints a *relative* scrim. The headless `OverlayProps::render(cx)`
 //! layers dismissal handlers and visibility on top.
+//!
+//! `compose` returns a `relative().size_full()` div so the
+//! overlay stays inside its parent's box (no `absolute().inset_0()`
+//! that would escape to the document root). Visibility is
+//! driven by `props.open` — when `false`, the scrim is
+//! `invisible()` so the cell still shows the content underneath.
 
 use std::sync::Arc;
 
@@ -31,8 +37,8 @@ impl OverlayRenderer for TokenOverlayRenderer {
 
         div()
             .id(props.id.clone())
-            .absolute()
-            .inset_0()
+            .relative()
+            .size_full()
             .bg(scrim)
             .when(!props.open, |el| el.invisible())
     }

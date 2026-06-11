@@ -6,12 +6,22 @@
 //!    is `last-wins` and `install_with` is idempotent, so a single click
 //!    on the toolbar's renderer toggle causes the next paint to read
 //!    the new renderers' tokens. See `theme_switcher.rs`.
-//! 2. **Locale install on change** — when the toolbar picks a new
+//! 2. **Host window registration** — `center.register_host_window`
+//!    is called every render so the notification auto-dismiss
+//!    timer has a window to refresh. Without this the timer is
+//!    never scheduled and non-sticky toasts would never disappear.
+//! 3. **Locale install on change** — when the toolbar picks a new
 //!    locale, we call the corresponding `yororen_ui::locale_xx::install`
 //!    to overwrite the global `I18n`.
-//! 3. **8 section call** — actions / display / surfaces / inputs /
-//!    controls / overlays / notifications / lists. Each lives in
-//!    `sections/<name>.rs`.
+//! 4. **7 section call** — actions / display / surfaces / inputs /
+//!    controls / overlays / lists. Each lives in `sections/<name>.rs`.
+//! 5. **Global notification host** —
+//!    [`crate::notifications_host::deferred_host`] is the LAST child
+//!    of the root, wrapped in `gpui::deferred` at priority 3 so it
+//!    paints above the modal scrim and every other overlay. The
+//!    toolbar's "Show toast" / "Show notification" buttons push into
+//!    the global `NotificationCenter`; the host reads that queue and
+//!    renders each item as a floating card in the top-right corner.
 
 use gpui::{
     Context, Div, InteractiveElement, IntoElement, ParentElement, Render, Stateful,
@@ -45,16 +55,30 @@ impl Render for GalleryApp {
         //    window always reflects the latest toolbar click.
         install_renderer(&mut **cx, self.current_renderer, self.dark_mode);
 
-        // 2. Surface color for the window background.
+        // 2. Register the host window with the notification
+        //    center. `maybe_schedule_auto_dismiss` returns
+        //    early if `host_window` is `None`, so the global
+        //    timer that auto-removes non-sticky toasts won't
+        //    fire unless we bind the current window. Cheap
+        //    (one `Mutex` lock + `Some` assignment).
+        if let Some(center) = cx.try_global::<NotificationCenter>() {
+            center.register_host_window(window.window_handle());
+        }
+
+        // 3. Surface color for the window background.
         let surface = cx.theme().get_color("surface.base").unwrap_or_default();
 
-        // 3. Build the toolbar (renderer / dark / locale / toast triggers).
+        // 4. Build the toolbar (renderer / dark / locale / toast triggers).
         let toolbar = build_toolbar(self, cx);
 
-        // 4. Scrollable root. The 8 sections are vertical children;
-        //    long content overflows.
+        // 5. Scrollable root. The 7 sections are vertical children;
+        //    long content overflows. `relative` provides the
+        //    containing block for the modal scrim rendered by
+        //    the overlays section AND for the global notification
+        //    host appended below.
         let scroll_root: Stateful<Div> = div()
             .id("gallery-scroll")
+            .relative()
             .size_full()
             .bg(surface)
             .flex()
@@ -72,9 +96,14 @@ impl Render for GalleryApp {
             .child(sections::inputs(self, window, cx))
             .child(sections::controls(self, window, cx))
             .child(sections::overlays(self, window, cx))
-            .child(sections::notifications(self, window, cx))
             .child(sections::lists(self, window, cx))
             .child(footer_section(self, cx))
+            // Global notification host: always the last child so
+            // its deferred-paint (priority 3) lands on top of the
+            // modal scrim (priority 2) and popover / dropdown
+            // panels (priority 1). The host is empty when the
+            // queue is empty, so adding it always is cheap.
+            .child(crate::notifications_host::deferred_host(cx))
     }
 }
 

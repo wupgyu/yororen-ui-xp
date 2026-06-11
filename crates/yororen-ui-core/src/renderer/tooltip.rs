@@ -3,6 +3,9 @@
 //! Trait surface is just `compose`. Inherent helpers
 //! (bg / fg / padding / font_size / border_radius) stay
 //! on the concrete renderer type.
+//!
+//! `compose` takes `&mut TooltipProps` so the renderer can
+//! `take()` the stored `trigger` `AnyElement` (single-use).
 
 use std::any::Any;
 
@@ -17,5 +20,5 @@ pub struct TooltipRenderState {
 }
 
 pub trait TooltipRenderer: Any + Send + Sync {
-    fn compose(&self, props: &TooltipProps, cx: &App) -> Div;
+    fn compose(&self, props: &mut TooltipProps, cx: &App) -> Div;
 }

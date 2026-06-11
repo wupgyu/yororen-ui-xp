@@ -5,7 +5,8 @@
 use std::sync::Arc;
 
 use gpui::{
-    App, AppContext, Bounds, Div, ElementId, Entity, InteractiveElement, Pixels, Size, Stateful,
+    App, AppContext, AnyElement, Bounds, Div, ElementId, Entity, InteractiveElement, Pixels, Size,
+    Stateful,
 };
 
 /// Preferred placement of a popover relative to its trigger.
@@ -98,31 +99,59 @@ impl PopoverState {
 /// The headless popover props handed to `.apply(div)` or the
 /// renderer's `DefaultPopover::default_render`.
 ///
-/// The actual trigger / content elements are produced by the
-/// caller and stashed in the entity. The headless apply just
-/// attaches the id.
-#[derive(Clone)]
+/// `trigger` and `content` are *caller-supplied* elements
+/// stored on the props. They are **data** (a description of
+/// UI the caller wants shown), not visual decisions — the
+/// renderer is what actually lays them out (trigger in
+/// normal flow, content floated with `gpui::deferred` +
+/// absolute positioning when `state.is_open()`). Holding
+/// `AnyElement` here is the v0.3 architectural compromise
+/// that lets composite overlays work without changing the
+/// `XxxRenderer` signature to accept extra arguments.
 pub struct PopoverProps {
     pub id: ElementId,
     pub state: Entity<PopoverState>,
+    pub trigger: Option<AnyElement>,
+    pub content: Option<AnyElement>,
 }
 
 pub fn popover(id: impl Into<ElementId>, state: Entity<PopoverState>) -> PopoverProps {
     PopoverProps {
         id: id.into(),
         state,
+        trigger: None,
+        content: None,
     }
 }
 
 impl PopoverProps {
+    /// Set the trigger element. Rendered in the normal layout
+    /// flow; the caller's click handler on the trigger is
+    /// expected to call `state.toggle()` (the popover's
+    /// "open on click" wiring is the caller's responsibility).
+    pub fn trigger(mut self, t: AnyElement) -> Self {
+        self.trigger = Some(t);
+        self
+    }
+
+    /// Set the popover content element. Floated next to the
+    /// trigger via `gpui::deferred` + absolute positioning
+    /// by the registered `PopoverRenderer` when
+    /// `state.is_open()` is true.
+    pub fn content(mut self, c: AnyElement) -> Self {
+        self.content = Some(c);
+        self
+    }
+
     pub fn apply(self, el: Div) -> Stateful<Div> {
         el.id(self.id)
     }
 
     /// Render the popover using the registered `PopoverRenderer`.
     /// Returns a `Stateful<Div>` with the element id. The renderer
-    /// decides bg / border / shadow based on the `state` entity.
-    pub fn render(self, cx: &gpui::App) -> Stateful<Div> {
+    /// decides bg / border / shadow / deferred paint based on the
+    /// `state` entity and the supplied `trigger` / `content`.
+    pub fn render(mut self, cx: &gpui::App) -> Stateful<Div> {
         use crate::renderer::RendererContext;
         use crate::renderer::popover::PopoverRenderer;
         use crate::renderer::markers::Popover as PopoverMarker;
@@ -130,7 +159,7 @@ impl PopoverProps {
         let r: &Arc<dyn PopoverRenderer> = cx
             .renderer_arc::<PopoverMarker, dyn PopoverRenderer>()
             .expect("PopoverRenderer registered");
-        let div = r.compose(&self, cx);
+        let div = r.compose(&mut self, cx);
         self.apply(div)
     }
 }
