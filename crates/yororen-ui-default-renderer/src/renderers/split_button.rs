@@ -209,7 +209,14 @@ impl SplitButtonRenderer for TokenSplitButtonRenderer {
                     offset: point(px(0.), px(4.)),
                     blur_radius: px(12.),
                     spread_radius: px(0.),
-                }]);
+                }])
+                // v0.2 popover pattern: occlude (the
+                // `InteractiveElement` trait method) blocks
+                // events from reaching elements painted behind
+                // the menu (stops a click on an option from
+                // also firing on the cell directly below the
+                // split button).
+                .occlude();
 
             for it in &props.items {
                 match it {

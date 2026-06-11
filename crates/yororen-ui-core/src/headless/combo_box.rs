@@ -140,6 +140,13 @@ pub fn combo_box(id: impl Into<ElementId>, state: Entity<ComboBoxState>) -> Comb
 }
 
 impl ComboBoxProps {
+    /// Apply the headless contract to the renderer-built `el`.
+    /// Sets the element id only. The renderer is responsible
+    /// for visuals AND for wiring the click handler that
+    /// toggles the dropdown — the renderer composes the
+    /// full UI (text input + dropdown) and decides how to
+    /// route the click to avoid bubbling from option items
+    /// back to the trigger.
     pub fn apply(self, el: Div) -> Stateful<Div> {
         el.id(self.id)
     }

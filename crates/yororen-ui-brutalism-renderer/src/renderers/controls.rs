@@ -61,7 +61,12 @@ impl BrutalSwitchRenderer {
                 .get_color("action.primary.hover_bg")
                 .unwrap_or(BRUTAL_BORDER)
         } else {
-            theme.get_color("surface.base").unwrap_or(BRUTAL_BORDER)
+            // Use a clearly visible color (content.tertiary)
+            // for the unchecked hover so the track is not lost
+            // against the page background (`surface.base`).
+            theme
+                .get_color("content.tertiary")
+                .unwrap_or(BRUTAL_BORDER)
         }
     }
     pub fn track_active_bg(&self, state: &SwitchRenderState, theme: &Theme) -> Hsla {

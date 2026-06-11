@@ -695,7 +695,21 @@ impl SplitButtonRenderer for BrutalSplitButtonRenderer {
                     offset: gpui::point(px(0.0), shadow_spec.offset_y),
                     blur_radius: shadow_spec.blur,
                     spread_radius: px(0.0),
-                }]);
+                }])
+                // v0.2 popover pattern: occlude_mouse blocks
+                // events from reaching elements painted behind
+                // the menu, and on_mouse_down_out fires when the
+                // user clicks *anywhere* outside the menu (other
+                // cells, the toolbar, the title) to dismiss.
+                .occlude()
+                .on_mouse_down_out({
+                    let state_for_close = props.state.clone();
+                    move |_ev, _window, cx| {
+                        if let Some(st) = state_for_close.as_ref() {
+                            st.update(cx, |s, _cx| s.close());
+                        }
+                    }
+                });
 
             for it in &props.items {
                 match it {

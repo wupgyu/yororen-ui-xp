@@ -7,7 +7,7 @@
 use std::sync::Arc;
 
 use gpui::{
-    AnyElement, App, AppContext, CursorStyle, Div, Hsla, InteractiveElement,
+    AnyElement, App, AppContext, CursorStyle, Div, ElementId, Hsla, InteractiveElement,
     IntoElement, KeyDownEvent, MouseButton, MouseDownEvent, MouseMoveEvent, ParentElement, Pixels,
     SharedString, Stateful, StatefulInteractiveElement, Styled, Window, div, hsla, prelude::FluentBuilder,
     px,
@@ -1127,16 +1127,125 @@ impl SelectRenderer for BrutalSelectRenderer {
         let pad = self.padding(&state, theme);
         let h = self.min_height(&state, theme);
         let r = self.border_radius(&state, theme);
-        gpui::div()
+        let value = state_read.value.clone();
+        let options = state_read.options.clone();
+        let is_open = state_read.is_open();
+
+        // Display label: selected option's label, or the placeholder.
+        let display = if let Some(v) = &value {
+            options
+                .iter()
+                .find(|o| &o.value == v)
+                .map(|o| o.label.to_string())
+                .unwrap_or_else(|| v.to_string())
+        } else {
+            state_read.placeholder.to_string()
+        };
+
+        // Trigger carries the toggle on_click. The wrapper has
+        // no click handler, so a click on a dropdown option
+        // bubbles harmlessly up the tree.
+        //
+        // `on_click` is on `StatefulInteractiveElement`, not
+        // `InteractiveElement`, so the trigger must be a
+        // `Stateful<Div>` (which we get by calling `.id()`
+        // first). The headless `apply` later sets the
+        // wrapper's id to the main `props.id`; the trigger
+        // keeps its own sub-id so the user can identify it.
+        let state_for_toggle = props.state.clone();
+        let mut trigger: Stateful<gpui::Div> = gpui::div()
             .flex()
             .items_center()
             .bg(bg)
+            .border_2()
             .border_color(border)
             .text_color(fg)
-            .p(pad.top)
+            .px(pad.left)
+            .py(pad.top)
             .min_h(h)
             .rounded(r)
-            .child(state_read.placeholder.to_string())
+            .child(display)
+            .id("brutal-select-trigger");
+        trigger = trigger.on_click(move |_ev, _window, cx| {
+            state_for_toggle.update(cx, |s, _cx| s.toggle());
+        });
+
+        let mut outer = gpui::div().relative().child(trigger);
+
+        if is_open && !options.is_empty() {
+            let h_f32: f32 = h.into();
+            let state_for_close = props.state.clone();
+            let mut dropdown: Stateful<gpui::Div> = gpui::div()
+                .id("brutal-select-dropdown")
+                .absolute()
+                .top(px(h_f32 + 4.0))
+                .left_0()
+                .right_0()
+                .bg(theme.get_color("surface.base").unwrap_or(BRUTAL_BORDER))
+                .border_2()
+                .border_color(border)
+                .rounded(r)
+                .p(px(4.))
+                .flex_col()
+                .gap(px(2.))
+                // `.occlude_mouse()` makes the dropdown's hitbox
+                // block mouse events from reaching elements
+                // painted behind it. This is what stops a click
+                // on an option from also firing on the cell
+                // directly below the popover.
+                .occlude()
+                // `on_mouse_down_out` fires whenever the user
+                // presses the mouse *outside* the dropdown's
+                // bounds (including clicks in the next cell,
+                // the toolbar, anywhere in the window) and is
+                // the v0.2 way of wiring "click outside
+                // dismisses".
+                .on_mouse_down_out(move |_ev, _window, cx| {
+                    state_for_close.update(cx, |s, _cx| s.close());
+                });
+
+            for (i, opt) in options.iter().enumerate() {
+                let opt_value = opt.value.clone();
+                let opt_label = opt.label.to_string();
+                let state_for_opt = props.state.clone();
+                let is_selected = value.as_ref() == Some(&opt.value);
+                let item_bg = if is_selected {
+                    theme.get_color("action.primary.bg").unwrap_or(BRUTAL_BORDER)
+                } else {
+                    gpui::hsla(0.0, 0.0, 0.0, 0.0)
+                };
+                let hover_bg = theme.get_color("surface.hover").unwrap_or(BRUTAL_BORDER);
+                let item_fg = if is_selected {
+                    theme.get_color("action.primary.fg").unwrap_or(BRUTAL_BORDER)
+                } else {
+                    theme.get_color("content.primary").unwrap_or(BRUTAL_BORDER)
+                };
+                let mut item: Stateful<gpui::Div> = gpui::div()
+                    .id(ElementId::Name(
+                        format!("brutal-select-opt-{}", i).into(),
+                    ))
+                    .px(px(8.))
+                    .py(px(6.))
+                    .rounded(px(4.))
+                    .bg(item_bg)
+                    .text_color(item_fg)
+                    .hover(move |s| s.bg(hover_bg))
+                    .child(opt_label);
+                item = item.on_click(move |_ev, _window, cx| {
+                    state_for_opt.update(cx, |s, _cx| {
+                        s.set_value(opt_value.clone());
+                        s.close();
+                    });
+                });
+                dropdown = dropdown.child(item);
+            }
+
+            // `gpui::deferred` paints the dropdown after the
+            // next sibling cell so it isn't covered.
+            outer = outer.child(gpui::deferred(dropdown).with_priority(1));
+        }
+
+        outer
     }
 }
 
@@ -1212,16 +1321,106 @@ impl ComboBoxRenderer for BrutalComboBoxRenderer {
         let pad = self.padding(&state, theme);
         let h = self.min_height(&state, theme);
         let r = self.border_radius(&state, theme);
-        gpui::div()
+        let text = state_read.text.clone();
+        let value = state_read.value.clone();
+        let options = state_read.options.clone();
+        let is_open = state_read.is_open();
+
+        // Display: the typed text takes priority, then the
+        // selected option's label, then the placeholder.
+        let display = if !text.is_empty() {
+            text
+        } else if let Some(v) = &value {
+            options
+                .iter()
+                .find(|o| &o.value == v)
+                .map(|o| o.label.to_string())
+                .unwrap_or_else(|| v.to_string())
+        } else {
+            state_read.placeholder.to_string()
+        };
+
+        let state_for_toggle = props.state.clone();
+        let mut trigger: Stateful<gpui::Div> = gpui::div()
             .flex()
             .items_center()
             .bg(bg)
+            .border_2()
             .border_color(border)
             .text_color(fg)
-            .p(pad.top)
+            .px(pad.left)
+            .py(pad.top)
             .min_h(h)
             .rounded(r)
-            .child(state_read.placeholder.to_string())
+            .child(display)
+            .id("brutal-combo-trigger");
+        trigger = trigger.on_click(move |_ev, _window, cx| {
+            state_for_toggle.update(cx, |s, _cx| s.toggle());
+        });
+
+        let mut outer = gpui::div().relative().child(trigger);
+
+        if is_open && !options.is_empty() {
+            let h_f32: f32 = h.into();
+            let state_for_close = props.state.clone();
+            let mut dropdown: Stateful<gpui::Div> = gpui::div()
+                .id("brutal-combo-dropdown")
+                .absolute()
+                .top(px(h_f32 + 4.0))
+                .left_0()
+                .right_0()
+                .bg(theme.get_color("surface.base").unwrap_or(BRUTAL_BORDER))
+                .border_2()
+                .border_color(border)
+                .rounded(r)
+                .p(px(4.))
+                .flex_col()
+                .gap(px(2.))
+                .occlude()
+                .on_mouse_down_out(move |_ev, _window, cx| {
+                    state_for_close.update(cx, |s, _cx| s.close());
+                });
+
+            for (i, opt) in options.iter().enumerate() {
+                let opt_value = opt.value.clone();
+                let opt_label = opt.label.to_string();
+                let state_for_opt = props.state.clone();
+                let is_selected = value.as_ref() == Some(&opt.value);
+                let item_bg = if is_selected {
+                    theme.get_color("action.primary.bg").unwrap_or(BRUTAL_BORDER)
+                } else {
+                    gpui::hsla(0.0, 0.0, 0.0, 0.0)
+                };
+                let hover_bg = theme.get_color("surface.hover").unwrap_or(BRUTAL_BORDER);
+                let item_fg = if is_selected {
+                    theme.get_color("action.primary.fg").unwrap_or(BRUTAL_BORDER)
+                } else {
+                    theme.get_color("content.primary").unwrap_or(BRUTAL_BORDER)
+                };
+                let mut item: Stateful<gpui::Div> = gpui::div()
+                    .id(ElementId::Name(
+                        format!("brutal-combo-opt-{}", i).into(),
+                    ))
+                    .px(px(8.))
+                    .py(px(6.))
+                    .rounded(px(4.))
+                    .bg(item_bg)
+                    .text_color(item_fg)
+                    .hover(move |s| s.bg(hover_bg))
+                    .child(opt_label);
+                item = item.on_click(move |_ev, _window, cx| {
+                    state_for_opt.update(cx, |s, _cx| {
+                        s.set_value(opt_value.clone());
+                        s.close();
+                    });
+                });
+                dropdown = dropdown.child(item);
+            }
+
+            outer = outer.child(gpui::deferred(dropdown).with_priority(1));
+        }
+
+        outer
     }
 }
 

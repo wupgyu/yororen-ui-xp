@@ -72,7 +72,10 @@ impl TokenSwitchRenderer {
                 .get_color("action.primary.hover_bg")
                 .unwrap_or_default()
         } else {
-            theme.get_color("surface.base").unwrap_or_default()
+            // Use a clearly visible color (content.tertiary)
+            // for the unchecked hover so the track is not lost
+            // against the page background (`surface.base`).
+            theme.get_color("content.tertiary").unwrap_or_default()
         }
     }
     pub fn track_active_bg(&self, state: &SwitchRenderState, theme: &Theme) -> Hsla {

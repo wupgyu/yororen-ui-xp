@@ -130,6 +130,13 @@ pub fn select(id: impl Into<ElementId>, state: Entity<SelectState>) -> SelectPro
 }
 
 impl SelectProps {
+    /// Apply the headless contract to the renderer-built `el`.
+    /// Sets the element id only. The renderer is responsible
+    /// for visuals AND for wiring the click handler that
+    /// toggles the dropdown — the renderer composes the
+    /// full UI (trigger + dropdown) and decides how to
+    /// route the click to avoid bubbling from option items
+    /// back to the trigger.
     pub fn apply(self, el: Div) -> Stateful<Div> {
         el.id(self.id)
     }

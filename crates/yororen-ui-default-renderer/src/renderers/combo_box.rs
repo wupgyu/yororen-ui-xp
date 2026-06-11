@@ -2,7 +2,10 @@
 
 use std::sync::Arc;
 
-use gpui::{App, Div, Hsla, ParentElement, Pixels, Styled, div};
+use gpui::{
+    App, Div, ElementId, Hsla, InteractiveElement, ParentElement, Pixels, Stateful,
+    StatefulInteractiveElement, Styled, div, px,
+};
 
 use yororen_ui_core::headless::combo_box::ComboBoxProps;
 use yororen_ui_core::renderer::spec::Edges;
@@ -89,16 +92,110 @@ impl ComboBoxRenderer for TokenComboBoxRenderer {
         let pad = self.padding(&state, theme);
         let h = self.min_height(&state, theme);
         let r = self.border_radius(&state, theme);
-        div()
+        let text = state_read.text.clone();
+        let value = state_read.value.clone();
+        let options = state_read.options.clone();
+        let is_open = state_read.is_open();
+
+        let display = if !text.is_empty() {
+            text
+        } else if let Some(v) = &value {
+            options
+                .iter()
+                .find(|o| &o.value == v)
+                .map(|o| o.label.to_string())
+                .unwrap_or_else(|| v.to_string())
+        } else {
+            state_read.placeholder.to_string()
+        };
+
+        let state_for_toggle = props.state.clone();
+        let mut trigger: Stateful<Div> = div()
             .flex()
             .items_center()
             .bg(bg)
+            .border_1()
             .border_color(border)
             .text_color(fg)
-            .p(pad.top)
+            .px(pad.left)
+            .py(pad.top)
             .min_h(h)
             .rounded(r)
-            .child(state_read.placeholder.to_string())
+            .child(display)
+            .id("default-combo-trigger");
+        trigger = trigger.on_click(move |_ev, _window, cx| {
+            state_for_toggle.update(cx, |s, _cx| s.toggle());
+        });
+
+        let mut outer = div().relative().child(trigger);
+
+        if is_open && !options.is_empty() {
+            let h_f32: f32 = h.into();
+            let state_for_close = props.state.clone();
+            let mut dropdown: Stateful<Div> = div()
+                .id("default-combo-dropdown")
+                .absolute()
+                .top(px(h_f32 + 4.0))
+                .left_0()
+                .right_0()
+                .bg(theme.get_color("surface.raised").unwrap_or_default())
+                .border_1()
+                .border_color(border)
+                .rounded(r)
+                .p(px(4.))
+                .flex_col()
+                .gap(px(2.))
+                .shadow(vec![gpui::BoxShadow {
+                    color: gpui::hsla(0.0, 0.0, 0.0, 0.12),
+                    offset: gpui::point(px(0.), px(4.)),
+                    blur_radius: px(12.),
+                    spread_radius: px(0.),
+                }])
+                .occlude()
+                .on_mouse_down_out(move |_ev, _window, cx| {
+                    state_for_close.update(cx, |s, _cx| s.close());
+                });
+
+            for (i, opt) in options.iter().enumerate() {
+                let opt_value = opt.value.clone();
+                let opt_label = opt.label.to_string();
+                let state_for_opt = props.state.clone();
+                let is_selected = value.as_ref() == Some(&opt.value);
+                let item_bg = if is_selected {
+                    theme.get_color("action.primary.bg").unwrap_or_default()
+                } else {
+                    gpui::hsla(0.0, 0.0, 0.0, 0.0)
+                };
+                let hover_bg = theme.get_color("surface.hover").unwrap_or_default();
+                let item_fg = if is_selected {
+                    theme.get_color("action.primary.fg").unwrap_or_default()
+                } else {
+                    theme.get_color("content.primary").unwrap_or_default()
+                };
+                let mut item: Stateful<Div> = div()
+                    .id(ElementId::Name(
+                        format!("default-combo-opt-{}", i).into(),
+                    ))
+                    .px(px(8.))
+                    .py(px(6.))
+                    .rounded(px(4.))
+                    .bg(item_bg)
+                    .text_color(item_fg)
+                    .hover(move |s| s.bg(hover_bg))
+                    .child(opt_label);
+                item = item.on_click(move |_ev, _window, cx| {
+                    state_for_opt.update(cx, |s, _cx| {
+                        s.set_value(opt_value.clone());
+                        s.close();
+                    });
+                });
+                dropdown = dropdown.child(item);
+            }
+
+            outer = outer.child(gpui::deferred(dropdown).with_priority(1));
+        }
+
+        outer
     }
 }
 

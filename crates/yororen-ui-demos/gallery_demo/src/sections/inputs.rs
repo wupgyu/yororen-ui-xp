@@ -132,9 +132,7 @@ pub fn render(
             });
         });
     });
-    let select_el = select("input-select", select_state.clone())
-        .apply(div())
-        .child(label("select-blank", "", cx).render(cx));
+    let select_el = select("input-select", select_state.clone()).render(cx);
 
     let entity_combo = entity.clone();
     let combo_state = app.combo_state.clone();
@@ -146,9 +144,7 @@ pub fn render(
             });
         });
     });
-    let combo_el = combo_box("input-combo", combo_state.clone())
-        .apply(div())
-        .child(label("combo-blank", "", cx).render(cx));
+    let combo_el = combo_box("input-combo", combo_state.clone()).render(cx);
 
     // assemble — each input goes in its own labelled cell,
     // followed by a status line that shows the live value.
@@ -198,3 +194,4 @@ fn input_cell(
                 .text_size(px(11.)),
         )
 }
+
