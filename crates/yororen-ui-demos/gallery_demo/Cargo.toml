@@ -9,6 +9,3 @@ serde_json = "1"
 yororen-ui = { package = "yororen_ui", path = "../../yororen-ui" }
 yororen-ui-default-renderer = { package = "yororen_ui_default_renderer", path = "../../yororen-ui-default-renderer" }
 yororen-ui-brutalism-renderer = { package = "yororen_ui_brutalism_renderer", path = "../../yororen-ui-brutalism-renderer" }
-yororen-ui-locale-en = { package = "yororen_ui_locale_en", path = "../../yororen-ui-locale-en" }
-yororen-ui-locale-zh-CN = { package = "yororen_ui_locale_zh_cn", path = "../../yororen-ui-locale-zh-CN" }
-yororen-ui-locale-ar = { package = "yororen_ui_locale_ar", path = "../../yororen-ui-locale-ar" }

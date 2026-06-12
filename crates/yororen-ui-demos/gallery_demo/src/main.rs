@@ -8,8 +8,9 @@
 //!    keymap for the 7 input components (idempotent via `OnceLock`).
 //! 2. `cx.set_global(NotificationCenter::new())` — toast /
 //!    notification global state.
-//! 3. `yororen_ui::locale_en::install(cx)` — install English as
-//!    the active locale (the toolbar can swap to zh-CN / ar).
+//! 3. `yororen_ui::locale::install_with_translations(...)` — install
+//!    English as the active locale and layer the gallery's own
+//!    translations on top (the toolbar can swap to zh-CN / ar).
 //! 4. `theme_switcher::install_renderer` — install the default
 //!    renderer + light theme (the toolbar re-installs per render).
 //! 5. Open a single 1280×900 window and attach a `GalleryApp`.
@@ -41,9 +42,10 @@ fn main() {
         cx.set_global(NotificationCenter::new());
 
         // 3. Install English as the default locale. The
-        //    `gallery_demo::i18n::install_for_locale` helper
-        //    layers this crate's own demo translations on top
-        //    of the framework defaults from `yororen-ui-locale-en`.
+        //    `gallery_demo::i18n::install_for_locale` helper uses
+        //    `yororen_ui::locale::install_with_translations` to layer
+        //    this crate's own demo translations on top of the framework
+        //    defaults from `yororen-ui-locale-en`.
         //    The toolbar locale toggle calls it again to hot-swap.
         crate::i18n::install_for_locale(cx, crate::state::LocaleChoice::En);
 

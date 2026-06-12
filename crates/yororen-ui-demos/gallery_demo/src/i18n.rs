@@ -17,19 +17,13 @@
 //! ## Lookup semantics
 //!
 //! The gallery's `install_for_locale` flow is:
-//! 1. `yororen_ui::locale_xx::install(cx)` — overwrites the global
-//!    `I18n` with a fresh catalog containing only the component
-//!    defaults for that locale.
-//! 2. `cx.global_mut::<I18n>().merge_translations(locale, demo_map)`
-//!    — layers the demo's own keys on top. `merge_translations`
-//!    shadows component defaults if the demo ever needs to (none
-//!    today — the keys are namespaced `demo.*` and never collide).
+//! 1. `yororen_ui::locale::install_with_translations(cx, tag, demo_map)`
+//!    — installs the framework defaults for the chosen locale and layers
+//!    the demo's own keys on top.
 //!
 //! All demo keys live under the `demo.*` namespace so a future
 //! sweep for "strings that should not be in the framework" is a
 //! one-line regex.
-
-use yororen_ui::i18n::{I18n, I18nContext, Locale, TranslationMap, parse_translation_value};
 
 use crate::state::LocaleChoice;
 
@@ -37,24 +31,14 @@ const RAW_EN: &str = include_str!("../translations/en.json");
 const RAW_ZH_CN: &str = include_str!("../translations/zh-CN.json");
 const RAW_AR: &str = include_str!("../translations/ar.json");
 
-/// Parse a bundled demo JSON file into a `TranslationMap`.
-///
-/// Panics on malformed JSON — the bundled files are checked-in
-/// artifacts, so a syntax error is a build-time bug, not a runtime
-/// condition.
-fn parse_demo(raw: &str) -> TranslationMap {
-    let value: serde_json::Value =
-        serde_json::from_str(raw).expect("bundled gallery demo JSON must be valid");
-    parse_translation_value(value).expect("bundled gallery demo JSON must be a JSON object")
-}
-
 /// Demo-only translation map for the chosen locale.
-fn demo_translation_map(choice: LocaleChoice) -> TranslationMap {
-    match choice {
-        LocaleChoice::En => parse_demo(RAW_EN),
-        LocaleChoice::ZhCn => parse_demo(RAW_ZH_CN),
-        LocaleChoice::Ar => parse_demo(RAW_AR),
-    }
+fn demo_translation_map(choice: LocaleChoice) -> yororen_ui::i18n::TranslationMap {
+    let raw = match choice {
+        LocaleChoice::En => RAW_EN,
+        LocaleChoice::ZhCn => RAW_ZH_CN,
+        LocaleChoice::Ar => RAW_AR,
+    };
+    yororen_ui::locale::parse_bundled_translations(raw)
 }
 
 /// Install the chosen locale on `cx`, layering the gallery demo's own
@@ -66,27 +50,19 @@ fn demo_translation_map(choice: LocaleChoice) -> TranslationMap {
 /// with a different `choice` swaps both the active locale and the
 /// demo catalog, so a toolbar toggle can hot-swap languages without
 /// restarting the app.
-///
-/// Pair this with `cx.theme()` / `yororen_ui::locale_xx::install`
-/// only when you also need the framework-level translations; the
-/// gallery always does, so the `main.rs` and toolbar `on_toggle`
-/// paths call this helper exclusively.
 pub fn install_for_locale(cx: &mut gpui::App, choice: LocaleChoice) {
-    // 1. Component defaults.
-    match choice {
-        LocaleChoice::En => yororen_ui::locale_en::install(cx),
-        LocaleChoice::ZhCn => yororen_ui::locale_zh_cn::install(cx),
-        LocaleChoice::Ar => yororen_ui::locale_ar::install(cx),
-    }
-    // 2. Demo's own keys, merged on top.
-    let locale: Locale = cx.i18n().locale().clone();
+    let locale_tag = choice.tag();
     let demo_map = demo_translation_map(choice);
-    cx.global_mut::<I18n>().merge_translations(locale, demo_map);
+    yororen_ui::locale::install_with_translations(cx, locale_tag, demo_map);
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn parse_demo(raw: &str) -> yororen_ui::i18n::TranslationMap {
+        yororen_ui::locale::parse_bundled_translations(raw)
+    }
 
     #[test]
     fn demo_keys_resolve() {

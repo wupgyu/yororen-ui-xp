@@ -36,3 +36,7 @@ pub use yororen_ui_brutalism_renderer as brutalism_renderer;
 pub use yororen_ui_locale_ar as locale_ar;
 pub use yororen_ui_locale_en as locale_en;
 pub use yororen_ui_locale_zh_cn as locale_zh_cn;
+
+/// Convenience helpers for installing the bundled locales and layering
+/// application-specific translations on top.
+pub mod locale;

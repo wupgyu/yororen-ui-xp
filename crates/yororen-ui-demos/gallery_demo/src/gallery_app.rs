@@ -313,9 +313,10 @@ fn build_toolbar(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
     );
 
     // Locale: 3 toggle_buttons. Toggling calls the gallery's
-    // `i18n::install_for_locale` to overwrite the global `I18n`
-    // with the chosen locale's component defaults + this demo's
-    // own translations (see `crate::i18n`).
+    // `i18n::install_for_locale` to call
+    // `yororen_ui::locale::install_with_translations`, which installs
+    // the chosen locale's component defaults + this demo's own
+    // translations (see `crate::i18n`).
     //
     // The button labels are the language's *own* name in its
     // native script — not localizable text. They are language

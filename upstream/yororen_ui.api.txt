@@ -31,3 +31,9 @@ pub use yororen_ui::notification
 pub use yororen_ui::renderer
 pub use yororen_ui::rtl
 pub use yororen_ui::theme
+pub mod yororen_ui::locale
+pub const yororen_ui::locale::SUPPORTED_LOCALE_TAGS: &[&str]
+pub fn yororen_ui::locale::framework_translation_map(&str) -> yororen_ui_core::i18n::runtime::TranslationMap
+pub fn yororen_ui::locale::install_locale(&mut gpui::app::App, &str)
+pub fn yororen_ui::locale::install_with_translations(&mut gpui::app::App, &str, yororen_ui_core::i18n::runtime::TranslationMap)
+pub fn yororen_ui::locale::parse_bundled_translations(&str) -> yororen_ui_core::i18n::runtime::TranslationMap
