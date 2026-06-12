@@ -7,6 +7,8 @@ use crate::renderer::RendererContext;
 
 use gpui::{App, Div, ElementId, FocusHandle, InteractiveElement, Stateful, StatefulInteractiveElement};
 
+use crate::animation::AnimatedVisibility;
+
 /// Reason an overlay was closed. Forwarded to the caller's
 /// `on_close` callback so the caller can branch on the cause.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -23,6 +25,7 @@ pub type OverlayCloseCallback =
 pub struct OverlayProps {
     pub id: ElementId,
     pub open: bool,
+    pub animation: AnimatedVisibility,
     pub focus_handle: FocusHandle,
     pub dismiss_on_escape: bool,
     pub dismiss_on_scrim: bool,
@@ -33,6 +36,7 @@ pub fn overlay(id: impl Into<ElementId>, cx: &mut App) -> OverlayProps {
     OverlayProps {
         id: id.into(),
         open: false,
+        animation: AnimatedVisibility::new(),
         focus_handle: cx.focus_handle(),
         dismiss_on_escape: true,
         dismiss_on_scrim: true,
@@ -43,6 +47,12 @@ pub fn overlay(id: impl Into<ElementId>, cx: &mut App) -> OverlayProps {
 impl OverlayProps {
     pub fn open(mut self, v: bool) -> Self {
         self.open = v;
+        if v {
+            self.animation.show();
+            self.animation.set_progress(0.0);
+        } else {
+            self.animation.hide();
+        }
         self
     }
     pub fn dismiss_on_escape(mut self, v: bool) -> Self {

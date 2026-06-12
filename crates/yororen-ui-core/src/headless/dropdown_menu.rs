@@ -8,6 +8,8 @@ use gpui::{
     Stateful,
 };
 
+use crate::animation::{AnimatedPresenceState, AnimatedVisibility};
+
 #[derive(Clone, Debug)]
 pub enum DropdownItem {
     Item(DropdownMenuItem),
@@ -59,6 +61,7 @@ pub type DropdownSelectCallback = Arc<dyn Fn(SharedString, &mut gpui::Window, &m
 #[derive(Clone)]
 pub struct DropdownMenuState {
     pub open: bool,
+    pub animation: AnimatedVisibility,
     pub highlighted_index: Option<usize>,
     pub dismiss_on_escape: bool,
     /// When `true` (the default), clicking anywhere outside the
@@ -73,6 +76,7 @@ impl DropdownMenuState {
     pub fn new(app: &mut App) -> Entity<Self> {
         app.new(|_| Self {
             open: false,
+            animation: AnimatedVisibility::new(),
             highlighted_index: None,
             dismiss_on_escape: true,
             dismiss_on_outside_click: true,
@@ -83,15 +87,21 @@ impl DropdownMenuState {
 
     pub fn open(&mut self) {
         self.open = true;
+        self.animation.show();
     }
     pub fn close(&mut self) {
         self.open = false;
+        self.animation.hide();
     }
     pub fn toggle(&mut self) {
         self.open = !self.open;
+        self.animation.toggle();
     }
     pub fn is_open(&self) -> bool {
         self.open
+    }
+    pub fn is_visible(&self) -> bool {
+        self.animation.is_visible()
     }
     pub fn set_items(&mut self, items: Vec<DropdownItem>) {
         self.items = items;
@@ -142,10 +152,20 @@ impl DropdownMenuState {
         {
             let id = it.id.clone();
             self.open = false;
+            self.animation.hide();
             if let Some(f) = &self.on_select {
                 f(id, window, cx);
             }
         }
+    }
+}
+
+impl AnimatedPresenceState for DropdownMenuState {
+    fn visibility(&self) -> &AnimatedVisibility {
+        &self.animation
+    }
+    fn visibility_mut(&mut self) -> &mut AnimatedVisibility {
+        &mut self.animation
     }
 }
 

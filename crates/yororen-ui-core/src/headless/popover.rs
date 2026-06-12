@@ -9,6 +9,8 @@ use gpui::{
     Stateful,
 };
 
+use crate::animation::{AnimatedPresenceState, AnimatedVisibility};
+
 /// Preferred placement of a popover relative to its trigger.
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub enum PopoverPlacement {
@@ -32,6 +34,7 @@ pub enum PopoverPlacement {
 #[derive(Clone)]
 pub struct PopoverState {
     pub open: bool,
+    pub animation: AnimatedVisibility,
     pub placement: PopoverPlacement,
     pub width: Option<Pixels>,
     pub dismiss_on_escape: bool,
@@ -49,6 +52,7 @@ impl PopoverState {
     pub fn new(app: &mut App) -> Entity<Self> {
         app.new(|_| Self {
             open: false,
+            animation: AnimatedVisibility::new(),
             placement: PopoverPlacement::default(),
             width: None,
             dismiss_on_escape: true,
@@ -61,15 +65,21 @@ impl PopoverState {
 
     pub fn open(&mut self) {
         self.open = true;
+        self.animation.show();
     }
     pub fn close(&mut self) {
         self.open = false;
+        self.animation.hide();
     }
     pub fn toggle(&mut self) {
         self.open = !self.open;
+        self.animation.toggle();
     }
     pub fn is_open(&self) -> bool {
         self.open
+    }
+    pub fn is_visible(&self) -> bool {
+        self.animation.is_visible()
     }
     pub fn set_placement(&mut self, p: PopoverPlacement) {
         self.placement = p;
@@ -93,6 +103,15 @@ impl PopoverState {
         if let Some(f) = &self.on_close {
             f(window, cx);
         }
+    }
+}
+
+impl AnimatedPresenceState for PopoverState {
+    fn visibility(&self) -> &AnimatedVisibility {
+        &self.animation
+    }
+    fn visibility_mut(&mut self) -> &mut AnimatedVisibility {
+        &mut self.animation
     }
 }
 

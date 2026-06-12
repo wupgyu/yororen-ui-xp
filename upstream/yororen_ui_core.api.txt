@@ -335,6 +335,27 @@ pub const yororen_ui_core::animation::preset_duration::NORMAL: core::time::Durat
 pub const yororen_ui_core::animation::preset_duration::SLOW: core::time::Duration
 pub const yororen_ui_core::animation::preset_duration::VERY_FAST: core::time::Duration
 pub const yororen_ui_core::animation::preset_duration::VERY_SLOW: core::time::Duration
+pub enum yororen_ui_core::animation::AnimationPhase
+pub yororen_ui_core::animation::AnimationPhase::Closed
+pub yororen_ui_core::animation::AnimationPhase::Enter
+pub yororen_ui_core::animation::AnimationPhase::Exit
+pub yororen_ui_core::animation::AnimationPhase::Open
+impl core::clone::Clone for yororen_ui_core::animation::AnimationPhase
+pub fn yororen_ui_core::animation::AnimationPhase::clone(&self) -> yororen_ui_core::animation::AnimationPhase
+impl core::cmp::Eq for yororen_ui_core::animation::AnimationPhase
+impl core::cmp::PartialEq for yororen_ui_core::animation::AnimationPhase
+pub fn yororen_ui_core::animation::AnimationPhase::eq(&self, &yororen_ui_core::animation::AnimationPhase) -> bool
+impl core::fmt::Debug for yororen_ui_core::animation::AnimationPhase
+pub fn yororen_ui_core::animation::AnimationPhase::fmt(&self, &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::Copy for yororen_ui_core::animation::AnimationPhase
+impl core::marker::StructuralPartialEq for yororen_ui_core::animation::AnimationPhase
+impl core::marker::Freeze for yororen_ui_core::animation::AnimationPhase
+impl core::marker::Send for yororen_ui_core::animation::AnimationPhase
+impl core::marker::Sync for yororen_ui_core::animation::AnimationPhase
+impl core::marker::Unpin for yororen_ui_core::animation::AnimationPhase
+impl core::marker::UnsafeUnpin for yororen_ui_core::animation::AnimationPhase
+impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::animation::AnimationPhase
+impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::animation::AnimationPhase
 pub enum yororen_ui_core::animation::AnimationType
 pub yororen_ui_core::animation::AnimationType::BounceIn
 pub yororen_ui_core::animation::AnimationType::BounceOut
@@ -397,6 +418,39 @@ impl core::marker::Unpin for yororen_ui_core::animation::PresetSlideDirection
 impl core::marker::UnsafeUnpin for yororen_ui_core::animation::PresetSlideDirection
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::animation::PresetSlideDirection
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::animation::PresetSlideDirection
+pub struct yororen_ui_core::animation::AnimatedVisibility
+pub yororen_ui_core::animation::AnimatedVisibility::enter_config: yororen_ui_core::animation::AnimationConfig
+pub yororen_ui_core::animation::AnimatedVisibility::exit_config: yororen_ui_core::animation::AnimationConfig
+pub yororen_ui_core::animation::AnimatedVisibility::progress: f32
+pub yororen_ui_core::animation::AnimatedVisibility::target: bool
+impl yororen_ui_core::animation::AnimatedVisibility
+pub fn yororen_ui_core::animation::AnimatedVisibility::hide(&mut self)
+pub fn yororen_ui_core::animation::AnimatedVisibility::is_animating(&self) -> bool
+pub fn yororen_ui_core::animation::AnimatedVisibility::is_open(&self) -> bool
+pub fn yororen_ui_core::animation::AnimatedVisibility::is_visible(&self) -> bool
+pub fn yororen_ui_core::animation::AnimatedVisibility::new() -> Self
+pub fn yororen_ui_core::animation::AnimatedVisibility::open() -> Self
+pub fn yororen_ui_core::animation::AnimatedVisibility::phase(&self) -> yororen_ui_core::animation::AnimationPhase
+pub fn yororen_ui_core::animation::AnimatedVisibility::set_progress(&mut self, f32)
+pub fn yororen_ui_core::animation::AnimatedVisibility::show(&mut self)
+pub fn yororen_ui_core::animation::AnimatedVisibility::toggle(&mut self)
+pub fn yororen_ui_core::animation::AnimatedVisibility::update(&mut self, core::time::Duration) -> bool
+pub fn yororen_ui_core::animation::AnimatedVisibility::with_config(self, yororen_ui_core::animation::AnimationConfig) -> Self
+pub fn yororen_ui_core::animation::AnimatedVisibility::with_enter(self, yororen_ui_core::animation::AnimationConfig) -> Self
+pub fn yororen_ui_core::animation::AnimatedVisibility::with_exit(self, yororen_ui_core::animation::AnimationConfig) -> Self
+impl core::clone::Clone for yororen_ui_core::animation::AnimatedVisibility
+pub fn yororen_ui_core::animation::AnimatedVisibility::clone(&self) -> yororen_ui_core::animation::AnimatedVisibility
+impl core::default::Default for yororen_ui_core::animation::AnimatedVisibility
+pub fn yororen_ui_core::animation::AnimatedVisibility::default() -> Self
+impl core::fmt::Debug for yororen_ui_core::animation::AnimatedVisibility
+pub fn yororen_ui_core::animation::AnimatedVisibility::fmt(&self, &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::Freeze for yororen_ui_core::animation::AnimatedVisibility
+impl core::marker::Send for yororen_ui_core::animation::AnimatedVisibility
+impl core::marker::Sync for yororen_ui_core::animation::AnimatedVisibility
+impl core::marker::Unpin for yororen_ui_core::animation::AnimatedVisibility
+impl core::marker::UnsafeUnpin for yororen_ui_core::animation::AnimatedVisibility
+impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::animation::AnimatedVisibility
+impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::animation::AnimatedVisibility
 pub struct yororen_ui_core::animation::AnimationConfig
 pub yororen_ui_core::animation::AnimationConfig::duration: core::time::Duration
 pub yororen_ui_core::animation::AnimationConfig::easing: yororen_ui_core::animation::EasingFn
@@ -670,6 +724,18 @@ impl yororen_ui_core::animation::AnimateExt for gpui::elements::div::Div
 pub fn gpui::elements::div::Div::animate_fade(self, impl core::convert::Into<gpui::window::ElementId>, core::time::Duration, f32) -> gpui::elements::div::Stateful<Self>
 pub fn gpui::elements::div::Div::animate_scale(self, impl core::convert::Into<gpui::window::ElementId>, core::time::Duration, f32) -> gpui::elements::div::Stateful<Self>
 pub fn gpui::elements::div::Div::animate_slide(self, impl core::convert::Into<gpui::window::ElementId>, yororen_ui_core::animation::HelpersSlideDirection, gpui::geometry::Pixels, core::time::Duration, f32) -> gpui::elements::div::Stateful<Self>
+pub trait yororen_ui_core::animation::AnimatedPresenceState: 'static
+pub fn yororen_ui_core::animation::AnimatedPresenceState::visibility(&self) -> &yororen_ui_core::animation::AnimatedVisibility
+pub fn yororen_ui_core::animation::AnimatedPresenceState::visibility_mut(&mut self) -> &mut yororen_ui_core::animation::AnimatedVisibility
+impl yororen_ui_core::animation::AnimatedPresenceState for yororen_ui_core::headless::dropdown_menu::DropdownMenuState
+pub fn yororen_ui_core::headless::dropdown_menu::DropdownMenuState::visibility(&self) -> &yororen_ui_core::animation::AnimatedVisibility
+pub fn yororen_ui_core::headless::dropdown_menu::DropdownMenuState::visibility_mut(&mut self) -> &mut yororen_ui_core::animation::AnimatedVisibility
+impl yororen_ui_core::animation::AnimatedPresenceState for yororen_ui_core::headless::modal::ModalState
+pub fn yororen_ui_core::headless::modal::ModalState::visibility(&self) -> &yororen_ui_core::animation::AnimatedVisibility
+pub fn yororen_ui_core::headless::modal::ModalState::visibility_mut(&mut self) -> &mut yororen_ui_core::animation::AnimatedVisibility
+impl yororen_ui_core::animation::AnimatedPresenceState for yororen_ui_core::headless::popover::PopoverState
+pub fn yororen_ui_core::headless::popover::PopoverState::visibility(&self) -> &yororen_ui_core::animation::AnimatedVisibility
+pub fn yororen_ui_core::headless::popover::PopoverState::visibility_mut(&mut self) -> &mut yororen_ui_core::animation::AnimatedVisibility
 pub trait yororen_ui_core::animation::OrchestrationBuilder: core::default::Default + core::marker::Sized + core::clone::Clone
 pub fn yororen_ui_core::animation::OrchestrationBuilder::with(self, core::time::Duration) -> Self
 pub fn yororen_ui_core::animation::OrchestrationBuilder::with_all(self, impl core::iter::traits::collect::IntoIterator<Item = core::time::Duration>) -> Self
@@ -1324,6 +1390,7 @@ impl core::marker::UnsafeUnpin for yororen_ui_core::headless::dropdown_menu::Dro
 impl !core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::headless::dropdown_menu::DropdownMenuProps
 impl !core::panic::unwind_safe::UnwindSafe for yororen_ui_core::headless::dropdown_menu::DropdownMenuProps
 pub struct yororen_ui_core::headless::dropdown_menu::DropdownMenuState
+pub yororen_ui_core::headless::dropdown_menu::DropdownMenuState::animation: yororen_ui_core::animation::AnimatedVisibility
 pub yororen_ui_core::headless::dropdown_menu::DropdownMenuState::dismiss_on_escape: bool
 pub yororen_ui_core::headless::dropdown_menu::DropdownMenuState::dismiss_on_outside_click: bool
 pub yororen_ui_core::headless::dropdown_menu::DropdownMenuState::highlighted_index: core::option::Option<usize>
@@ -1334,6 +1401,7 @@ pub fn yororen_ui_core::headless::dropdown_menu::DropdownMenuState::close(&mut s
 pub fn yororen_ui_core::headless::dropdown_menu::DropdownMenuState::highlight_next(&mut self)
 pub fn yororen_ui_core::headless::dropdown_menu::DropdownMenuState::highlight_prev(&mut self)
 pub fn yororen_ui_core::headless::dropdown_menu::DropdownMenuState::is_open(&self) -> bool
+pub fn yororen_ui_core::headless::dropdown_menu::DropdownMenuState::is_visible(&self) -> bool
 pub fn yororen_ui_core::headless::dropdown_menu::DropdownMenuState::new(&mut gpui::app::App) -> gpui::app::entity_map::Entity<Self>
 pub fn yororen_ui_core::headless::dropdown_menu::DropdownMenuState::open(&mut self)
 pub fn yororen_ui_core::headless::dropdown_menu::DropdownMenuState::select_highlighted(&mut self, &mut gpui::window::Window, &mut gpui::app::App)
@@ -1343,6 +1411,9 @@ pub fn yororen_ui_core::headless::dropdown_menu::DropdownMenuState::set_on_selec
 pub fn yororen_ui_core::headless::dropdown_menu::DropdownMenuState::toggle(&mut self)
 impl core::clone::Clone for yororen_ui_core::headless::dropdown_menu::DropdownMenuState
 pub fn yororen_ui_core::headless::dropdown_menu::DropdownMenuState::clone(&self) -> yororen_ui_core::headless::dropdown_menu::DropdownMenuState
+impl yororen_ui_core::animation::AnimatedPresenceState for yororen_ui_core::headless::dropdown_menu::DropdownMenuState
+pub fn yororen_ui_core::headless::dropdown_menu::DropdownMenuState::visibility(&self) -> &yororen_ui_core::animation::AnimatedVisibility
+pub fn yororen_ui_core::headless::dropdown_menu::DropdownMenuState::visibility_mut(&mut self) -> &mut yororen_ui_core::animation::AnimatedVisibility
 impl core::marker::Freeze for yororen_ui_core::headless::dropdown_menu::DropdownMenuState
 impl !core::marker::Send for yororen_ui_core::headless::dropdown_menu::DropdownMenuState
 impl !core::marker::Sync for yororen_ui_core::headless::dropdown_menu::DropdownMenuState
@@ -2997,6 +3068,7 @@ impl core::marker::UnsafeUnpin for yororen_ui_core::headless::modal::ModalProps
 impl !core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::headless::modal::ModalProps
 impl !core::panic::unwind_safe::UnwindSafe for yororen_ui_core::headless::modal::ModalProps
 pub struct yororen_ui_core::headless::modal::ModalState
+pub yororen_ui_core::headless::modal::ModalState::animation: yororen_ui_core::animation::AnimatedVisibility
 pub yororen_ui_core::headless::modal::ModalState::dismiss_on_escape: bool
 pub yororen_ui_core::headless::modal::ModalState::dismiss_on_scrim: bool
 pub yororen_ui_core::headless::modal::ModalState::initial_focus: core::option::Option<gpui::window::FocusHandle>
@@ -3006,6 +3078,7 @@ impl yororen_ui_core::headless::modal::ModalState
 pub fn yororen_ui_core::headless::modal::ModalState::close(&mut self)
 pub fn yororen_ui_core::headless::modal::ModalState::invoke_close(&self, yororen_ui_core::headless::modal::ModalCloseReason, &mut gpui::window::Window, &mut gpui::app::App)
 pub fn yororen_ui_core::headless::modal::ModalState::is_open(&self) -> bool
+pub fn yororen_ui_core::headless::modal::ModalState::is_visible(&self) -> bool
 pub fn yororen_ui_core::headless::modal::ModalState::new(&mut gpui::app::App) -> gpui::app::entity_map::Entity<Self>
 pub fn yororen_ui_core::headless::modal::ModalState::open(&mut self)
 pub fn yororen_ui_core::headless::modal::ModalState::set_dismiss_on_escape(&mut self, bool)
@@ -3015,6 +3088,9 @@ pub fn yororen_ui_core::headless::modal::ModalState::set_on_close<F>(&mut self, 
 pub fn yororen_ui_core::headless::modal::ModalState::set_title(&mut self, impl core::convert::Into<alloc::string::String>)
 impl core::clone::Clone for yororen_ui_core::headless::modal::ModalState
 pub fn yororen_ui_core::headless::modal::ModalState::clone(&self) -> yororen_ui_core::headless::modal::ModalState
+impl yororen_ui_core::animation::AnimatedPresenceState for yororen_ui_core::headless::modal::ModalState
+pub fn yororen_ui_core::headless::modal::ModalState::visibility(&self) -> &yororen_ui_core::animation::AnimatedVisibility
+pub fn yororen_ui_core::headless::modal::ModalState::visibility_mut(&mut self) -> &mut yororen_ui_core::animation::AnimatedVisibility
 impl core::marker::Freeze for yororen_ui_core::headless::modal::ModalState
 impl core::marker::Send for yororen_ui_core::headless::modal::ModalState
 impl core::marker::Sync for yororen_ui_core::headless::modal::ModalState
@@ -3094,6 +3170,7 @@ impl core::marker::UnsafeUnpin for yororen_ui_core::headless::overlay::OverlayCl
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::headless::overlay::OverlayCloseReason
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::headless::overlay::OverlayCloseReason
 pub struct yororen_ui_core::headless::overlay::OverlayProps
+pub yororen_ui_core::headless::overlay::OverlayProps::animation: yororen_ui_core::animation::AnimatedVisibility
 pub yororen_ui_core::headless::overlay::OverlayProps::dismiss_on_escape: bool
 pub yororen_ui_core::headless::overlay::OverlayProps::dismiss_on_scrim: bool
 pub yororen_ui_core::headless::overlay::OverlayProps::focus_handle: gpui::window::FocusHandle
@@ -3235,6 +3312,7 @@ impl core::marker::UnsafeUnpin for yororen_ui_core::headless::popover::PopoverPr
 impl !core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::headless::popover::PopoverProps
 impl !core::panic::unwind_safe::UnwindSafe for yororen_ui_core::headless::popover::PopoverProps
 pub struct yororen_ui_core::headless::popover::PopoverState
+pub yororen_ui_core::headless::popover::PopoverState::animation: yororen_ui_core::animation::AnimatedVisibility
 pub yororen_ui_core::headless::popover::PopoverState::content_size: core::option::Option<gpui::geometry::Size<gpui::geometry::Pixels>>
 pub yororen_ui_core::headless::popover::PopoverState::dismiss_on_escape: bool
 pub yororen_ui_core::headless::popover::PopoverState::dismiss_on_outside_click: bool
@@ -3246,6 +3324,7 @@ impl yororen_ui_core::headless::popover::PopoverState
 pub fn yororen_ui_core::headless::popover::PopoverState::close(&mut self)
 pub fn yororen_ui_core::headless::popover::PopoverState::invoke_close(&self, &mut gpui::window::Window, &mut gpui::app::App)
 pub fn yororen_ui_core::headless::popover::PopoverState::is_open(&self) -> bool
+pub fn yororen_ui_core::headless::popover::PopoverState::is_visible(&self) -> bool
 pub fn yororen_ui_core::headless::popover::PopoverState::new(&mut gpui::app::App) -> gpui::app::entity_map::Entity<Self>
 pub fn yororen_ui_core::headless::popover::PopoverState::open(&mut self)
 pub fn yororen_ui_core::headless::popover::PopoverState::set_dismiss_on_escape(&mut self, bool)
@@ -3256,6 +3335,9 @@ pub fn yororen_ui_core::headless::popover::PopoverState::set_width(&mut self, gp
 pub fn yororen_ui_core::headless::popover::PopoverState::toggle(&mut self)
 impl core::clone::Clone for yororen_ui_core::headless::popover::PopoverState
 pub fn yororen_ui_core::headless::popover::PopoverState::clone(&self) -> yororen_ui_core::headless::popover::PopoverState
+impl yororen_ui_core::animation::AnimatedPresenceState for yororen_ui_core::headless::popover::PopoverState
+pub fn yororen_ui_core::headless::popover::PopoverState::visibility(&self) -> &yororen_ui_core::animation::AnimatedVisibility
+pub fn yororen_ui_core::headless::popover::PopoverState::visibility_mut(&mut self) -> &mut yororen_ui_core::animation::AnimatedVisibility
 impl core::marker::Freeze for yororen_ui_core::headless::popover::PopoverState
 impl core::marker::Send for yororen_ui_core::headless::popover::PopoverState
 impl core::marker::Sync for yororen_ui_core::headless::popover::PopoverState

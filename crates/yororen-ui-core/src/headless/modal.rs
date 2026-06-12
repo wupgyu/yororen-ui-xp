@@ -6,6 +6,8 @@ use std::sync::Arc;
 
 use gpui::{App, AppContext, Div, ElementId, Entity, FocusHandle, InteractiveElement, Stateful};
 
+use crate::animation::{AnimatedPresenceState, AnimatedVisibility};
+
 /// Reason a modal was closed. Forwarded to the caller's
 /// `on_close` so it can branch.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -21,6 +23,7 @@ pub type ModalCloseCallback =
 #[derive(Clone)]
 pub struct ModalState {
     pub open: bool,
+    pub animation: AnimatedVisibility,
     pub dismiss_on_escape: bool,
     pub dismiss_on_scrim: bool,
     /// Focus handle for the *initial* focus when the modal opens.
@@ -35,6 +38,7 @@ impl ModalState {
     pub fn new(app: &mut App) -> Entity<Self> {
         app.new(|_| Self {
             open: false,
+            animation: AnimatedVisibility::new(),
             dismiss_on_escape: true,
             dismiss_on_scrim: true,
             initial_focus: None,
@@ -45,12 +49,17 @@ impl ModalState {
 
     pub fn open(&mut self) {
         self.open = true;
+        self.animation.show();
     }
     pub fn close(&mut self) {
         self.open = false;
+        self.animation.hide();
     }
     pub fn is_open(&self) -> bool {
         self.open
+    }
+    pub fn is_visible(&self) -> bool {
+        self.animation.is_visible()
     }
     pub fn set_dismiss_on_escape(&mut self, v: bool) {
         self.dismiss_on_escape = v;
@@ -74,6 +83,15 @@ impl ModalState {
         if let Some(f) = &self.on_close {
             f(reason, window, cx);
         }
+    }
+}
+
+impl AnimatedPresenceState for ModalState {
+    fn visibility(&self) -> &AnimatedVisibility {
+        &self.animation
+    }
+    fn visibility_mut(&mut self) -> &mut AnimatedVisibility {
+        &mut self.animation
     }
 }
 
