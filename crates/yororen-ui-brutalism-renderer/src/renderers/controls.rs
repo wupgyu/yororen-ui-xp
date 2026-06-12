@@ -531,8 +531,8 @@ impl SliderRenderer for BrutalSliderRenderer {
     }
 }
 
-/// Internal `Element` painting the brutalism slider track + fill
-/// + knob. Same bounds-publishing contract as the default
+/// Internal `Element` painting the brutalism slider track, fill,
+/// and knob. Same bounds-publishing contract as the default
 /// renderer so the headless drag handlers in
 /// `SliderProps::render` can resolve mouse positions.
 struct BrutalSliderTrackElement {

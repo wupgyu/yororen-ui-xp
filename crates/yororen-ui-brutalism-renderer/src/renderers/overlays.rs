@@ -495,7 +495,11 @@ impl MenuRenderer for BrutalMenuRenderer {
                     let id = menu_item.id.clone();
                     let label = menu_item.label.to_string();
                     let row_bg = if is_highlighted { item_hover_bg } else { bg };
-                    let row_fg = if is_highlighted { item_hl_fg } else { item_hl_fg };
+                    let row_fg = if is_highlighted {
+                        item_hl_fg
+                    } else {
+                        theme.get_color("content.primary").unwrap_or(item_hl_fg)
+                    };
                     let mut row: Stateful<Div> = gpui::div()
                         .id(ElementId::Name(format!("brutal-menu-item-{}", i).into()))
                         .px(item_px)
