@@ -3,7 +3,7 @@
 use std::sync::Arc;
 
 use gpui::{
-    App, Div, FocusHandle, Hsla, InteractiveElement, ParentElement, Pixels, Stateful,
+    App, CursorStyle, Div, FocusHandle, Hsla, InteractiveElement, ParentElement, Pixels, Stateful,
     StatefulInteractiveElement, Styled, div, px,
 };
 
@@ -147,6 +147,11 @@ impl SwitchRenderer for TokenSwitchRenderer {
         el = el.child(div().bg(knob).size(knob_size).rounded(pill_radius));
         el.hover(|s| s.bg(track_hover))
             .active(|s| s.bg(track_active))
+            .cursor(if props.disabled {
+                CursorStyle::OperationNotAllowed
+            } else {
+                CursorStyle::PointingHand
+            })
     }
 }
 

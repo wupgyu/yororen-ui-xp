@@ -3,7 +3,7 @@
 use std::sync::Arc;
 
 use gpui::{
-    App, Div, ElementId, Hsla, InteractiveElement, ParentElement, Pixels, Stateful,
+    App, CursorStyle, Div, ElementId, Hsla, InteractiveElement, ParentElement, Pixels, Stateful,
     StatefulInteractiveElement, Styled, div, px,
 };
 
@@ -121,6 +121,7 @@ impl SelectRenderer for TokenSelectRenderer {
             .py(pad.top)
             .min_h(h)
             .rounded(r)
+            .cursor(CursorStyle::PointingHand)
             .child(display)
             .id("default-select-trigger");
         trigger = trigger.on_click(move |_ev, _window, cx| {
@@ -181,6 +182,7 @@ impl SelectRenderer for TokenSelectRenderer {
                     .rounded(px(4.))
                     .bg(item_bg)
                     .text_color(item_fg)
+                    .cursor(CursorStyle::PointingHand)
                     .hover(move |s| s.bg(hover_bg))
                     .child(opt_label);
                 item = item.on_click(move |_ev, window, cx| {

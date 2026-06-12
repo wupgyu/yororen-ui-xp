@@ -3,9 +3,9 @@
 use std::sync::{Arc, Mutex};
 
 use gpui::{
-    App, Bounds, Corners, Edges, Element, GlobalElementId, Hsla, InteractiveElement, IntoElement,
-    LayoutId, PaintQuad, ParentElement, Path, PathBuilder, Pixels, Point, Styled, Style, Window,
-    div, hsla, point, px, size, BorderStyle,
+    App, Bounds, Corners, CursorStyle, Edges, Element, GlobalElementId, Hsla, InteractiveElement,
+    IntoElement, LayoutId, PaintQuad, ParentElement, Path, PathBuilder, Pixels, Point, Styled,
+    Style, Window, div, hsla, point, px, size, BorderStyle,
 };
 
 use yororen_ui_core::headless::slider::SliderProps;
@@ -90,6 +90,11 @@ impl SliderRenderer for TokenSliderRenderer {
             .id(props.id.clone())
             .w(track_w)
             .h(px(24.0))
+            .cursor(if props.disabled {
+                CursorStyle::OperationNotAllowed
+            } else {
+                CursorStyle::PointingHand
+            })
             .child(track_element);
 
         SliderRenderOutput {

@@ -5,7 +5,7 @@
 
 use std::sync::Arc;
 
-use gpui::{InteractiveElement, App, Div, Hsla, ParentElement, Pixels, SharedString, Stateful, Styled, div, px};
+use gpui::{InteractiveElement, App, CursorStyle, Div, Hsla, ParentElement, Pixels, SharedString, Stateful, Styled, div, px};
 
 use yororen_ui_core::headless::table::{TableColumn, TableProps};
 use yororen_ui_core::theme::{ActiveTheme, Theme};
@@ -97,7 +97,14 @@ impl TableRenderer for TokenTableRenderer {
         let mut body = div().flex().flex_col();
         for (row_idx, row) in props.rows.iter().enumerate() {
             let is_selected = props.selected_row == Some(row_idx);
-            let mut row_el = div().flex().flex_row();
+            let mut row_el = div()
+                .flex()
+                .flex_row()
+                .cursor(if props.on_select_row.is_some() {
+                    CursorStyle::PointingHand
+                } else {
+                    CursorStyle::Arrow
+                });
             if is_selected {
                 row_el = row_el.bg(selected_bg);
             }

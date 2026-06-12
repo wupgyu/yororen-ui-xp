@@ -3,7 +3,7 @@
 use std::sync::Arc;
 
 use gpui::{
-    App, Div, FocusHandle, Hsla, InteractiveElement, ParentElement, Pixels, Stateful,
+    App, CursorStyle, Div, FocusHandle, Hsla, InteractiveElement, ParentElement, Pixels, Stateful,
     StatefulInteractiveElement, Styled, div, px,
 };
 
@@ -120,7 +120,13 @@ impl CheckboxRenderer for TokenCheckboxRenderer {
         if props.checked {
             el = el.child(div().bg(border).size(check_size).rounded(px(2.)));
         }
-        el.hover(|s| s.bg(hover_bg)).active(|s| s.bg(active_bg))
+        el.hover(|s| s.bg(hover_bg))
+            .active(|s| s.bg(active_bg))
+            .cursor(if props.disabled {
+                CursorStyle::OperationNotAllowed
+            } else {
+                CursorStyle::PointingHand
+            })
     }
 }
 

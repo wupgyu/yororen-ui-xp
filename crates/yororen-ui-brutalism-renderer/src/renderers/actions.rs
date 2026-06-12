@@ -2,8 +2,8 @@
 //! `ToggleButton`, `SplitButton`.
 
 use gpui::{
-    App, Div, ElementId, FocusHandle, Hsla, InteractiveElement, ParentElement, Pixels, Stateful,
-    StatefulInteractiveElement, Styled, div, px,
+    App, CursorStyle, Div, ElementId, FocusHandle, Hsla, InteractiveElement, ParentElement, Pixels,
+    Stateful, StatefulInteractiveElement, Styled, div, px,
 };
 use yororen_ui_core::headless::button::ButtonProps;
 use yororen_ui_core::headless::icon::IconProps;
@@ -201,7 +201,13 @@ impl ButtonRenderer for BrutalButtonRenderer {
             el = el.child(caption);
         }
 
-        el.hover(|s| s.bg(hover_bg)).active(|s| s.bg(active_bg))
+        el.hover(|s| s.bg(hover_bg))
+            .active(|s| s.bg(active_bg))
+            .cursor(if props.disabled {
+                CursorStyle::OperationNotAllowed
+            } else {
+                CursorStyle::PointingHand
+            })
     }
 }
 
@@ -343,7 +349,13 @@ impl IconButtonRenderer for BrutalIconButtonRenderer {
             el = el.child(icon_el);
         }
 
-        el.hover(|s| s.bg(hover_bg)).active(|s| s.bg(active_bg))
+        el.hover(|s| s.bg(hover_bg))
+            .active(|s| s.bg(active_bg))
+            .cursor(if props.disabled {
+                CursorStyle::OperationNotAllowed
+            } else {
+                CursorStyle::PointingHand
+            })
     }
 }
 
@@ -523,7 +535,13 @@ impl ToggleButtonRenderer for BrutalToggleButtonRenderer {
             el = el.child(caption);
         }
 
-        el.hover(|s| s.bg(hover_bg)).active(|s| s.bg(active_bg))
+        el.hover(|s| s.bg(hover_bg))
+            .active(|s| s.bg(active_bg))
+            .cursor(if props.disabled {
+                CursorStyle::OperationNotAllowed
+            } else {
+                CursorStyle::PointingHand
+            })
     }
 }
 

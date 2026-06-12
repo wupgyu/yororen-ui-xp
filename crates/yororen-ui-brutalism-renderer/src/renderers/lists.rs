@@ -1,6 +1,6 @@
 //! Brutalist list renderers: `ListItem`, `TreeItem`, `Form`.
 
-use gpui::{App, Div, ElementId, Hsla, InteractiveElement, IntoElement, ParentElement, Pixels, SharedString, Stateful, StatefulInteractiveElement, Styled, Window, prelude::FluentBuilder, px};
+use gpui::{App, CursorStyle, Div, ElementId, Hsla, InteractiveElement, IntoElement, ParentElement, Pixels, SharedString, Stateful, StatefulInteractiveElement, Styled, Window, prelude::FluentBuilder, px};
 use yororen_ui_core::renderer::spec::Edges;
 use yororen_ui_core::theme::Theme;
 
@@ -85,6 +85,13 @@ impl ListItemRenderer for BrutalListItemRenderer {
             .py(pad.top)
             .min_h(h)
             .rounded(r)
+            .cursor(if props.disabled {
+                CursorStyle::OperationNotAllowed
+            } else if props.on_click.is_some() {
+                CursorStyle::PointingHand
+            } else {
+                CursorStyle::Arrow
+            })
             .child(props.title.to_string())
     }
 }

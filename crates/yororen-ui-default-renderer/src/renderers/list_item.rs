@@ -2,7 +2,7 @@
 
 use std::sync::Arc;
 
-use gpui::{App, Div, Hsla, ParentElement, Pixels, Styled, div};
+use gpui::{App, CursorStyle, Div, Hsla, ParentElement, Pixels, Styled, div};
 
 use yororen_ui_core::headless::list_item::ListItemProps;
 use yororen_ui_core::renderer::spec::Edges;
@@ -84,6 +84,13 @@ impl ListItemRenderer for TokenListItemRenderer {
             .py(pad.top)
             .min_h(h)
             .rounded(r)
+            .cursor(if props.disabled {
+                CursorStyle::OperationNotAllowed
+            } else if props.on_click.is_some() {
+                CursorStyle::PointingHand
+            } else {
+                CursorStyle::Arrow
+            })
             .child(props.title.to_string())
     }
 }

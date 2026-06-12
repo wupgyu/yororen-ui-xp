@@ -3,7 +3,7 @@
 use std::sync::Arc;
 
 use gpui::{
-    App, Div, FocusHandle, Hsla, InteractiveElement, ParentElement, Pixels, Stateful,
+    App, CursorStyle, Div, FocusHandle, Hsla, InteractiveElement, ParentElement, Pixels, Stateful,
     StatefulInteractiveElement, Styled, div, px,
 };
 
@@ -108,7 +108,13 @@ impl RadioRenderer for TokenRadioRenderer {
         if props.checked {
             el = el.child(div().bg(dot_fg).size(dot_size).rounded(pill_radius));
         }
-        el.hover(|s| s.bg(hover_bg)).active(|s| s.bg(active_bg))
+        el.hover(|s| s.bg(hover_bg))
+            .active(|s| s.bg(active_bg))
+            .cursor(if props.disabled {
+                CursorStyle::OperationNotAllowed
+            } else {
+                CursorStyle::PointingHand
+            })
     }
 }
 

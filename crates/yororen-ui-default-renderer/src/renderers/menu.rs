@@ -10,7 +10,7 @@
 use std::sync::Arc;
 
 use gpui::{
-    App, Div, ElementId, Hsla, InteractiveElement, ParentElement, Pixels, Stateful,
+    App, CursorStyle, Div, ElementId, Hsla, InteractiveElement, ParentElement, Pixels, Stateful,
     StatefulInteractiveElement, Styled, div, px,
 };
 use yororen_ui_core::headless::dropdown_menu::DropdownItem;
@@ -80,6 +80,7 @@ impl MenuRenderer for TokenMenuRenderer {
                         .py(px(6.0))
                         .rounded(px(4.0))
                         .bg(row_bg)
+                        .cursor(CursorStyle::PointingHand)
                         .hover(move |s| s.bg(item_hover))
                         .child(label);
                     row = row.on_click(move |_ev, window, cx| {

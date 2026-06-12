@@ -3,10 +3,10 @@
 //! `EmptyState`.
 
 use gpui::{
-    AbsoluteLength, App, BorderStyle, Bounds, BoxShadow, Corners, DefiniteLength, Div, Edges,
-    Element, ElementId, FontWeight, GlobalElementId, Hsla, InspectorElementId, InteractiveElement,
-    IntoElement, LayoutId, Length, Pixels, Position, SharedString, Stateful, StatefulInteractiveElement,
-    Style, Styled, Window, hsla, point, px,
+    AbsoluteLength, App, BorderStyle, Bounds, BoxShadow, Corners, CursorStyle, DefiniteLength,
+    Div, Edges, Element, ElementId, FontWeight, GlobalElementId, Hsla, InspectorElementId,
+    InteractiveElement, IntoElement, LayoutId, Length, Pixels, Position, SharedString, Stateful,
+    StatefulInteractiveElement, Style, Styled, Window, hsla, point, px,
 };
 use std::sync::OnceLock;
 use std::time::Instant;
@@ -481,6 +481,13 @@ impl TagRenderer for BrutalTagRenderer {
             .gap(p / 2.)
             .border_2()
             .border_color(brutal_border_color(theme))
+            .cursor(if props.disabled {
+                CursorStyle::OperationNotAllowed
+            } else if props.on_click.is_some() {
+                CursorStyle::PointingHand
+            } else {
+                CursorStyle::Arrow
+            })
             .child(props.label.clone());
         if props.closable {
             let close_size = self.close_size(&state, theme);

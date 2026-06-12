@@ -1202,6 +1202,7 @@ impl SelectRenderer for BrutalSelectRenderer {
             .py(pad.top)
             .min_h(h)
             .rounded(r)
+            .cursor(CursorStyle::PointingHand)
             .child(display)
             .id("brutal-select-trigger");
         trigger = trigger.on_click(move |_ev, _window, cx| {
@@ -1267,6 +1268,7 @@ impl SelectRenderer for BrutalSelectRenderer {
                     .rounded(px(4.))
                     .bg(item_bg)
                     .text_color(item_fg)
+                    .cursor(CursorStyle::PointingHand)
                     .hover(move |s| s.bg(hover_bg))
                     .child(opt_label);
                 item = item.on_click(move |_ev, window, cx| {
@@ -1440,6 +1442,7 @@ impl ComboBoxRenderer for BrutalComboBoxRenderer {
             .rounded(r)
             .id("brutal-combo-trigger")
             .track_focus(&focus_handle)
+            .cursor(CursorStyle::IBeam)
             // The text input is the flex child that grows;
             // the chevron is the fixed-size child on the
             // right. Click anywhere on the trigger opens the
@@ -1453,6 +1456,7 @@ impl ComboBoxRenderer for BrutalComboBoxRenderer {
                     .items_center()
                     .justify_center()
                     .text_color(hint_color)
+                    .cursor(CursorStyle::PointingHand)
                     .child(if is_open { "▴" } else { "▾" }),
             );
         let combo_state_for_open = props.state.clone();
@@ -1520,6 +1524,7 @@ impl ComboBoxRenderer for BrutalComboBoxRenderer {
                     .rounded(px(4.))
                     .bg(item_bg)
                     .text_color(item_fg)
+                    .cursor(CursorStyle::PointingHand)
                     .hover(move |s| s.bg(hover_bg))
                     .child(opt_label);
                 // On pick: headless `pick` writes value

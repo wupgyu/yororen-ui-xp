@@ -3,7 +3,7 @@
 use std::sync::Arc;
 
 use gpui::{
-    App, Div, FontWeight, Hsla, InteractiveElement, ParentElement, Pixels,
+    App, CursorStyle, Div, FontWeight, Hsla, InteractiveElement, ParentElement, Pixels,
     StatefulInteractiveElement, Styled, div,
 };
 
@@ -106,6 +106,13 @@ impl TagRenderer for TokenTagRenderer {
             .font_weight(fw)
             .rounded(r)
             .gap(p / 2.)
+            .cursor(if props.disabled {
+                CursorStyle::OperationNotAllowed
+            } else if props.on_click.is_some() {
+                CursorStyle::PointingHand
+            } else {
+                CursorStyle::Arrow
+            })
             .child(props.label.clone());
         if props.closable {
             let close_size = self.close_size(&state, theme);

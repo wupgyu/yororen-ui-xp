@@ -3,7 +3,8 @@
 
 use gpui::prelude::FluentBuilder;
 use gpui::{
-    App, Div, Hsla, InteractiveElement, ParentElement, Pixels, Stateful, Styled, div, px,
+    App, CursorStyle, Div, Hsla, InteractiveElement, ParentElement, Pixels, Stateful, Styled, div,
+    px,
 };
 use yororen_ui_core::renderer::spec::Edges;
 use yororen_ui_core::theme::Theme;
@@ -335,6 +336,7 @@ impl DisclosureRenderer for BrutalDisclosureRenderer {
             .flex_col()
             .gap(px(4.0))
             .text_color(fg)
+            .cursor(CursorStyle::PointingHand)
             .child(
                 div()
                     .flex()

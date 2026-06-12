@@ -2,7 +2,7 @@
 
 use std::sync::Arc;
 
-use gpui::{App, Div, Hsla, Pixels, Styled, div};
+use gpui::{App, CursorStyle, Div, Hsla, Pixels, Styled, div};
 
 use yororen_ui_core::headless::card::CardProps;
 use yororen_ui_core::renderer::spec::Edges;
@@ -60,6 +60,11 @@ impl CardRenderer for TokenCardRenderer {
             .border_color(border)
             .p(pad.top)
             .rounded(r)
+            .cursor(if props.interactive {
+                CursorStyle::PointingHand
+            } else {
+                CursorStyle::Arrow
+            })
     }
 }
 

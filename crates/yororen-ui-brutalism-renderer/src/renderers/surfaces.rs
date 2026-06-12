@@ -1,7 +1,7 @@
 //! Brutalist surface renderers: `Tooltip`, `Avatar`, `Panel`,
 //! `Card`.
 
-use gpui::{App, Div, Hsla, ParentElement, Pixels, Styled, div, px};
+use gpui::{App, CursorStyle, Div, Hsla, ParentElement, Pixels, Styled, div, px};
 use yororen_ui_core::renderer::spec::Edges;
 use yororen_ui_core::theme::{ActiveTheme, Theme};
 
@@ -358,7 +358,7 @@ impl BrutalCardRenderer {
 impl CardRenderer for BrutalCardRenderer {
     fn compose(
         &self,
-        _props: &yororen_ui_core::headless::card::CardProps,
+        props: &yororen_ui_core::headless::card::CardProps,
         cx: &App,
     ) -> Div {
         use yororen_ui_core::theme::ActiveTheme;
@@ -377,6 +377,11 @@ impl CardRenderer for BrutalCardRenderer {
             .border_color(border)
             .p(pad.top)
             .rounded(r)
+            .cursor(if props.interactive {
+                CursorStyle::PointingHand
+            } else {
+                CursorStyle::Arrow
+            })
     }
 }
 

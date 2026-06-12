@@ -7,7 +7,7 @@
 
 use std::sync::Arc;
 
-use gpui::{App, Div, Hsla, InteractiveElement, ParentElement, Pixels, Styled, div};
+use gpui::{App, CursorStyle, Div, Hsla, InteractiveElement, ParentElement, Pixels, Styled, div};
 
 use yororen_ui_core::headless::disclosure::DisclosureProps;
 use yororen_ui_core::theme::Theme;
@@ -52,6 +52,7 @@ impl DisclosureRenderer for TokenDisclosureRenderer {
             .bg(bg)
             .rounded(r)
             .text_color(fg)
+            .cursor(CursorStyle::PointingHand)
             .hover(|s| s.bg(hover_bg))
             .child(
                 div()

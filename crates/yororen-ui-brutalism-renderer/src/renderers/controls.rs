@@ -1,7 +1,7 @@
 //! Brutalist control renderers: `Switch`, `Checkbox`, `Radio`.
 
 use gpui::{
-    App, Div, FocusHandle, Hsla, InteractiveElement, ParentElement, Pixels, Stateful,
+    App, CursorStyle, Div, FocusHandle, Hsla, InteractiveElement, ParentElement, Pixels, Stateful,
     StatefulInteractiveElement, Styled, div, px,
 };
 use yororen_ui_core::theme::ActiveTheme;
@@ -140,6 +140,11 @@ impl SwitchRenderer for BrutalSwitchRenderer {
         el = el.child(div().bg(knob).size(knob_size));
         el.hover(|s| s.bg(track_hover))
             .active(|s| s.bg(track_active))
+            .cursor(if props.disabled {
+                CursorStyle::OperationNotAllowed
+            } else {
+                CursorStyle::PointingHand
+            })
     }
 }
 
@@ -252,6 +257,11 @@ impl CheckboxRenderer for BrutalCheckboxRenderer {
         }
         el.hover(|s| s.bg(hover_bg))
             .active(|s| s.bg(active_bg))
+            .cursor(if props.disabled {
+                CursorStyle::OperationNotAllowed
+            } else {
+                CursorStyle::PointingHand
+            })
     }
 }
 
@@ -350,5 +360,10 @@ impl RadioRenderer for BrutalRadioRenderer {
         }
         el.hover(|s| s.bg(hover_bg))
             .active(|s| s.bg(active_bg))
+            .cursor(if props.disabled {
+                CursorStyle::OperationNotAllowed
+            } else {
+                CursorStyle::PointingHand
+            })
     }
 }

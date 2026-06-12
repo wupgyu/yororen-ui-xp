@@ -3,8 +3,8 @@
 use std::sync::Arc;
 
 use gpui::{
-    AnyElement, App, Div, ElementId, Hsla, InteractiveElement, IntoElement, ParentElement,
-    Pixels, Stateful, StatefulInteractiveElement, Styled, Window, div, px,
+    AnyElement, App, CursorStyle, Div, ElementId, Hsla, InteractiveElement, IntoElement,
+    ParentElement, Pixels, Stateful, StatefulInteractiveElement, Styled, Window, div, px,
 };
 
 use yororen_ui_core::headless::combo_box::ComboBoxProps;
@@ -166,6 +166,7 @@ impl ComboBoxRenderer for TokenComboBoxRenderer {
             .rounded(r)
             .id("default-combo-trigger")
             .track_focus(&focus_handle)
+            .cursor(CursorStyle::IBeam)
             .child(div().flex_1().min_w(px(0.)).child(ti_element))
             .child(
                 div()
@@ -174,6 +175,7 @@ impl ComboBoxRenderer for TokenComboBoxRenderer {
                     .items_center()
                     .justify_center()
                     .text_color(hint_color)
+                    .cursor(CursorStyle::PointingHand)
                     .child(if is_open { "▴" } else { "▾" }),
             );
         let combo_state_for_open = props.state.clone();
@@ -245,6 +247,7 @@ impl ComboBoxRenderer for TokenComboBoxRenderer {
                     .rounded(px(4.))
                     .bg(item_bg)
                     .text_color(item_fg)
+                    .cursor(CursorStyle::PointingHand)
                     .hover(move |s| s.bg(hover_bg))
                     .child(opt_label);
                 item = item.on_click(move |_ev, window, cx| {

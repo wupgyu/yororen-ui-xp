@@ -8,8 +8,8 @@
 use std::sync::Arc;
 
 use gpui::{
-    App, Div, ElementId, FocusHandle, Hsla, InteractiveElement, ParentElement, Pixels, Stateful,
-    StatefulInteractiveElement, Styled, div,
+    App, CursorStyle, Div, ElementId, FocusHandle, Hsla, InteractiveElement, ParentElement, Pixels,
+    Stateful, StatefulInteractiveElement, Styled, div,
 };
 
 use yororen_ui_core::headless::icon::IconProps;
@@ -127,6 +127,11 @@ impl IconButtonRenderer for TokenIconButtonRenderer {
 
         el.hover(|s| s.bg(hover_bg))
             .active(|s| s.bg(active_bg))
+            .cursor(if props.disabled {
+                CursorStyle::OperationNotAllowed
+            } else {
+                CursorStyle::PointingHand
+            })
     }
 }
 
