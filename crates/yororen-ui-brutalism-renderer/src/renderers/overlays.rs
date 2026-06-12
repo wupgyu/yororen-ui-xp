@@ -6,10 +6,12 @@ use gpui::{
     App, CursorStyle, Div, ElementId, Hsla, InteractiveElement, ParentElement, Pixels, Stateful,
     StatefulInteractiveElement, Styled, div, px,
 };
+use yororen_ui_core::animation::SlideDirection;
 use yororen_ui_core::renderer::spec::Edges;
 use yororen_ui_core::theme::Theme;
 
 use crate::style::{BRUTAL_BORDER, BRUTAL_BORDER_WIDTH, BRUTAL_RADIUS, brutal_border_color, brutal_shadow_overlay};
+use yororen_ui_default_renderer::animation::{AnimatedPresenceElement, fade_in_on_mount};
 
 // =====================================================================
 // Modal
@@ -52,7 +54,7 @@ impl BrutalModalRenderer {
 impl ModalRenderer for BrutalModalRenderer {
     fn compose(
         &self,
-        _props: &yororen_ui_core::headless::modal::ModalProps,
+        props: &yororen_ui_core::headless::modal::ModalProps,
         cx: &App,
     ) -> Div {
         use yororen_ui_core::theme::ActiveTheme;
@@ -63,12 +65,17 @@ impl ModalRenderer for BrutalModalRenderer {
         let pad = self.panel_padding(&state, theme);
         let r = self.panel_border_radius(&state, theme);
         let shadow = brutal_shadow_overlay(theme);
+
+        if !props.state.read(cx).is_visible() {
+            return div();
+        }
+
         // Brutalism Modal renderer paints *only* the panel
         // (bg / border / padding / radius / hard offset shadow).
         // The scrim and centering are the caller's responsibility
         // — same contract as `TokenModalRenderer` in the default
         // renderer.
-        gpui::div()
+        let panel = gpui::div()
             .bg(panel_bg)
             .border_color(panel_border)
             .border_2()
@@ -82,7 +89,19 @@ impl ModalRenderer for BrutalModalRenderer {
                     x: gpui::px(0.0),
                     y: shadow.offset_y,
                 },
-            }])
+            }]);
+
+        div().child(AnimatedPresenceElement::new(
+            props.state.clone(),
+            props.id.clone(),
+            SlideDirection::Down,
+            px(
+                theme
+                    .get_number("motion.slide_distance")
+                    .unwrap_or(10.0) as f32,
+            ),
+            panel,
+        ))
     }
 }
 
@@ -128,7 +147,7 @@ impl PopoverRenderer for BrutalPopoverRenderer {
         let border = self.border(&state, theme);
         let r = self.border_radius(&state, theme);
         let alpha = self.shadow_alpha(&state, theme);
-        let open = props.state.read(cx).is_open();
+        let visible = props.state.read(cx).is_visible();
         let offset_px = self.offset(&state, theme);
 
         let mut outer = gpui::div().relative();
@@ -137,7 +156,7 @@ impl PopoverRenderer for BrutalPopoverRenderer {
             outer = outer.child(t);
         }
 
-        if open
+        if visible
             && let Some(c) = props.content.take()
         {
             // Capture outside-clicks to close the popover.
@@ -165,7 +184,23 @@ impl PopoverRenderer for BrutalPopoverRenderer {
                 }])
                 .occlude()
                 .child(c);
-            outer = outer.child(gpui::deferred(panel).with_priority(1));
+            let distance = px(
+                theme
+                    .get_number("motion.slide_distance")
+                    .unwrap_or(10.0) as f32,
+            );
+            outer = outer.child(
+                gpui::deferred(
+                    div().child(AnimatedPresenceElement::new(
+                        props.state.clone(),
+                        (props.id.clone(), "content"),
+                        SlideDirection::Down,
+                        distance,
+                        panel,
+                    )),
+                )
+                .with_priority(1),
+            );
         }
 
         outer
@@ -234,10 +269,10 @@ impl DropdownMenuRenderer for BrutalDropdownMenuRenderer {
             outer = outer.child(t);
         }
 
-        // 2) Body — only when open, floated with
+        // 2) Body — only when visible, floated with
         //    `gpui::deferred` so it paints over subsequent
         //    sibling cells in the gallery.
-        if state.open
+        if props.state.read(cx).is_visible()
             && let Some(c) = props.content.take()
         {
             let shadow = crate::style::brutal_shadow_overlay(theme);
@@ -266,7 +301,23 @@ impl DropdownMenuRenderer for BrutalDropdownMenuRenderer {
                     state_for_close.update(cx, |s, _cx| s.close());
                 })
                 .child(c);
-            outer = outer.child(gpui::deferred(panel).with_priority(1));
+            let distance = px(
+                theme
+                    .get_number("motion.slide_distance")
+                    .unwrap_or(10.0) as f32,
+            );
+            outer = outer.child(
+                gpui::deferred(
+                    div().child(AnimatedPresenceElement::new(
+                        props.state.clone(),
+                        (props.id.clone(), "body"),
+                        SlideDirection::Down,
+                        distance,
+                        panel,
+                    )),
+                )
+                .with_priority(1),
+            );
         }
 
         outer
@@ -385,12 +436,26 @@ impl OverlayRenderer for BrutalOverlayRenderer {
         // cell's box (the cell is now `position: relative`, see
         // `sections/mod.rs::cell`). The brutalism flavor is just
         // the scrim color — the overlay has no border / radius.
-        div()
-            .id(props.id.clone())
+        let scrim_el = div()
             .relative()
             .size_full()
             .bg(scrim)
-            .when(!props.open, |el: Stateful<Div>| el.invisible())
+            .when(!props.open, |el: Div| el.invisible());
+
+        if !props.open {
+            return div().id(props.id.clone()).child(scrim_el);
+        }
+
+        let duration_ms = theme
+            .get_number("motion.duration_modal_fade")
+            .unwrap_or(200.0) as u64;
+        let el = fade_in_on_mount(
+            scrim_el,
+            props.id.clone(),
+            std::time::Duration::from_millis(duration_ms),
+            yororen_ui_core::animation::ease_out_quad,
+        );
+        div().id(props.id.clone()).child(el)
     }
 }
 
