@@ -783,3 +783,110 @@ impl SplitButtonRenderer for BrutalSplitButtonRenderer {
         }
     }
 }
+
+// =====================================================================
+// ButtonGroup
+// =====================================================================
+
+pub use yororen_ui_core::renderer::button_group::{ButtonGroupRenderState, ButtonGroupRenderer};
+
+pub struct BrutalButtonGroupRenderer;
+
+// Inherent helpers — *not* part of the trait surface.
+impl BrutalButtonGroupRenderer {
+    /// Gap between children in **detached** mode. Brutalism uses
+    /// a wider gap than the default renderer because the thick
+    /// borders make adjacent buttons visually heavy and a tighter
+    /// gap looks cramped. In attached (segmented) mode the gap is
+    /// always 0.
+    pub fn gap(&self, _state: &ButtonGroupRenderState, theme: &Theme) -> f32 {
+        theme
+            .get_number("tokens.control.button_group.gap")
+            .unwrap_or(4.0) as f32
+    }
+
+    /// Corner radius the first / last button inherit. Brutalism
+    /// always renders sharp corners, so this is `BRUTAL_RADIUS`
+    /// (0).
+    pub fn radius(&self, _state: &ButtonGroupRenderState, _theme: &Theme) -> Pixels {
+        px(BRUTAL_RADIUS)
+    }
+
+    /// Border colour for the shared group border (only drawn
+    /// in attached mode).
+    pub fn border_color(&self, _state: &ButtonGroupRenderState, theme: &Theme) -> Hsla {
+        brutal_border_color(theme)
+    }
+}
+
+impl ButtonGroupRenderer for BrutalButtonGroupRenderer {
+    fn compose(
+        &self,
+        props: yororen_ui_core::headless::button_group::ButtonGroupProps,
+        cx: &App,
+    ) -> Stateful<Div> {
+        use yororen_ui_core::headless::button_group::ButtonGroupOrientation;
+
+        let theme = cx.theme();
+        let state = ButtonGroupRenderState {
+            orientation: props.orientation,
+            attached: props.attached,
+        };
+        let n = props.children.len();
+        let id = props.id;
+        let children = props.children;
+
+        // Container: flex row/column. The border, radius, and
+        // overflow are only applied in attached mode — in
+        // detached mode each child keeps its own brutalist border.
+        let mut container = match props.orientation {
+            ButtonGroupOrientation::Horizontal => div().flex().flex_row().items_center(),
+            ButtonGroupOrientation::Vertical => div().flex().flex_col().items_center(),
+        };
+
+        if props.attached && n > 0 {
+            let radius = self.radius(&state, theme);
+            let border = self.border_color(&state, theme);
+            // In segmented mode the group itself owns a thick
+            // brutalist border around the whole row/column and
+            // the children's individual borders are clipped to
+            // 0 width below to avoid double-thickness seams.
+            container = container
+                .overflow_hidden()
+                .rounded(radius)
+                .border(px(BRUTAL_BORDER_WIDTH))
+                .border_color(border);
+        } else {
+            let gap = px(self.gap(&state, theme));
+            container = container.gap(gap);
+        }
+
+        // Process children: in attached mode strip the inner
+        // children's border-radius so they butt up cleanly and
+        // re-add the outer corners to the first / last child.
+        let mut iter = children.into_iter();
+        for i in 0..n {
+            let Some(mut child) = iter.next() else { break };
+            if props.attached && n > 1 {
+                let radius = self.radius(&state, theme);
+                child = child.rounded(px(0.));
+                if i == 0 {
+                    if props.orientation == ButtonGroupOrientation::Horizontal {
+                        child = child.rounded_tl(radius).rounded_bl(radius);
+                    } else {
+                        child = child.rounded_tl(radius).rounded_tr(radius);
+                    }
+                } else if i + 1 == n {
+                    if props.orientation == ButtonGroupOrientation::Horizontal {
+                        child = child.rounded_tr(radius).rounded_br(radius);
+                    } else {
+                        child = child.rounded_bl(radius).rounded_br(radius);
+                    }
+                }
+            }
+            container = container.child(child);
+        }
+
+        container.id(id)
+    }
+}

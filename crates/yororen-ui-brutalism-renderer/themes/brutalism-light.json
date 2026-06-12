@@ -61,7 +61,15 @@
   },
   "tokens": {
     "radii": { "none": 0, "xs": 0, "sm": 0, "md": 0, "lg": 0, "xl": 0, "pill": 0 },
-    "spacing": { "tight": 4, "normal": 8, "loose": 16 },
+    "spacing": {
+      "tight": 4, "normal": 8, "loose": 16,
+      "gap_0": 0, "gap_1": 4, "gap_2": 8, "gap_3": 12, "gap_4": 16, "gap_5": 20, "gap_6": 24, "gap_7": 32,
+      "inset_xs": 4, "inset_sm": 8, "inset_md": 12, "inset_lg": 16, "inset_xl": 24,
+      "xs": 4, "sm": 8, "md": 12, "lg": 16, "xl": 24
+    },
+    "sizes": {
+      "icon_xxs": 10, "icon_xs": 12, "icon_sm": 14, "icon_md": 16, "icon_lg": 20, "icon_xl": 24
+    },
     "typography": {
       "family_default": "ui-monospace, 'Courier New', monospace",
       "family_mono": "ui-monospace, 'Courier New', monospace",
@@ -109,7 +117,16 @@
       "form": { "radius": 0, "border_width": 0, "padding": 16, "gap": 12 },
       "list_item": { "radius": 0, "border_width": 2, "padding": 10, "min_height": 36 },
       "tree_item": { "radius": 0, "border_width": 2, "padding": 8, "min_height": 32, "chevron_size": 18 },
-      "empty_state": { "radius": 0, "border_width": 3, "padding": 32 }
+      "empty_state": { "radius": 0, "border_width": 3, "padding": 32 },
+      "button_group": { "gap": 4 },
+      "slider": { "track_h": 12, "thumb_size": 22, "hit_padding": 8, "track_w": 240, "border_width": 3 },
+      "menu": { "padding": 4, "item_padding_x": 10, "item_padding_y": 6, "gap": 2, "border_width": 3 },
+      "tree": { "gap": 0, "border_width": 3, "padding": 4 },
+      "table": { "cell_padding": 10, "header_font_size": 12, "row_font_size": 13, "border_width": 3 },
+      "form_field": { "gap": 6, "label_font_size": 12 },
+      "spacer": { "min_size": 0 },
+      "icon": { "default_size": 16 },
+      "text": { "default_size": 14 }
     }
   }
 }

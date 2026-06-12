@@ -139,6 +139,16 @@ impl BrutalAvatarRenderer {
     pub fn status_border_color(&self, _: &AvatarRenderState, theme: &Theme) -> Hsla {
         brutal_border_color(theme)
     }
+
+    /// Initials / label colour. Reads `content.primary` from
+    /// the theme so the text contrasts with the surface
+    /// background in both light and dark modes. Without this
+    /// helper the `div().child(text)` would inherit gpui's
+    /// default (`#000000`) which is invisible against the dark
+    /// avatar background.
+    pub fn label_color(&self, _: &AvatarRenderState, theme: &Theme) -> Hsla {
+        theme.get_color("content.primary").unwrap_or(BRUTAL_BORDER)
+    }
 }
 
 impl AvatarRenderer for BrutalAvatarRenderer {
@@ -155,6 +165,7 @@ impl AvatarRenderer for BrutalAvatarRenderer {
         };
         let bg = self.default_bg(&state, theme);
         let r = self.border_radius(&state, theme);
+        let label_color = self.label_color(&state, theme);
         let size = props.size.unwrap_or(px(40.0));
         // Initials font sized at ~40% of avatar height so 2-letter
         // initials always fit inside the box.
@@ -165,7 +176,10 @@ impl AvatarRenderer for BrutalAvatarRenderer {
             props.name.as_ref().map(|n| initials_from_name(n.as_ref()))
         };
         let content = if let Some(text) = label_text {
-            div().text_size(font_size).child(text)
+            div()
+                .text_size(font_size)
+                .text_color(label_color)
+                .child(text)
         } else {
             div()
         };

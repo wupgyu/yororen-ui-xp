@@ -1,10 +1,11 @@
-//! Brutalist list renderers: `ListItem`, `TreeItem`, `Form`.
+//! Brutalist list renderers: `ListItem`, `TreeItem`, `Tree`,
+//! `Form`, `FormField`, `Table`, `VirtualList`, `UniformVirtualList`.
 
 use gpui::{App, CursorStyle, Div, ElementId, Hsla, InteractiveElement, IntoElement, ParentElement, Pixels, SharedString, Stateful, StatefulInteractiveElement, Styled, Window, prelude::FluentBuilder, px};
 use yororen_ui_core::renderer::spec::Edges;
 use yororen_ui_core::theme::Theme;
 
-use crate::style::{BRUTAL_BORDER, BRUTAL_RADIUS};
+use crate::style::{BRUTAL_BORDER, BRUTAL_BORDER_WIDTH, BRUTAL_RADIUS, brutal_border_color};
 
 // =====================================================================
 // ListItem
@@ -517,5 +518,391 @@ impl UniformVirtualListRenderer for BrutalUniformVirtualListRenderer {
             .on_scroll_wheel(|_event, _window, cx| {
                 cx.stop_propagation();
             })
+    }
+}
+
+// =====================================================================
+// Tree
+// =====================================================================
+
+pub use yororen_ui_core::renderer::tree::{TreeRenderState, TreeRenderer};
+
+pub struct BrutalTreeRenderer;
+
+// Inherent helpers — *not* part of the trait surface.
+impl BrutalTreeRenderer {
+    pub fn border_color(&self, _state: &TreeRenderState, theme: &Theme) -> Hsla {
+        brutal_border_color(theme)
+    }
+    pub fn border_width(&self, _state: &TreeRenderState, theme: &Theme) -> Pixels {
+        px(theme
+            .get_number("tokens.control.tree.border_width")
+            .unwrap_or(BRUTAL_BORDER_WIDTH as f64) as f32)
+    }
+    pub fn padding(&self, _state: &TreeRenderState, theme: &Theme) -> Pixels {
+        px(theme
+            .get_number("tokens.control.tree.padding")
+            .unwrap_or(4.0) as f32)
+    }
+    pub fn gap(&self, _state: &TreeRenderState, theme: &Theme) -> Pixels {
+        // Brutalism defaults to 0 row gap so adjacent tree items
+        // form a continuous column (their own thick borders
+        // already separate them visually).
+        px(theme
+            .get_number("tokens.control.tree.gap")
+            .unwrap_or(0.0) as f32)
+    }
+    pub fn border_radius(&self, _state: &TreeRenderState, _theme: &Theme) -> Pixels {
+        px(BRUTAL_RADIUS)
+    }
+    pub fn bg(&self, _state: &TreeRenderState, theme: &Theme) -> Hsla {
+        theme.get_color("surface.base").unwrap_or(BRUTAL_BORDER)
+    }
+}
+
+impl TreeRenderer for BrutalTreeRenderer {
+    fn compose(
+        &self,
+        props: &yororen_ui_core::headless::tree::TreeProps,
+        cx: &App,
+    ) -> Stateful<Div> {
+        use yororen_ui_core::theme::ActiveTheme;
+        let theme = cx.theme();
+        let state = TreeRenderState {
+            has_selection: props.selected.is_some(),
+        };
+        let border = self.border_color(&state, theme);
+        let bw = self.border_width(&state, theme);
+        let pad = self.padding(&state, theme);
+        let gap = self.gap(&state, theme);
+        let radius = self.border_radius(&state, theme);
+        let bg = self.bg(&state, theme);
+
+        gpui::div()
+            .id(props.id.clone())
+            .flex()
+            .flex_col()
+            .bg(bg)
+            .gap(gap)
+            .p(pad)
+            .rounded(radius)
+            .border(bw)
+            .border_color(border)
+    }
+}
+
+// =====================================================================
+// FormField
+// =====================================================================
+
+pub use yororen_ui_core::renderer::form_field::{FormFieldRenderState, FormFieldRenderer};
+
+pub struct BrutalFormFieldRenderer;
+
+// Inherent helpers — *not* part of the trait surface.
+impl BrutalFormFieldRenderer {
+    pub fn label_color(&self, _state: &FormFieldRenderState, theme: &Theme) -> Hsla {
+        theme.get_color("content.primary").unwrap_or(BRUTAL_BORDER)
+    }
+    pub fn error_color(&self, _state: &FormFieldRenderState, theme: &Theme) -> Hsla {
+        theme
+            .get_color("status.error.bg")
+            .or_else(|| theme.get_color("status.danger.bg"))
+            .unwrap_or(BRUTAL_BORDER)
+    }
+    pub fn helper_color(&self, _state: &FormFieldRenderState, theme: &Theme) -> Hsla {
+        theme.get_color("content.tertiary").unwrap_or(BRUTAL_BORDER)
+    }
+    pub fn gap(&self, _state: &FormFieldRenderState, theme: &Theme) -> Pixels {
+        px(theme
+            .get_number("tokens.control.form_field.gap")
+            .or_else(|| theme.get_number("tokens.spacing.gap_2"))
+            .unwrap_or(8.0) as f32)
+    }
+    pub fn font_size(&self, _state: &FormFieldRenderState, theme: &Theme) -> Pixels {
+        px(theme
+            .get_number("tokens.control.form_field.label_font_size")
+            .or_else(|| theme.get_number("tokens.typography.font_size_xs"))
+            .unwrap_or(12.0) as f32)
+    }
+}
+
+impl FormFieldRenderer for BrutalFormFieldRenderer {
+    fn compose(
+        &self,
+        props: &mut yororen_ui_core::headless::form_field::FormFieldProps,
+        cx: &App,
+    ) -> Stateful<Div> {
+        use yororen_ui_core::theme::ActiveTheme;
+        let theme = cx.theme();
+        let state = FormFieldRenderState {
+            has_error: props.error.is_some(),
+            required: props.required,
+        };
+        let label_color = self.label_color(&state, theme);
+        let error_color = self.error_color(&state, theme);
+        let helper_color = self.helper_color(&state, theme);
+        let gap = self.gap(&state, theme);
+        let font_size = self.font_size(&state, theme);
+
+        let mut wrapper = gpui::div()
+            .id(props.id.clone())
+            .flex()
+            .flex_col()
+            .gap(gap);
+
+        // 1) Label row — brutalism keeps the required indicator
+        //    as a plain `*` (no extra styling) so it does not
+        //    fight with the bold all-caps brutalist aesthetic.
+        if let Some(label) = &props.label {
+            let label_text: SharedString = if props.required {
+                SharedString::from(format!("{} *", label))
+            } else {
+                label.clone()
+            };
+            wrapper = wrapper.child(
+                gpui::div()
+                    .text_size(font_size)
+                    .text_color(label_color)
+                    .child(label_text),
+            );
+        }
+
+        // 2) Input — taken out of the props so the renderer
+        //    owns it. Same pattern as `TokenFormFieldRenderer`.
+        if let Some(input) = props.input.take() {
+            wrapper = wrapper.child(input);
+        }
+
+        // 3) Error text (above help text — errors are more
+        //    urgent in the brutalist palette and the danger
+        //    background already screams).
+        if let Some(error) = &props.error {
+            wrapper = wrapper.child(
+                gpui::div()
+                    .text_size(font_size)
+                    .text_color(error_color)
+                    .child(error.clone()),
+            );
+        }
+
+        // 4) Help text.
+        if let Some(help) = &props.help {
+            wrapper = wrapper.child(
+                gpui::div()
+                    .text_size(font_size)
+                    .text_color(helper_color)
+                    .child(help.clone()),
+            );
+        }
+
+        wrapper
+    }
+}
+
+// =====================================================================
+// Table
+// =====================================================================
+
+pub use yororen_ui_core::renderer::table::{TableRenderState, TableRenderer};
+
+pub struct BrutalTableRenderer;
+
+// Inherent helpers — *not* part of the trait surface.
+impl BrutalTableRenderer {
+    pub fn header_bg(&self, _state: &TableRenderState, theme: &Theme) -> Hsla {
+        // The header row should be visibly heavier than body
+        // rows. Brutalism uses `action.primary.bg` (typically a
+        // very dark or solid colour) so the header reads like a
+        // brutalist title bar.
+        theme
+            .get_color("action.primary.bg")
+            .unwrap_or(BRUTAL_BORDER)
+    }
+    pub fn header_text_color(&self, _state: &TableRenderState, theme: &Theme) -> Hsla {
+        theme
+            .get_color("action.primary.fg")
+            .unwrap_or(BRUTAL_BORDER)
+    }
+    pub fn row_text_color(&self, _state: &TableRenderState, theme: &Theme) -> Hsla {
+        theme.get_color("content.primary").unwrap_or(BRUTAL_BORDER)
+    }
+    pub fn row_bg(&self, _state: &TableRenderState, theme: &Theme) -> Hsla {
+        theme.get_color("surface.base").unwrap_or(BRUTAL_BORDER)
+    }
+    pub fn selected_bg(&self, _state: &TableRenderState, theme: &Theme) -> Hsla {
+        // Selection is the brutalist "FOCUS COLOR" (a sharp
+        // signal pink/red) so picking a row is unmistakable.
+        theme
+            .get_color("border.focus")
+            .or_else(|| theme.get_color("action.primary.hover_bg"))
+            .unwrap_or(BRUTAL_BORDER)
+    }
+    pub fn selected_fg(&self, _state: &TableRenderState, theme: &Theme) -> Hsla {
+        theme.get_color("content.on_status").unwrap_or(BRUTAL_BORDER)
+    }
+    pub fn hover_bg(&self, _state: &TableRenderState, theme: &Theme) -> Hsla {
+        theme.get_color("surface.hover").unwrap_or(BRUTAL_BORDER)
+    }
+    pub fn border_color(&self, _state: &TableRenderState, theme: &Theme) -> Hsla {
+        brutal_border_color(theme)
+    }
+    pub fn border_width(&self, _state: &TableRenderState, theme: &Theme) -> Pixels {
+        px(theme
+            .get_number("tokens.control.table.border_width")
+            .unwrap_or(BRUTAL_BORDER_WIDTH as f64) as f32)
+    }
+    pub fn cell_padding(&self, _state: &TableRenderState, theme: &Theme) -> Pixels {
+        px(theme
+            .get_number("tokens.control.table.cell_padding")
+            .or_else(|| theme.get_number("tokens.spacing.inset_sm"))
+            .unwrap_or(10.0) as f32)
+    }
+    pub fn header_font_size(&self, _state: &TableRenderState, theme: &Theme) -> Pixels {
+        px(theme
+            .get_number("tokens.control.table.header_font_size")
+            .or_else(|| theme.get_number("tokens.typography.font_size_xs"))
+            .unwrap_or(12.0) as f32)
+    }
+    pub fn row_font_size(&self, _state: &TableRenderState, theme: &Theme) -> Pixels {
+        px(theme
+            .get_number("tokens.control.table.row_font_size")
+            .or_else(|| theme.get_number("tokens.typography.font_size_sm"))
+            .unwrap_or(13.0) as f32)
+    }
+    pub fn border_radius(&self, _state: &TableRenderState, _theme: &Theme) -> Pixels {
+        px(BRUTAL_RADIUS)
+    }
+
+    fn header_cell(
+        &self,
+        col: &yororen_ui_core::headless::table::TableColumn,
+        state: &TableRenderState,
+        theme: &Theme,
+    ) -> Div {
+        let mut cell = gpui::div()
+            .child(col.header.clone())
+            .text_color(self.header_text_color(state, theme))
+            .text_size(self.header_font_size(state, theme))
+            .px(self.cell_padding(state, theme))
+            .py(self.cell_padding(state, theme))
+            .flex()
+            .items_center();
+        if let Some(w) = col.width_px {
+            cell = cell.w(px(w));
+        } else {
+            cell = cell.flex_1();
+        }
+        cell
+    }
+
+    fn body_cell(
+        &self,
+        value: &SharedString,
+        state: &TableRenderState,
+        theme: &Theme,
+        is_selected: bool,
+    ) -> Div {
+        let fg = if is_selected {
+            self.selected_fg(state, theme)
+        } else {
+            self.row_text_color(state, theme)
+        };
+        gpui::div()
+            .child(value.clone())
+            .text_color(fg)
+            .text_size(self.row_font_size(state, theme))
+            .px(self.cell_padding(state, theme))
+            .py(self.cell_padding(state, theme))
+            .flex()
+            .items_center()
+            .flex_1()
+    }
+}
+
+impl TableRenderer for BrutalTableRenderer {
+    fn compose(
+        &self,
+        props: &yororen_ui_core::headless::table::TableProps,
+        cx: &App,
+    ) -> Stateful<Div> {
+        use yororen_ui_core::theme::ActiveTheme;
+        let theme = cx.theme();
+        let state = TableRenderState {
+            selected_row: props.selected_row,
+        };
+        let header_bg = self.header_bg(&state, theme);
+        let border = self.border_color(&state, theme);
+        let bw = self.border_width(&state, theme);
+        let selected_bg = self.selected_bg(&state, theme);
+        let hover_bg = self.hover_bg(&state, theme);
+        let row_bg = self.row_bg(&state, theme);
+        let radius = self.border_radius(&state, theme);
+
+        // Header row — the heavy brutalist title bar at the top
+        // of the table. A thick bottom border separates it from
+        // the body.
+        let mut header = gpui::div()
+            .flex()
+            .flex_row()
+            .bg(header_bg)
+            .border_b(bw)
+            .border_color(border);
+        for col in &props.columns {
+            header = header.child(self.header_cell(col, &state, theme));
+        }
+
+        // Body rows. Selected rows get a focus-pink background;
+        // other rows hover to `surface.hover`. Rows are
+        // separated by a thin bottom border in the brutalist
+        // border colour for visual rhythm.
+        let mut body = gpui::div().flex().flex_col();
+        let row_count = props.rows.len();
+        for (row_idx, row) in props.rows.iter().enumerate() {
+            let is_selected = props.selected_row == Some(row_idx);
+            let bg = if is_selected { selected_bg } else { row_bg };
+            let mut row_el = gpui::div()
+                .flex()
+                .flex_row()
+                .bg(bg)
+                .cursor(if props.on_select_row.is_some() {
+                    CursorStyle::PointingHand
+                } else {
+                    CursorStyle::Arrow
+                });
+            // Inner separator between rows (omit on the last row
+            // — the table container's bottom border closes it).
+            if row_idx + 1 < row_count {
+                row_el = row_el.border_b(px(1.0)).border_color(border);
+            }
+            // Only register hover styling for non-selected
+            // rows. Without an id this is harmless — gpui will
+            // simply paint the hover colour when the pointer is
+            // over the row's bounding box.
+            if !is_selected {
+                row_el = row_el.hover(move |s| s.bg(hover_bg));
+            }
+            for (cell_idx, cell_value) in row.iter().enumerate() {
+                let mut cell = self.body_cell(cell_value, &state, theme, is_selected);
+                if let Some(col) = props.columns.get(cell_idx)
+                    && let Some(w) = col.width_px
+                {
+                    cell = cell.w(px(w));
+                }
+                row_el = row_el.child(cell);
+            }
+            body = body.child(row_el);
+        }
+
+        gpui::div()
+            .id(props.id.clone())
+            .flex()
+            .flex_col()
+            .rounded(radius)
+            .border(bw)
+            .border_color(border)
+            .overflow_hidden()
+            .child(header)
+            .child(body)
     }
 }

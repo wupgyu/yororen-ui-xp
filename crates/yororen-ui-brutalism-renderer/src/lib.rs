@@ -29,22 +29,36 @@ use yororen_ui_core::renderer::{RendererContext, markers as m};
 use yororen_ui_core::theme::{Theme, install as install_theme};
 
 use yororen_ui_default_renderer::renderers::*;
+use yororen_ui_core::renderer::button_group::ButtonGroupRenderer;
+use yororen_ui_core::renderer::form_field::FormFieldRenderer;
+use yororen_ui_core::renderer::icon::IconRenderer as CoreIconRenderer;
 use yororen_ui_core::renderer::image::ImageRenderer;
 use yororen_ui_core::renderer::keybinding_display::KeybindingDisplayRenderer;
+use yororen_ui_core::renderer::menu::MenuRenderer;
 use yororen_ui_core::renderer::overlay::OverlayRenderer;
+use yororen_ui_core::renderer::radio_group::RadioGroupRenderer;
 use yororen_ui_core::renderer::shortcut_hint::ShortcutHintRenderer;
+use yororen_ui_core::renderer::slider::SliderRenderer;
+use yororen_ui_core::renderer::spacer::SpacerRenderer;
+use yororen_ui_core::renderer::table::TableRenderer;
+use yororen_ui_core::renderer::text::TextRenderer;
+use yororen_ui_core::renderer::tree::TreeRenderer;
 
 use crate::renderers::{
     actions::{
-        BrutalButtonRenderer, BrutalIconButtonRenderer, BrutalSplitButtonRenderer,
-        BrutalToggleButtonRenderer,
+        BrutalButtonGroupRenderer, BrutalButtonRenderer, BrutalIconButtonRenderer,
+        BrutalSplitButtonRenderer, BrutalToggleButtonRenderer,
     },
-    controls::{BrutalCheckboxRenderer, BrutalRadioRenderer, BrutalSwitchRenderer},
+    controls::{
+        BrutalCheckboxRenderer, BrutalRadioGroupRenderer, BrutalRadioRenderer,
+        BrutalSliderRenderer, BrutalSwitchRenderer,
+    },
     display::{
         BrutalBadgeRenderer, BrutalDividerRenderer, BrutalEmptyStateRenderer,
-        BrutalFocusRingRenderer, BrutalHeadingRenderer, BrutalKeybindingDisplayRenderer,
-        BrutalLabelRenderer, BrutalProgressBarRenderer, BrutalShortcutHintRenderer,
-        BrutalSkeletonRenderer, BrutalTagRenderer,
+        BrutalFocusRingRenderer, BrutalHeadingRenderer, BrutalIconRenderer,
+        BrutalKeybindingDisplayRenderer, BrutalLabelRenderer, BrutalProgressBarRenderer,
+        BrutalShortcutHintRenderer, BrutalSkeletonRenderer, BrutalSpacerRenderer,
+        BrutalTagRenderer, BrutalTextRenderer,
     },
     inputs::{
         BrutalComboBoxRenderer, BrutalFilePathInputRenderer, BrutalKeybindingInputRenderer,
@@ -52,13 +66,14 @@ use crate::renderers::{
         BrutalSelectRenderer, BrutalTextAreaRenderer, BrutalTextInputRenderer,
     },
     lists::{
-        BrutalFormRenderer, BrutalListItemRenderer, BrutalTreeItemRenderer,
+        BrutalFormFieldRenderer, BrutalFormRenderer, BrutalListItemRenderer,
+        BrutalTableRenderer, BrutalTreeItemRenderer, BrutalTreeRenderer,
         BrutalUniformVirtualListRenderer, BrutalVirtualListRenderer,
     },
     notifications::{BrutalNotificationRenderer, BrutalToastRenderer},
     overlays::{
-        BrutalDisclosureRenderer, BrutalDropdownMenuRenderer, BrutalModalRenderer,
-        BrutalOverlayRenderer, BrutalPopoverRenderer,
+        BrutalDisclosureRenderer, BrutalDropdownMenuRenderer, BrutalMenuRenderer,
+        BrutalModalRenderer, BrutalOverlayRenderer, BrutalPopoverRenderer,
     },
     surfaces::{
         BrutalAvatarRenderer, BrutalCardRenderer, BrutalImageRenderer, BrutalPanelRenderer,
@@ -101,7 +116,7 @@ fn brutal_theme_for(appearance: WindowAppearance) -> Theme {
 /// the theme (e.g. for tests) can still wire up the brutalist
 /// look without re-installing the theme.
 pub fn register_brutal_renderers(cx: &mut App) {
-    // Actions (4)
+    // Actions (5)
     cx.register_renderer_arc::<m::Button, dyn ButtonRenderer>(Arc::new(BrutalButtonRenderer));
     cx.register_renderer_arc::<m::IconButton, dyn IconButtonRenderer>(Arc::new(
         BrutalIconButtonRenderer,
@@ -112,8 +127,11 @@ pub fn register_brutal_renderers(cx: &mut App) {
     cx.register_renderer_arc::<m::SplitButton, dyn SplitButtonRenderer>(Arc::new(
         BrutalSplitButtonRenderer,
     ));
+    cx.register_renderer_arc::<m::ButtonGroup, dyn ButtonGroupRenderer>(Arc::new(
+        BrutalButtonGroupRenderer,
+    ));
 
-    // Display (9)
+    // Display (14)
     cx.register_renderer_arc::<m::Label, dyn LabelRenderer>(Arc::new(BrutalLabelRenderer));
     cx.register_renderer_arc::<m::Heading, dyn HeadingRenderer>(Arc::new(BrutalHeadingRenderer));
     cx.register_renderer_arc::<m::Divider, dyn DividerRenderer>(Arc::new(BrutalDividerRenderer));
@@ -135,6 +153,9 @@ pub fn register_brutal_renderers(cx: &mut App) {
     cx.register_renderer_arc::<m::ShortcutHint, dyn ShortcutHintRenderer>(Arc::new(
         BrutalShortcutHintRenderer,
     ));
+    cx.register_renderer_arc::<m::Icon, dyn CoreIconRenderer>(Arc::new(BrutalIconRenderer));
+    cx.register_renderer_arc::<m::Text, dyn TextRenderer>(Arc::new(BrutalTextRenderer));
+    cx.register_renderer_arc::<m::Spacer, dyn SpacerRenderer>(Arc::new(BrutalSpacerRenderer));
 
     // Surfaces (4)
     cx.register_renderer_arc::<m::Tooltip, dyn TooltipRenderer>(Arc::new(BrutalTooltipRenderer));
@@ -166,12 +187,16 @@ pub fn register_brutal_renderers(cx: &mut App) {
         BrutalKeybindingInputRenderer,
     ));
 
-    // Controls (3)
+    // Controls (5)
     cx.register_renderer_arc::<m::Switch, dyn SwitchRenderer>(Arc::new(BrutalSwitchRenderer));
     cx.register_renderer_arc::<m::Checkbox, dyn CheckboxRenderer>(Arc::new(BrutalCheckboxRenderer));
     cx.register_renderer_arc::<m::Radio, dyn RadioRenderer>(Arc::new(BrutalRadioRenderer));
+    cx.register_renderer_arc::<m::RadioGroup, dyn RadioGroupRenderer>(Arc::new(
+        BrutalRadioGroupRenderer,
+    ));
+    cx.register_renderer_arc::<m::Slider, dyn SliderRenderer>(Arc::new(BrutalSliderRenderer));
 
-    // Overlays (5)
+    // Overlays (6)
     cx.register_renderer_arc::<m::Modal, dyn ModalRenderer>(Arc::new(BrutalModalRenderer));
     cx.register_renderer_arc::<m::Popover, dyn PopoverRenderer>(Arc::new(BrutalPopoverRenderer));
     cx.register_renderer_arc::<m::DropdownMenu, dyn DropdownMenuRenderer>(Arc::new(
@@ -181,6 +206,7 @@ pub fn register_brutal_renderers(cx: &mut App) {
         BrutalDisclosureRenderer,
     ));
     cx.register_renderer_arc::<m::Overlay, dyn OverlayRenderer>(Arc::new(BrutalOverlayRenderer));
+    cx.register_renderer_arc::<m::Menu, dyn MenuRenderer>(Arc::new(BrutalMenuRenderer));
 
     // Notifications (2)
     cx.register_renderer_arc::<m::Toast, dyn ToastRenderer>(Arc::new(BrutalToastRenderer));
@@ -188,10 +214,15 @@ pub fn register_brutal_renderers(cx: &mut App) {
         BrutalNotificationRenderer,
     ));
 
-    // Lists (3)
+    // Lists (8)
     cx.register_renderer_arc::<m::ListItem, dyn ListItemRenderer>(Arc::new(BrutalListItemRenderer));
     cx.register_renderer_arc::<m::TreeItem, dyn TreeItemRenderer>(Arc::new(BrutalTreeItemRenderer));
+    cx.register_renderer_arc::<m::Tree, dyn TreeRenderer>(Arc::new(BrutalTreeRenderer));
     cx.register_renderer_arc::<m::Form, dyn FormRenderer>(Arc::new(BrutalFormRenderer));
+    cx.register_renderer_arc::<m::FormField, dyn FormFieldRenderer>(Arc::new(
+        BrutalFormFieldRenderer,
+    ));
+    cx.register_renderer_arc::<m::Table, dyn TableRenderer>(Arc::new(BrutalTableRenderer));
     cx.register_renderer_arc::<m::VirtualList, dyn VirtualListRenderer>(Arc::new(
         BrutalVirtualListRenderer,
     ));

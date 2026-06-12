@@ -1049,4 +1049,143 @@ impl ShortcutHintRenderer for BrutalShortcutHintRenderer {
     }
 }
 
+// =====================================================================
+// Icon
+// =====================================================================
+
+pub use yororen_ui_core::renderer::icon::{IconRenderState, IconRenderer};
+
+pub struct BrutalIconRenderer;
+
+// Inherent helpers — *not* part of the trait surface.
+impl BrutalIconRenderer {
+    pub fn size(&self, state: &IconRenderState, theme: &Theme) -> Pixels {
+        if state.has_custom_size {
+            return px(0.0);
+        }
+        // Brutalism prefers slightly chunkier icons so they read
+        // well next to the thick borders. Fallback to a higher
+        // default than the system theme (16 vs 14).
+        px(theme
+            .get_number("tokens.control.icon.default_size")
+            .or_else(|| theme.get_number("tokens.sizes.icon_md"))
+            .unwrap_or(16.0) as f32)
+    }
+
+    pub fn color(&self, state: &IconRenderState, theme: &Theme) -> Hsla {
+        if state.has_custom_color {
+            return BRUTAL_BORDER;
+        }
+        theme.get_color("content.primary").unwrap_or(BRUTAL_BORDER)
+    }
+}
+
+impl IconRenderer for BrutalIconRenderer {
+    fn compose(
+        &self,
+        props: &yororen_ui_core::headless::icon::IconProps,
+        cx: &App,
+    ) -> gpui::AnyElement {
+        let theme = cx.theme();
+        let state = IconRenderState {
+            has_custom_color: props.color.is_some(),
+            has_custom_size: props.size.is_some(),
+        };
+        let path: SharedString = match &props.source {
+            IconSource::Builtin(name) => format!("icons/{name}.svg").into(),
+            IconSource::Resource(path) => path.clone(),
+        };
+        let size = props.size.unwrap_or_else(|| self.size(&state, theme));
+        let color = props.color.unwrap_or_else(|| self.color(&state, theme));
+        gpui::svg()
+            .path(path)
+            .size(size)
+            .id(props.id.clone())
+            .text_color(color)
+            .into_any_element()
+    }
+}
+
+// =====================================================================
+// Text
+// =====================================================================
+
+pub use yororen_ui_core::renderer::text::{TextRenderState, TextRenderer};
+
+pub struct BrutalTextRenderer;
+
+// Inherent helpers — *not* part of the trait surface.
+impl BrutalTextRenderer {
+    pub fn size(&self, state: &TextRenderState, theme: &Theme) -> Pixels {
+        if state.has_custom_size {
+            return px(0.0);
+        }
+        px(theme
+            .get_number("tokens.control.text.default_size")
+            .or_else(|| theme.get_number("tokens.typography.font_size_md"))
+            .unwrap_or(14.0) as f32)
+    }
+
+    pub fn color(&self, state: &TextRenderState, theme: &Theme) -> Hsla {
+        if state.has_custom_color {
+            return BRUTAL_BORDER;
+        }
+        theme.get_color("content.primary").unwrap_or(BRUTAL_BORDER)
+    }
+
+    pub fn family(&self, _state: &TextRenderState, theme: &Theme) -> SharedString {
+        // Brutalism is mono-by-default. Fall back to the
+        // brutalism font constant if the theme omits the
+        // typography family path.
+        theme
+            .get_string("tokens.typography.family_default")
+            .unwrap_or(BRUTAL_FONT_FAMILY)
+            .to_string()
+            .into()
+    }
+}
+
+impl TextRenderer for BrutalTextRenderer {
+    fn compose(
+        &self,
+        props: &yororen_ui_core::headless::text::TextProps,
+        cx: &App,
+    ) -> Stateful<Div> {
+        let theme = cx.theme();
+        let state = TextRenderState {
+            has_custom_size: props.size.is_some(),
+            has_custom_color: false,
+        };
+        gpui::div()
+            .id(props.id.clone())
+            .text_size(props.size.unwrap_or_else(|| self.size(&state, theme)))
+            .text_color(self.color(&state, theme))
+            .font_family(self.family(&state, theme))
+            .child(props.text.clone())
+    }
+}
+
+// =====================================================================
+// Spacer
+// =====================================================================
+
+pub use yororen_ui_core::renderer::spacer::{SpacerRenderState, SpacerRenderer};
+
+pub struct BrutalSpacerRenderer;
+
+impl SpacerRenderer for BrutalSpacerRenderer {
+    fn compose(
+        &self,
+        props: &yororen_ui_core::headless::spacer::SpacerProps,
+        _cx: &App,
+    ) -> Stateful<Div> {
+        // A spacer is invisible by definition — brutalism has
+        // nothing extra to add, so we mirror the default
+        // renderer's `flex_1()` behaviour. The caller can layer
+        // explicit width / height on top via the returned
+        // `Stateful<Div>`.
+        gpui::div().id(props.id.clone()).flex_1()
+    }
+}
+
 // End of shortcut-hint impl.

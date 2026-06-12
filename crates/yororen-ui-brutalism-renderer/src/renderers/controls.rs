@@ -1,13 +1,18 @@
-//! Brutalist control renderers: `Switch`, `Checkbox`, `Radio`.
+//! Brutalist control renderers: `Switch`, `Checkbox`, `Radio`,
+//! `RadioGroup`, `Slider`.
+
+use std::sync::{Arc, Mutex};
 
 use gpui::{
-    App, CursorStyle, Div, FocusHandle, Hsla, InteractiveElement, ParentElement, Pixels, Stateful,
-    StatefulInteractiveElement, Styled, div, px,
+    App, BorderStyle, Bounds, Corners, CursorStyle, Div, Edges as GpuiEdges, Element, FocusHandle,
+    GlobalElementId, Hsla, InteractiveElement, IntoElement, LayoutId, PaintQuad, ParentElement,
+    Pixels, Stateful, StatefulInteractiveElement, Style, Styled, Window, div, hsla, point, px,
+    size,
 };
 use yororen_ui_core::theme::ActiveTheme;
 use yororen_ui_core::theme::Theme;
 
-use crate::style::{BRUTAL_BORDER, brutal_border_color};
+use crate::style::{BRUTAL_BORDER, BRUTAL_BORDER_WIDTH, brutal_border_color};
 
 // =====================================================================
 // Switch
@@ -365,5 +370,287 @@ impl RadioRenderer for BrutalRadioRenderer {
             } else {
                 CursorStyle::PointingHand
             })
+    }
+}
+
+// =====================================================================
+// RadioGroup
+// =====================================================================
+
+pub use yororen_ui_core::renderer::radio_group::{RadioGroupRenderState, RadioGroupRenderer};
+
+pub struct BrutalRadioGroupRenderer;
+
+// Inherent helpers — *not* part of the trait surface.
+impl BrutalRadioGroupRenderer {
+    /// Horizontal gap between radio buttons. Brutalism keeps a
+    /// slightly wider gap than the default renderer so adjacent
+    /// thick borders don't visually collide.
+    pub fn gap(&self, _state: &RadioGroupRenderState, theme: &Theme) -> Pixels {
+        px(theme
+            .get_number("tokens.spacing.gap_3")
+            .or_else(|| theme.get_number("tokens.spacing.normal"))
+            .unwrap_or(12.0) as f32)
+    }
+}
+
+impl RadioGroupRenderer for BrutalRadioGroupRenderer {
+    fn compose(
+        &self,
+        props: &yororen_ui_core::headless::radio_group::RadioGroupProps,
+        cx: &App,
+    ) -> Stateful<Div> {
+        let theme = cx.theme();
+        let state = RadioGroupRenderState {
+            selected_index: props.selected_index,
+        };
+        let gap = self.gap(&state, theme);
+
+        div()
+            .id(props.id.clone())
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(gap)
+    }
+}
+
+// =====================================================================
+// Slider
+// =====================================================================
+
+pub use yororen_ui_core::renderer::slider::{
+    SliderRenderOutput, SliderRenderState, SliderRenderer,
+};
+
+pub struct BrutalSliderRenderer;
+
+// Inherent helpers — *not* part of the trait surface.
+impl BrutalSliderRenderer {
+    pub fn track_h(&self, _state: &SliderRenderState, theme: &Theme) -> f32 {
+        theme
+            .get_number("tokens.control.slider.track_h")
+            .unwrap_or(12.0) as f32
+    }
+    pub fn knob_size(&self, _state: &SliderRenderState, theme: &Theme) -> f32 {
+        theme
+            .get_number("tokens.control.slider.thumb_size")
+            .unwrap_or(22.0) as f32
+    }
+    pub fn track_w(&self, _state: &SliderRenderState, theme: &Theme) -> Pixels {
+        px(theme
+            .get_number("tokens.control.slider.track_w")
+            .unwrap_or(240.0) as f32)
+    }
+    pub fn border_width(&self, _state: &SliderRenderState, theme: &Theme) -> f32 {
+        theme
+            .get_number("tokens.control.slider.border_width")
+            .unwrap_or(BRUTAL_BORDER_WIDTH as f64) as f32
+    }
+    pub fn track_bg(&self, state: &SliderRenderState, theme: &Theme) -> Hsla {
+        if state.disabled {
+            theme.get_color("surface.sunken").unwrap_or(BRUTAL_BORDER)
+        } else {
+            theme.get_color("surface.base").unwrap_or(BRUTAL_BORDER)
+        }
+    }
+    pub fn fill_bg(&self, state: &SliderRenderState, theme: &Theme) -> Hsla {
+        if state.disabled {
+            theme.get_color("content.disabled").unwrap_or(BRUTAL_BORDER)
+        } else {
+            theme
+                .get_color("action.primary.bg")
+                .unwrap_or(BRUTAL_BORDER)
+        }
+    }
+    pub fn knob_bg(&self, state: &SliderRenderState, theme: &Theme) -> Hsla {
+        if state.disabled {
+            theme.get_color("content.disabled").unwrap_or(BRUTAL_BORDER)
+        } else {
+            theme
+                .get_color("action.primary.fg")
+                .unwrap_or(BRUTAL_BORDER)
+        }
+    }
+    pub fn border(&self, _state: &SliderRenderState, theme: &Theme) -> Hsla {
+        brutal_border_color(theme)
+    }
+}
+
+impl SliderRenderer for BrutalSliderRenderer {
+    fn compose(&self, props: &yororen_ui_core::headless::slider::SliderProps, cx: &App) -> SliderRenderOutput {
+        let theme = cx.theme();
+        let state = SliderRenderState {
+            disabled: props.disabled,
+        };
+        let track_h = self.track_h(&state, theme);
+        let knob_size = self.knob_size(&state, theme);
+        let track_w = self.track_w(&state, theme);
+        let border_w = self.border_width(&state, theme);
+        let track_bg = self.track_bg(&state, theme);
+        let fill_bg = self.fill_bg(&state, theme);
+        let knob_bg = self.knob_bg(&state, theme);
+        let border = self.border(&state, theme);
+
+        let pct = ((props.value - props.min) / (props.max - props.min)).clamp(0.0, 1.0);
+
+        let bounds_store: Arc<Mutex<Option<Bounds<Pixels>>>> = Arc::new(Mutex::new(None));
+
+        // The total row height is enough for the knob plus the
+        // brutalist border on both sides, with a small gap.
+        let row_h = (knob_size + border_w * 2.0 + 4.0).max(30.0);
+
+        let track_element = BrutalSliderTrackElement {
+            bounds: bounds_store.clone(),
+            pct,
+            row_h,
+            track_h,
+            knob_size,
+            border_w,
+            track_bg,
+            fill_bg,
+            knob_bg,
+            border,
+        };
+
+        let visual = div()
+            .id(props.id.clone())
+            .w(track_w)
+            .h(px(row_h))
+            .cursor(if props.disabled {
+                CursorStyle::OperationNotAllowed
+            } else {
+                CursorStyle::PointingHand
+            })
+            .child(track_element);
+
+        SliderRenderOutput {
+            visual,
+            track_bounds: bounds_store,
+        }
+    }
+}
+
+/// Internal `Element` painting the brutalism slider track + fill
+/// + knob. Same bounds-publishing contract as the default
+/// renderer so the headless drag handlers in
+/// `SliderProps::render` can resolve mouse positions.
+struct BrutalSliderTrackElement {
+    bounds: Arc<Mutex<Option<Bounds<Pixels>>>>,
+    pct: f32,
+    row_h: f32,
+    track_h: f32,
+    knob_size: f32,
+    border_w: f32,
+    track_bg: Hsla,
+    fill_bg: Hsla,
+    knob_bg: Hsla,
+    border: Hsla,
+}
+
+impl IntoElement for BrutalSliderTrackElement {
+    type Element = Self;
+    fn into_element(self) -> Self::Element {
+        self
+    }
+}
+
+impl Element for BrutalSliderTrackElement {
+    type RequestLayoutState = ();
+    type PrepaintState = ();
+
+    fn id(&self) -> Option<gpui::ElementId> {
+        None
+    }
+
+    fn source_location(&self) -> Option<&'static std::panic::Location<'static>> {
+        None
+    }
+
+    fn request_layout(
+        &mut self,
+        _id: Option<&GlobalElementId>,
+        _inspector_id: Option<&gpui::InspectorElementId>,
+        window: &mut Window,
+        cx: &mut App,
+    ) -> (LayoutId, Self::RequestLayoutState) {
+        let mut style = Style::default();
+        style.size.width = gpui::relative(1.0).into();
+        style.size.height = px(self.row_h).into();
+        (window.request_layout(style, [], cx), ())
+    }
+
+    fn prepaint(
+        &mut self,
+        _id: Option<&GlobalElementId>,
+        _inspector_id: Option<&gpui::InspectorElementId>,
+        bounds: Bounds<Pixels>,
+        _request_layout: &mut Self::RequestLayoutState,
+        _window: &mut Window,
+        _cx: &mut App,
+    ) -> Self::PrepaintState {
+        *self.bounds.lock().unwrap() = Some(bounds);
+    }
+
+    fn paint(
+        &mut self,
+        _id: Option<&GlobalElementId>,
+        _inspector_id: Option<&gpui::InspectorElementId>,
+        bounds: Bounds<Pixels>,
+        _request_layout: &mut Self::RequestLayoutState,
+        _prepaint: &mut Self::PrepaintState,
+        window: &mut Window,
+        _cx: &mut App,
+    ) {
+        let track_y = bounds.top() + px((self.row_h - self.track_h) / 2.0);
+        let knob_y = bounds.top() + px((self.row_h - self.knob_size) / 2.0);
+        let track_w: f32 = bounds.size.width.into();
+        let fill_w = px(self.pct * (track_w - self.knob_size));
+        let knob_x = bounds.left() + px(self.pct * (track_w - self.knob_size));
+
+        // Track — sharp-cornered brutalist bar with a thick
+        // border instead of the default renderer's pill shape.
+        let track_bounds = Bounds::new(
+            point(bounds.left(), track_y),
+            size(bounds.size.width, px(self.track_h)),
+        );
+        window.paint_quad(PaintQuad {
+            bounds: track_bounds,
+            corner_radii: Corners::all(px(0.0)),
+            background: self.track_bg.into(),
+            border_color: self.border,
+            border_widths: GpuiEdges::all(px(self.border_w)),
+            border_style: BorderStyle::Solid,
+        });
+
+        // Fill — sharp-cornered, painted up to (but not over)
+        // the knob so the knob's border isn't covered.
+        let fill_bounds = Bounds::new(
+            point(bounds.left(), track_y),
+            size(fill_w, px(self.track_h)),
+        );
+        window.paint_quad(PaintQuad {
+            bounds: fill_bounds,
+            corner_radii: Corners::all(px(0.0)),
+            background: self.fill_bg.into(),
+            border_color: hsla(0., 0., 0., 0.),
+            border_widths: GpuiEdges::default(),
+            border_style: BorderStyle::default(),
+        });
+
+        // Knob — square (no rounding) with a thick brutalist
+        // border on top of the track.
+        let knob_bounds = Bounds::new(
+            point(knob_x, knob_y),
+            size(px(self.knob_size), px(self.knob_size)),
+        );
+        window.paint_quad(PaintQuad {
+            bounds: knob_bounds,
+            corner_radii: Corners::all(px(0.0)),
+            background: self.knob_bg.into(),
+            border_color: self.border,
+            border_widths: GpuiEdges::all(px(self.border_w)),
+            border_style: BorderStyle::Solid,
+        });
     }
 }

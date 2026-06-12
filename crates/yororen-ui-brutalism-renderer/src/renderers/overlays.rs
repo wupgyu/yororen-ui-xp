@@ -1,15 +1,15 @@
 //! Brutalist overlay renderers: `Modal`, `Popover`,
-//! `DropdownMenu`, `Disclosure`.
+//! `DropdownMenu`, `Disclosure`, `Overlay`, `Menu`.
 
 use gpui::prelude::FluentBuilder;
 use gpui::{
-    App, CursorStyle, Div, Hsla, InteractiveElement, ParentElement, Pixels, Stateful, Styled, div,
-    px,
+    App, CursorStyle, Div, ElementId, Hsla, InteractiveElement, ParentElement, Pixels, Stateful,
+    StatefulInteractiveElement, Styled, div, px,
 };
 use yororen_ui_core::renderer::spec::Edges;
 use yororen_ui_core::theme::Theme;
 
-use crate::style::{BRUTAL_BORDER, BRUTAL_RADIUS, brutal_border_color, brutal_shadow_overlay};
+use crate::style::{BRUTAL_BORDER, BRUTAL_BORDER_WIDTH, BRUTAL_RADIUS, brutal_border_color, brutal_shadow_overlay};
 
 // =====================================================================
 // Modal
@@ -391,5 +391,171 @@ impl OverlayRenderer for BrutalOverlayRenderer {
             .size_full()
             .bg(scrim)
             .when(!props.open, |el: Stateful<Div>| el.invisible())
+    }
+}
+
+// =====================================================================
+// Menu
+// =====================================================================
+
+pub use yororen_ui_core::renderer::menu::{MenuRenderState, MenuRenderer};
+
+pub struct BrutalMenuRenderer;
+
+// Inherent helpers — *not* part of the trait surface.
+impl BrutalMenuRenderer {
+    pub fn bg(&self, _state: &MenuRenderState, theme: &Theme) -> Hsla {
+        theme.get_color("surface.raised").unwrap_or(BRUTAL_BORDER)
+    }
+    pub fn border(&self, _state: &MenuRenderState, theme: &Theme) -> Hsla {
+        brutal_border_color(theme)
+    }
+    pub fn border_width(&self, _state: &MenuRenderState, theme: &Theme) -> Pixels {
+        px(theme
+            .get_number("tokens.control.menu.border_width")
+            .unwrap_or(BRUTAL_BORDER_WIDTH as f64) as f32)
+    }
+    pub fn border_radius(&self, _state: &MenuRenderState, _theme: &Theme) -> Pixels {
+        px(BRUTAL_RADIUS)
+    }
+    pub fn padding(&self, _state: &MenuRenderState, theme: &Theme) -> Pixels {
+        px(theme
+            .get_number("tokens.control.menu.padding")
+            .unwrap_or(4.0) as f32)
+    }
+    pub fn item_padding_x(&self, _state: &MenuRenderState, theme: &Theme) -> Pixels {
+        px(theme
+            .get_number("tokens.control.menu.item_padding_x")
+            .unwrap_or(10.0) as f32)
+    }
+    pub fn item_padding_y(&self, _state: &MenuRenderState, theme: &Theme) -> Pixels {
+        px(theme
+            .get_number("tokens.control.menu.item_padding_y")
+            .unwrap_or(6.0) as f32)
+    }
+    pub fn item_gap(&self, _state: &MenuRenderState, theme: &Theme) -> Pixels {
+        px(theme
+            .get_number("tokens.control.menu.gap")
+            .unwrap_or(2.0) as f32)
+    }
+    pub fn item_hover_bg(&self, _state: &MenuRenderState, theme: &Theme) -> Hsla {
+        // Brutalism uses the action.neutral.hover_bg (typically
+        // a vivid yellow/cyan in the brutalism palette) so the
+        // hovered row is unmistakably highlighted.
+        theme
+            .get_color("action.neutral.hover_bg")
+            .unwrap_or(BRUTAL_BORDER)
+    }
+    pub fn item_hl_fg(&self, _state: &MenuRenderState, theme: &Theme) -> Hsla {
+        theme.get_color("content.primary").unwrap_or(BRUTAL_BORDER)
+    }
+    pub fn group_label_fg(&self, _state: &MenuRenderState, theme: &Theme) -> Hsla {
+        theme
+            .get_color("content.tertiary")
+            .unwrap_or(BRUTAL_BORDER)
+    }
+}
+
+impl MenuRenderer for BrutalMenuRenderer {
+    fn compose(
+        &self,
+        props: &yororen_ui_core::headless::menu::MenuProps,
+        cx: &App,
+    ) -> Stateful<Div> {
+        use yororen_ui_core::headless::dropdown_menu::DropdownItem;
+        use yororen_ui_core::theme::ActiveTheme;
+        let theme = cx.theme();
+        let state = MenuRenderState {};
+        let bg = self.bg(&state, theme);
+        let border = self.border(&state, theme);
+        let bw = self.border_width(&state, theme);
+        let radius = self.border_radius(&state, theme);
+        let pad = self.padding(&state, theme);
+        let item_px = self.item_padding_x(&state, theme);
+        let item_py = self.item_padding_y(&state, theme);
+        let item_gap = self.item_gap(&state, theme);
+        let item_hover_bg = self.item_hover_bg(&state, theme);
+        let item_hl_fg = self.item_hl_fg(&state, theme);
+        let group_label_fg = self.group_label_fg(&state, theme);
+
+        let items = props.state.read(cx).items.clone();
+        let highlighted = props.state.read(cx).highlighted_index;
+
+        // Build the menu body (flex column) with one row per
+        // item. Highlighted row is painted using `item_hover_bg`
+        // directly so keyboard navigation matches mouse hover
+        // without an extra theme key.
+        let mut body: Div = gpui::div().flex().flex_col().gap(item_gap);
+
+        for (i, item) in items.iter().enumerate() {
+            match item {
+                DropdownItem::Item(menu_item) => {
+                    let is_highlighted = highlighted == Some(i);
+                    let state_for_pick = props.state.clone();
+                    let id = menu_item.id.clone();
+                    let label = menu_item.label.to_string();
+                    let row_bg = if is_highlighted { item_hover_bg } else { bg };
+                    let row_fg = if is_highlighted { item_hl_fg } else { item_hl_fg };
+                    let mut row: Stateful<Div> = gpui::div()
+                        .id(ElementId::Name(format!("brutal-menu-item-{}", i).into()))
+                        .px(item_px)
+                        .py(item_py)
+                        .rounded(px(BRUTAL_RADIUS))
+                        .bg(row_bg)
+                        .text_color(row_fg)
+                        .cursor(CursorStyle::PointingHand)
+                        .hover(move |s| s.bg(item_hover_bg))
+                        .child(label);
+                    row = row.on_click(move |_ev, window, cx| {
+                        let cb = state_for_pick.read(cx).on_select().cloned();
+                        if let Some(f) = cb {
+                            f(id.clone(), window, cx);
+                        }
+                    });
+                    body = body.child(row);
+                }
+                DropdownItem::Separator => {
+                    // A 2-pixel hard separator matches the
+                    // brutalism divider thickness.
+                    let sep = gpui::div()
+                        .id(ElementId::Name(format!("brutal-menu-sep-{}", i).into()))
+                        .h(px(2.0))
+                        .my(px(2.0))
+                        .bg(border);
+                    body = body.child(sep);
+                }
+                DropdownItem::Group(group) => {
+                    let group_label = group.label.to_string();
+                    let header = gpui::div()
+                        .id(ElementId::Name(format!("brutal-menu-group-{}", i).into()))
+                        .px(item_px)
+                        .py(px(4.0))
+                        .text_color(group_label_fg)
+                        .text_size(px(11.0))
+                        .child(group_label);
+                    body = body.child(header);
+                }
+            }
+        }
+
+        // Brutalism menu shell: thick black border + hard offset
+        // shadow + sharp corners. The shadow uses the overlay
+        // tier (largest brutalism y offset) since menus float
+        // above other content.
+        let shadow = brutal_shadow_overlay(theme);
+        gpui::div()
+            .id(props.id.clone())
+            .bg(bg)
+            .border(bw)
+            .border_color(border)
+            .rounded(radius)
+            .p(pad)
+            .shadow(vec![gpui::BoxShadow {
+                color: shadow.color,
+                offset: gpui::point(px(0.0), shadow.offset_y),
+                blur_radius: shadow.blur,
+                spread_radius: px(0.0),
+            }])
+            .child(body)
     }
 }
