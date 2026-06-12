@@ -51,7 +51,10 @@ use crate::renderers::{
         BrutalNumberInputRenderer, BrutalPasswordInputRenderer, BrutalSearchInputRenderer,
         BrutalSelectRenderer, BrutalTextAreaRenderer, BrutalTextInputRenderer,
     },
-    lists::{BrutalFormRenderer, BrutalListItemRenderer, BrutalTreeItemRenderer},
+    lists::{
+        BrutalFormRenderer, BrutalListItemRenderer, BrutalTreeItemRenderer,
+        BrutalVirtualListRenderer,
+    },
     notifications::{BrutalNotificationRenderer, BrutalToastRenderer},
     overlays::{
         BrutalDisclosureRenderer, BrutalDropdownMenuRenderer, BrutalModalRenderer,
@@ -189,4 +192,7 @@ pub fn register_brutal_renderers(cx: &mut App) {
     cx.register_renderer_arc::<m::ListItem, dyn ListItemRenderer>(Arc::new(BrutalListItemRenderer));
     cx.register_renderer_arc::<m::TreeItem, dyn TreeItemRenderer>(Arc::new(BrutalTreeItemRenderer));
     cx.register_renderer_arc::<m::Form, dyn FormRenderer>(Arc::new(BrutalFormRenderer));
+    cx.register_renderer_arc::<m::VirtualList, dyn VirtualListRenderer>(Arc::new(
+        BrutalVirtualListRenderer,
+    ));
 }

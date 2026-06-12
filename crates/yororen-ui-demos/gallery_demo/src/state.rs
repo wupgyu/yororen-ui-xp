@@ -22,6 +22,7 @@ use yororen_ui::headless::popover::PopoverState;
 use yororen_ui::headless::select::SelectState;
 use yororen_ui::headless::tooltip::TooltipState;
 use yororen_ui::headless::tree_item::TreeNodeId;
+use yororen_ui::headless::virtual_list::VirtualListController;
 
 use crate::theme_switcher::{DarkMode, RendererKind};
 
@@ -109,6 +110,13 @@ pub struct GalleryApp {
     pub form_email_error: Option<String>,
     pub tree_expanded: BTreeSet<TreeNodeId>,
     pub tree_selected: Option<TreeNodeId>,
+    // Virtual-list controller — the caller (GalleryApp) owns the
+    // ListState and threads it into the headless `virtual_list`
+    // factory every frame. The closure the renderer hands to
+    // `gpui::list` is the only thing that ever touches the inner
+    // scroll position; the controller is what the caller uses to
+    // reset/splice/scroll.
+    pub list_controller: VirtualListController,
 }
 
 impl GalleryApp {
@@ -230,6 +238,11 @@ impl GalleryApp {
             form_email_error: None,
             tree_expanded: BTreeSet::new(),
             tree_selected: None,
+            // 1000-item list — top-aligned, 20-px overdraw. The
+            // controller is mutated via `reset`/`splice`/
+            // `scroll_to_reveal_item`; the headless props snapshot
+            // its state on every render frame.
+            list_controller: VirtualListController::new(1_000, gpui::ListAlignment::Top, gpui::px(20.)),
         }
     }
 }

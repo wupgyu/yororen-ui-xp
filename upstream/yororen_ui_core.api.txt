@@ -1760,6 +1760,7 @@ pub yororen_ui_core::headless::list_item::ListItemProps::description: core::opti
 pub yororen_ui_core::headless::list_item::ListItemProps::disabled: bool
 pub yororen_ui_core::headless::list_item::ListItemProps::id: gpui::window::ElementId
 pub yororen_ui_core::headless::list_item::ListItemProps::leading_icon: core::option::Option<gpui::shared_string::SharedString>
+pub yororen_ui_core::headless::list_item::ListItemProps::on_click: core::option::Option<yororen_ui_core::headless::button::ClickCallback>
 pub yororen_ui_core::headless::list_item::ListItemProps::selected: bool
 pub yororen_ui_core::headless::list_item::ListItemProps::title: gpui::shared_string::SharedString
 pub yororen_ui_core::headless::list_item::ListItemProps::trailing_icon: core::option::Option<gpui::shared_string::SharedString>
@@ -1768,6 +1769,7 @@ pub fn yororen_ui_core::headless::list_item::ListItemProps::apply(self, gpui::el
 pub fn yororen_ui_core::headless::list_item::ListItemProps::description(self, impl core::convert::Into<gpui::shared_string::SharedString>) -> Self
 pub fn yororen_ui_core::headless::list_item::ListItemProps::disabled(self, bool) -> Self
 pub fn yororen_ui_core::headless::list_item::ListItemProps::leading_icon(self, impl core::convert::Into<gpui::shared_string::SharedString>) -> Self
+pub fn yororen_ui_core::headless::list_item::ListItemProps::on_click<F>(self, F) -> Self where F: 'static + core::marker::Send + core::marker::Sync + core::ops::function::Fn(&gpui::interactive::ClickEvent, &mut gpui::window::Window, &mut gpui::app::App)
 pub fn yororen_ui_core::headless::list_item::ListItemProps::render(self, &gpui::app::App) -> gpui::elements::div::Stateful<gpui::elements::div::Div>
 pub fn yororen_ui_core::headless::list_item::ListItemProps::selected(self, bool) -> Self
 pub fn yororen_ui_core::headless::list_item::ListItemProps::trailing_icon(self, impl core::convert::Into<gpui::shared_string::SharedString>) -> Self
@@ -1780,9 +1782,10 @@ impl core::marker::Send for yororen_ui_core::headless::list_item::ListItemProps
 impl core::marker::Sync for yororen_ui_core::headless::list_item::ListItemProps
 impl core::marker::Unpin for yororen_ui_core::headless::list_item::ListItemProps
 impl core::marker::UnsafeUnpin for yororen_ui_core::headless::list_item::ListItemProps
-impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::headless::list_item::ListItemProps
-impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::headless::list_item::ListItemProps
+impl !core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::headless::list_item::ListItemProps
+impl !core::panic::unwind_safe::UnwindSafe for yororen_ui_core::headless::list_item::ListItemProps
 pub fn yororen_ui_core::headless::list_item::list_item(impl core::convert::Into<gpui::window::ElementId>, impl core::convert::Into<gpui::shared_string::SharedString>, &mut gpui::app::App) -> yororen_ui_core::headless::list_item::ListItemProps
+pub type yororen_ui_core::headless::list_item::ClickCallback = alloc::sync::Arc<(dyn core::ops::function::Fn(&gpui::interactive::ClickEvent, &mut gpui::window::Window, &mut gpui::app::App) + core::marker::Send + core::marker::Sync)>
 pub mod yororen_ui_core::headless::listbox
 pub struct yororen_ui_core::headless::listbox::ListboxOption
 pub yororen_ui_core::headless::listbox::ListboxOption::disabled: bool
@@ -4856,26 +4859,71 @@ pub const yororen_ui_core::headless::tree_item::double_click_threshold: core::ti
 pub fn yororen_ui_core::headless::tree_item::tree_item(impl core::convert::Into<gpui::window::ElementId>, impl core::convert::Into<yororen_ui_core::headless::tree_item::TreeNodeId>, impl core::convert::Into<alloc::string::String>, &mut gpui::app::App) -> yororen_ui_core::headless::tree_item::TreeItemProps
 pub type yororen_ui_core::headless::tree_item::ClickCallback = alloc::sync::Arc<(dyn core::ops::function::Fn(&gpui::interactive::ClickEvent, &mut gpui::window::Window, &mut gpui::app::App) + core::marker::Send + core::marker::Sync)>
 pub mod yororen_ui_core::headless::virtual_list
+pub struct yororen_ui_core::headless::virtual_list::VirtualListController
+impl yororen_ui_core::headless::virtual_list::VirtualListController
+pub fn yororen_ui_core::headless::virtual_list::VirtualListController::new(usize, gpui::elements::list::ListAlignment, gpui::geometry::Pixels) -> Self
+pub fn yororen_ui_core::headless::virtual_list::VirtualListController::reset(&self, usize)
+pub fn yororen_ui_core::headless::virtual_list::VirtualListController::scroll_to_reveal_item(&self, usize)
+pub fn yororen_ui_core::headless::virtual_list::VirtualListController::splice(&self, core::ops::range::Range<usize>, usize)
+pub fn yororen_ui_core::headless::virtual_list::VirtualListController::state(&self) -> gpui::elements::list::ListState
+pub fn yororen_ui_core::headless::virtual_list::VirtualListController::with_default(usize) -> Self
+impl core::clone::Clone for yororen_ui_core::headless::virtual_list::VirtualListController
+pub fn yororen_ui_core::headless::virtual_list::VirtualListController::clone(&self) -> yororen_ui_core::headless::virtual_list::VirtualListController
+impl core::fmt::Debug for yororen_ui_core::headless::virtual_list::VirtualListController
+pub fn yororen_ui_core::headless::virtual_list::VirtualListController::fmt(&self, &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::Freeze for yororen_ui_core::headless::virtual_list::VirtualListController
+impl !core::marker::Send for yororen_ui_core::headless::virtual_list::VirtualListController
+impl !core::marker::Sync for yororen_ui_core::headless::virtual_list::VirtualListController
+impl core::marker::Unpin for yororen_ui_core::headless::virtual_list::VirtualListController
+impl core::marker::UnsafeUnpin for yororen_ui_core::headless::virtual_list::VirtualListController
+impl !core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::headless::virtual_list::VirtualListController
+impl !core::panic::unwind_safe::UnwindSafe for yororen_ui_core::headless::virtual_list::VirtualListController
 pub struct yororen_ui_core::headless::virtual_list::VirtualListProps
+pub yororen_ui_core::headless::virtual_list::VirtualListProps::alignment: gpui::elements::list::ListAlignment
 pub yororen_ui_core::headless::virtual_list::VirtualListProps::id: gpui::window::ElementId
 pub yororen_ui_core::headless::virtual_list::VirtualListProps::item_count: usize
-pub yororen_ui_core::headless::virtual_list::VirtualListProps::overdraw_px: core::option::Option<f32>
+pub yororen_ui_core::headless::virtual_list::VirtualListProps::overdraw: gpui::geometry::Pixels
+pub yororen_ui_core::headless::virtual_list::VirtualListProps::render_row: core::option::Option<yororen_ui_core::headless::virtual_list::RenderRowFn>
+pub yororen_ui_core::headless::virtual_list::VirtualListProps::sizing_behavior: gpui::elements::list::ListSizingBehavior
+pub yororen_ui_core::headless::virtual_list::VirtualListProps::state: gpui::elements::list::ListState
 impl yororen_ui_core::headless::virtual_list::VirtualListProps
+pub fn yororen_ui_core::headless::virtual_list::VirtualListProps::alignment(self, gpui::elements::list::ListAlignment) -> Self
 pub fn yororen_ui_core::headless::virtual_list::VirtualListProps::apply(self, gpui::elements::div::Div) -> gpui::elements::div::Stateful<gpui::elements::div::Div>
-pub fn yororen_ui_core::headless::virtual_list::VirtualListProps::overdraw(self, f32) -> Self
+pub fn yororen_ui_core::headless::virtual_list::VirtualListProps::item_count(self, usize) -> Self
+pub fn yororen_ui_core::headless::virtual_list::VirtualListProps::overdraw(self, gpui::geometry::Pixels) -> Self
 pub fn yororen_ui_core::headless::virtual_list::VirtualListProps::render(self, &gpui::app::App) -> gpui::elements::div::Stateful<gpui::elements::div::Div>
-impl core::clone::Clone for yororen_ui_core::headless::virtual_list::VirtualListProps
-pub fn yororen_ui_core::headless::virtual_list::VirtualListProps::clone(&self) -> yororen_ui_core::headless::virtual_list::VirtualListProps
+pub fn yororen_ui_core::headless::virtual_list::VirtualListProps::row(self, impl core::ops::function::FnMut(usize, &mut gpui::window::Window, &mut gpui::app::App) -> gpui::element::AnyElement + 'static) -> Self
+pub fn yororen_ui_core::headless::virtual_list::VirtualListProps::sizing(self, gpui::elements::list::ListSizingBehavior) -> Self
 impl core::fmt::Debug for yororen_ui_core::headless::virtual_list::VirtualListProps
 pub fn yororen_ui_core::headless::virtual_list::VirtualListProps::fmt(&self, &mut core::fmt::Formatter<'_>) -> core::fmt::Result
 impl core::marker::Freeze for yororen_ui_core::headless::virtual_list::VirtualListProps
-impl core::marker::Send for yororen_ui_core::headless::virtual_list::VirtualListProps
-impl core::marker::Sync for yororen_ui_core::headless::virtual_list::VirtualListProps
+impl !core::marker::Send for yororen_ui_core::headless::virtual_list::VirtualListProps
+impl !core::marker::Sync for yororen_ui_core::headless::virtual_list::VirtualListProps
 impl core::marker::Unpin for yororen_ui_core::headless::virtual_list::VirtualListProps
 impl core::marker::UnsafeUnpin for yororen_ui_core::headless::virtual_list::VirtualListProps
-impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::headless::virtual_list::VirtualListProps
-impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::headless::virtual_list::VirtualListProps
-pub fn yororen_ui_core::headless::virtual_list::virtual_list(impl core::convert::Into<gpui::window::ElementId>, usize, &mut gpui::app::App) -> yororen_ui_core::headless::virtual_list::VirtualListProps
+impl !core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::headless::virtual_list::VirtualListProps
+impl !core::panic::unwind_safe::UnwindSafe for yororen_ui_core::headless::virtual_list::VirtualListProps
+pub fn yororen_ui_core::headless::virtual_list::virtual_list(impl core::convert::Into<gpui::window::ElementId>, &yororen_ui_core::headless::virtual_list::VirtualListController, &mut gpui::app::App) -> yororen_ui_core::headless::virtual_list::VirtualListProps
+pub type yororen_ui_core::headless::virtual_list::RenderRowFn = alloc::boxed::Box<(dyn core::ops::function::FnMut(usize, &mut gpui::window::Window, &mut gpui::app::App) -> gpui::element::AnyElement + 'static)>
+pub struct yororen_ui_core::headless::VirtualListController
+impl yororen_ui_core::headless::virtual_list::VirtualListController
+pub fn yororen_ui_core::headless::virtual_list::VirtualListController::new(usize, gpui::elements::list::ListAlignment, gpui::geometry::Pixels) -> Self
+pub fn yororen_ui_core::headless::virtual_list::VirtualListController::reset(&self, usize)
+pub fn yororen_ui_core::headless::virtual_list::VirtualListController::scroll_to_reveal_item(&self, usize)
+pub fn yororen_ui_core::headless::virtual_list::VirtualListController::splice(&self, core::ops::range::Range<usize>, usize)
+pub fn yororen_ui_core::headless::virtual_list::VirtualListController::state(&self) -> gpui::elements::list::ListState
+pub fn yororen_ui_core::headless::virtual_list::VirtualListController::with_default(usize) -> Self
+impl core::clone::Clone for yororen_ui_core::headless::virtual_list::VirtualListController
+pub fn yororen_ui_core::headless::virtual_list::VirtualListController::clone(&self) -> yororen_ui_core::headless::virtual_list::VirtualListController
+impl core::fmt::Debug for yororen_ui_core::headless::virtual_list::VirtualListController
+pub fn yororen_ui_core::headless::virtual_list::VirtualListController::fmt(&self, &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::Freeze for yororen_ui_core::headless::virtual_list::VirtualListController
+impl !core::marker::Send for yororen_ui_core::headless::virtual_list::VirtualListController
+impl !core::marker::Sync for yororen_ui_core::headless::virtual_list::VirtualListController
+impl core::marker::Unpin for yororen_ui_core::headless::virtual_list::VirtualListController
+impl core::marker::UnsafeUnpin for yororen_ui_core::headless::virtual_list::VirtualListController
+impl !core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::headless::virtual_list::VirtualListController
+impl !core::panic::unwind_safe::UnwindSafe for yororen_ui_core::headless::virtual_list::VirtualListController
 pub fn yororen_ui_core::headless::avatar(impl core::convert::Into<gpui::window::ElementId>, &mut gpui::app::App) -> yororen_ui_core::headless::avatar::AvatarProps
 pub fn yororen_ui_core::headless::badge(impl core::convert::Into<gpui::window::ElementId>, impl core::convert::Into<alloc::string::String>, &mut gpui::app::App) -> yororen_ui_core::headless::badge::BadgeProps
 pub fn yororen_ui_core::headless::button(impl core::convert::Into<gpui::window::ElementId>, &mut gpui::app::App) -> yororen_ui_core::headless::button::ButtonProps
@@ -4897,6 +4945,7 @@ pub fn yororen_ui_core::headless::tag(impl core::convert::Into<gpui::window::Ele
 pub fn yororen_ui_core::headless::text(impl core::convert::Into<gpui::window::ElementId>, impl core::convert::Into<gpui::shared_string::SharedString>, &mut gpui::app::App) -> yororen_ui_core::headless::text::TextProps
 pub fn yororen_ui_core::headless::text_input(impl core::convert::Into<gpui::window::ElementId>) -> yororen_ui_core::headless::text_input::TextInputProps
 pub fn yororen_ui_core::headless::toggle_button(impl core::convert::Into<gpui::window::ElementId>, &mut gpui::app::App) -> yororen_ui_core::headless::toggle_button::ToggleButtonProps
+pub fn yororen_ui_core::headless::virtual_list(impl core::convert::Into<gpui::window::ElementId>, &yororen_ui_core::headless::virtual_list::VirtualListController, &mut gpui::app::App) -> yororen_ui_core::headless::virtual_list::VirtualListProps
 pub mod yororen_ui_core::i18n
 pub mod yororen_ui_core::i18n::format
 pub enum yororen_ui_core::i18n::format::CurrencyDisplay
@@ -8586,11 +8635,14 @@ pub fn yororen_ui_core::renderer::variant::TokenVariantStyle::fg(&self, &yororen
 pub fn yororen_ui_core::renderer::variant::variant_compose(alloc::sync::Arc<dyn yororen_ui_core::renderer::variant::VariantStyle>, &[(yororen_ui_core::renderer::variant::VariantKey, alloc::sync::Arc<dyn yororen_ui_core::renderer::variant::VariantStyle>)]) -> alloc::sync::Arc<dyn yororen_ui_core::renderer::variant::VariantStyle>
 pub mod yororen_ui_core::renderer::virtual_list
 pub struct yororen_ui_core::renderer::virtual_list::VirtualListRenderState
+pub yororen_ui_core::renderer::virtual_list::VirtualListRenderState::alignment: gpui::elements::list::ListAlignment
 pub yororen_ui_core::renderer::virtual_list::VirtualListRenderState::item_count: usize
+pub yororen_ui_core::renderer::virtual_list::VirtualListRenderState::overdraw: gpui::geometry::Pixels
+pub yororen_ui_core::renderer::virtual_list::VirtualListRenderState::sizing_behavior: gpui::elements::list::ListSizingBehavior
 impl core::clone::Clone for yororen_ui_core::renderer::virtual_list::VirtualListRenderState
 pub fn yororen_ui_core::renderer::virtual_list::VirtualListRenderState::clone(&self) -> yororen_ui_core::renderer::virtual_list::VirtualListRenderState
 impl core::default::Default for yororen_ui_core::renderer::virtual_list::VirtualListRenderState
-pub fn yororen_ui_core::renderer::virtual_list::VirtualListRenderState::default() -> yororen_ui_core::renderer::virtual_list::VirtualListRenderState
+pub fn yororen_ui_core::renderer::virtual_list::VirtualListRenderState::default() -> Self
 impl core::fmt::Debug for yororen_ui_core::renderer::virtual_list::VirtualListRenderState
 pub fn yororen_ui_core::renderer::virtual_list::VirtualListRenderState::fmt(&self, &mut core::fmt::Formatter<'_>) -> core::fmt::Result
 impl core::marker::Copy for yororen_ui_core::renderer::virtual_list::VirtualListRenderState
@@ -8602,7 +8654,7 @@ impl core::marker::UnsafeUnpin for yororen_ui_core::renderer::virtual_list::Virt
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::renderer::virtual_list::VirtualListRenderState
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::renderer::virtual_list::VirtualListRenderState
 pub trait yororen_ui_core::renderer::virtual_list::VirtualListRenderer: core::any::Any + core::marker::Send + core::marker::Sync
-pub fn yororen_ui_core::renderer::virtual_list::VirtualListRenderer::compose(&self, &yororen_ui_core::headless::virtual_list::VirtualListProps, &gpui::app::App) -> gpui::elements::div::Stateful<gpui::elements::div::Div>
+pub fn yororen_ui_core::renderer::virtual_list::VirtualListRenderer::compose(&self, yororen_ui_core::headless::virtual_list::VirtualListProps, yororen_ui_core::headless::virtual_list::RenderRowFn, &gpui::app::App) -> gpui::elements::div::Stateful<gpui::elements::div::Div>
 pub enum yororen_ui_core::renderer::ActionVariantKind
 pub yororen_ui_core::renderer::ActionVariantKind::Danger
 pub yororen_ui_core::renderer::ActionVariantKind::Neutral

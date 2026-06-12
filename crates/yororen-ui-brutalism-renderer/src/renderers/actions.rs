@@ -731,6 +731,7 @@ impl SplitButtonRenderer for BrutalSplitButtonRenderer {
                             trailing_icon: None,
                             selected: false,
                             disabled: item_disabled,
+                            on_click: None,
                         }
                         .render(cx);
 

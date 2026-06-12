@@ -4,7 +4,7 @@
 
 use std::collections::BTreeSet;
 
-use gpui::{Context, Div, ElementId, ParentElement, Styled, Window, div, px};
+use gpui::{Context, Div, ElementId, IntoElement, ParentElement, Styled, Window, div, px};
 
 use yororen_ui::headless::form::form;
 use yororen_ui::headless::form_field::form_field;
@@ -191,13 +191,41 @@ pub fn render(app: &mut GalleryApp, window: &mut Window, cx: &mut Context<Galler
     let tree_wrapped = cell("tree + tree_item (3-5 rows; click chevron or double-click row to expand, click row to select)", tree_el, cx);
 
     // --- virtual_list ---
-    let vl = virtual_list("lists-vl", 1_000, cx)
-        .overdraw(20.0)
+    // 1000 items, each rendered as a `list_item` via the row
+    // closure handed to `gpui::list`. The closure captures the
+    // GalleryApp entity so the row reads the *current* selection
+    // state on every frame and `on_click` updates it.
+    let app_entity_for_vl = cx.entity().clone();
+    let vl_label = label(
+        "vl-info",
+        "(1000 items; click a row to select, scroll to virtualize)",
+        cx,
+    )
+    .muted(true)
+    .render(cx);
+    let vl = virtual_list("lists-vl", &app.list_controller, cx)
+        .row(move |ix, _window, cx| {
+            let app_entity = app_entity_for_vl.clone();
+            // Read the *current* selected index from the entity on
+            // each row construction; the closure is `FnMut` and is
+            // re-invoked per visible row per frame.
+            let selected = app_entity.read(cx).selected_list_item == Some(ix);
+            let row_id: ElementId = format!("vl-row-{ix}").into();
+            list_item(row_id, format!("Item #{ix}"), cx)
+                .selected(selected)
+                .on_click(move |_ev, _window, cx| {
+                    app_entity.update(cx, |s, _cx| {
+                        s.selected_list_item = Some(ix);
+                    });
+                })
+                .render(cx)
+                .into_any_element()
+        })
         .render(cx)
-        .w(px(220.))
-        .h(px(120.))
-        .child(label("vl-blank", "(1000 items; scroll to test)", cx).muted(true).render(cx));
-    let vl_wrapped = cell("virtual_list (1000 items)", vl, cx);
+        .w(px(240.))
+        .h(px(180.))
+        .child(vl_label);
+    let vl_wrapped = cell("virtual_list (1000 items; scroll to test virtualization)", vl, cx);
 
     // --- spacer ---
     let sp = spacer("lists-spacer", cx)

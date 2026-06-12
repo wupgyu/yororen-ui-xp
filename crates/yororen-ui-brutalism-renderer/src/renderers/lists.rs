@@ -325,3 +325,78 @@ impl FormRenderer for BrutalFormRenderer {
         gpui::div().flex().flex_col().gap(g)
     }
 }
+
+// =====================================================================
+// VirtualList
+// =====================================================================
+
+pub use yororen_ui_core::renderer::virtual_list::{VirtualListRenderState, VirtualListRenderer};
+
+pub struct BrutalVirtualListRenderer;
+
+// Inherent helpers — *not* part of the trait surface.
+impl BrutalVirtualListRenderer {
+    pub fn bg(&self, _: &VirtualListRenderState, theme: &Theme) -> Hsla {
+        theme.get_color("surface.base").unwrap_or(BRUTAL_BORDER)
+    }
+    pub fn border_color(&self, _: &VirtualListRenderState, theme: &Theme) -> Hsla {
+        crate::style::brutal_border_color(theme)
+    }
+    pub fn border_width(&self, _: &VirtualListRenderState, _: &Theme) -> Pixels {
+        px(crate::style::BRUTAL_BORDER_WIDTH)
+    }
+    pub fn border_radius(&self, _: &VirtualListRenderState, _: &Theme) -> Pixels {
+        px(BRUTAL_RADIUS)
+    }
+}
+
+impl VirtualListRenderer for BrutalVirtualListRenderer {
+    fn compose(
+        &self,
+        props: yororen_ui_core::headless::virtual_list::VirtualListProps,
+        render_row: yororen_ui_core::headless::virtual_list::RenderRowFn,
+        cx: &App,
+    ) -> Stateful<Div> {
+        use yororen_ui_core::theme::ActiveTheme;
+        let theme = cx.theme();
+        let state = VirtualListRenderState {
+            item_count: props.item_count,
+            alignment: props.alignment,
+            overdraw: props.overdraw,
+            sizing_behavior: props.sizing_behavior,
+        };
+        let bg = self.bg(&state, theme);
+        let border = self.border_color(&state, theme);
+        let bw = self.border_width(&state, theme);
+        let radius = self.border_radius(&state, theme);
+
+        // The inner list is constructed inline and forced to
+        // fill the parent — same `size_full().flex_grow().min_h_0()`
+        // pattern as the default renderer. Brutalism could add
+        // its own offsets (e.g. a hard offset shadow on the
+        // scroll surface) here without sharing code with default.
+        let list_el = gpui::list(props.state, render_row).with_sizing_behavior(props.sizing_behavior);
+        let inner = list_el.size_full().flex_grow().min_h_0();
+
+        // The outer div is the brutalist frame: thick black
+        // border, square corners, surface background, and
+        // overflow hidden so scrolled content is clipped to
+        // the frame. `flex().flex_col()` makes the inner list's
+        // `flex_grow()` work and lets any sibling children
+        // (e.g. an info label added by the caller) take their
+        // natural size at the top.
+        gpui::div()
+            .id(props.id)
+            .flex()
+            .flex_col()
+            .bg(bg)
+            .border_color(border)
+            .border_l(bw)
+            .border_r(bw)
+            .border_t(bw)
+            .border_b(bw)
+            .rounded(radius)
+            .overflow_hidden()
+            .child(inner)
+    }
+}

@@ -115,6 +115,7 @@ pub use tag::tag;
 pub use text::text;
 pub use text_input::text_input;
 pub use toggle_button::toggle_button;
+pub use virtual_list::{VirtualListController, virtual_list};
 
 // Marker types (for `cx.renderer_arc::<markers::Button, ...>`).
 // These are the *component* markers, not the `headless::*Props`
