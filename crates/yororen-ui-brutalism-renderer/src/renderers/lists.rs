@@ -385,6 +385,16 @@ impl VirtualListRenderer for BrutalVirtualListRenderer {
         // `flex_grow()` work and lets any sibling children
         // (e.g. an info label added by the caller) take their
         // natural size at the top.
+        //
+        // The trailing `on_scroll_wheel` stops propagation after
+        // the inner list has handled the scroll. `gpui::list`
+        // scrolls correctly but does **not** call
+        // `stop_propagation()`, so without this the wheel event
+        // bubbles up to the page / outer scrollable container
+        // and scrolls *that* in addition to the list — a
+        // regression the v0.3 wrapping div introduced (v0.2.0's
+        // `VirtualList` was the styled list itself, no outer
+        // hitbox to bubble past).
         gpui::div()
             .id(props.id)
             .flex()
@@ -398,5 +408,8 @@ impl VirtualListRenderer for BrutalVirtualListRenderer {
             .rounded(radius)
             .overflow_hidden()
             .child(inner)
+            .on_scroll_wheel(|_event, _window, cx| {
+                cx.stop_propagation();
+            })
     }
 }

@@ -58,6 +58,18 @@ impl VirtualListRenderer for TokenVirtualListRenderer {
         let list_el = list(props.state, render_row).with_sizing_behavior(props.sizing_behavior);
         let inner = list_el.size_full().flex_grow().min_h_0();
 
+        // `gpui::list` handles scroll internally (its own
+        // bubble-phase `on_mouse_event` consumes the delta and
+        // calls `list_state.scroll(...)`), but it does **not**
+        // call `stop_propagation()`. Without an explicit stop
+        // here, the wheel event continues to bubble up to the
+        // page / outer scrollable container and scrolls *that*
+        // in addition to the list — the v0.3 wrapping div
+        // introduced this regression (v0.2.0's `VirtualList`
+        // was the styled list element itself, so there was no
+        // outer hitbox to bubble past). Register a bubble-phase
+        // scroll handler on the outer div that stops the event
+        // after the list has handled it.
         div()
             .id(props.id)
             .flex()
@@ -68,6 +80,9 @@ impl VirtualListRenderer for TokenVirtualListRenderer {
             .rounded(radius)
             .overflow_hidden()
             .child(inner)
+            .on_scroll_wheel(|_event, _window, cx| {
+                cx.stop_propagation();
+            })
     }
 }
 
