@@ -7,10 +7,13 @@
 
 use std::sync::Arc;
 
-use gpui::{App, Div, Hsla, InteractiveElement, ParentElement, Pixels, Styled, div};
+use gpui::{App, Div, Hsla, InteractiveElement, ParentElement, Pixels, Styled, div, px};
 
+use yororen_ui_core::animation::SlideDirection;
 use yororen_ui_core::headless::dropdown_menu::DropdownMenuProps;
 use yororen_ui_core::theme::Theme;
+
+use crate::animation::AnimatedPresenceElement;
 
 pub use yororen_ui_core::renderer::dropdown_menu::{DropdownMenuRenderState, DropdownMenuRenderer};
 
@@ -50,18 +53,18 @@ impl DropdownMenuRenderer for TokenDropdownMenuRenderer {
             outer = outer.child(t);
         }
 
-        // 2) Body — only when open, floated with
+        // 2) Body — only when visible, floated with
         //    `gpui::deferred` so it paints over subsequent
         //    sibling cells in the gallery.
-        if state.open
+        if props.state.read(cx).is_visible()
             && let Some(c) = props.content.take()
         {
-            let state_for_close = props.state.clone();
             // The body is a `menu` element which already paints
             // its own border + bg; the dropdown panel only adds
             // shadow and click-outside dismissal. Avoid double
             // borders by NOT setting `border_1` / `border_color`
             // here.
+            let state_for_close = props.state.clone();
             let panel: Div = div()
                 .absolute()
                 .top(gpui::px(4.0))
@@ -81,7 +84,23 @@ impl DropdownMenuRenderer for TokenDropdownMenuRenderer {
                     state_for_close.update(cx, |s, _cx| s.close());
                 })
                 .child(c);
-            outer = outer.child(gpui::deferred(panel).with_priority(1));
+            let distance = px(
+                theme
+                    .get_number("motion.slide_distance")
+                    .unwrap_or(10.0) as f32,
+            );
+            outer = outer.child(
+                gpui::deferred(
+                    div().child(AnimatedPresenceElement::new(
+                        props.state.clone(),
+                        (props.id.clone(), "body"),
+                        SlideDirection::Down,
+                        distance,
+                        panel,
+                    )),
+                )
+                .with_priority(1),
+            );
         }
 
         outer

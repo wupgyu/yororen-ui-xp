@@ -7,10 +7,13 @@
 
 use std::sync::Arc;
 
-use gpui::{App, Div, Hsla, InteractiveElement, ParentElement, Pixels, Styled, div};
+use gpui::{App, Div, Hsla, InteractiveElement, ParentElement, Pixels, Styled, div, px};
 
+use yororen_ui_core::animation::SlideDirection;
 use yororen_ui_core::headless::popover::PopoverProps;
 use yororen_ui_core::theme::Theme;
+
+use crate::animation::AnimatedPresenceElement;
 
 pub use yororen_ui_core::renderer::popover::{PopoverRenderState, PopoverRenderer};
 
@@ -48,7 +51,7 @@ impl PopoverRenderer for TokenPopoverRenderer {
         let border = self.border(&state, theme);
         let r = self.border_radius(&state, theme);
         let alpha = self.shadow_alpha(&state, theme);
-        let open = props.state.read(cx).is_open();
+        let visible = props.state.read(cx).is_visible();
         let offset_px = self.offset(&state, theme);
 
         // Outer container is `relative` so the absolute panel
@@ -64,10 +67,10 @@ impl PopoverRenderer for TokenPopoverRenderer {
             outer = outer.child(t);
         }
 
-        // 2) Content — only when open, floated with
+        // 2) Content — only when visible, floated with
         //    `gpui::deferred` so it paints after the
         //    subsequent sibling cells in the gallery.
-        if open
+        if visible
             && let Some(c) = props.content.take()
         {
             // The outer container captures outside-clicks and
@@ -98,7 +101,23 @@ impl PopoverRenderer for TokenPopoverRenderer {
                 }])
                 .occlude()
                 .child(c);
-            outer = outer.child(gpui::deferred(panel).with_priority(1));
+            let distance = px(
+                theme
+                    .get_number("motion.slide_distance")
+                    .unwrap_or(10.0) as f32,
+            );
+            outer = outer.child(
+                gpui::deferred(
+                    div().child(AnimatedPresenceElement::new(
+                        props.state.clone(),
+                        (props.id.clone(), "content"),
+                        SlideDirection::Down,
+                        distance,
+                        panel,
+                    )),
+                )
+                .with_priority(1),
+            );
         }
 
         outer

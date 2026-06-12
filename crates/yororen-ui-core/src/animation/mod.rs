@@ -36,7 +36,8 @@ pub use easing::{
     ease_out_quint_clamped, ease_out_sine, ease_out_sine_clamped,
 };
 pub use helpers::{
-    AnimateExt, SlideDirection as HelpersSlideDirection, animation_id, lerp, lerp_color,
+    AnimateExt, SlideDirection, SlideDirection as HelpersSlideDirection, animation_id, lerp,
+    lerp_color,
 };
 pub use orchestrator::{
     AnimationParallel, AnimationSequence, OrchestrationBuilder, Staggered, parallel, sequence,

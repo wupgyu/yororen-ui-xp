@@ -24,6 +24,7 @@
 //! and call `cx.register_renderer_arc::<markers::X, dyn XxxRenderer>(...)`
 //! at install time.
 
+pub mod animation;
 pub mod renderers;
 pub mod themes;
 

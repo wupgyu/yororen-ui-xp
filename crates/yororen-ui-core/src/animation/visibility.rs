@@ -11,7 +11,6 @@
 use std::time::Duration;
 
 use super::config::AnimationConfig;
-use super::easing::ease_out_quad;
 use super::timing::clamp01;
 
 /// Data-only state that describes an open / closed transition.
@@ -175,7 +174,11 @@ pub enum AnimationPhase {
 /// Implemented by the headless state structs (`ModalState`,
 /// `DropdownMenuState`, `PopoverState`, etc.) so renderer-side
 /// animation drivers can be generic over the concrete state type.
-pub trait AnimatedPresenceState: 'static + Send + Sync {
+///
+/// The bound is only `'static` because `gpui::Entity<S>` already
+/// owns the synchronization semantics; the trait itself just reads
+/// and writes the visibility field.
+pub trait AnimatedPresenceState: 'static {
     /// Borrow the visibility state.
     fn visibility(&self) -> &AnimatedVisibility;
     /// Mutably borrow the visibility state.

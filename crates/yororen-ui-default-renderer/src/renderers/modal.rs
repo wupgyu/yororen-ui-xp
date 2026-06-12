@@ -6,10 +6,13 @@
 
 use std::sync::Arc;
 
-use gpui::{App, Div, Hsla, Pixels, Styled, div};
+use gpui::{App, Div, Hsla, ParentElement, Pixels, Styled, div, px};
 
+use yororen_ui_core::animation::SlideDirection;
 use yororen_ui_core::headless::modal::ModalProps;
 use yororen_ui_core::theme::Theme;
+
+use crate::animation::AnimatedPresenceElement;
 
 pub use yororen_ui_core::renderer::modal::{ModalRenderState, ModalRenderer};
 
@@ -39,13 +42,18 @@ impl ModalRenderer for TokenModalRenderer {
         use yororen_ui_core::theme::ActiveTheme;
         let theme = cx.theme();
         let state = ModalRenderState {};
-        let _ = props;
         let panel_bg = self.panel_bg(&state, theme);
         let panel_border = self.panel_border(&state, theme);
         let pad = self.panel_padding(&state, theme);
         let r = self.panel_border_radius(&state, theme);
         let alpha = self.panel_shadow_alpha(&state, theme);
-        div()
+
+        let visible = props.state.read(cx).is_visible();
+        if !visible {
+            return div();
+        }
+
+        let panel = div()
             .bg(panel_bg)
             .border_1()
             .border_color(panel_border)
@@ -55,9 +63,23 @@ impl ModalRenderer for TokenModalRenderer {
                 color: gpui::hsla(0.0, 0.0, 0.0, alpha),
                 blur_radius: gpui::px(12.0),
                 spread_radius: gpui::px(0.0),
-                offset: gpui::Point { x: gpui::px(0.0), y: gpui::px(4.0) },
-                
-            }])
+                offset: gpui::Point {
+                    x: gpui::px(0.0),
+                    y: gpui::px(4.0),
+                },
+            }]);
+
+        div().child(AnimatedPresenceElement::new(
+            props.state.clone(),
+            props.id.clone(),
+            SlideDirection::Down,
+            px(
+                theme
+                    .get_number("motion.slide_distance")
+                    .unwrap_or(10.0) as f32,
+            ),
+            panel,
+        ))
     }
 }
 

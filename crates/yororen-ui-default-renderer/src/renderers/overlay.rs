@@ -11,11 +11,13 @@
 
 use std::sync::Arc;
 
-use gpui::{App, Div, Hsla, InteractiveElement, Stateful, Styled, div};
+use gpui::{App, Div, Hsla, InteractiveElement, ParentElement, Stateful, Styled, div};
 use gpui::prelude::FluentBuilder;
 
 use yororen_ui_core::headless::overlay::OverlayProps;
 use yororen_ui_core::theme::{ActiveTheme, Theme};
+
+use crate::animation::fade_in_on_mount;
 
 pub use yororen_ui_core::renderer::overlay::{OverlayRenderState, OverlayRenderer};
 
@@ -35,12 +37,26 @@ impl OverlayRenderer for TokenOverlayRenderer {
         let state = OverlayRenderState { open: props.open };
         let scrim = self.scrim_color(&state, theme);
 
-        div()
-            .id(props.id.clone())
+        let scrim_el = div()
             .relative()
             .size_full()
             .bg(scrim)
-            .when(!props.open, |el| el.invisible())
+            .when(!props.open, |el| el.invisible());
+
+        if !props.open {
+            return div().id(props.id.clone()).child(scrim_el);
+        }
+
+        let duration_ms = theme
+            .get_number("motion.duration_modal_fade")
+            .unwrap_or(200.0) as u64;
+        let el = fade_in_on_mount(
+            scrim_el,
+            props.id.clone(),
+            std::time::Duration::from_millis(duration_ms),
+            yororen_ui_core::animation::ease_out_quad,
+        );
+        div().id(props.id.clone()).child(el)
     }
 }
 

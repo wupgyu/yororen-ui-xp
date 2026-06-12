@@ -385,20 +385,20 @@ pub yororen_ui_core::animation::HelpersSlideDirection::Down
 pub yororen_ui_core::animation::HelpersSlideDirection::Left
 pub yororen_ui_core::animation::HelpersSlideDirection::Right
 pub yororen_ui_core::animation::HelpersSlideDirection::Up
-impl core::clone::Clone for yororen_ui_core::animation::HelpersSlideDirection
-pub fn yororen_ui_core::animation::HelpersSlideDirection::clone(&self) -> yororen_ui_core::animation::HelpersSlideDirection
-impl core::convert::From<yororen_ui_core::animation::PresetSlideDirection> for yororen_ui_core::animation::HelpersSlideDirection
-pub fn yororen_ui_core::animation::HelpersSlideDirection::from(yororen_ui_core::animation::PresetSlideDirection) -> Self
-impl core::fmt::Debug for yororen_ui_core::animation::HelpersSlideDirection
-pub fn yororen_ui_core::animation::HelpersSlideDirection::fmt(&self, &mut core::fmt::Formatter<'_>) -> core::fmt::Result
-impl core::marker::Copy for yororen_ui_core::animation::HelpersSlideDirection
-impl core::marker::Freeze for yororen_ui_core::animation::HelpersSlideDirection
-impl core::marker::Send for yororen_ui_core::animation::HelpersSlideDirection
-impl core::marker::Sync for yororen_ui_core::animation::HelpersSlideDirection
-impl core::marker::Unpin for yororen_ui_core::animation::HelpersSlideDirection
-impl core::marker::UnsafeUnpin for yororen_ui_core::animation::HelpersSlideDirection
-impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::animation::HelpersSlideDirection
-impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::animation::HelpersSlideDirection
+impl core::clone::Clone for yororen_ui_core::animation::SlideDirection
+pub fn yororen_ui_core::animation::SlideDirection::clone(&self) -> yororen_ui_core::animation::SlideDirection
+impl core::convert::From<yororen_ui_core::animation::PresetSlideDirection> for yororen_ui_core::animation::SlideDirection
+pub fn yororen_ui_core::animation::SlideDirection::from(yororen_ui_core::animation::PresetSlideDirection) -> Self
+impl core::fmt::Debug for yororen_ui_core::animation::SlideDirection
+pub fn yororen_ui_core::animation::SlideDirection::fmt(&self, &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::Copy for yororen_ui_core::animation::SlideDirection
+impl core::marker::Freeze for yororen_ui_core::animation::SlideDirection
+impl core::marker::Send for yororen_ui_core::animation::SlideDirection
+impl core::marker::Sync for yororen_ui_core::animation::SlideDirection
+impl core::marker::Unpin for yororen_ui_core::animation::SlideDirection
+impl core::marker::UnsafeUnpin for yororen_ui_core::animation::SlideDirection
+impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::animation::SlideDirection
+impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::animation::SlideDirection
 pub enum yororen_ui_core::animation::PresetSlideDirection
 pub yororen_ui_core::animation::PresetSlideDirection::Down
 pub yororen_ui_core::animation::PresetSlideDirection::Left
@@ -406,8 +406,8 @@ pub yororen_ui_core::animation::PresetSlideDirection::Right
 pub yororen_ui_core::animation::PresetSlideDirection::Up
 impl core::clone::Clone for yororen_ui_core::animation::PresetSlideDirection
 pub fn yororen_ui_core::animation::PresetSlideDirection::clone(&self) -> yororen_ui_core::animation::PresetSlideDirection
-impl core::convert::From<yororen_ui_core::animation::PresetSlideDirection> for yororen_ui_core::animation::HelpersSlideDirection
-pub fn yororen_ui_core::animation::HelpersSlideDirection::from(yororen_ui_core::animation::PresetSlideDirection) -> Self
+impl core::convert::From<yororen_ui_core::animation::PresetSlideDirection> for yororen_ui_core::animation::SlideDirection
+pub fn yororen_ui_core::animation::SlideDirection::from(yororen_ui_core::animation::PresetSlideDirection) -> Self
 impl core::fmt::Debug for yororen_ui_core::animation::PresetSlideDirection
 pub fn yororen_ui_core::animation::PresetSlideDirection::fmt(&self, &mut core::fmt::Formatter<'_>) -> core::fmt::Result
 impl core::marker::Copy for yororen_ui_core::animation::PresetSlideDirection
@@ -418,6 +418,25 @@ impl core::marker::Unpin for yororen_ui_core::animation::PresetSlideDirection
 impl core::marker::UnsafeUnpin for yororen_ui_core::animation::PresetSlideDirection
 impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::animation::PresetSlideDirection
 impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::animation::PresetSlideDirection
+pub enum yororen_ui_core::animation::SlideDirection
+pub yororen_ui_core::animation::SlideDirection::Down
+pub yororen_ui_core::animation::SlideDirection::Left
+pub yororen_ui_core::animation::SlideDirection::Right
+pub yororen_ui_core::animation::SlideDirection::Up
+impl core::clone::Clone for yororen_ui_core::animation::SlideDirection
+pub fn yororen_ui_core::animation::SlideDirection::clone(&self) -> yororen_ui_core::animation::SlideDirection
+impl core::convert::From<yororen_ui_core::animation::PresetSlideDirection> for yororen_ui_core::animation::SlideDirection
+pub fn yororen_ui_core::animation::SlideDirection::from(yororen_ui_core::animation::PresetSlideDirection) -> Self
+impl core::fmt::Debug for yororen_ui_core::animation::SlideDirection
+pub fn yororen_ui_core::animation::SlideDirection::fmt(&self, &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::Copy for yororen_ui_core::animation::SlideDirection
+impl core::marker::Freeze for yororen_ui_core::animation::SlideDirection
+impl core::marker::Send for yororen_ui_core::animation::SlideDirection
+impl core::marker::Sync for yororen_ui_core::animation::SlideDirection
+impl core::marker::Unpin for yororen_ui_core::animation::SlideDirection
+impl core::marker::UnsafeUnpin for yororen_ui_core::animation::SlideDirection
+impl core::panic::unwind_safe::RefUnwindSafe for yororen_ui_core::animation::SlideDirection
+impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::animation::SlideDirection
 pub struct yororen_ui_core::animation::AnimatedVisibility
 pub yororen_ui_core::animation::AnimatedVisibility::enter_config: yororen_ui_core::animation::AnimationConfig
 pub yororen_ui_core::animation::AnimatedVisibility::exit_config: yororen_ui_core::animation::AnimationConfig
@@ -719,11 +738,11 @@ impl core::panic::unwind_safe::UnwindSafe for yororen_ui_core::animation::TrackI
 pub trait yororen_ui_core::animation::AnimateExt
 pub fn yororen_ui_core::animation::AnimateExt::animate_fade(self, impl core::convert::Into<gpui::window::ElementId>, core::time::Duration, f32) -> gpui::elements::div::Stateful<Self> where Self: core::marker::Sized
 pub fn yororen_ui_core::animation::AnimateExt::animate_scale(self, impl core::convert::Into<gpui::window::ElementId>, core::time::Duration, f32) -> gpui::elements::div::Stateful<Self> where Self: core::marker::Sized
-pub fn yororen_ui_core::animation::AnimateExt::animate_slide(self, impl core::convert::Into<gpui::window::ElementId>, yororen_ui_core::animation::HelpersSlideDirection, gpui::geometry::Pixels, core::time::Duration, f32) -> gpui::elements::div::Stateful<Self> where Self: core::marker::Sized
+pub fn yororen_ui_core::animation::AnimateExt::animate_slide(self, impl core::convert::Into<gpui::window::ElementId>, yororen_ui_core::animation::SlideDirection, gpui::geometry::Pixels, core::time::Duration, f32) -> gpui::elements::div::Stateful<Self> where Self: core::marker::Sized
 impl yororen_ui_core::animation::AnimateExt for gpui::elements::div::Div
 pub fn gpui::elements::div::Div::animate_fade(self, impl core::convert::Into<gpui::window::ElementId>, core::time::Duration, f32) -> gpui::elements::div::Stateful<Self>
 pub fn gpui::elements::div::Div::animate_scale(self, impl core::convert::Into<gpui::window::ElementId>, core::time::Duration, f32) -> gpui::elements::div::Stateful<Self>
-pub fn gpui::elements::div::Div::animate_slide(self, impl core::convert::Into<gpui::window::ElementId>, yororen_ui_core::animation::HelpersSlideDirection, gpui::geometry::Pixels, core::time::Duration, f32) -> gpui::elements::div::Stateful<Self>
+pub fn gpui::elements::div::Div::animate_slide(self, impl core::convert::Into<gpui::window::ElementId>, yororen_ui_core::animation::SlideDirection, gpui::geometry::Pixels, core::time::Duration, f32) -> gpui::elements::div::Stateful<Self>
 pub trait yororen_ui_core::animation::AnimatedPresenceState: 'static
 pub fn yororen_ui_core::animation::AnimatedPresenceState::visibility(&self) -> &yororen_ui_core::animation::AnimatedVisibility
 pub fn yororen_ui_core::animation::AnimatedPresenceState::visibility_mut(&mut self) -> &mut yororen_ui_core::animation::AnimatedVisibility
