@@ -107,9 +107,7 @@ impl ListItemProps {
         let on_click = self.on_click.clone();
         let disabled = self.disabled;
         let mut s: Stateful<Div> = el.id(self.id);
-        if !disabled
-            && let Some(f) = on_click
-        {
+        if !disabled && let Some(f) = on_click {
             s = s.on_click(move |ev, window, cx| {
                 if disabled {
                     return;

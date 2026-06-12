@@ -1,7 +1,9 @@
 //! Headless `text` — a typed text span. No state.
 
-use gpui::{App, Div, ElementId, InteractiveElement, ParentElement, SharedString, Stateful, Styled};
 use crate::renderer::RendererContext;
+use gpui::{
+    App, Div, ElementId, InteractiveElement, ParentElement, SharedString, Stateful, Styled,
+};
 
 #[derive(Clone, Debug)]
 pub struct TextProps {

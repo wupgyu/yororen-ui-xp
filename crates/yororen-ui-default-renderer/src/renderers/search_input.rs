@@ -4,8 +4,8 @@ use std::sync::Arc;
 
 use gpui::{
     AnyElement, App, CursorStyle, Div, Hsla, InteractiveElement, IntoElement, MouseButton,
-    ParentElement, Pixels, SharedString, Stateful, StatefulInteractiveElement, Styled, Window,
-    div, prelude::FluentBuilder, px,
+    ParentElement, Pixels, SharedString, Stateful, StatefulInteractiveElement, Styled, Window, div,
+    prelude::FluentBuilder, px,
 };
 
 use yororen_ui_core::headless::icon::{IconSource, icon};
@@ -75,12 +75,7 @@ impl TokenSearchInputRenderer {
 }
 
 impl SearchInputRenderer for TokenSearchInputRenderer {
-    fn compose(
-        &self,
-        props: &SearchInputProps,
-        cx: &mut App,
-        window: &mut Window,
-    ) -> AnyElement {
+    fn compose(&self, props: &SearchInputProps, cx: &mut App, window: &mut Window) -> AnyElement {
         use yororen_ui_core::theme::ActiveTheme;
 
         let placeholder_str = props.placeholder.clone();

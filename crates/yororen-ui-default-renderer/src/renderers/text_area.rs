@@ -79,12 +79,7 @@ impl TokenTextAreaRenderer {
 }
 
 impl TextAreaRenderer for TokenTextAreaRenderer {
-    fn compose(
-        &self,
-        props: &TextAreaProps,
-        cx: &mut App,
-        window: &mut Window,
-    ) -> AnyElement {
+    fn compose(&self, props: &TextAreaProps, cx: &mut App, window: &mut Window) -> AnyElement {
         use yororen_ui_core::theme::ActiveTheme;
 
         let placeholder_str = props.placeholder.clone();
@@ -179,13 +174,33 @@ impl TextAreaRenderer for TokenTextAreaRenderer {
 
         let mut keyed: Stateful<Div> = base
             .key_context("UITextInput")
-            .on_action(action_handler!(state.clone(), disabled, Backspace, backspace))
+            .on_action(action_handler!(
+                state.clone(),
+                disabled,
+                Backspace,
+                backspace
+            ))
             .on_action(action_handler!(state.clone(), disabled, Delete, delete))
             .on_action(action_handler!(state.clone(), disabled, Left, left))
             .on_action(action_handler!(state.clone(), disabled, Right, right))
-            .on_action(action_handler!(state.clone(), disabled, SelectLeft, select_left))
-            .on_action(action_handler!(state.clone(), disabled, SelectRight, select_right))
-            .on_action(action_handler!(state.clone(), disabled, SelectAll, select_all))
+            .on_action(action_handler!(
+                state.clone(),
+                disabled,
+                SelectLeft,
+                select_left
+            ))
+            .on_action(action_handler!(
+                state.clone(),
+                disabled,
+                SelectRight,
+                select_right
+            ))
+            .on_action(action_handler!(
+                state.clone(),
+                disabled,
+                SelectAll,
+                select_all
+            ))
             .on_action(action_handler!(state.clone(), disabled, Home, home))
             .on_action(action_handler!(state.clone(), disabled, End, end))
             .on_action(action_handler!(

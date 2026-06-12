@@ -134,11 +134,7 @@ impl ButtonProps {
     }
 
     /// Convenience: set both caption and icon in one call.
-    pub fn caption_icon(
-        mut self,
-        caption: impl Into<SharedString>,
-        icon: IconSource,
-    ) -> Self {
+    pub fn caption_icon(mut self, caption: impl Into<SharedString>, icon: IconSource) -> Self {
         self.caption = Some(caption.into());
         self.icon = Some(icon);
         self

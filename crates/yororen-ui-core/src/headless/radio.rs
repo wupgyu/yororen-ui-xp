@@ -100,8 +100,8 @@ impl RadioProps {
     /// only layers the toggle callback on top.
     pub fn render(self, cx: &App) -> Stateful<Div> {
         use crate::renderer::RendererContext;
-        use crate::renderer::radio::RadioRenderer;
         use crate::renderer::markers::Radio as RadioMarker;
+        use crate::renderer::radio::RadioRenderer;
 
         let r: &Arc<dyn RadioRenderer> = cx
             .renderer_arc::<RadioMarker, dyn RadioRenderer>()

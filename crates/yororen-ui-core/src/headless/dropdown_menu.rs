@@ -4,8 +4,7 @@
 use std::sync::Arc;
 
 use gpui::{
-    App, AppContext, AnyElement, Div, ElementId, Entity, InteractiveElement, SharedString,
-    Stateful,
+    AnyElement, App, AppContext, Div, ElementId, Entity, InteractiveElement, SharedString, Stateful,
 };
 
 use crate::animation::{AnimatedPresenceState, AnimatedVisibility};

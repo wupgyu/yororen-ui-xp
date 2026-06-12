@@ -5,7 +5,7 @@
 
 use std::sync::Arc;
 
-use gpui::{InteractiveElement, App, Div, Pixels, Stateful, Styled, div};
+use gpui::{App, Div, InteractiveElement, Pixels, Stateful, Styled, div};
 
 use yororen_ui_core::headless::radio_group::RadioGroupProps;
 use yororen_ui_core::theme::{ActiveTheme, Theme};

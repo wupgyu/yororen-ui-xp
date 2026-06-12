@@ -1,7 +1,10 @@
 //! Headless `icon` — a `gpui::svg` with id. No state.
 
-use gpui::{AnyElement, App, Div, ElementId, Hsla, InteractiveElement, IntoElement, SharedString, Stateful, Styled};
 use crate::renderer::RendererContext;
+use gpui::{
+    AnyElement, App, Div, ElementId, Hsla, InteractiveElement, IntoElement, SharedString, Stateful,
+    Styled,
+};
 
 #[derive(Clone, Debug)]
 pub struct IconProps {

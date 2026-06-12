@@ -3,9 +3,9 @@
 use std::sync::{Arc, Mutex};
 
 use gpui::{
-    App, Bounds, Corners, CursorStyle, Edges, Element, GlobalElementId, Hsla, InteractiveElement,
-    IntoElement, LayoutId, PaintQuad, ParentElement, Path, PathBuilder, Pixels, Point, Styled,
-    Style, Window, div, hsla, point, px, size, BorderStyle,
+    App, BorderStyle, Bounds, Corners, CursorStyle, Edges, Element, GlobalElementId, Hsla,
+    InteractiveElement, IntoElement, LayoutId, PaintQuad, ParentElement, Path, PathBuilder, Pixels,
+    Point, Style, Styled, Window, div, hsla, point, px, size,
 };
 
 use yororen_ui_core::headless::slider::SliderProps;
@@ -180,8 +180,7 @@ impl Element for SliderTrackElement {
         );
         window.paint_quad(PaintQuad {
             bounds: track_bounds,
-            corner_radii: Corners::all(track_radius)
-                .clamp_radii_for_quad_size(track_bounds.size),
+            corner_radii: Corners::all(track_radius).clamp_radii_for_quad_size(track_bounds.size),
             background: self.track_bg.into(),
             border_color: hsla(0., 0., 0., 0.),
             border_widths: Edges::default(),

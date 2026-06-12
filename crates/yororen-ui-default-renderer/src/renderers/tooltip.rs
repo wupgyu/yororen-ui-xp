@@ -102,23 +102,20 @@ impl TooltipRenderer for TokenTooltipRenderer {
         if let Some(t) = props.trigger.take() {
             let text = props.text.clone();
             let trigger_id = format!("{}-trigger", props.id);
-            outer = outer.child(
-                div()
-                    .id(trigger_id)
-                    .child(t)
-                    .hoverable_tooltip(move |_window, cx| {
-                        cx.new(|_cx| TooltipView {
-                            text: text.clone(),
-                            bg,
-                            fg,
-                            pad_top: pad.top,
-                            font_size: fs,
-                            border_radius: r,
-                            max_width: max_w,
-                        })
-                        .into()
-                    }),
-            );
+            outer = outer.child(div().id(trigger_id).child(t).hoverable_tooltip(
+                move |_window, cx| {
+                    cx.new(|_cx| TooltipView {
+                        text: text.clone(),
+                        bg,
+                        fg,
+                        pad_top: pad.top,
+                        font_size: fs,
+                        border_radius: r,
+                        max_width: max_w,
+                    })
+                    .into()
+                },
+            ));
         }
 
         outer

@@ -7,9 +7,7 @@ use gpui::{App, Div, Hsla, InteractiveElement, ParentElement, Pixels, Stateful, 
 use yororen_ui_core::headless::shortcut_hint::ShortcutHintProps;
 use yororen_ui_core::theme::Theme;
 
-pub use yororen_ui_core::renderer::shortcut_hint::{
-    ShortcutHintRenderState, ShortcutHintRenderer,
-};
+pub use yororen_ui_core::renderer::shortcut_hint::{ShortcutHintRenderState, ShortcutHintRenderer};
 
 pub struct TokenShortcutHintRenderer;
 
@@ -95,8 +93,6 @@ impl ShortcutHintRenderer for TokenShortcutHintRenderer {
     }
 }
 
-pub fn arc_shortcut_hint<T: ShortcutHintRenderer + 'static>(
-    r: T,
-) -> Arc<dyn ShortcutHintRenderer> {
+pub fn arc_shortcut_hint<T: ShortcutHintRenderer + 'static>(r: T) -> Arc<dyn ShortcutHintRenderer> {
     Arc::new(r)
 }

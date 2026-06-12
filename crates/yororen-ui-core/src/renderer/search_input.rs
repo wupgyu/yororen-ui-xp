@@ -19,10 +19,5 @@ pub struct SearchInputRenderState {
 }
 
 pub trait SearchInputRenderer: Any + Send + Sync {
-    fn compose(
-        &self,
-        props: &SearchInputProps,
-        cx: &mut App,
-        window: &mut Window,
-    ) -> AnyElement;
+    fn compose(&self, props: &SearchInputProps, cx: &mut App, window: &mut Window) -> AnyElement;
 }

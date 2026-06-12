@@ -3,8 +3,8 @@
 //! `EmptyState`.
 
 use gpui::{
-    AbsoluteLength, App, BorderStyle, Bounds, BoxShadow, Corners, CursorStyle, DefiniteLength,
-    Div, Edges, Element, ElementId, FontWeight, GlobalElementId, Hsla, InspectorElementId,
+    AbsoluteLength, App, BorderStyle, Bounds, BoxShadow, Corners, CursorStyle, DefiniteLength, Div,
+    Edges, Element, ElementId, FontWeight, GlobalElementId, Hsla, InspectorElementId,
     InteractiveElement, IntoElement, LayoutId, Length, Pixels, Position, SharedString, Stateful,
     StatefulInteractiveElement, Style, Styled, Window, hsla, point, px,
 };
@@ -144,16 +144,10 @@ impl BrutalHeadingRenderer {
 }
 
 impl HeadingRenderer for BrutalHeadingRenderer {
-    fn compose(
-        &self,
-        props: &yororen_ui_core::headless::heading::HeadingProps,
-        cx: &App,
-    ) -> Div {
+    fn compose(&self, props: &yororen_ui_core::headless::heading::HeadingProps, cx: &App) -> Div {
         use yororen_ui_core::theme::ActiveTheme;
         let theme = cx.theme();
-        let state = HeadingRenderState {
-            level: props.level,
-        };
+        let state = HeadingRenderState { level: props.level };
         let size = self.size(&state, theme);
         let weight = self.weight(&state, theme);
         let color = self.color(&state, theme);
@@ -186,11 +180,7 @@ impl BrutalDividerRenderer {
 }
 
 impl DividerRenderer for BrutalDividerRenderer {
-    fn compose(
-        &self,
-        props: &yororen_ui_core::headless::divider::DividerProps,
-        cx: &App,
-    ) -> Div {
+    fn compose(&self, props: &yororen_ui_core::headless::divider::DividerProps, cx: &App) -> Div {
         use yororen_ui_core::theme::ActiveTheme;
         let theme = cx.theme();
         let state = DividerRenderState {
@@ -332,11 +322,7 @@ impl BrutalBadgeRenderer {
 }
 
 impl BadgeRenderer for BrutalBadgeRenderer {
-    fn compose(
-        &self,
-        props: &yororen_ui_core::headless::badge::BadgeProps,
-        cx: &App,
-    ) -> Div {
+    fn compose(&self, props: &yororen_ui_core::headless::badge::BadgeProps, cx: &App) -> Div {
         use yororen_ui_core::theme::ActiveTheme;
         let theme = cx.theme();
         let state = BadgeRenderState {
@@ -449,11 +435,7 @@ impl BrutalTagRenderer {
 }
 
 impl TagRenderer for BrutalTagRenderer {
-    fn compose(
-        &self,
-        props: &yororen_ui_core::headless::tag::TagProps,
-        cx: &App,
-    ) -> Div {
+    fn compose(&self, props: &yororen_ui_core::headless::tag::TagProps, cx: &App) -> Div {
         use yororen_ui_core::theme::ActiveTheme;
         let theme = cx.theme();
         let state = TagRenderState {
@@ -566,8 +548,9 @@ static BRUTAL_SKELETON_PULSE_EPOCH: OnceLock<Instant> = OnceLock::new();
 /// A `Length` of zero pixels for `Edges::all` — pins the
 /// absolutely-positioned overlay to all four sides of its parent
 /// Div (the "fill the parent" idiom).
-const BRUTAL_ZERO_LENGTH: Length =
-    Length::Definite(DefiniteLength::Absolute(AbsoluteLength::Pixels(gpui::px(0.))));
+const BRUTAL_ZERO_LENGTH: Length = Length::Definite(DefiniteLength::Absolute(
+    AbsoluteLength::Pixels(gpui::px(0.)),
+));
 
 /// Custom `gpui::Element` that paints a single rounded quad with
 /// a time-varying alpha, producing the skeleton pulse animation.
@@ -651,8 +634,8 @@ impl Element for BrutalSkeletonPulseElement {
             2.0 - progress * 2.0
         };
         let eased = ease_in_out(tri);
-        let alpha_mult =
-            BRUTAL_SKELETON_PULSE_MIN + (BRUTAL_SKELETON_PULSE_MAX - BRUTAL_SKELETON_PULSE_MIN) * eased;
+        let alpha_mult = BRUTAL_SKELETON_PULSE_MIN
+            + (BRUTAL_SKELETON_PULSE_MAX - BRUTAL_SKELETON_PULSE_MIN) * eased;
         let color = hsla(self.bg.h, self.bg.s, self.bg.l, self.bg.a * alpha_mult);
 
         window.paint_quad(gpui::PaintQuad {
@@ -667,11 +650,7 @@ impl Element for BrutalSkeletonPulseElement {
 }
 
 impl SkeletonRenderer for BrutalSkeletonRenderer {
-    fn compose(
-        &self,
-        props: &yororen_ui_core::headless::skeleton::SkeletonProps,
-        cx: &App,
-    ) -> Div {
+    fn compose(&self, props: &yororen_ui_core::headless::skeleton::SkeletonProps, cx: &App) -> Div {
         let theme = cx.theme();
         let state = SkeletonRenderState {
             block: props.block,
@@ -893,7 +872,11 @@ impl BrutalKeybindingDisplayRenderer {
             .get_number("tokens.control.keybinding_input.separator_gap")
             .unwrap_or(4.0) as f32)
     }
-    pub fn font_family(&self, _state: &KeybindingDisplayRenderState, theme: &Theme) -> SharedString {
+    pub fn font_family(
+        &self,
+        _state: &KeybindingDisplayRenderState,
+        theme: &Theme,
+    ) -> SharedString {
         theme
             .get_string("tokens.typography.family_mono")
             .unwrap_or(BRUTAL_FONT_FAMILY)
@@ -948,9 +931,7 @@ impl KeybindingDisplayRenderer for BrutalKeybindingDisplayRenderer {
 // ShortcutHint
 // =====================================================================
 
-pub use yororen_ui_core::renderer::shortcut_hint::{
-    ShortcutHintRenderState, ShortcutHintRenderer,
-};
+pub use yororen_ui_core::renderer::shortcut_hint::{ShortcutHintRenderState, ShortcutHintRenderer};
 
 pub struct BrutalShortcutHintRenderer;
 

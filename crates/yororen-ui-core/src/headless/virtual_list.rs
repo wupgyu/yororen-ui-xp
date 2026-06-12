@@ -156,8 +156,7 @@ impl VirtualListController {
 
 /// Type of the per-item render closure. Called by `gpui::list` for
 /// each visible row, with the item index and the gpui context.
-pub type RenderRowFn =
-    Box<dyn FnMut(usize, &mut Window, &mut App) -> gpui::AnyElement + 'static>;
+pub type RenderRowFn = Box<dyn FnMut(usize, &mut Window, &mut App) -> gpui::AnyElement + 'static>;
 
 /// Per-frame callback invoked by the renderer when the visible
 /// range changes (scroll, resize, or item-count change). The
@@ -263,7 +262,10 @@ impl VirtualListProps {
     }
 
     /// Provide the closure that produces each visible row.
-    pub fn row(mut self, f: impl FnMut(usize, &mut Window, &mut App) -> gpui::AnyElement + 'static) -> Self {
+    pub fn row(
+        mut self,
+        f: impl FnMut(usize, &mut Window, &mut App) -> gpui::AnyElement + 'static,
+    ) -> Self {
         self.render_row = Some(Box::new(f));
         self
     }

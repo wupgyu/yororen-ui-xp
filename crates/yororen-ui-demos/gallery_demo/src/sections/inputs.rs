@@ -18,11 +18,7 @@ use yororen_ui::i18n::Translate;
 
 use crate::state::GalleryApp;
 
-pub fn render(
-    app: &mut GalleryApp,
-    window: &mut Window,
-    cx: &mut Context<GalleryApp>,
-) -> Div {
+pub fn render(app: &mut GalleryApp, window: &mut Window, cx: &mut Context<GalleryApp>) -> Div {
     let entity = cx.entity().clone();
     let value_prefix = cx.t("demo.input.value").to_string();
     let mode_prefix = cx.t("demo.input.mode").to_string();
@@ -155,15 +151,60 @@ pub fn render(
         .flex()
         .flex_col()
         .gap(px(16.))
-        .child(input_cell(cx.t("input.text"), text_input_el, &format!("{value_prefix} {:?}", text_value), cx))
-        .child(input_cell(cx.t("input.password"), pw_input_el, &format!("{value_prefix} {:?}", pw_value), cx))
-        .child(input_cell(cx.t("input.number"), num_input_el, &format!("{value_prefix} {}", num_value), cx))
-        .child(input_cell(cx.t("input.search"), search_input_el, &format!("{value_prefix} {:?}", search_value), cx))
-        .child(input_cell(cx.t("demo.input.file_path_hint"), fp_input_el, &format!("{value_prefix} {:?}", fp_value), cx))
-        .child(input_cell(cx.t("demo.input.keybinding_hint"), kb_input_el, &format!("{value_prefix} {:?}  {mode_prefix} {:?}", kb_value, kb_mode), cx))
-        .child(input_cell(cx.t("demo.input.text_area_hint"), ta_input_el, &format!("{value_prefix} {:?}", ta_value), cx))
-        .child(input_cell(cx.t("input.select"), select_el, &format!("{value_prefix} {}", app.select_demo_value), cx))
-        .child(input_cell(cx.t("input.combo"), combo_el, &format!("{value_prefix} {}", app.combo_demo_value), cx))
+        .child(input_cell(
+            cx.t("input.text"),
+            text_input_el,
+            &format!("{value_prefix} {:?}", text_value),
+            cx,
+        ))
+        .child(input_cell(
+            cx.t("input.password"),
+            pw_input_el,
+            &format!("{value_prefix} {:?}", pw_value),
+            cx,
+        ))
+        .child(input_cell(
+            cx.t("input.number"),
+            num_input_el,
+            &format!("{value_prefix} {}", num_value),
+            cx,
+        ))
+        .child(input_cell(
+            cx.t("input.search"),
+            search_input_el,
+            &format!("{value_prefix} {:?}", search_value),
+            cx,
+        ))
+        .child(input_cell(
+            cx.t("demo.input.file_path_hint"),
+            fp_input_el,
+            &format!("{value_prefix} {:?}", fp_value),
+            cx,
+        ))
+        .child(input_cell(
+            cx.t("demo.input.keybinding_hint"),
+            kb_input_el,
+            &format!("{value_prefix} {:?}  {mode_prefix} {:?}", kb_value, kb_mode),
+            cx,
+        ))
+        .child(input_cell(
+            cx.t("demo.input.text_area_hint"),
+            ta_input_el,
+            &format!("{value_prefix} {:?}", ta_value),
+            cx,
+        ))
+        .child(input_cell(
+            cx.t("input.select"),
+            select_el,
+            &format!("{value_prefix} {}", app.select_demo_value),
+            cx,
+        ))
+        .child(input_cell(
+            cx.t("input.combo"),
+            combo_el,
+            &format!("{value_prefix} {}", app.combo_demo_value),
+            cx,
+        ))
 }
 
 /// Render a labelled input cell with a status line below it
@@ -199,4 +240,3 @@ pub fn input_cell(
                 .text_size(px(11.)),
         )
 }
-

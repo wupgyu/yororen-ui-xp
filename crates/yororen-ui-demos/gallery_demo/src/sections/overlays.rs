@@ -94,9 +94,13 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
     let tooltip_trigger = label("ov-tt-target", cx.t("demo.tooltip.hover_target"), cx)
         .render(cx)
         .into_any_element();
-    let tooltip_el = tooltip("ov-tooltip", cx.t("demo.tooltip.text"), tooltip_state.clone())
-        .trigger(tooltip_trigger)
-        .render(cx);
+    let tooltip_el = tooltip(
+        "ov-tooltip",
+        cx.t("demo.tooltip.text"),
+        tooltip_state.clone(),
+    )
+    .trigger(tooltip_trigger)
+    .render(cx);
     let tooltip_wrapped = cell(cx.t("demo.tooltip.cell"), tooltip_el, cx);
 
     // --- dropdown_menu ---
@@ -172,7 +176,11 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
     let overlay_el = overlay("ov-overlay", cx)
         .open(is_modal_open)
         .render(cx)
-        .child(label("ov-overlay-info", cx.t("demo.overlays.scrim_info"), cx).muted(true).render(cx));
+        .child(
+            label("ov-overlay-info", cx.t("demo.overlays.scrim_info"), cx)
+                .muted(true)
+                .render(cx),
+        );
     let overlay_wrapped = cell(cx.t("demo.overlays.scrim"), overlay_el, cx);
 
     let summary_template = cx.t("demo.overlays.summary").to_string();
@@ -186,7 +194,15 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
         .child(dropdown_wrapped)
         .child(disc_wrapped)
         .child(overlay_wrapped)
-        .child(label("ov-summary", summary_template
-            .replacen("{}", &app.dropdown_demo_value, 1)
-            .replacen("{}", &app.menu_demo_value, 1), cx).muted(true).render(cx))
+        .child(
+            label(
+                "ov-summary",
+                summary_template
+                    .replacen("{}", &app.dropdown_demo_value, 1)
+                    .replacen("{}", &app.menu_demo_value, 1),
+                cx,
+            )
+            .muted(true)
+            .render(cx),
+        )
 }

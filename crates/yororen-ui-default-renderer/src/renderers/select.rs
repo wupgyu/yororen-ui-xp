@@ -176,9 +176,7 @@ impl SelectRenderer for TokenSelectRenderer {
                     theme.get_color("content.primary").unwrap_or_default()
                 };
                 let mut item: Stateful<Div> = div()
-                    .id(ElementId::Name(
-                        format!("default-select-opt-{}", i).into(),
-                    ))
+                    .id(ElementId::Name(format!("default-select-opt-{}", i).into()))
                     .px(px(8.))
                     .py(px(6.))
                     .rounded(px(4.))
@@ -202,29 +200,20 @@ impl SelectRenderer for TokenSelectRenderer {
                 dropdown = dropdown.child(item);
             }
 
-            let distance = px(
-                theme
-                    .get_number("motion.slide_distance")
-                    .unwrap_or(10.0) as f32,
-            );
+            let distance = px(theme.get_number("motion.slide_distance").unwrap_or(10.0) as f32);
             // The animation wrapper is absolutely positioned at the
             // top-left of the outer relative container so the dropdown
             // inside keeps its original `top/left/right` offsets.
             outer = outer.child(
-                gpui::deferred(
-                    div()
-                        .absolute()
-                        .top_0()
-                        .left_0()
-                        .right_0()
-                        .child(AnimatedPresenceElement::new(
-                            props.state.clone(),
-                            (props.id.clone(), "dropdown"),
-                            SlideDirection::Down,
-                            distance,
-                            div().child(dropdown),
-                        )),
-                )
+                gpui::deferred(div().absolute().top_0().left_0().right_0().child(
+                    AnimatedPresenceElement::new(
+                        props.state.clone(),
+                        (props.id.clone(), "dropdown"),
+                        SlideDirection::Down,
+                        distance,
+                        div().child(dropdown),
+                    ),
+                ))
                 .with_priority(1),
             );
         }

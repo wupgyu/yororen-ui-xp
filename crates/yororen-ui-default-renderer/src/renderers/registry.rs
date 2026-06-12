@@ -84,8 +84,8 @@ use super::toggle_button::TokenToggleButtonRenderer;
 use super::tooltip::TokenTooltipRenderer;
 use super::tree::TokenTreeRenderer;
 use super::tree_item::TokenTreeItemRenderer;
-use super::virtual_list::TokenVirtualListRenderer;
 use super::uniform_virtual_list::TokenUniformVirtualListRenderer;
+use super::virtual_list::TokenVirtualListRenderer;
 use yororen_ui_core::renderer::avatar::AvatarRenderer;
 use yororen_ui_core::renderer::badge::BadgeRenderer;
 use yororen_ui_core::renderer::button::ButtonRenderer;
@@ -138,8 +138,8 @@ use yororen_ui_core::renderer::toggle_button::ToggleButtonRenderer;
 use yororen_ui_core::renderer::tooltip::TooltipRenderer;
 use yororen_ui_core::renderer::tree::TreeRenderer;
 use yororen_ui_core::renderer::tree_item::TreeItemRenderer;
-use yororen_ui_core::renderer::virtual_list::VirtualListRenderer;
 use yororen_ui_core::renderer::uniform_virtual_list::UniformVirtualListRenderer;
+use yororen_ui_core::renderer::virtual_list::VirtualListRenderer;
 
 use yororen_ui_core::renderer::avatar::AvatarRenderState;
 use yororen_ui_core::renderer::badge::BadgeRenderState;
@@ -193,8 +193,8 @@ use yororen_ui_core::renderer::toggle_button::ToggleButtonRenderState;
 use yororen_ui_core::renderer::tooltip::TooltipRenderState;
 use yororen_ui_core::renderer::tree::TreeRenderState;
 use yororen_ui_core::renderer::tree_item::TreeItemRenderState;
-use yororen_ui_core::renderer::virtual_list::VirtualListRenderState;
 use yororen_ui_core::renderer::uniform_virtual_list::UniformVirtualListRenderState;
+use yororen_ui_core::renderer::virtual_list::VirtualListRenderState;
 
 /// Collection of component renderers. Looked up at render time by
 /// `XxxRenderState` `TypeId`.
@@ -390,7 +390,11 @@ impl RendererRegistry {
     renderer_setter!(with_table, TableRenderState, TableRenderer);
     renderer_setter!(with_text, TextRenderState, TextRenderer);
     renderer_setter!(with_tree, TreeRenderState, TreeRenderer);
-    renderer_setter!(with_virtual_list, VirtualListRenderState, VirtualListRenderer);
+    renderer_setter!(
+        with_virtual_list,
+        VirtualListRenderState,
+        VirtualListRenderer
+    );
     renderer_setter!(
         with_uniform_virtual_list,
         UniformVirtualListRenderState,
@@ -522,7 +526,11 @@ impl RendererRegistry {
     renderer_getter!(get_table, TableRenderState, TableRenderer);
     renderer_getter!(get_text, TextRenderState, TextRenderer);
     renderer_getter!(get_tree, TreeRenderState, TreeRenderer);
-    renderer_getter!(get_virtual_list, VirtualListRenderState, VirtualListRenderer);
+    renderer_getter!(
+        get_virtual_list,
+        VirtualListRenderState,
+        VirtualListRenderer
+    );
     renderer_getter!(
         get_uniform_virtual_list,
         UniformVirtualListRenderState,

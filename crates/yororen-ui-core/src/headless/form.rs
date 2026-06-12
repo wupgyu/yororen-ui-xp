@@ -3,7 +3,9 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
-use gpui::{AnyElement, App, Div, ElementId, InteractiveElement, IntoElement, SharedString, Stateful};
+use gpui::{
+    AnyElement, App, Div, ElementId, InteractiveElement, IntoElement, SharedString, Stateful,
+};
 
 pub type FormSubmitCallback =
     Arc<dyn Fn(HashMap<SharedString, String>, &mut gpui::Window, &mut App) + Send + Sync>;

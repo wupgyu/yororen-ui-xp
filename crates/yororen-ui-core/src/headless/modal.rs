@@ -4,7 +4,10 @@
 
 use std::sync::Arc;
 
-use gpui::{App, AppContext, AnyElement, Div, ElementId, Entity, FocusHandle, InteractiveElement, IntoElement, Stateful};
+use gpui::{
+    AnyElement, App, AppContext, Div, ElementId, Entity, FocusHandle, InteractiveElement,
+    IntoElement, Stateful,
+};
 
 use crate::animation::{AnimatedPresenceState, AnimatedVisibility};
 
@@ -136,8 +139,8 @@ impl ModalProps {
     /// the `state` entity.
     pub fn render(mut self, cx: &gpui::App) -> Stateful<Div> {
         use crate::renderer::RendererContext;
-        use crate::renderer::modal::ModalRenderer;
         use crate::renderer::markers::Modal as ModalMarker;
+        use crate::renderer::modal::ModalRenderer;
 
         let r: &Arc<dyn ModalRenderer> = cx
             .renderer_arc::<ModalMarker, dyn ModalRenderer>()

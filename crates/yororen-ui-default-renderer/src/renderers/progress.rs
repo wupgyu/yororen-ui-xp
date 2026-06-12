@@ -66,13 +66,7 @@ impl ProgressBarRenderer for TokenProgressBarRenderer {
             .rounded(r)
             .border_1()
             .border_color(bc)
-            .child(
-                div()
-                    .h_full()
-                    .w(gpui::relative(ratio))
-                    .bg(fill)
-                    .rounded(r),
-            )
+            .child(div().h_full().w(gpui::relative(ratio)).bg(fill).rounded(r))
     }
 }
 

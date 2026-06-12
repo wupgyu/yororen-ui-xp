@@ -66,12 +66,7 @@ pub trait TextInputPainterHost: 'static {
     /// bounds, and the clamped horizontal scroll so the IME
     /// pipeline (`bounds_for_range` / `character_index_for_point`)
     /// can answer without re-shaping.
-    fn update_paint_state(
-        &mut self,
-        line: ShapedLine,
-        bounds: Bounds<Pixels>,
-        scroll_x: Pixels,
-    );
+    fn update_paint_state(&mut self, line: ShapedLine, bounds: Bounds<Pixels>, scroll_x: Pixels);
     /// Focus handle for the embedded input. Used by the blink
     /// task and the IME registration.
     fn focus_handle(&self) -> FocusHandle;

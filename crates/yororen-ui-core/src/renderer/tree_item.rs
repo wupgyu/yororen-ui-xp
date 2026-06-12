@@ -29,10 +29,5 @@ pub trait TreeItemRenderer: Any + Send + Sync {
     /// Returns `Stateful<Div>` because the row carries an
     /// `on_click` handler (select) and may carry a
     /// double-click handler (toggle / on_double_click).
-    fn compose(
-        &self,
-        props: &TreeItemProps,
-        cx: &mut App,
-        window: &mut Window,
-    ) -> Stateful<Div>;
+    fn compose(&self, props: &TreeItemProps, cx: &mut App, window: &mut Window) -> Stateful<Div>;
 }

@@ -19,10 +19,5 @@ pub struct FilePathInputRenderState {
 }
 
 pub trait FilePathInputRenderer: Any + Send + Sync {
-    fn compose(
-        &self,
-        props: &FilePathInputProps,
-        cx: &mut App,
-        window: &mut Window,
-    ) -> AnyElement;
+    fn compose(&self, props: &FilePathInputProps, cx: &mut App, window: &mut Window) -> AnyElement;
 }

@@ -7,7 +7,7 @@
 
 use std::sync::Arc;
 
-use gpui::{InteractiveElement, App, Div, Stateful, Styled, div};
+use gpui::{App, Div, InteractiveElement, Stateful, Styled, div};
 
 use yororen_ui_core::headless::spacer::SpacerProps;
 

@@ -107,12 +107,7 @@ impl TokenSwitchRenderer {
 }
 
 impl SwitchRenderer for TokenSwitchRenderer {
-    fn compose(
-        &self,
-        props: &SwitchProps,
-        focus_handle: &FocusHandle,
-        cx: &App,
-    ) -> Stateful<Div> {
+    fn compose(&self, props: &SwitchProps, focus_handle: &FocusHandle, cx: &App) -> Stateful<Div> {
         use yororen_ui_core::theme::ActiveTheme;
         let theme = cx.theme();
         let state = SwitchRenderState {
@@ -133,8 +128,20 @@ impl SwitchRenderer for TokenSwitchRenderer {
 
         // Cross-fade the knob colour between unchecked and checked
         // states while it slides.
-        let unchecked_knob_color = self.knob_bg(&SwitchRenderState { checked: false, ..state }, theme);
-        let checked_knob_color = self.knob_bg(&SwitchRenderState { checked: true, ..state }, theme);
+        let unchecked_knob_color = self.knob_bg(
+            &SwitchRenderState {
+                checked: false,
+                ..state
+            },
+            theme,
+        );
+        let checked_knob_color = self.knob_bg(
+            &SwitchRenderState {
+                checked: true,
+                ..state
+            },
+            theme,
+        );
         let knob_off = div()
             .absolute()
             .inset_0()

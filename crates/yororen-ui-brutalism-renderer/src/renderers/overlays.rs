@@ -10,7 +10,9 @@ use yororen_ui_core::animation::SlideDirection;
 use yororen_ui_core::renderer::spec::Edges;
 use yororen_ui_core::theme::Theme;
 
-use crate::style::{BRUTAL_BORDER, BRUTAL_BORDER_WIDTH, BRUTAL_RADIUS, brutal_border_color, brutal_shadow_overlay};
+use crate::style::{
+    BRUTAL_BORDER, BRUTAL_BORDER_WIDTH, BRUTAL_RADIUS, brutal_border_color, brutal_shadow_overlay,
+};
 use yororen_ui_default_renderer::animation::{AnimatedPresenceElement, fade_in_on_mount};
 
 // =====================================================================
@@ -52,11 +54,7 @@ impl BrutalModalRenderer {
 }
 
 impl ModalRenderer for BrutalModalRenderer {
-    fn compose(
-        &self,
-        props: &mut yororen_ui_core::headless::modal::ModalProps,
-        cx: &App,
-    ) -> Div {
+    fn compose(&self, props: &mut yororen_ui_core::headless::modal::ModalProps, cx: &App) -> Div {
         use yororen_ui_core::theme::ActiveTheme;
         let theme = cx.theme();
         let state = ModalRenderState {};
@@ -101,11 +99,7 @@ impl ModalRenderer for BrutalModalRenderer {
             props.state.clone(),
             props.id.clone(),
             SlideDirection::Down,
-            px(
-                theme
-                    .get_number("motion.slide_distance")
-                    .unwrap_or(10.0) as f32,
-            ),
+            px(theme.get_number("motion.slide_distance").unwrap_or(10.0) as f32),
             panel,
         ))
     }
@@ -162,9 +156,7 @@ impl PopoverRenderer for BrutalPopoverRenderer {
             outer = outer.child(t);
         }
 
-        if visible
-            && let Some(c) = props.content.take()
-        {
+        if visible && let Some(c) = props.content.take() {
             // Capture outside-clicks to close the popover.
             let state_for_close = props.state.clone();
             outer = outer.on_mouse_down_out(move |_ev, _window, cx| {
@@ -190,28 +182,20 @@ impl PopoverRenderer for BrutalPopoverRenderer {
                 }])
                 .occlude()
                 .child(c);
-            let distance = px(
-                theme
-                    .get_number("motion.slide_distance")
-                    .unwrap_or(10.0) as f32,
-            );
+            let distance = px(theme.get_number("motion.slide_distance").unwrap_or(10.0) as f32);
             // The animation wrapper is absolutely positioned at the
             // top-left of the outer relative container so the panel
             // inside keeps its original `top/left` offset.
             outer = outer.child(
-                gpui::deferred(
-                    div()
-                        .absolute()
-                        .top_0()
-                        .left_0()
-                        .child(AnimatedPresenceElement::new(
-                            props.state.clone(),
-                            (props.id.clone(), "content"),
-                            SlideDirection::Down,
-                            distance,
-                            panel,
-                        )),
-                )
+                gpui::deferred(div().absolute().top_0().left_0().child(
+                    AnimatedPresenceElement::new(
+                        props.state.clone(),
+                        (props.id.clone(), "content"),
+                        SlideDirection::Down,
+                        distance,
+                        panel,
+                    ),
+                ))
                 .with_priority(1),
             );
         }
@@ -314,28 +298,20 @@ impl DropdownMenuRenderer for BrutalDropdownMenuRenderer {
                     state_for_close.update(cx, |s, _cx| s.close());
                 })
                 .child(c);
-            let distance = px(
-                theme
-                    .get_number("motion.slide_distance")
-                    .unwrap_or(10.0) as f32,
-            );
+            let distance = px(theme.get_number("motion.slide_distance").unwrap_or(10.0) as f32);
             // The animation wrapper is absolutely positioned at the
             // top-left of the outer relative container so the panel
             // inside keeps its original `top/left` offset.
             outer = outer.child(
-                gpui::deferred(
-                    div()
-                        .absolute()
-                        .top_0()
-                        .left_0()
-                        .child(AnimatedPresenceElement::new(
-                            props.state.clone(),
-                            (props.id.clone(), "body"),
-                            SlideDirection::Down,
-                            distance,
-                            panel,
-                        )),
-                )
+                gpui::deferred(div().absolute().top_0().left_0().child(
+                    AnimatedPresenceElement::new(
+                        props.state.clone(),
+                        (props.id.clone(), "body"),
+                        SlideDirection::Down,
+                        distance,
+                        panel,
+                    ),
+                ))
                 .with_priority(1),
             );
         }
@@ -519,9 +495,7 @@ impl BrutalMenuRenderer {
             .unwrap_or(6.0) as f32)
     }
     pub fn item_gap(&self, _state: &MenuRenderState, theme: &Theme) -> Pixels {
-        px(theme
-            .get_number("tokens.control.menu.gap")
-            .unwrap_or(2.0) as f32)
+        px(theme.get_number("tokens.control.menu.gap").unwrap_or(2.0) as f32)
     }
     pub fn item_hover_bg(&self, _state: &MenuRenderState, theme: &Theme) -> Hsla {
         // Brutalism uses the action.neutral.hover_bg (typically
@@ -535,9 +509,7 @@ impl BrutalMenuRenderer {
         theme.get_color("content.primary").unwrap_or(BRUTAL_BORDER)
     }
     pub fn group_label_fg(&self, _state: &MenuRenderState, theme: &Theme) -> Hsla {
-        theme
-            .get_color("content.tertiary")
-            .unwrap_or(BRUTAL_BORDER)
+        theme.get_color("content.tertiary").unwrap_or(BRUTAL_BORDER)
     }
 }
 

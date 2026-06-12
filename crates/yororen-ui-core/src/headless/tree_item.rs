@@ -138,9 +138,9 @@ impl TreeItemProps {
     /// focus handle is headless state that the renderer has
     /// no business mutating.
     pub fn render(self, cx: &mut App, window: &mut Window) -> Stateful<Div> {
-        use crate::renderer::tree_item::TreeItemRenderer;
-        use crate::renderer::markers::TreeItem as TreeItemMarker;
         use crate::renderer::RendererContext;
+        use crate::renderer::markers::TreeItem as TreeItemMarker;
+        use crate::renderer::tree_item::TreeItemRenderer;
 
         // Clone the renderer Arc to release the immutable
         // borrow of `cx` from `renderer_arc` before we call

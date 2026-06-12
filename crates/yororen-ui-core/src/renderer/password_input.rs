@@ -22,10 +22,5 @@ pub struct PasswordInputRenderState {
 }
 
 pub trait PasswordInputRenderer: Any + Send + Sync {
-    fn compose(
-        &self,
-        props: &PasswordInputProps,
-        cx: &mut App,
-        window: &mut Window,
-    ) -> AnyElement;
+    fn compose(&self, props: &PasswordInputProps, cx: &mut App, window: &mut Window) -> AnyElement;
 }

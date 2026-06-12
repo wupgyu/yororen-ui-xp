@@ -26,8 +26,8 @@ use std::cell::RefCell;
 use std::sync::Arc;
 
 use gpui::{
-    App, Div, ElementId, Hsla, InteractiveElement, ParentElement, Pixels, Stateful, Styled, div, px,
-    uniform_list,
+    App, Div, ElementId, Hsla, InteractiveElement, ParentElement, Pixels, Stateful, Styled, div,
+    px, uniform_list,
 };
 
 use yororen_ui_core::headless::virtual_list::{UniformRenderRowFn, UniformVirtualListProps};
@@ -77,12 +77,14 @@ impl UniformVirtualListRenderer for TokenUniformVirtualListRenderer {
         // closure; on each call we borrow_mut and produce the
         // Vec of elements for the requested range.
         let row_cell = RefCell::new(render_row);
-        let list_el = uniform_list(inner_id, props.item_count, move |range, window, cx_inner| {
-            let mut f = row_cell.borrow_mut();
-            range
-                .map(|ix| f(ix, window, cx_inner))
-                .collect::<Vec<_>>()
-        })
+        let list_el = uniform_list(
+            inner_id,
+            props.item_count,
+            move |range, window, cx_inner| {
+                let mut f = row_cell.borrow_mut();
+                range.map(|ix| f(ix, window, cx_inner)).collect::<Vec<_>>()
+            },
+        )
         .with_sizing_behavior(props.sizing_behavior)
         .track_scroll(&props.handle);
 

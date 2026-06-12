@@ -5,7 +5,7 @@
 
 use std::sync::Arc;
 
-use gpui::{InteractiveElement, App, Div, Hsla, ParentElement, Pixels, Stateful, Styled, div};
+use gpui::{App, Div, Hsla, InteractiveElement, ParentElement, Pixels, Stateful, Styled, div};
 
 use yororen_ui_core::headless::text::TextProps;
 use yororen_ui_core::theme::{ActiveTheme, Theme};
@@ -19,14 +19,20 @@ impl TokenTextRenderer {
         if state.has_custom_size {
             return gpui::px(0.0);
         }
-        gpui::px(theme.get_number("tokens.typography.font_size_md").unwrap_or(14.0) as f32)
+        gpui::px(
+            theme
+                .get_number("tokens.typography.font_size_md")
+                .unwrap_or(14.0) as f32,
+        )
     }
 
     pub fn color(&self, state: &TextRenderState, theme: &Theme) -> Hsla {
         if state.has_custom_color {
             return gpui::rgb(0x0A0A0A).into();
         }
-        theme.get_color("content.primary").unwrap_or_else(|| gpui::rgb(0x0A0A0A).into())
+        theme
+            .get_color("content.primary")
+            .unwrap_or_else(|| gpui::rgb(0x0A0A0A).into())
     }
 }
 

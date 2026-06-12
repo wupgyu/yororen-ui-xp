@@ -75,8 +75,8 @@ impl TagProps {
     /// button / hover bg.
     pub fn render(self, cx: &gpui::App) -> Stateful<Div> {
         use crate::renderer::RendererContext;
-        use crate::renderer::tag::TagRenderer;
         use crate::renderer::markers::Tag as TagMarker;
+        use crate::renderer::tag::TagRenderer;
 
         let r: &Arc<dyn TagRenderer> = cx
             .renderer_arc::<TagMarker, dyn TagRenderer>()

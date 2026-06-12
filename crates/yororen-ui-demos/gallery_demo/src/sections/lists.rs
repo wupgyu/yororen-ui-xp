@@ -6,6 +6,7 @@ use std::collections::BTreeSet;
 
 use gpui::{Context, Div, ElementId, IntoElement, ParentElement, Styled, Window, div, px};
 
+use yororen_ui::headless::button::button;
 use yororen_ui::headless::form::form;
 use yororen_ui::headless::form_field::form_field;
 use yororen_ui::headless::label::label;
@@ -20,7 +21,6 @@ use yororen_ui::headless::tree::node_id;
 use yororen_ui::headless::tree::tree;
 use yororen_ui::headless::tree_item::tree_item;
 use yororen_ui::headless::virtual_list::{uniform_virtual_list, virtual_list};
-use yororen_ui::headless::button::button;
 use yororen_ui::i18n::Translate;
 
 use crate::sections::cell;
@@ -111,9 +111,7 @@ pub fn render(app: &mut GalleryApp, window: &mut Window, cx: &mut Context<Galler
         })
         .submit(cx.t("demo.form.email_label").to_string());
 
-    let submit_btn_el = form_props
-        .submit_button(cx)
-        .expect("submit_label was set");
+    let submit_btn_el = form_props.submit_button(cx).expect("submit_label was set");
 
     let submitted_label = cx.t("demo.form.submitted").to_string();
     let last_error_label = cx.t("demo.form.last_error").to_string();
@@ -157,9 +155,21 @@ pub fn render(app: &mut GalleryApp, window: &mut Window, cx: &mut Context<Galler
             TableColumn::new("city", col_city.clone()).width(120.),
         ])
         .rows(vec![
-            vec![row_alice.clone().into(), age_30.clone().into(), beijing.clone().into()],
-            vec![row_bob.clone().into(), age_25.clone().into(), shanghai.clone().into()],
-            vec![row_carol.clone().into(), age_28.clone().into(), shenzhen.clone().into()],
+            vec![
+                row_alice.clone().into(),
+                age_30.clone().into(),
+                beijing.clone().into(),
+            ],
+            vec![
+                row_bob.clone().into(),
+                age_25.clone().into(),
+                shanghai.clone().into(),
+            ],
+            vec![
+                row_carol.clone().into(),
+                age_28.clone().into(),
+                shenzhen.clone().into(),
+            ],
         ])
         .selected(app.selected_table_row.unwrap_or(0))
         .on_select(move |i, _w, cx| {
@@ -172,10 +182,26 @@ pub fn render(app: &mut GalleryApp, window: &mut Window, cx: &mut Context<Galler
     // --- tree (with tree_item rows) ---
     let mut tree_data = TreeData::new();
     tree_data.add(None, node_id("root"), cx.t("demo.lists.tree_root"));
-    tree_data.add(Some(node_id("root")), node_id("child1"), cx.t("demo.lists.tree_child1"));
-    tree_data.add(Some(node_id("root")), node_id("child2"), cx.t("demo.lists.tree_child2"));
-    tree_data.add(Some(node_id("child1")), node_id("leaf1"), cx.t("demo.lists.tree_leaf1"));
-    tree_data.add(Some(node_id("child1")), node_id("leaf2"), cx.t("demo.lists.tree_leaf2"));
+    tree_data.add(
+        Some(node_id("root")),
+        node_id("child1"),
+        cx.t("demo.lists.tree_child1"),
+    );
+    tree_data.add(
+        Some(node_id("root")),
+        node_id("child2"),
+        cx.t("demo.lists.tree_child2"),
+    );
+    tree_data.add(
+        Some(node_id("child1")),
+        node_id("leaf1"),
+        cx.t("demo.lists.tree_leaf1"),
+    );
+    tree_data.add(
+        Some(node_id("child1")),
+        node_id("leaf2"),
+        cx.t("demo.lists.tree_leaf2"),
+    );
     let tree_data_for_iter = tree_data.clone();
     let entity_tree = cx.entity().clone();
     let tree_expanded: BTreeSet<_> = app.tree_expanded.clone();
@@ -190,10 +216,7 @@ pub fn render(app: &mut GalleryApp, window: &mut Window, cx: &mut Context<Galler
     let visible = tree_data_for_iter.flatten(&tree_expanded);
     for (id, depth) in visible {
         let has_children = !tree_data_for_iter.children_of(&id).is_empty();
-        let label_text = tree_data_for_iter
-            .label_of(&id)
-            .unwrap_or("")
-            .to_string();
+        let label_text = tree_data_for_iter.label_of(&id).unwrap_or("").to_string();
         let is_expanded = tree_expanded.contains(&id);
         let is_selected = tree_selected.as_ref() == Some(&id);
 
@@ -333,13 +356,9 @@ pub fn render(app: &mut GalleryApp, window: &mut Window, cx: &mut Context<Galler
         .replacen("{:?}", &visible_str, 1)
         .replacen("{}", &app.vl_item_count.to_string(), 1)
         .replacen("{}", &app.vl_load_count.to_string(), 1);
-    let status_label = label(
-        "vl-status",
-        vl_status_text,
-        cx,
-    )
-    .muted(true)
-    .render(cx);
+    let status_label = label("vl-status", vl_status_text, cx)
+        .muted(true)
+        .render(cx);
     let vl_col = div()
         .flex()
         .flex_col()
@@ -347,11 +366,7 @@ pub fn render(app: &mut GalleryApp, window: &mut Window, cx: &mut Context<Galler
         .child(vl)
         .child(controls_row)
         .child(status_label);
-    let vl_wrapped = cell(
-        cx.t("demo.lists.cell_vl"),
-        vl_col,
-        cx,
-    );
+    let vl_wrapped = cell(cx.t("demo.lists.cell_vl"), vl_col, cx);
 
     // --- uniform_virtual_list ---
     // 1000 fixed-height rows. `gpui::uniform_list` measures only
@@ -398,24 +413,22 @@ pub fn render(app: &mut GalleryApp, window: &mut Window, cx: &mut Context<Galler
         .gap(px(6.))
         .child(uvl)
         .child(uvl_controls);
-    let uvl_wrapped = cell(
-        cx.t("demo.lists.cell_uvl"),
-        uvl_col,
-        cx,
-    );
+    let uvl_wrapped = cell(cx.t("demo.lists.cell_uvl"), uvl_col, cx);
 
     // --- spacer ---
-    let sp = spacer("lists-spacer", cx)
-        .render(cx)
-        .h(px(16.))
-        .w_full();
+    let sp = spacer("lists-spacer", cx).render(cx).h(px(16.)).w_full();
     let sp_wrapped = cell(cx.t("demo.lists.cell_spacer"), sp, cx);
 
     // --- radio_group empty (also used as a layout shell) ---
-    let rg_demo = radio_group("lists-rg", cx)
-        .name("rg-2")
-        .render(cx)
-        .child(label("rg-2-info", cx.t("demo.controls.radio_group_empty_label"), cx).muted(true).render(cx));
+    let rg_demo = radio_group("lists-rg", cx).name("rg-2").render(cx).child(
+        label(
+            "rg-2-info",
+            cx.t("demo.controls.radio_group_empty_label"),
+            cx,
+        )
+        .muted(true)
+        .render(cx),
+    );
     let rg_wrapped = cell(cx.t("demo.controls.cell_radio_group_empty"), rg_demo, cx);
 
     div()

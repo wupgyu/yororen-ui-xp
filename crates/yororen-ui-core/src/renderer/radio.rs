@@ -21,10 +21,5 @@ pub struct RadioRenderState {
 
 pub trait RadioRenderer: Any + Send + Sync {
     /// Build the full `Stateful<Div>` for a radio.
-    fn compose(
-        &self,
-        props: &RadioProps,
-        focus_handle: &FocusHandle,
-        cx: &App,
-    ) -> Stateful<Div>;
+    fn compose(&self, props: &RadioProps, focus_handle: &FocusHandle, cx: &App) -> Stateful<Div>;
 }

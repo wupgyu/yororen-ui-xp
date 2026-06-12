@@ -26,18 +26,18 @@ use crate::renderers::{
     TokenAvatarRenderer, TokenBadgeRenderer, TokenButtonGroupRenderer, TokenButtonRenderer,
     TokenCardRenderer, TokenCheckboxRenderer, TokenComboBoxRenderer, TokenDisclosureRenderer,
     TokenDividerRenderer, TokenDropdownMenuRenderer, TokenEmptyStateRenderer,
-    TokenFilePathInputRenderer, TokenFocusRingRenderer, TokenFormRenderer, TokenFormFieldRenderer,
+    TokenFilePathInputRenderer, TokenFocusRingRenderer, TokenFormFieldRenderer, TokenFormRenderer,
     TokenHeadingRenderer, TokenIconButtonRenderer, TokenIconRenderer, TokenImageRenderer,
     TokenKeybindingDisplayRenderer, TokenKeybindingInputRenderer, TokenLabelRenderer,
     TokenListItemRenderer, TokenMenuRenderer, TokenModalRenderer, TokenNotificationRenderer,
     TokenNumberInputRenderer, TokenOverlayRenderer, TokenPanelRenderer, TokenPasswordInputRenderer,
-    TokenPopoverRenderer, TokenProgressBarRenderer, TokenRadioRenderer, TokenRadioGroupRenderer,
-    TokenSearchInputRenderer, TokenSelectRenderer, TokenShortcutHintRenderer, TokenSkeletonRenderer,
-    TokenSliderRenderer, TokenSpacerRenderer, TokenSplitButtonRenderer, TokenSwitchRenderer,
-    TokenTableRenderer, TokenTagRenderer, TokenTextAreaRenderer, TokenTextInputRenderer,
-    TokenTextRenderer, TokenToastRenderer, TokenToggleButtonRenderer, TokenTooltipRenderer,
-    TokenTreeItemRenderer, TokenTreeRenderer, TokenUniformVirtualListRenderer,
-    TokenVirtualListRenderer,
+    TokenPopoverRenderer, TokenProgressBarRenderer, TokenRadioGroupRenderer, TokenRadioRenderer,
+    TokenSearchInputRenderer, TokenSelectRenderer, TokenShortcutHintRenderer,
+    TokenSkeletonRenderer, TokenSliderRenderer, TokenSpacerRenderer, TokenSplitButtonRenderer,
+    TokenSwitchRenderer, TokenTableRenderer, TokenTagRenderer, TokenTextAreaRenderer,
+    TokenTextInputRenderer, TokenTextRenderer, TokenToastRenderer, TokenToggleButtonRenderer,
+    TokenTooltipRenderer, TokenTreeItemRenderer, TokenTreeRenderer,
+    TokenUniformVirtualListRenderer, TokenVirtualListRenderer,
 };
 
 /// Load `themes/system-light.json` as a `Theme`.
@@ -200,9 +200,9 @@ pub fn register_default_renderers(cx: &mut App) {
     cx.register_renderer_arc::<markers::Form, dyn crate::renderers::FormRenderer>(Arc::new(
         TokenFormRenderer,
     ));
-    cx.register_renderer_arc::<markers::FormField, dyn crate::renderers::FormFieldRenderer>(Arc::new(
-        TokenFormFieldRenderer,
-    ));
+    cx.register_renderer_arc::<markers::FormField, dyn crate::renderers::FormFieldRenderer>(
+        Arc::new(TokenFormFieldRenderer),
+    );
     cx.register_renderer_arc::<markers::ListItem, dyn crate::renderers::ListItemRenderer>(
         Arc::new(TokenListItemRenderer),
     );

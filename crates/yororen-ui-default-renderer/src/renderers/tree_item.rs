@@ -27,13 +27,11 @@ use std::sync::Arc;
 
 use gpui::{
     App, Div, ElementId, Hsla, InteractiveElement, IntoElement, ParentElement, Pixels,
-    SharedString, Stateful, StatefulInteractiveElement, Styled, Window, div, px,
-    prelude::FluentBuilder,
+    SharedString, Stateful, StatefulInteractiveElement, Styled, Window, div,
+    prelude::FluentBuilder, px,
 };
 
-use yororen_ui_core::headless::tree_item::{
-    DOUBLE_CLICK_THRESHOLD, LastClick, TreeItemProps,
-};
+use yororen_ui_core::headless::tree_item::{DOUBLE_CLICK_THRESHOLD, LastClick, TreeItemProps};
 use yororen_ui_core::renderer::spec::Edges;
 use yororen_ui_core::theme::Theme;
 
@@ -72,32 +70,26 @@ impl TokenTreeItemRenderer {
     }
     pub fn padding(&self, _state: &TreeItemRenderState, theme: &Theme) -> Edges<Pixels> {
         Edges::symmetric(
-            px(
-                theme
-                    .get_number("tokens.control.tree_item.horizontal_padding")
-                    .unwrap_or_else(|| theme.get_number("tokens.spacing.inset_sm").unwrap_or(8.0))
-                    as f32,
-            ),
+            px(theme
+                .get_number("tokens.control.tree_item.horizontal_padding")
+                .unwrap_or_else(|| theme.get_number("tokens.spacing.inset_sm").unwrap_or(8.0))
+                as f32),
             px(theme.get_number("tokens.spacing.inset_xs").unwrap_or(4.0) as f32),
         )
     }
     pub fn min_height(&self, _state: &TreeItemRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.control.tree_item.min_height")
-                .unwrap_or(28.0) as f32,
-        )
+        px(theme
+            .get_number("tokens.control.tree_item.min_height")
+            .unwrap_or(28.0) as f32)
     }
     pub fn chevron_size(&self, _state: &TreeItemRenderState, theme: &Theme) -> Pixels {
-        px(
-            theme
-                .get_number("tokens.control.tree_item.chevron_size")
-                .unwrap_or_else(|| {
-                    theme
-                        .get_number("tokens.control.list_item.chevron_size")
-                        .unwrap_or(18.0)
-                }) as f32,
-        )
+        px(theme
+            .get_number("tokens.control.tree_item.chevron_size")
+            .unwrap_or_else(|| {
+                theme
+                    .get_number("tokens.control.list_item.chevron_size")
+                    .unwrap_or(18.0)
+            }) as f32)
     }
     pub fn border_radius(&self, _state: &TreeItemRenderState, theme: &Theme) -> Pixels {
         px(theme.get_number("tokens.radii.sm").unwrap_or(0.0) as f32)
@@ -108,12 +100,7 @@ impl TokenTreeItemRenderer {
 }
 
 impl TreeItemRenderer for TokenTreeItemRenderer {
-    fn compose(
-        &self,
-        props: &TreeItemProps,
-        cx: &mut App,
-        window: &mut Window,
-    ) -> Stateful<Div> {
+    fn compose(&self, props: &TreeItemProps, cx: &mut App, window: &mut Window) -> Stateful<Div> {
         use yororen_ui_core::theme::ActiveTheme;
         let theme = cx.theme();
         let state = TreeItemRenderState {
@@ -145,7 +132,11 @@ impl TreeItemRenderer for TokenTreeItemRenderer {
         // underneath (which would otherwise fire the row's
         // `on_click`).
         let chevron_slot: gpui::AnyElement = if props.has_children {
-            let glyph: SharedString = if props.expanded { "▾".into() } else { "▸".into() };
+            let glyph: SharedString = if props.expanded {
+                "▾".into()
+            } else {
+                "▸".into()
+            };
             let chevron_id: ElementId = format!("{}-chevron", props.id).into();
             let toggle_cb = props.on_toggle.clone();
             let disabled = props.disabled;

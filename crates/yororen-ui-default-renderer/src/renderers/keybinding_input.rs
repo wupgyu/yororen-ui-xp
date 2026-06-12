@@ -4,8 +4,8 @@ use std::sync::Arc;
 
 use gpui::{
     AnyElement, App, CursorStyle, Div, Hsla, InteractiveElement, IntoElement, KeyDownEvent,
-    MouseButton, ParentElement, Pixels, SharedString, Stateful, StatefulInteractiveElement,
-    Styled, Window, div, px,
+    MouseButton, ParentElement, Pixels, SharedString, Stateful, StatefulInteractiveElement, Styled,
+    Window, div, px,
 };
 
 use yororen_ui_core::headless::keybinding_input::{KeybindingInputMode, KeybindingInputProps};
@@ -128,13 +128,8 @@ impl KeybindingInputRenderer for TokenKeybindingInputRenderer {
             })
             .track_focus(&focus_handle);
 
-        let mut keyed: Stateful<Div> = wire_input_keyboard(
-            base,
-            state.clone(),
-            focus_handle.clone(),
-            disabled,
-            None,
-        );
+        let mut keyed: Stateful<Div> =
+            wire_input_keyboard(base, state.clone(), focus_handle.clone(), disabled, None);
 
         if mode == KeybindingInputMode::Capturing && !disabled {
             let state_for_capture = state.clone();

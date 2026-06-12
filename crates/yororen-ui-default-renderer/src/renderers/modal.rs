@@ -79,11 +79,7 @@ impl ModalRenderer for TokenModalRenderer {
             props.state.clone(),
             props.id.clone(),
             SlideDirection::Down,
-            px(
-                theme
-                    .get_number("motion.slide_distance")
-                    .unwrap_or(10.0) as f32,
-            ),
+            px(theme.get_number("motion.slide_distance").unwrap_or(10.0) as f32),
             panel,
         ))
     }

@@ -1,8 +1,8 @@
 //! Headless `table` — columns + rows + optional selection. The
 //! visual lives in the renderer.
 
-use std::sync::Arc;
 use crate::renderer::RendererContext;
+use std::sync::Arc;
 
 use gpui::{App, Div, ElementId, InteractiveElement, SharedString, Stateful};
 

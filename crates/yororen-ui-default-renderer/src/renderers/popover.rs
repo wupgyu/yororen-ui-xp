@@ -70,9 +70,7 @@ impl PopoverRenderer for TokenPopoverRenderer {
         // 2) Content — only when visible, floated with
         //    `gpui::deferred` so it paints after the
         //    subsequent sibling cells in the gallery.
-        if visible
-            && let Some(c) = props.content.take()
-        {
+        if visible && let Some(c) = props.content.take() {
             // The outer container captures outside-clicks and
             // closes the popover; the floating panel calls
             // `.occlude()` to swallow hits for elements behind
@@ -101,28 +99,20 @@ impl PopoverRenderer for TokenPopoverRenderer {
                 }])
                 .occlude()
                 .child(c);
-            let distance = px(
-                theme
-                    .get_number("motion.slide_distance")
-                    .unwrap_or(10.0) as f32,
-            );
+            let distance = px(theme.get_number("motion.slide_distance").unwrap_or(10.0) as f32);
             // The animation wrapper is absolutely positioned at the
             // top-left of the outer relative container so the panel
             // inside keeps its original `top/left` offset.
             outer = outer.child(
-                gpui::deferred(
-                    div()
-                        .absolute()
-                        .top_0()
-                        .left_0()
-                        .child(AnimatedPresenceElement::new(
-                            props.state.clone(),
-                            (props.id.clone(), "content"),
-                            SlideDirection::Down,
-                            distance,
-                            panel,
-                        )),
-                )
+                gpui::deferred(div().absolute().top_0().left_0().child(
+                    AnimatedPresenceElement::new(
+                        props.state.clone(),
+                        (props.id.clone(), "content"),
+                        SlideDirection::Down,
+                        distance,
+                        panel,
+                    ),
+                ))
                 .with_priority(1),
             );
         }

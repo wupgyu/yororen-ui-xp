@@ -64,11 +64,9 @@ impl VirtualListRenderer for TokenVirtualListRenderer {
         // correct: the new Box owns the caller's `FnMut`, and the
         // previous frame's handler is dropped at this point.
         if let Some(mut cb) = props.on_visible_range_change.take() {
-            props
-                .state
-                .set_scroll_handler(move |ev, window, cx_inner| {
-                    cb(ev.visible_range.clone(), ev.count, window, cx_inner);
-                });
+            props.state.set_scroll_handler(move |ev, window, cx_inner| {
+                cb(ev.visible_range.clone(), ev.count, window, cx_inner);
+            });
         }
 
         // Construct the inner list with the caller's state and

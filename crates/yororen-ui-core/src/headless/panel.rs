@@ -62,8 +62,8 @@ impl PanelProps {
     /// renderer-built bg / border / padding / radius.
     pub fn render(self, cx: &gpui::App) -> Stateful<Div> {
         use crate::renderer::RendererContext;
-        use crate::renderer::panel::PanelRenderer;
         use crate::renderer::markers::Panel as PanelMarker;
+        use crate::renderer::panel::PanelRenderer;
 
         let r: &Arc<dyn PanelRenderer> = cx
             .renderer_arc::<PanelMarker, dyn PanelRenderer>()

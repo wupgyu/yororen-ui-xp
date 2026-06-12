@@ -7,8 +7,8 @@ use yororen_ui::theme::ActiveTheme;
 
 use yororen_ui::headless::badge::{BadgeVariant, badge};
 use yororen_ui::headless::divider::divider;
-use yororen_ui::headless::heading::heading;
 use yororen_ui::headless::heading::HeadingLevel;
+use yororen_ui::headless::heading::heading;
 use yororen_ui::headless::icon::icon;
 use yororen_ui::headless::label::label;
 use yororen_ui::headless::progress::progress;
@@ -27,29 +27,75 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
         .flex_wrap()
         .items_center()
         .gap(px(12.))
-        .child(cell(cx.t("demo.display.cell_label_default"), label("lbl-default", cx.t("demo.display.label_default"), cx).render(cx), cx))
-        .child(cell(cx.t("demo.display.cell_label_strong"), label("lbl-strong", cx.t("demo.display.label_strong"), cx).strong(true).render(cx), cx))
-        .child(cell(cx.t("demo.display.cell_label_muted"), label("lbl-muted", cx.t("demo.display.label_muted"), cx).muted(true).render(cx), cx))
-        .child(cell(cx.t("demo.display.cell_label_mono"), label("lbl-mono", cx.t("demo.display.label_mono"), cx).mono(true).render(cx), cx));
+        .child(cell(
+            cx.t("demo.display.cell_label_default"),
+            label("lbl-default", cx.t("demo.display.label_default"), cx).render(cx),
+            cx,
+        ))
+        .child(cell(
+            cx.t("demo.display.cell_label_strong"),
+            label("lbl-strong", cx.t("demo.display.label_strong"), cx)
+                .strong(true)
+                .render(cx),
+            cx,
+        ))
+        .child(cell(
+            cx.t("demo.display.cell_label_muted"),
+            label("lbl-muted", cx.t("demo.display.label_muted"), cx)
+                .muted(true)
+                .render(cx),
+            cx,
+        ))
+        .child(cell(
+            cx.t("demo.display.cell_label_mono"),
+            label("lbl-mono", cx.t("demo.display.label_mono"), cx)
+                .mono(true)
+                .render(cx),
+            cx,
+        ));
 
     // --- 4 heading levels ---
     let headings = div()
         .flex()
         .flex_col()
         .gap(px(4.))
-        .child(cell(cx.t("demo.display.cell_heading_h1"), heading("h-1", HeadingLevel::H1, cx.t("demo.display.heading_h1"), cx).render(cx), cx))
-        .child(cell(cx.t("demo.display.cell_heading_h2"), heading("h-2", HeadingLevel::H2, cx.t("demo.display.heading_h2"), cx).render(cx), cx))
-        .child(cell(cx.t("demo.display.cell_heading_h3"), heading("h-3", HeadingLevel::H3, cx.t("demo.display.heading_h3"), cx).render(cx), cx))
-        .child(cell(cx.t("demo.display.cell_heading_h4"), heading("h-4", HeadingLevel::H4, cx.t("demo.display.heading_h4"), cx).render(cx), cx));
+        .child(cell(
+            cx.t("demo.display.cell_heading_h1"),
+            heading("h-1", HeadingLevel::H1, cx.t("demo.display.heading_h1"), cx).render(cx),
+            cx,
+        ))
+        .child(cell(
+            cx.t("demo.display.cell_heading_h2"),
+            heading("h-2", HeadingLevel::H2, cx.t("demo.display.heading_h2"), cx).render(cx),
+            cx,
+        ))
+        .child(cell(
+            cx.t("demo.display.cell_heading_h3"),
+            heading("h-3", HeadingLevel::H3, cx.t("demo.display.heading_h3"), cx).render(cx),
+            cx,
+        ))
+        .child(cell(
+            cx.t("demo.display.cell_heading_h4"),
+            heading("h-4", HeadingLevel::H4, cx.t("demo.display.heading_h4"), cx).render(cx),
+            cx,
+        ));
 
     // --- 2 dividers ---
     let dividers = div()
         .flex()
         .flex_col()
         .gap(px(8.))
-        .child(label("d-h-info", cx.t("demo.display.divider_h"), cx).muted(true).render(cx))
+        .child(
+            label("d-h-info", cx.t("demo.display.divider_h"), cx)
+                .muted(true)
+                .render(cx),
+        )
         .child(divider("d-h1", cx).render(cx))
-        .child(label("d-v-info", cx.t("demo.display.divider_v"), cx).muted(true).render(cx))
+        .child(
+            label("d-v-info", cx.t("demo.display.divider_v"), cx)
+                .muted(true)
+                .render(cx),
+        )
         .child(divider("d-v1", cx).vertical().render(cx).h(px(24.)));
 
     // --- 5 badge variants ---
@@ -59,11 +105,41 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
         .flex_wrap()
         .items_center()
         .gap(px(8.))
-        .child(cell(cx.t("button.neutral"), badge("bd-n", cx.t("demo.display.badge_neutral"), cx).variant(BadgeVariant::Neutral).render(cx), cx))
-        .child(cell(cx.t("button.primary"), badge("bd-s", cx.t("demo.display.badge_success"), cx).variant(BadgeVariant::Success).render(cx), cx))
-        .child(cell(cx.t("button.danger"), badge("bd-w", cx.t("demo.display.badge_warning"), cx).variant(BadgeVariant::Warning).render(cx), cx))
-        .child(cell(cx.t("button.danger"), badge("bd-d", cx.t("demo.display.badge_danger"), cx).variant(BadgeVariant::Danger).render(cx), cx))
-        .child(cell(cx.t("button.primary"), badge("bd-i", cx.t("demo.display.badge_info"), cx).variant(BadgeVariant::Info).render(cx), cx));
+        .child(cell(
+            cx.t("button.neutral"),
+            badge("bd-n", cx.t("demo.display.badge_neutral"), cx)
+                .variant(BadgeVariant::Neutral)
+                .render(cx),
+            cx,
+        ))
+        .child(cell(
+            cx.t("button.primary"),
+            badge("bd-s", cx.t("demo.display.badge_success"), cx)
+                .variant(BadgeVariant::Success)
+                .render(cx),
+            cx,
+        ))
+        .child(cell(
+            cx.t("button.danger"),
+            badge("bd-w", cx.t("demo.display.badge_warning"), cx)
+                .variant(BadgeVariant::Warning)
+                .render(cx),
+            cx,
+        ))
+        .child(cell(
+            cx.t("button.danger"),
+            badge("bd-d", cx.t("demo.display.badge_danger"), cx)
+                .variant(BadgeVariant::Danger)
+                .render(cx),
+            cx,
+        ))
+        .child(cell(
+            cx.t("button.primary"),
+            badge("bd-i", cx.t("demo.display.badge_info"), cx)
+                .variant(BadgeVariant::Info)
+                .render(cx),
+            cx,
+        ));
 
     // --- tag: selected + closable ---
     let entity_for_tag_click = cx.entity().clone();
@@ -115,9 +191,30 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
         .flex()
         .flex_col()
         .gap(px(8.))
-        .child(cell(cx.t("demo.display.cell_skeleton_line"), skeleton("sk-line", cx).render(cx).w(px(180.)).h(px(12.)), cx))
-        .child(cell(cx.t("demo.display.cell_skeleton_block"), skeleton("sk-block", cx).block(true).render(cx).w(px(180.)).h(px(60.)), cx))
-        .child(cell(cx.t("demo.display.cell_skeleton_block_sharp"), skeleton("sk-block-sharp", cx).block(true).block_sharp(true).render(cx).w(px(180.)).h(px(40.)), cx));
+        .child(cell(
+            cx.t("demo.display.cell_skeleton_line"),
+            skeleton("sk-line", cx).render(cx).w(px(180.)).h(px(12.)),
+            cx,
+        ))
+        .child(cell(
+            cx.t("demo.display.cell_skeleton_block"),
+            skeleton("sk-block", cx)
+                .block(true)
+                .render(cx)
+                .w(px(180.))
+                .h(px(60.)),
+            cx,
+        ))
+        .child(cell(
+            cx.t("demo.display.cell_skeleton_block_sharp"),
+            skeleton("sk-block-sharp", cx)
+                .block(true)
+                .block_sharp(true)
+                .render(cx)
+                .w(px(180.))
+                .h(px(40.)),
+            cx,
+        ));
 
     // --- progress ---
     let progress_label = cx.t("demo.display.loading").to_string();
@@ -125,8 +222,20 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
         .flex()
         .flex_col()
         .gap(px(8.))
-        .child(cell(cx.t("demo.display.cell_progress_determinate"), progress("prg-1", cx).value(app.progress_value).max(1.0).label(progress_label).render(cx), cx))
-        .child(cell(cx.t("demo.display.cell_progress_indeterminate"), progress("prg-indet", cx).indeterminate(true).render(cx), cx));
+        .child(cell(
+            cx.t("demo.display.cell_progress_determinate"),
+            progress("prg-1", cx)
+                .value(app.progress_value)
+                .max(1.0)
+                .label(progress_label)
+                .render(cx),
+            cx,
+        ))
+        .child(cell(
+            cx.t("demo.display.cell_progress_indeterminate"),
+            progress("prg-indet", cx).indeterminate(true).render(cx),
+            cx,
+        ));
 
     // --- text + icon ---
     let icon_color = cx.theme().get_color("content.primary").unwrap_or_default();
@@ -135,9 +244,37 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
         .flex_row()
         .items_center()
         .gap(px(12.))
-        .child(cell(cx.t("demo.display.cell_text"), text("tx-1", cx.t("demo.display.plain_text"), cx).size(px(14.)).render(cx), cx))
-        .child(cell(cx.t("demo.display.cell_icon_check"), icon("ic-1", yororen_ui::headless::icon::IconSource::Builtin("check".into()), cx).size(px(18.)).color(icon_color).render(cx), cx))
-        .child(cell(cx.t("demo.display.cell_icon_search"), icon("ic-2", yororen_ui::headless::icon::IconSource::Builtin("search".into()), cx).size(px(18.)).color(icon_color).render(cx), cx));
+        .child(cell(
+            cx.t("demo.display.cell_text"),
+            text("tx-1", cx.t("demo.display.plain_text"), cx)
+                .size(px(14.))
+                .render(cx),
+            cx,
+        ))
+        .child(cell(
+            cx.t("demo.display.cell_icon_check"),
+            icon(
+                "ic-1",
+                yororen_ui::headless::icon::IconSource::Builtin("check".into()),
+                cx,
+            )
+            .size(px(18.))
+            .color(icon_color)
+            .render(cx),
+            cx,
+        ))
+        .child(cell(
+            cx.t("demo.display.cell_icon_search"),
+            icon(
+                "ic-2",
+                yororen_ui::headless::icon::IconSource::Builtin("search".into()),
+                cx,
+            )
+            .size(px(18.))
+            .color(icon_color)
+            .render(cx),
+            cx,
+        ));
 
     div()
         .flex()

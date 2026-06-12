@@ -19,10 +19,5 @@ pub struct NumberInputRenderState {
 }
 
 pub trait NumberInputRenderer: Any + Send + Sync {
-    fn compose(
-        &self,
-        props: &NumberInputProps,
-        cx: &mut App,
-        window: &mut Window,
-    ) -> AnyElement;
+    fn compose(&self, props: &NumberInputProps, cx: &mut App, window: &mut Window) -> AnyElement;
 }

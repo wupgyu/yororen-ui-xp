@@ -197,12 +197,7 @@ pub trait TextInputActionHandler: 'static {
     /// Cut. Default: no-op.
     fn cut(&mut self, _: &Cut, _w: &mut Window, _cx: &mut App) {}
     /// Show the platform character palette. Default: no-op.
-    fn show_character_palette(
-        &mut self,
-        _: &ShowCharacterPalette,
-        _w: &mut Window,
-        _cx: &mut App,
-    ) {
+    fn show_character_palette(&mut self, _: &ShowCharacterPalette, _w: &mut Window, _cx: &mut App) {
     }
     /// Enter / Return. Default: no-op. The wrapper also fires the
     /// consumer's `on_submit` callback after this hook.
@@ -219,21 +214,9 @@ pub trait TextInputActionHandler: 'static {
     ) {
     }
     /// Mouse-up. Default: no-op.
-    fn on_mouse_up(
-        &mut self,
-        _event: &gpui::MouseUpEvent,
-        _w: &mut Window,
-        _cx: &mut App,
-    ) {
-    }
+    fn on_mouse_up(&mut self, _event: &gpui::MouseUpEvent, _w: &mut Window, _cx: &mut App) {}
     /// Mouse-move (drag-select). Default: no-op.
-    fn on_mouse_move(
-        &mut self,
-        _event: &gpui::MouseMoveEvent,
-        _w: &mut Window,
-        _cx: &mut App,
-    ) {
-    }
+    fn on_mouse_move(&mut self, _event: &gpui::MouseMoveEvent, _w: &mut Window, _cx: &mut App) {}
 }
 
 // =====================================================================
@@ -431,12 +414,8 @@ impl TextInputState {
         range: Option<Range<usize>>,
         new_text: &str,
     ) -> bool {
-        self.core.replace_text_in_range_bytes(
-            &mut self.value,
-            self.max_length,
-            range,
-            new_text,
-        )
+        self.core
+            .replace_text_in_range_bytes(&mut self.value, self.max_length, range, new_text)
     }
 
     /// Compose (IME marked text). Replaces the active selection
@@ -491,7 +470,8 @@ impl TextInputState {
 
     /// UTF-8 version of `EntityInputHandler::character_index_for_point`.
     pub fn character_index_for_point_inner(&self, point: gpui::Point<Pixels>) -> Option<usize> {
-        self.core.character_index_for_point_inner(&self.value, point)
+        self.core
+            .character_index_for_point_inner(&self.value, point)
     }
 }
 

@@ -15,7 +15,7 @@
 
 use std::any::Any;
 
-use gpui::{px, App, Div, Stateful};
+use gpui::{App, Div, Stateful, px};
 
 use crate::headless::virtual_list::{RenderRowFn, VirtualListProps};
 use gpui::ListAlignment;
@@ -54,10 +54,5 @@ pub trait VirtualListRenderer: Any + Send + Sync {
     /// virtual list. The row closure is taken by value (not by
     /// `&mut`) so the renderer can move it into the inner
     /// `gpui::List` element.
-    fn compose(
-        &self,
-        props: VirtualListProps,
-        render_row: RenderRowFn,
-        cx: &App,
-    ) -> Stateful<Div>;
+    fn compose(&self, props: VirtualListProps, render_row: RenderRowFn, cx: &App) -> Stateful<Div>;
 }

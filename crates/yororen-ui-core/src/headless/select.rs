@@ -185,8 +185,8 @@ impl SelectProps {
     /// based on the `state` entity.
     pub fn render(self, cx: &gpui::App) -> Stateful<Div> {
         use crate::renderer::RendererContext;
-        use crate::renderer::select::SelectRenderer;
         use crate::renderer::markers::Select as SelectMarker;
+        use crate::renderer::select::SelectRenderer;
 
         let r: &Arc<dyn SelectRenderer> = cx
             .renderer_arc::<SelectMarker, dyn SelectRenderer>()

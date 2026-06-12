@@ -2,10 +2,12 @@
 //! headless layer owns the open state machine; visual lives in the
 //! renderer.
 
-use std::sync::Arc;
 use crate::renderer::RendererContext;
+use std::sync::Arc;
 
-use gpui::{App, Div, ElementId, FocusHandle, InteractiveElement, Stateful, StatefulInteractiveElement};
+use gpui::{
+    App, Div, ElementId, FocusHandle, InteractiveElement, Stateful, StatefulInteractiveElement,
+};
 
 use crate::animation::AnimatedVisibility;
 

@@ -81,12 +81,8 @@ impl ButtonGroupRenderer for TokenButtonGroupRenderer {
         // overflow are only applied in attached mode — in
         // detached mode each child keeps its own styling.
         let mut container = match props.orientation {
-            ButtonGroupOrientation::Horizontal => {
-                div().flex().flex_row().items_center()
-            }
-            ButtonGroupOrientation::Vertical => {
-                div().flex().flex_col().items_center()
-            }
+            ButtonGroupOrientation::Horizontal => div().flex().flex_row().items_center(),
+            ButtonGroupOrientation::Vertical => div().flex().flex_col().items_center(),
         };
 
         if props.attached && n > 0 {
@@ -134,9 +130,7 @@ impl ButtonGroupRenderer for TokenButtonGroupRenderer {
     }
 }
 
-pub fn arc_button_group<T: ButtonGroupRenderer + 'static>(
-    r: T,
-) -> Arc<dyn ButtonGroupRenderer> {
+pub fn arc_button_group<T: ButtonGroupRenderer + 'static>(r: T) -> Arc<dyn ButtonGroupRenderer> {
     Arc::new(r)
 }
 

@@ -42,22 +42,22 @@ use gpui::{
     Window, div, hsla, px,
 };
 
-use yororen_ui::headless::heading::heading;
+use yororen_ui::ActionVariantKind;
+use yororen_ui::headless::button::button;
+use yororen_ui::headless::divider::divider;
 use yororen_ui::headless::heading::HeadingLevel;
+use yororen_ui::headless::heading::heading;
+use yororen_ui::headless::label::label;
 use yororen_ui::headless::modal::modal;
+use yororen_ui::headless::toggle_button::toggle_button;
 use yororen_ui::headless::virtual_list::virtual_list;
 use yororen_ui::i18n::Translate;
 use yororen_ui::notification::center::{Notification, NotificationCenter, ToastKind};
 use yororen_ui::theme::ActiveTheme;
-use yororen_ui::ActionVariantKind;
-use yororen_ui::headless::button::button;
-use yororen_ui::headless::divider::divider;
-use yororen_ui::headless::label::label;
-use yororen_ui::headless::toggle_button::toggle_button;
 
 use crate::sections;
 use crate::state::{GalleryApp, LocaleChoice};
-use crate::theme_switcher::{install_renderer, DarkMode, RendererKind};
+use crate::theme_switcher::{DarkMode, RendererKind, install_renderer};
 /// Number of rows in the top-level section virtual list.
 ///
 /// Row mapping:
@@ -200,10 +200,7 @@ fn section_row(
 /// scroll-root, regardless of whether the modal is open
 /// (when closed, an empty deferred placeholder keeps the
 /// element-tree shape stable across frames).
-fn build_modal_overlay(
-    app: &GalleryApp,
-    cx: &mut Context<GalleryApp>,
-) -> gpui::Deferred {
+fn build_modal_overlay(app: &GalleryApp, cx: &mut Context<GalleryApp>) -> gpui::Deferred {
     let is_modal_visible = app.modal_state.read(cx).is_visible();
     if !is_modal_visible {
         return gpui::deferred(div()).with_priority(2);
@@ -211,7 +208,11 @@ fn build_modal_overlay(
 
     let modal_state_for_close = app.modal_state.clone();
     let modal_panel = modal("ov-modal", app.modal_state.clone())
-        .child(label("ov-modal-title", cx.t("demo.modal.title"), cx).strong(true).render(cx))
+        .child(
+            label("ov-modal-title", cx.t("demo.modal.title"), cx)
+                .strong(true)
+                .render(cx),
+        )
         .child(label("ov-modal-body", cx.t("demo.modal.body"), cx).render(cx))
         .child(
             button("ov-modal-close", cx)

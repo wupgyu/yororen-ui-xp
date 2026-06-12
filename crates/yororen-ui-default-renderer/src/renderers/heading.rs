@@ -42,9 +42,7 @@ impl HeadingRenderer for TokenHeadingRenderer {
     fn compose(&self, props: &HeadingProps, cx: &App) -> Div {
         use yororen_ui_core::theme::ActiveTheme;
         let theme = cx.theme();
-        let state = HeadingRenderState {
-            level: props.level,
-        };
+        let state = HeadingRenderState { level: props.level };
         let size = self.size(&state, theme);
         let weight = self.weight(&state, theme);
         let color = self.color(&state, theme);

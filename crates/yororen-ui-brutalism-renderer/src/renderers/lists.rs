@@ -1,7 +1,10 @@
 //! Brutalist list renderers: `ListItem`, `TreeItem`, `Tree`,
 //! `Form`, `FormField`, `Table`, `VirtualList`, `UniformVirtualList`.
 
-use gpui::{App, CursorStyle, Div, ElementId, Hsla, InteractiveElement, IntoElement, ParentElement, Pixels, SharedString, Stateful, StatefulInteractiveElement, Styled, Window, prelude::FluentBuilder, px};
+use gpui::{
+    App, CursorStyle, Div, ElementId, Hsla, InteractiveElement, IntoElement, ParentElement, Pixels,
+    SharedString, Stateful, StatefulInteractiveElement, Styled, Window, prelude::FluentBuilder, px,
+};
 use yororen_ui_core::renderer::spec::Edges;
 use yororen_ui_core::theme::Theme;
 
@@ -195,7 +198,11 @@ impl TreeItemRenderer for BrutalTreeItemRenderer {
         let radius = self.border_radius(&state, theme);
 
         let chevron_slot = if props.has_children {
-            let glyph: SharedString = if props.expanded { "▾".into() } else { "▸".into() };
+            let glyph: SharedString = if props.expanded {
+                "▾".into()
+            } else {
+                "▸".into()
+            };
             let chevron_id: ElementId = format!("{}-chevron", props.id).into();
             let toggle_cb = props.on_toggle.clone();
             let disabled = props.disabled;
@@ -321,11 +328,7 @@ impl BrutalFormRenderer {
 }
 
 impl FormRenderer for BrutalFormRenderer {
-    fn compose(
-        &self,
-        _props: &yororen_ui_core::headless::form::FormProps,
-        cx: &App,
-    ) -> Div {
+    fn compose(&self, _props: &yororen_ui_core::headless::form::FormProps, cx: &App) -> Div {
         use yororen_ui_core::theme::ActiveTheme;
         let theme = cx.theme();
         let state = FormRenderState {};
@@ -382,11 +385,9 @@ impl VirtualListRenderer for BrutalVirtualListRenderer {
         // `ListState::set_scroll_handler` (see TokenVirtualListRenderer
         // for the rationale — same approach here).
         if let Some(mut cb) = props.on_visible_range_change.take() {
-            props
-                .state
-                .set_scroll_handler(move |ev, window, cx_inner| {
-                    cb(ev.visible_range.clone(), ev.count, window, cx_inner);
-                });
+            props.state.set_scroll_handler(move |ev, window, cx_inner| {
+                cb(ev.visible_range.clone(), ev.count, window, cx_inner);
+            });
         }
 
         // The inner list is constructed inline and forced to
@@ -394,7 +395,8 @@ impl VirtualListRenderer for BrutalVirtualListRenderer {
         // pattern as the default renderer. Brutalism could add
         // its own offsets (e.g. a hard offset shadow on the
         // scroll surface) here without sharing code with default.
-        let list_el = gpui::list(props.state, render_row).with_sizing_behavior(props.sizing_behavior);
+        let list_el =
+            gpui::list(props.state, render_row).with_sizing_behavior(props.sizing_behavior);
         let inner = list_el.size_full().flex_grow().min_h_0();
 
         // The outer div is the brutalist frame: thick black
@@ -494,9 +496,7 @@ impl UniformVirtualListRenderer for BrutalUniformVirtualListRenderer {
             props.item_count,
             move |range, window, cx_inner| {
                 let mut f = row_cell.borrow_mut();
-                range
-                    .map(|ix| f(ix, window, cx_inner))
-                    .collect::<Vec<_>>()
+                range.map(|ix| f(ix, window, cx_inner)).collect::<Vec<_>>()
             },
         )
         .with_sizing_behavior(props.sizing_behavior)
@@ -551,9 +551,7 @@ impl BrutalTreeRenderer {
         // Brutalism defaults to 0 row gap so adjacent tree items
         // form a continuous column (their own thick borders
         // already separate them visually).
-        px(theme
-            .get_number("tokens.control.tree.gap")
-            .unwrap_or(0.0) as f32)
+        px(theme.get_number("tokens.control.tree.gap").unwrap_or(0.0) as f32)
     }
     pub fn border_radius(&self, _state: &TreeRenderState, _theme: &Theme) -> Pixels {
         px(BRUTAL_RADIUS)
@@ -648,11 +646,7 @@ impl FormFieldRenderer for BrutalFormFieldRenderer {
         let gap = self.gap(&state, theme);
         let font_size = self.font_size(&state, theme);
 
-        let mut wrapper = gpui::div()
-            .id(props.id.clone())
-            .flex()
-            .flex_col()
-            .gap(gap);
+        let mut wrapper = gpui::div().id(props.id.clone()).flex().flex_col().gap(gap);
 
         // 1) Label row — brutalism keeps the required indicator
         //    as a plain `*` (no extra styling) so it does not
@@ -742,7 +736,9 @@ impl BrutalTableRenderer {
             .unwrap_or(BRUTAL_BORDER)
     }
     pub fn selected_fg(&self, _state: &TableRenderState, theme: &Theme) -> Hsla {
-        theme.get_color("content.on_status").unwrap_or(BRUTAL_BORDER)
+        theme
+            .get_color("content.on_status")
+            .unwrap_or(BRUTAL_BORDER)
     }
     pub fn hover_bg(&self, _state: &TableRenderState, theme: &Theme) -> Hsla {
         theme.get_color("surface.hover").unwrap_or(BRUTAL_BORDER)
@@ -864,15 +860,16 @@ impl TableRenderer for BrutalTableRenderer {
         for (row_idx, row) in props.rows.iter().enumerate() {
             let is_selected = props.selected_row == Some(row_idx);
             let bg = if is_selected { selected_bg } else { row_bg };
-            let mut row_el = gpui::div()
-                .flex()
-                .flex_row()
-                .bg(bg)
-                .cursor(if props.on_select_row.is_some() {
-                    CursorStyle::PointingHand
-                } else {
-                    CursorStyle::Arrow
-                });
+            let mut row_el =
+                gpui::div()
+                    .flex()
+                    .flex_row()
+                    .bg(bg)
+                    .cursor(if props.on_select_row.is_some() {
+                        CursorStyle::PointingHand
+                    } else {
+                        CursorStyle::Arrow
+                    });
             // Inner separator between rows (omit on the last row
             // — the table container's bottom border closes it).
             if row_idx + 1 < row_count {

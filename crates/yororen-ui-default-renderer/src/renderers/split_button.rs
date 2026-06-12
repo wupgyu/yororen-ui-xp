@@ -112,11 +112,12 @@ impl SplitButtonRenderer for TokenSplitButtonRenderer {
 
         // ---- Chevron button (toggles dropdown_state) ----
         let state_for_chevron = props.state.clone();
-        let chevron_click: ClickCallback = Arc::new(move |_ev: &ClickEvent, _w: &mut Window, cx: &mut App| {
-            if let Some(s) = state_for_chevron.as_ref() {
-                s.update(cx, |st, _cx| st.toggle());
-            }
-        });
+        let chevron_click: ClickCallback =
+            Arc::new(move |_ev: &ClickEvent, _w: &mut Window, cx: &mut App| {
+                if let Some(s) = state_for_chevron.as_ref() {
+                    s.update(cx, |st, _cx| st.toggle());
+                }
+            });
         let chevron_label = if open { "▴" } else { "▾" };
         let chevron_id: ElementId = format!("{:?}-chevron", props.id).into();
         let chevron_w = self.chevron_width(&state, theme);
@@ -184,13 +185,9 @@ impl SplitButtonRenderer for TokenSplitButtonRenderer {
                 .unwrap_or_default();
             let panel_border = theme.get_color("border.default").unwrap_or_default();
             let panel_radius = px(theme.get_number("tokens.radii.lg").unwrap_or(8.0) as f32);
-            let panel_pad = px(theme
-                .get_number("tokens.spacing.inset_xs")
-                .unwrap_or(4.0) as f32);
+            let panel_pad = px(theme.get_number("tokens.spacing.inset_xs").unwrap_or(4.0) as f32);
             let item_hover_bg = theme.get_color("surface.hover").unwrap_or_default();
-            let shadow_color = theme
-                .get_color("shadow.elevation_2")
-                .unwrap_or_default();
+            let shadow_color = theme.get_color("shadow.elevation_2").unwrap_or_default();
             let divider_color = theme.get_color("border.divider").unwrap_or_default();
             let menu_w = self.menu_width(&state, theme);
             let min_h = self.min_height(&state, theme);
@@ -280,11 +277,7 @@ impl SplitButtonRenderer for TokenSplitButtonRenderer {
                 }
             }
 
-            let distance = px(
-                theme
-                    .get_number("motion.slide_distance")
-                    .unwrap_or(10.0) as f32,
-            );
+            let distance = px(theme.get_number("motion.slide_distance").unwrap_or(10.0) as f32);
             let state_entity = props
                 .state
                 .clone()

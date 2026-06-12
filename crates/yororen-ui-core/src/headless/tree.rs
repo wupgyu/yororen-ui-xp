@@ -3,8 +3,8 @@
 //! visual lives in the renderer; callers iterate `children(id)` to
 //! produce rows.
 
-use std::collections::{BTreeMap, BTreeSet, HashMap};
 use crate::renderer::RendererContext;
+use std::collections::{BTreeMap, BTreeSet, HashMap};
 
 use gpui::{App, Div, ElementId, InteractiveElement, SharedString, Stateful};
 

@@ -36,10 +36,42 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
         .flex_wrap()
         .items_center()
         .gap(px(12.))
-        .child(cell(cx.t("demo.actions.cell_button_neutral"), button("btn-neutral", cx).variant(ActionVariantKind::Neutral).caption(cx.t("button.neutral")).on_click(|_, _, _| {}).render(cx), cx))
-        .child(cell(cx.t("demo.actions.cell_button_primary"), button("btn-primary", cx).variant(ActionVariantKind::Primary).caption(cx.t("button.primary")).on_click(|_, _, _| {}).render(cx), cx))
-        .child(cell(cx.t("demo.actions.cell_button_danger"), button("btn-danger", cx).variant(ActionVariantKind::Danger).caption(cx.t("button.danger")).on_click(|_, _, _| {}).render(cx), cx))
-        .child(cell(cx.t("demo.actions.cell_button_disabled"), button("btn-disabled", cx).disabled(true).caption(cx.t("button.disabled")).on_click(|_, _, _| {}).render(cx), cx));
+        .child(cell(
+            cx.t("demo.actions.cell_button_neutral"),
+            button("btn-neutral", cx)
+                .variant(ActionVariantKind::Neutral)
+                .caption(cx.t("button.neutral"))
+                .on_click(|_, _, _| {})
+                .render(cx),
+            cx,
+        ))
+        .child(cell(
+            cx.t("demo.actions.cell_button_primary"),
+            button("btn-primary", cx)
+                .variant(ActionVariantKind::Primary)
+                .caption(cx.t("button.primary"))
+                .on_click(|_, _, _| {})
+                .render(cx),
+            cx,
+        ))
+        .child(cell(
+            cx.t("demo.actions.cell_button_danger"),
+            button("btn-danger", cx)
+                .variant(ActionVariantKind::Danger)
+                .caption(cx.t("button.danger"))
+                .on_click(|_, _, _| {})
+                .render(cx),
+            cx,
+        ))
+        .child(cell(
+            cx.t("demo.actions.cell_button_disabled"),
+            button("btn-disabled", cx)
+                .disabled(true)
+                .caption(cx.t("button.disabled"))
+                .on_click(|_, _, _| {})
+                .render(cx),
+            cx,
+        ));
 
     // --- icon_button: variant + icon only, colour is
     //     auto-derived from the renderer's `fg` token. ---
@@ -49,8 +81,23 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
         .flex_wrap()
         .items_center()
         .gap(px(12.))
-        .child(cell(cx.t("demo.actions.cell_icon_button"), icon_button("icon-btn-check", cx).on_click(|_, _, _| {}).icon(IconSource::Builtin("check".into())).render(cx), cx))
-        .child(cell(cx.t("demo.actions.cell_icon_button_primary"), icon_button("icon-btn-primary-check", cx).variant(ActionVariantKind::Primary).on_click(|_, _, _| {}).icon(IconSource::Builtin("check".into())).render(cx), cx));
+        .child(cell(
+            cx.t("demo.actions.cell_icon_button"),
+            icon_button("icon-btn-check", cx)
+                .on_click(|_, _, _| {})
+                .icon(IconSource::Builtin("check".into()))
+                .render(cx),
+            cx,
+        ))
+        .child(cell(
+            cx.t("demo.actions.cell_icon_button_primary"),
+            icon_button("icon-btn-primary-check", cx)
+                .variant(ActionVariantKind::Primary)
+                .on_click(|_, _, _| {})
+                .icon(IconSource::Builtin("check".into()))
+                .render(cx),
+            cx,
+        ));
 
     // --- toggle_button ---
     let entity_for_tb = entity.clone();
@@ -59,7 +106,19 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
         .flex_row()
         .items_center()
         .gap(px(12.))
-        .child(cell(cx.t("demo.actions.cell_toggle_button"), toggle_button("toggle-1", cx).selected(app.toggle_btn_selected).caption(cx.t("demo.actions.press_me")).on_toggle(move |_selected, _ev, _window, cx| { entity_for_tb.update(cx, |s, _cx| { s.toggle_btn_selected = !s.toggle_btn_selected; }); }).render(cx), cx));
+        .child(cell(
+            cx.t("demo.actions.cell_toggle_button"),
+            toggle_button("toggle-1", cx)
+                .selected(app.toggle_btn_selected)
+                .caption(cx.t("demo.actions.press_me"))
+                .on_toggle(move |_selected, _ev, _window, cx| {
+                    entity_for_tb.update(cx, |s, _cx| {
+                        s.toggle_btn_selected = !s.toggle_btn_selected;
+                    });
+                })
+                .render(cx),
+            cx,
+        ));
 
     // --- split_button: primary action + chevron-toggled
     //     dropdown. The renderer handles the trigger row,
@@ -114,11 +173,33 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
         .flex_row()
         .items_center()
         .gap(px(12.))
-        .child(cell(cx.t("demo.actions.cell_button_group"), button_group("btn-group-1", cx)
-            .child(button("bg-left", cx).variant(ActionVariantKind::Neutral).caption(left_caption).on_click(|_, _, _| {}).render(cx))
-            .child(button("bg-mid", cx).variant(ActionVariantKind::Neutral).caption(mid_caption).on_click(|_, _, _| {}).render(cx))
-            .child(button("bg-right", cx).variant(ActionVariantKind::Neutral).caption(right_caption).on_click(|_, _, _| {}).render(cx))
-            .render(cx), cx));
+        .child(cell(
+            cx.t("demo.actions.cell_button_group"),
+            button_group("btn-group-1", cx)
+                .child(
+                    button("bg-left", cx)
+                        .variant(ActionVariantKind::Neutral)
+                        .caption(left_caption)
+                        .on_click(|_, _, _| {})
+                        .render(cx),
+                )
+                .child(
+                    button("bg-mid", cx)
+                        .variant(ActionVariantKind::Neutral)
+                        .caption(mid_caption)
+                        .on_click(|_, _, _| {})
+                        .render(cx),
+                )
+                .child(
+                    button("bg-right", cx)
+                        .variant(ActionVariantKind::Neutral)
+                        .caption(right_caption)
+                        .on_click(|_, _, _| {})
+                        .render(cx),
+                )
+                .render(cx),
+            cx,
+        ));
 
     div()
         .flex()

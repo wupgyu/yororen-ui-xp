@@ -3,7 +3,7 @@
 use std::sync::Arc;
 
 use gpui::{
-    App, AppContext, AnyElement, Bounds, Div, ElementId, Entity, InteractiveElement, Pixels, Size,
+    AnyElement, App, AppContext, Bounds, Div, ElementId, Entity, InteractiveElement, Pixels, Size,
     Stateful, Window,
 };
 
@@ -124,8 +124,8 @@ impl TooltipProps {
     /// layer only attaches the element id.
     pub fn render(mut self, cx: &gpui::App) -> Stateful<Div> {
         use crate::renderer::RendererContext;
-        use crate::renderer::tooltip::TooltipRenderer;
         use crate::renderer::markers::Tooltip as TooltipMarker;
+        use crate::renderer::tooltip::TooltipRenderer;
 
         let r: &Arc<dyn TooltipRenderer> = cx
             .renderer_arc::<TooltipMarker, dyn TooltipRenderer>()

@@ -41,9 +41,9 @@ impl FocusRingProps {
     /// via `.child(...)` — the ring is the border, the child is
     /// the focused content.
     pub fn render(self, cx: &gpui::App) -> Stateful<Div> {
-        use crate::renderer::markers::FocusRing as FocusRingMarker;
-        use crate::renderer::focus_ring::FocusRingRenderer;
         use crate::renderer::RendererContext;
+        use crate::renderer::focus_ring::FocusRingRenderer;
+        use crate::renderer::markers::FocusRing as FocusRingMarker;
 
         let r: &Arc<dyn FocusRingRenderer> = cx
             .renderer_arc::<FocusRingMarker, dyn FocusRingRenderer>()

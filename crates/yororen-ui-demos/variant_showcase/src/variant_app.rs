@@ -13,8 +13,8 @@
 //! then wire it back to the headless button via `apply(...)`.
 
 use gpui::{
-    Context, Hsla, InteractiveElement, IntoElement, ParentElement, Render, StatefulInteractiveElement,
-    Styled, Window, div, px,
+    Context, Hsla, InteractiveElement, IntoElement, ParentElement, Render,
+    StatefulInteractiveElement, Styled, Window, div, px,
 };
 use yororen_ui::ActionVariantKind;
 use yororen_ui::ActiveTheme;

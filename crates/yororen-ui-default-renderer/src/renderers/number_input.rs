@@ -4,8 +4,8 @@ use std::sync::Arc;
 
 use gpui::{
     AnyElement, App, CursorStyle, Div, Hsla, InteractiveElement, IntoElement, MouseButton,
-    ParentElement, Pixels, SharedString, Stateful, StatefulInteractiveElement, Styled, Window,
-    div, px,
+    ParentElement, Pixels, SharedString, Stateful, StatefulInteractiveElement, Styled, Window, div,
+    px,
 };
 
 use yororen_ui_core::headless::number_input::NumberInputProps;
@@ -63,12 +63,7 @@ impl TokenNumberInputRenderer {
 }
 
 impl NumberInputRenderer for TokenNumberInputRenderer {
-    fn compose(
-        &self,
-        props: &NumberInputProps,
-        cx: &mut App,
-        window: &mut Window,
-    ) -> AnyElement {
+    fn compose(&self, props: &NumberInputProps, cx: &mut App, window: &mut Window) -> AnyElement {
         use yororen_ui_core::theme::ActiveTheme;
 
         let placeholder_str = props.placeholder.clone();
@@ -171,13 +166,7 @@ impl NumberInputRenderer for TokenNumberInputRenderer {
             })
             .track_focus(&focus_handle);
 
-        let keyed = wire_input_keyboard(
-            base,
-            state.clone(),
-            focus_handle.clone(),
-            disabled,
-            None,
-        );
+        let keyed = wire_input_keyboard(base, state.clone(), focus_handle.clone(), disabled, None);
 
         let state_for_dec = state.clone();
         let state_for_inc = state.clone();

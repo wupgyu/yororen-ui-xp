@@ -182,15 +182,13 @@ impl TextInputCore {
 
     /// Inverse.
     pub fn range_from_utf16(value: &str, utf16_range: &Range<usize>) -> Range<usize> {
-        Self::utf16_to_offset(value, utf16_range.start)..Self::utf16_to_offset(value, utf16_range.end)
+        Self::utf16_to_offset(value, utf16_range.start)
+            ..Self::utf16_to_offset(value, utf16_range.end)
     }
 
     /// Return the substring for a UTF-16 range, plus the
     /// adjusted UTF-8 range the platform may have requested.
-    pub fn text_for_range_utf16(
-        value: &str,
-        range_utf16: Range<usize>,
-    ) -> (String, Range<usize>) {
+    pub fn text_for_range_utf16(value: &str, range_utf16: Range<usize>) -> (String, Range<usize>) {
         let start = Self::utf16_to_offset(value, range_utf16.start);
         let end = Self::utf16_to_offset(value, range_utf16.end);
         let text = value.get(start..end).unwrap_or("").to_string();
@@ -249,13 +247,7 @@ impl TextInputCore {
     /// Replace the range `[start..end)` (UTF-8 bytes) with
     /// `new_text`. Updates caret and selection to land at the
     /// end of the inserted text.
-    pub fn replace_text(
-        &mut self,
-        value: &mut String,
-        start: usize,
-        end: usize,
-        new_text: &str,
-    ) {
+    pub fn replace_text(&mut self, value: &mut String, start: usize, end: usize, new_text: &str) {
         let start = start.min(value.len());
         let end = end.max(start).min(value.len());
         value.replace_range(start..end, new_text);
@@ -287,15 +279,13 @@ impl TextInputCore {
         // selection because the caret sits at the end of the
         // marked text — falling back to the selection would
         // insert *after* the pinyin.
-        let resolved = range
-            .or_else(|| self.marked_range.clone())
-            .or_else(|| {
-                if !self.selected_range().is_empty() {
-                    Some(self.selected_range())
-                } else {
-                    None
-                }
-            });
+        let resolved = range.or_else(|| self.marked_range.clone()).or_else(|| {
+            if !self.selected_range().is_empty() {
+                Some(self.selected_range())
+            } else {
+                None
+            }
+        });
         // Decide the effective new text up front (honouring
         // `max_length`). This avoids the "apply, then truncate"
         // path which would leave the caret past the end.
@@ -367,10 +357,10 @@ impl TextInputCore {
         // didn't provide one, the caret sits at the end of
         // the marked text.
         if let Some(sel_utf16) = new_selected_range {
-            let start_in_marked = Self::utf16_to_offset(value, sel_utf16.start)
-                .saturating_sub(marked_start);
-            let end_in_marked = Self::utf16_to_offset(value, sel_utf16.end)
-                .saturating_sub(marked_start);
+            let start_in_marked =
+                Self::utf16_to_offset(value, sel_utf16.start).saturating_sub(marked_start);
+            let end_in_marked =
+                Self::utf16_to_offset(value, sel_utf16.end).saturating_sub(marked_start);
             let sel_start = (marked_start + start_in_marked).min(marked_end);
             let sel_end = (marked_start + end_in_marked).min(marked_end);
             self.selection_start = sel_start;
@@ -385,10 +375,7 @@ impl TextInputCore {
     // -- `EntityInputHandler` body methods (not the trait impl) -----
 
     /// UTF-8 version of `EntityInputHandler::text_for_range`.
-    pub fn text_for_range_inner(
-        value: &str,
-        range_utf16: Range<usize>,
-    ) -> (String, Range<usize>) {
+    pub fn text_for_range_inner(value: &str, range_utf16: Range<usize>) -> (String, Range<usize>) {
         Self::text_for_range_utf16(value, range_utf16)
     }
 
@@ -592,12 +579,7 @@ impl TextInputCore {
     /// Cmd/Ctrl+V. `paste_newlines = false` collapses `\n` to
     /// space (single-line input convention). Returns `true` if
     /// the value changed.
-    pub fn paste(
-        &mut self,
-        value: &mut String,
-        paste_newlines: bool,
-        cx: &mut App,
-    ) -> bool {
+    pub fn paste(&mut self, value: &mut String, paste_newlines: bool, cx: &mut App) -> bool {
         let Some(item) = cx.read_from_clipboard() else {
             return false;
         };
@@ -639,12 +621,7 @@ impl TextInputCore {
     }
 
     /// Mouse-down: start drag-select and place the caret.
-    pub fn on_mouse_down(
-        &mut self,
-        value: &str,
-        position: Point<Pixels>,
-        window: &mut Window,
-    ) {
+    pub fn on_mouse_down(&mut self, value: &str, position: Point<Pixels>, window: &mut Window) {
         self.is_selecting = true;
         if let Some(utf16) = self.character_index_for_point_inner(value, position) {
             let byte = Self::utf16_to_offset(value, utf16);

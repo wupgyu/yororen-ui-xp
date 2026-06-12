@@ -1,8 +1,8 @@
 //! Headless `menu` — like `dropdown_menu` but rendered without a
 //! trigger (used inside `popover`s or as a context menu body).
 
-use std::sync::Arc;
 use crate::renderer::RendererContext;
+use std::sync::Arc;
 
 use gpui::{App, AppContext, Div, ElementId, Entity, InteractiveElement, SharedString, Stateful};
 

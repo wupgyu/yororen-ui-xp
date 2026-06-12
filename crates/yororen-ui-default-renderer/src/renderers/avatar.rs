@@ -76,7 +76,10 @@ impl AvatarRenderer for TokenAvatarRenderer {
         };
         let label_color: Hsla = theme.get_color("content.primary").unwrap_or_default();
         let content = if let Some(text) = label_text {
-            div().text_size(font_size).text_color(label_color).child(text)
+            div()
+                .text_size(font_size)
+                .text_color(label_color)
+                .child(text)
         } else {
             div()
         };

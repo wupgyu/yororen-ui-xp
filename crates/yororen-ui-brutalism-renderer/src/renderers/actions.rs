@@ -5,12 +5,12 @@ use gpui::{
     App, CursorStyle, Div, ElementId, FocusHandle, Hsla, InteractiveElement, ParentElement, Pixels,
     Stateful, StatefulInteractiveElement, Styled, div, px,
 };
+use yororen_ui_core::animation::SlideDirection;
 use yororen_ui_core::headless::button::ButtonProps;
 use yororen_ui_core::headless::icon::IconProps;
 use yororen_ui_core::headless::icon_button::IconButtonProps;
 use yororen_ui_core::headless::toggle_button::ToggleButtonProps;
 use yororen_ui_core::renderer::spec::{BorderSpec, Edges, ShadowSpec};
-use yororen_ui_core::animation::SlideDirection;
 use yororen_ui_core::renderer::variant::ActionVariantKind;
 use yororen_ui_core::renderer::variant::VariantState;
 use yororen_ui_core::theme::ActiveTheme;
@@ -131,12 +131,7 @@ impl BrutalButtonRenderer {
 }
 
 impl ButtonRenderer for BrutalButtonRenderer {
-    fn compose(
-        &self,
-        props: &ButtonProps,
-        focus_handle: &FocusHandle,
-        cx: &App,
-    ) -> Stateful<Div> {
+    fn compose(&self, props: &ButtonProps, focus_handle: &FocusHandle, cx: &App) -> Stateful<Div> {
         let theme = cx.theme();
         let state = ButtonRenderState {
             variant: props.variant,
@@ -687,12 +682,8 @@ impl SplitButtonRenderer for BrutalSplitButtonRenderer {
                 .or_else(|| theme.get_color("surface.raised"))
                 .unwrap_or(BRUTAL_BORDER);
             let panel_border = brutal_border_color(theme);
-            let item_hover_bg = theme
-                .get_color("surface.hover")
-                .unwrap_or(BRUTAL_BORDER);
-            let divider_color = theme
-                .get_color("border.divider")
-                .unwrap_or(BRUTAL_BORDER);
+            let item_hover_bg = theme.get_color("surface.hover").unwrap_or(BRUTAL_BORDER);
+            let divider_color = theme.get_color("border.divider").unwrap_or(BRUTAL_BORDER);
             let menu_w = px(theme
                 .get_number("tokens.control.split_button.menu_width")
                 .unwrap_or(200.0) as f32);
@@ -786,29 +777,21 @@ impl SplitButtonRenderer for BrutalSplitButtonRenderer {
             // The animation wrapper is absolutely positioned at the
             // top-left of the root relative container so the menu
             // inside keeps its original `top/left` offset.
-            let distance = px(
-                theme
-                    .get_number("motion.slide_distance")
-                    .unwrap_or(10.0) as f32,
-            );
+            let distance = px(theme.get_number("motion.slide_distance").unwrap_or(10.0) as f32);
             let state_entity = props
                 .state
                 .clone()
                 .expect("visible implies state is present");
             root.child(
-                gpui::deferred(
-                    div()
-                        .absolute()
-                        .top_0()
-                        .left_0()
-                        .child(AnimatedPresenceElement::new(
-                            state_entity,
-                            (props.id.clone(), "menu"),
-                            SlideDirection::Down,
-                            distance,
-                            div().child(menu),
-                        )),
-                )
+                gpui::deferred(div().absolute().top_0().left_0().child(
+                    AnimatedPresenceElement::new(
+                        state_entity,
+                        (props.id.clone(), "menu"),
+                        SlideDirection::Down,
+                        distance,
+                        div().child(menu),
+                    ),
+                ))
                 .with_priority(1),
             )
         } else {

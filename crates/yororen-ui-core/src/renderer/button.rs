@@ -55,10 +55,5 @@ pub use crate::renderer::variant::ActionVariantKind;
 /// `cx.register_renderer_arc::<ButtonMarker, dyn ButtonRenderer>(…)`.
 pub trait ButtonRenderer: Any + Send + Sync {
     /// Build the full `Stateful<Div>` for a button.
-    fn compose(
-        &self,
-        props: &ButtonProps,
-        focus_handle: &FocusHandle,
-        cx: &App,
-    ) -> Stateful<Div>;
+    fn compose(&self, props: &ButtonProps, focus_handle: &FocusHandle, cx: &App) -> Stateful<Div>;
 }

@@ -6,7 +6,7 @@
 
 use std::sync::Arc;
 
-use gpui::{InteractiveElement, App, Div, Hsla, Pixels, Stateful, Styled, div};
+use gpui::{App, Div, Hsla, InteractiveElement, Pixels, Stateful, Styled, div};
 
 use yororen_ui_core::headless::tree::TreeProps;
 use yororen_ui_core::theme::{ActiveTheme, Theme};

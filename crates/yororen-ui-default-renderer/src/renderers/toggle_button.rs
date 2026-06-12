@@ -2,8 +2,10 @@
 
 use std::sync::Arc;
 
-use gpui::{App, CursorStyle, Div, ElementId, FocusHandle, Hsla, InteractiveElement, ParentElement, Pixels,
-           Stateful, StatefulInteractiveElement, Styled, div, px};
+use gpui::{
+    App, CursorStyle, Div, ElementId, FocusHandle, Hsla, InteractiveElement, ParentElement, Pixels,
+    Stateful, StatefulInteractiveElement, Styled, div, px,
+};
 
 use yororen_ui_core::headless::icon::IconProps;
 use yororen_ui_core::headless::toggle_button::ToggleButtonProps;

@@ -104,10 +104,7 @@ mod tests {
     fn demo_keys_present_in_all_locales() {
         fn collect(raw: &str) -> std::collections::BTreeSet<String> {
             let map = parse_demo(raw);
-            map.values()
-                .keys()
-                .map(|k| format!("demo.{k}"))
-                .collect()
+            map.values().keys().map(|k| format!("demo.{k}")).collect()
         }
         let en = collect(RAW_EN);
         let zh = collect(RAW_ZH_CN);

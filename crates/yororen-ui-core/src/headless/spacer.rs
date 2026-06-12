@@ -1,7 +1,7 @@
 //! Headless `spacer` — flexible empty space. No state.
 
-use gpui::{App, Div, ElementId, InteractiveElement, Stateful};
 use crate::renderer::RendererContext;
+use gpui::{App, Div, ElementId, InteractiveElement, Stateful};
 
 #[derive(Clone, Debug)]
 pub struct SpacerProps {

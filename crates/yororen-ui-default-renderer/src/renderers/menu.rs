@@ -70,9 +70,7 @@ impl MenuRenderer for TokenMenuRenderer {
                     let row_bg = if is_highlighted {
                         item_hover
                     } else {
-                        theme
-                            .get_color("surface.base")
-                            .unwrap_or_default()
+                        theme.get_color("surface.base").unwrap_or_default()
                     };
                     let mut row: Stateful<Div> = div()
                         .id(ElementId::Name(format!("menu-item-{}", i).into()))

@@ -4,8 +4,8 @@ use std::sync::Arc;
 
 use gpui::{
     AnyElement, App, AppContext, CursorStyle, Div, Hsla, InteractiveElement, IntoElement,
-    MouseButton, ParentElement, Pixels, SharedString, Stateful, StatefulInteractiveElement,
-    Styled, Window, div, px,
+    MouseButton, ParentElement, Pixels, SharedString, Stateful, StatefulInteractiveElement, Styled,
+    Window, div, px,
 };
 
 use yororen_ui_core::headless::file_path_input::FilePathInputProps;
@@ -14,9 +14,7 @@ use yororen_ui_core::headless::text_input::TextInputState;
 use yororen_ui_core::headless::text_input_element::{
     TextInputElement, start_cursor_blink, wire_input_keyboard,
 };
-use yororen_ui_core::renderer::file_path_input::{
-    FilePathInputRenderState, FilePathInputRenderer,
-};
+use yororen_ui_core::renderer::file_path_input::{FilePathInputRenderState, FilePathInputRenderer};
 use yororen_ui_core::renderer::spec::Edges;
 use yororen_ui_core::theme::Theme;
 
@@ -80,12 +78,7 @@ impl TokenFilePathInputRenderer {
 }
 
 impl FilePathInputRenderer for TokenFilePathInputRenderer {
-    fn compose(
-        &self,
-        props: &FilePathInputProps,
-        cx: &mut App,
-        window: &mut Window,
-    ) -> AnyElement {
+    fn compose(&self, props: &FilePathInputProps, cx: &mut App, window: &mut Window) -> AnyElement {
         use yororen_ui_core::theme::ActiveTheme;
 
         let placeholder_str = props.placeholder.clone();
@@ -171,13 +164,7 @@ impl FilePathInputRenderer for TokenFilePathInputRenderer {
             })
             .track_focus(&focus_handle);
 
-        let keyed = wire_input_keyboard(
-            base,
-            state.clone(),
-            focus_handle.clone(),
-            disabled,
-            None,
-        );
+        let keyed = wire_input_keyboard(base, state.clone(), focus_handle.clone(), disabled, None);
 
         let on_browse_clone = on_browse.clone();
         let window_handle = window.window_handle();

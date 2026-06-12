@@ -73,5 +73,5 @@ pub mod toggle_button;
 pub mod tooltip;
 pub mod tree;
 pub mod tree_item;
-pub mod virtual_list;
 pub mod uniform_virtual_list;
+pub mod virtual_list;

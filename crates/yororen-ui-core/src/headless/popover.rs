@@ -5,7 +5,7 @@
 use std::sync::Arc;
 
 use gpui::{
-    App, AppContext, AnyElement, Bounds, Div, ElementId, Entity, InteractiveElement, Pixels, Size,
+    AnyElement, App, AppContext, Bounds, Div, ElementId, Entity, InteractiveElement, Pixels, Size,
     Stateful,
 };
 
@@ -172,8 +172,8 @@ impl PopoverProps {
     /// `state` entity and the supplied `trigger` / `content`.
     pub fn render(mut self, cx: &gpui::App) -> Stateful<Div> {
         use crate::renderer::RendererContext;
-        use crate::renderer::popover::PopoverRenderer;
         use crate::renderer::markers::Popover as PopoverMarker;
+        use crate::renderer::popover::PopoverRenderer;
 
         let r: &Arc<dyn PopoverRenderer> = cx
             .renderer_arc::<PopoverMarker, dyn PopoverRenderer>()

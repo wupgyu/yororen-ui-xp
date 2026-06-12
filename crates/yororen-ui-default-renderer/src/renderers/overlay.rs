@@ -11,8 +11,8 @@
 
 use std::sync::Arc;
 
-use gpui::{App, Div, Hsla, InteractiveElement, ParentElement, Stateful, Styled, div};
 use gpui::prelude::FluentBuilder;
+use gpui::{App, Div, Hsla, InteractiveElement, ParentElement, Stateful, Styled, div};
 
 use yororen_ui_core::headless::overlay::OverlayProps;
 use yororen_ui_core::theme::{ActiveTheme, Theme};

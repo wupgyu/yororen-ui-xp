@@ -53,6 +53,4 @@ pub use preset::{
 };
 
 pub use timing::{clamp01, parallel_progress, progress_from_elapsed, sequence_progress};
-pub use visibility::{
-    AnimatedPresenceState, AnimatedVisibility, AnimationPhase,
-};
+pub use visibility::{AnimatedPresenceState, AnimatedVisibility, AnimationPhase};

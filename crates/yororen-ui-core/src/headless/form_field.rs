@@ -3,8 +3,10 @@
 //! layer only owns the label, required flag, help and error
 //! strings.
 
-use gpui::{AnyElement, App, Div, ElementId, InteractiveElement, IntoElement, SharedString, Stateful};
 use crate::renderer::RendererContext;
+use gpui::{
+    AnyElement, App, Div, ElementId, InteractiveElement, IntoElement, SharedString, Stateful,
+};
 
 /// A labelled wrapper around a form input. The visual rendering
 /// (`[label]`, `[input]`, `[help]`, `[error]` vertical stack)

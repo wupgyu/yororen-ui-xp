@@ -84,28 +84,20 @@ impl DropdownMenuRenderer for TokenDropdownMenuRenderer {
                     state_for_close.update(cx, |s, _cx| s.close());
                 })
                 .child(c);
-            let distance = px(
-                theme
-                    .get_number("motion.slide_distance")
-                    .unwrap_or(10.0) as f32,
-            );
+            let distance = px(theme.get_number("motion.slide_distance").unwrap_or(10.0) as f32);
             // The animation wrapper is absolutely positioned at the
             // top-left of the outer relative container so the panel
             // inside keeps its original `top/left` offset.
             outer = outer.child(
-                gpui::deferred(
-                    div()
-                        .absolute()
-                        .top_0()
-                        .left_0()
-                        .child(AnimatedPresenceElement::new(
-                            props.state.clone(),
-                            (props.id.clone(), "body"),
-                            SlideDirection::Down,
-                            distance,
-                            panel,
-                        )),
-                )
+                gpui::deferred(div().absolute().top_0().left_0().child(
+                    AnimatedPresenceElement::new(
+                        props.state.clone(),
+                        (props.id.clone(), "body"),
+                        SlideDirection::Down,
+                        distance,
+                        panel,
+                    ),
+                ))
                 .with_priority(1),
             );
         }

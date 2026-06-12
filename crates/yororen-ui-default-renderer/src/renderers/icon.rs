@@ -6,7 +6,7 @@
 
 use std::sync::Arc;
 
-use gpui::{InteractiveElement, AnyElement, App, Hsla, IntoElement, Pixels, Styled, svg};
+use gpui::{AnyElement, App, Hsla, InteractiveElement, IntoElement, Pixels, Styled, svg};
 
 use yororen_ui_core::headless::icon::{IconProps, IconSource};
 use yororen_ui_core::theme::{ActiveTheme, Theme};
@@ -27,7 +27,9 @@ impl TokenIconRenderer {
         if state.has_custom_color {
             return gpui::rgb(0x0A0A0A).into();
         }
-        theme.get_color("content.primary").unwrap_or_else(|| gpui::rgb(0x0A0A0A).into())
+        theme
+            .get_color("content.primary")
+            .unwrap_or_else(|| gpui::rgb(0x0A0A0A).into())
     }
 }
 

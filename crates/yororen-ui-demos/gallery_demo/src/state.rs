@@ -271,7 +271,11 @@ impl GalleryApp {
             // infinite-loading demo (callback bumps by +100 each
             // time the visible end is within 50 of total) triggers
             // quickly on first scroll-to-bottom.
-            list_controller: VirtualListController::new(100, gpui::ListAlignment::Top, gpui::px(20.)),
+            list_controller: VirtualListController::new(
+                100,
+                gpui::ListAlignment::Top,
+                gpui::px(20.),
+            ),
             vl_visible_range: None,
             vl_item_count: 100,
             vl_load_count: 0,

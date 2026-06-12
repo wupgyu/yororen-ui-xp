@@ -5,7 +5,10 @@
 
 use std::sync::Arc;
 
-use gpui::{InteractiveElement, App, CursorStyle, Div, Hsla, ParentElement, Pixels, SharedString, Stateful, Styled, div, px};
+use gpui::{
+    App, CursorStyle, Div, Hsla, InteractiveElement, ParentElement, Pixels, SharedString, Stateful,
+    Styled, div, px,
+};
 
 use yororen_ui_core::headless::table::{TableColumn, TableProps};
 use yororen_ui_core::theme::{ActiveTheme, Theme};
@@ -34,7 +37,9 @@ impl TokenTableRenderer {
         px(theme.get_number("tokens.spacing.inset_sm").unwrap_or(8.0) as f32)
     }
     pub fn font_size(&self, _state: &TableRenderState, theme: &Theme) -> Pixels {
-        px(theme.get_number("tokens.typography.font_size_sm").unwrap_or(12.0) as f32)
+        px(theme
+            .get_number("tokens.typography.font_size_sm")
+            .unwrap_or(12.0) as f32)
     }
     pub fn border_radius(&self, _state: &TableRenderState, theme: &Theme) -> Pixels {
         px(theme.get_number("tokens.radii.sm").unwrap_or(4.0) as f32)

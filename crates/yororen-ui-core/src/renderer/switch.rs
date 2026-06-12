@@ -21,10 +21,5 @@ pub struct SwitchRenderState {
 
 pub trait SwitchRenderer: Any + Send + Sync {
     /// Build the full `Stateful<Div>` for a switch.
-    fn compose(
-        &self,
-        props: &SwitchProps,
-        focus_handle: &FocusHandle,
-        cx: &App,
-    ) -> Stateful<Div>;
+    fn compose(&self, props: &SwitchProps, focus_handle: &FocusHandle, cx: &App) -> Stateful<Div>;
 }

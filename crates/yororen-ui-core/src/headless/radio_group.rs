@@ -1,8 +1,8 @@
 //! Headless `radio_group` — owns a `name` and a current selection
 //! index. Keyboard navigation lives in the renderer.
 
-use std::sync::Arc;
 use crate::renderer::RendererContext;
+use std::sync::Arc;
 
 use gpui::{App, Div, ElementId, InteractiveElement, SharedString, Stateful};
 

@@ -56,7 +56,10 @@ impl fmt::Debug for ButtonGroupProps {
             .field("id", &self.id)
             .field("orientation", &self.orientation)
             .field("attached", &self.attached)
-            .field("children", &format_args!("[{} children]", self.children.len()))
+            .field(
+                "children",
+                &format_args!("[{} children]", self.children.len()),
+            )
             .finish()
     }
 }

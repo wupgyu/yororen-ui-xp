@@ -117,10 +117,7 @@ impl CheckboxRenderer for TokenCheckboxRenderer {
             },
             theme,
         );
-        let check = div()
-            .bg(check_color)
-            .size(check_size)
-            .rounded(px(2.));
+        let check = div().bg(check_color).size(check_size).rounded(px(2.));
         let animated_check =
             AnimatedOpacityElement::new((props.id.clone(), "check"), props.checked, check);
 

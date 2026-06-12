@@ -113,8 +113,8 @@ impl SplitButtonProps {
     /// body composed of `panel` + `list_item` renderers.
     pub fn render(self, cx: &gpui::App) -> Stateful<Div> {
         use crate::renderer::RendererContext;
-        use crate::renderer::split_button::SplitButtonRenderer;
         use crate::renderer::markers::SplitButton as SplitButtonMarker;
+        use crate::renderer::split_button::SplitButtonRenderer;
 
         let r: &Arc<dyn SplitButtonRenderer> = cx
             .renderer_arc::<SplitButtonMarker, dyn SplitButtonRenderer>()

@@ -71,12 +71,7 @@ impl TokenRadioRenderer {
 }
 
 impl RadioRenderer for TokenRadioRenderer {
-    fn compose(
-        &self,
-        props: &RadioProps,
-        focus_handle: &FocusHandle,
-        cx: &App,
-    ) -> Stateful<Div> {
+    fn compose(&self, props: &RadioProps, focus_handle: &FocusHandle, cx: &App) -> Stateful<Div> {
         use yororen_ui_core::theme::ActiveTheme;
         let theme = cx.theme();
         let state = RadioRenderState {

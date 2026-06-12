@@ -53,7 +53,9 @@ use gpui::{
     StatefulInteractiveElement, Styled, deferred, div, hsla, px,
 };
 
-use yororen_ui::notification::center::{Notification, NotificationCenter, NotificationId, ToastKind};
+use yororen_ui::notification::center::{
+    Notification, NotificationCenter, NotificationId, ToastKind,
+};
 use yororen_ui::theme::ActiveTheme;
 
 use crate::state::GalleryApp;
@@ -157,7 +159,11 @@ pub fn render(cx: &mut Context<GalleryApp>) -> impl IntoElement {
 /// the kind color with `kind_fg` as the text color, and the
 /// close (×) button is on the same row as the title (right
 /// side).
-fn toast_card(cx: &mut Context<GalleryApp>, n: Notification, id: NotificationId) -> gpui::Stateful<gpui::Div> {
+fn toast_card(
+    cx: &mut Context<GalleryApp>,
+    n: Notification,
+    id: NotificationId,
+) -> gpui::Stateful<gpui::Div> {
     let kind_path = match n.kind {
         ToastKind::Success => "status.success",
         ToastKind::Warning => "status.warning",
@@ -172,10 +178,18 @@ fn toast_card(cx: &mut Context<GalleryApp>, n: Notification, id: NotificationId)
     // text tone in that case.
     let kind_bg = theme
         .get_color(&format!("{kind_path}.bg"))
-        .unwrap_or_else(|| theme.get_color("surface.raised").unwrap_or_else(default_surface));
+        .unwrap_or_else(|| {
+            theme
+                .get_color("surface.raised")
+                .unwrap_or_else(default_surface)
+        });
     let kind_fg = theme
         .get_color(&format!("{kind_path}.fg"))
-        .unwrap_or_else(|| theme.get_color("content.primary").unwrap_or_else(default_text));
+        .unwrap_or_else(|| {
+            theme
+                .get_color("content.primary")
+                .unwrap_or_else(default_text)
+        });
     // The border is a slightly darkened / lightened version of
     // the kind background, so the card has a visible edge on
     // both pastel (default) and saturated (brutalism) palettes.
@@ -202,11 +216,7 @@ fn toast_card(cx: &mut Context<GalleryApp>, n: Notification, id: NotificationId)
         .cursor_pointer()
         .text_color(close_fg)
         .opacity(0.55)
-        .hover(move |this| {
-            this.bg(close_bg_hover)
-                .text_color(close_fg)
-                .opacity(1.0)
-        })
+        .hover(move |this| this.bg(close_bg_hover).text_color(close_fg).opacity(1.0))
         .on_click(move |_ev, _window, cx| {
             center.dismiss(id, cx);
         })
@@ -227,12 +237,7 @@ fn toast_card(cx: &mut Context<GalleryApp>, n: Notification, id: NotificationId)
                 .child(title),
         );
     }
-    text_column = text_column.child(
-        div()
-            .text_sm()
-            .text_color(kind_fg)
-            .child(n.message.clone()),
-    );
+    text_column = text_column.child(div().text_sm().text_color(kind_fg).child(n.message.clone()));
 
     // Title row: [title column] [spacer] [close]. This is the
     // row the user asked the close button to share with the

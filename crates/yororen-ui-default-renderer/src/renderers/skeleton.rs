@@ -175,8 +175,7 @@ impl Element for SkeletonPulseElement {
             // (h=12, radius=9999) the arcs intersect inside the
             // 12px space, leaving almost nothing visible. The
             // clamp gives us a clean pill at half the height.
-            corner_radii: Corners::all(self.radius)
-                .clamp_radii_for_quad_size(bounds.size),
+            corner_radii: Corners::all(self.radius).clamp_radii_for_quad_size(bounds.size),
             background: color.into(),
             border_color: hsla(0., 0., 0., 0.),
             border_widths: Edges::default(),

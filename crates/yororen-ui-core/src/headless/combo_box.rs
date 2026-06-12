@@ -6,7 +6,8 @@ use std::sync::Arc;
 
 use gpui::{
     App, AppContext, Bounds, Context, Div, ElementId, Entity, EntityInputHandler, FocusHandle,
-    Focusable, InteractiveElement, Pixels, SharedString, ShapedLine, Stateful, UTF16Selection, Window,
+    Focusable, InteractiveElement, Pixels, ShapedLine, SharedString, Stateful, UTF16Selection,
+    Window,
 };
 
 use crate::animation::{AnimatedPresenceState, AnimatedVisibility};
@@ -403,7 +404,8 @@ impl EntityInputHandler for ComboBoxState {
         _cx: &mut Context<Self>,
     ) {
         let range = range_utf16.map(|r| TextInputCore::range_from_utf16(&self.text, &r));
-        let new_sel = new_selected_range_utf16.map(|r| TextInputCore::range_from_utf16(&self.text, &r));
+        let new_sel =
+            new_selected_range_utf16.map(|r| TextInputCore::range_from_utf16(&self.text, &r));
         self.core
             .replace_and_mark_text_in_range_bytes(&mut self.text, range, new_text, new_sel);
     }

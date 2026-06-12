@@ -101,9 +101,8 @@ impl<S: AnimatedPresenceState> Element for AnimatedPresenceElement<S> {
         // so the entity always reflects the current progress and the
         // app can query `is_visible()` to decide whether to keep the
         // overlay mounted.
-        let (progress, target, _is_animating, enter_config, exit_config) = self.state.update(
-            cx,
-            |s, _cx| {
+        let (progress, target, _is_animating, enter_config, exit_config) =
+            self.state.update(cx, |s, _cx| {
                 let v = s.visibility_mut();
                 let target = v.target;
 
@@ -125,8 +124,7 @@ impl<S: AnimatedPresenceState> Element for AnimatedPresenceElement<S> {
                     v.enter_config.clone(),
                     v.exit_config.clone(),
                 )
-            },
-        );
+            });
 
         // Request another frame whenever progress changed. This keeps
         // the animation running while it is active, and schedules one
@@ -147,7 +145,10 @@ impl<S: AnimatedPresenceState> Element for AnimatedPresenceElement<S> {
         let distance_f: f32 = self.distance.into();
         let translate = distance_f * (1.0 - eased);
 
-        let child = self.child.take().expect("AnimatedPresenceElement::request_layout called once");
+        let child = self
+            .child
+            .take()
+            .expect("AnimatedPresenceElement::request_layout called once");
         let mut styled = child.id(self.id.clone()).opacity(progress);
 
         match self.direction {
@@ -448,7 +449,10 @@ impl Element for AnimatedMarginElement {
             .child
             .take()
             .expect("AnimatedMarginElement::request_layout called once");
-        let mut element = child.id(self.id.clone()).ml(px(translate)).into_any_element();
+        let mut element = child
+            .id(self.id.clone())
+            .ml(px(translate))
+            .into_any_element();
         (element.request_layout(window, cx), element)
     }
 

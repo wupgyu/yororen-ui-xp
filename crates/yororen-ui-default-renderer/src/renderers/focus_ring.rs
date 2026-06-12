@@ -4,8 +4,8 @@ use std::sync::Arc;
 
 use gpui::{BoxShadow, Hsla, InteractiveElement, Pixels, Stateful, Styled, div, point};
 
-pub use yororen_ui_core::renderer::focus_ring::{FocusRingRenderState, FocusRingRenderer};
 use yororen_ui_core::headless::focus_ring::FocusRingProps;
+pub use yororen_ui_core::renderer::focus_ring::{FocusRingRenderState, FocusRingRenderer};
 use yororen_ui_core::theme::Theme;
 
 pub struct TokenFocusRingRenderer;

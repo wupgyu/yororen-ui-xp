@@ -61,8 +61,8 @@ impl ProgressBarProps {
     /// element id and the renderer-built track + fill.
     pub fn render(self, cx: &gpui::App) -> Stateful<Div> {
         use crate::renderer::RendererContext;
-        use crate::renderer::progress::ProgressBarRenderer;
         use crate::renderer::markers::ProgressBar as ProgressBarMarker;
+        use crate::renderer::progress::ProgressBarRenderer;
 
         let r: &Arc<dyn ProgressBarRenderer> = cx
             .renderer_arc::<ProgressBarMarker, dyn ProgressBarRenderer>()

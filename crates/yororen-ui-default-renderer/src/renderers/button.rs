@@ -145,12 +145,7 @@ impl TokenButtonRenderer {
 }
 
 impl ButtonRenderer for TokenButtonRenderer {
-    fn compose(
-        &self,
-        props: &ButtonProps,
-        focus_handle: &FocusHandle,
-        cx: &App,
-    ) -> Stateful<Div> {
+    fn compose(&self, props: &ButtonProps, focus_handle: &FocusHandle, cx: &App) -> Stateful<Div> {
         let theme = cx.theme();
         let state = ButtonRenderState {
             variant: props.variant,

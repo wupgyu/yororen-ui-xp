@@ -18,8 +18,8 @@
 
 use gpui::App;
 
-use yororen_ui_brutalism_renderer as brutalism_renderer;
 use yororen_ui::theme::Theme;
+use yororen_ui_brutalism_renderer as brutalism_renderer;
 use yororen_ui_default_renderer as default_renderer;
 
 /// Which renderer to install. Switched at runtime by the toolbar.
@@ -44,12 +44,10 @@ pub enum DarkMode {
     Dark,
 }
 
-const BRUTAL_LIGHT_JSON: &str = include_str!(
-    "../../../yororen-ui-brutalism-renderer/themes/brutalism-light.json"
-);
-const BRUTAL_DARK_JSON: &str = include_str!(
-    "../../../yororen-ui-brutalism-renderer/themes/brutalism-dark.json"
-);
+const BRUTAL_LIGHT_JSON: &str =
+    include_str!("../../../yororen-ui-brutalism-renderer/themes/brutalism-light.json");
+const BRUTAL_DARK_JSON: &str =
+    include_str!("../../../yororen-ui-brutalism-renderer/themes/brutalism-dark.json");
 
 fn brutalism_theme(dark: DarkMode) -> Theme {
     let json = if matches!(dark, DarkMode::Dark) {

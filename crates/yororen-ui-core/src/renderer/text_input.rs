@@ -32,10 +32,5 @@ pub struct TextInputRenderState {
 pub trait TextInputRenderer: Any + Send + Sync {
     /// Build the full `AnyElement` for the input (wrapper +
     /// inner `TextInputElement` + keymap + focus tracking).
-    fn compose(
-        &self,
-        props: &TextInputProps,
-        cx: &mut App,
-        window: &mut Window,
-    ) -> AnyElement;
+    fn compose(&self, props: &TextInputProps, cx: &mut App, window: &mut Window) -> AnyElement;
 }

@@ -70,9 +70,7 @@ impl BrutalSwitchRenderer {
             // Use a clearly visible color (content.tertiary)
             // for the unchecked hover so the track is not lost
             // against the page background (`surface.base`).
-            theme
-                .get_color("content.tertiary")
-                .unwrap_or(BRUTAL_BORDER)
+            theme.get_color("content.tertiary").unwrap_or(BRUTAL_BORDER)
         }
     }
     pub fn track_active_bg(&self, state: &SwitchRenderState, theme: &Theme) -> Hsla {
@@ -129,16 +127,22 @@ impl SwitchRenderer for BrutalSwitchRenderer {
 
         // Cross-fade the knob colour between unchecked and checked
         // states while it slides.
-        let unchecked_knob_color = self.knob_bg(&SwitchRenderState { checked: false, ..state }, theme);
-        let checked_knob_color = self.knob_bg(&SwitchRenderState { checked: true, ..state }, theme);
-        let knob_off = div()
-            .absolute()
-            .inset_0()
-            .bg(unchecked_knob_color);
-        let knob_on = div()
-            .absolute()
-            .inset_0()
-            .bg(checked_knob_color);
+        let unchecked_knob_color = self.knob_bg(
+            &SwitchRenderState {
+                checked: false,
+                ..state
+            },
+            theme,
+        );
+        let checked_knob_color = self.knob_bg(
+            &SwitchRenderState {
+                checked: true,
+                ..state
+            },
+            theme,
+        );
+        let knob_off = div().absolute().inset_0().bg(unchecked_knob_color);
+        let knob_on = div().absolute().inset_0().bg(checked_knob_color);
         let knob_inner = div()
             .relative()
             .size(knob_size)
@@ -525,7 +529,11 @@ impl BrutalSliderRenderer {
 }
 
 impl SliderRenderer for BrutalSliderRenderer {
-    fn compose(&self, props: &yororen_ui_core::headless::slider::SliderProps, cx: &App) -> SliderRenderOutput {
+    fn compose(
+        &self,
+        props: &yororen_ui_core::headless::slider::SliderProps,
+        cx: &App,
+    ) -> SliderRenderOutput {
         let theme = cx.theme();
         let state = SliderRenderState {
             disabled: props.disabled,

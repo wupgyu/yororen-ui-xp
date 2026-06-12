@@ -79,12 +79,7 @@ impl TokenComboBoxRenderer {
 }
 
 impl ComboBoxRenderer for TokenComboBoxRenderer {
-    fn compose(
-        &self,
-        props: &ComboBoxProps,
-        cx: &mut App,
-        window: &mut Window,
-    ) -> AnyElement {
+    fn compose(&self, props: &ComboBoxProps, cx: &mut App, window: &mut Window) -> AnyElement {
         use yororen_ui_core::theme::ActiveTheme;
 
         let theme = cx.theme().clone();
@@ -123,7 +118,9 @@ impl ComboBoxRenderer for TokenComboBoxRenderer {
         if focused {
             start_cursor_blink(props.state.clone(), window, cx);
         } else {
-            props.state.update(cx, |s, _cx| s.core.cursor_visible = true);
+            props
+                .state
+                .update(cx, |s, _cx| s.core.cursor_visible = true);
         }
 
         let display_str: String = if !text.is_empty() {
@@ -270,29 +267,20 @@ impl ComboBoxRenderer for TokenComboBoxRenderer {
                 dropdown = dropdown.child(item);
             }
 
-            let distance = px(
-                theme
-                    .get_number("motion.slide_distance")
-                    .unwrap_or(10.0) as f32,
-            );
+            let distance = px(theme.get_number("motion.slide_distance").unwrap_or(10.0) as f32);
             // The animation wrapper is absolutely positioned at the
             // top-left of the outer relative container so the dropdown
             // inside keeps its original `top/left/right` offsets.
             outer = outer.child(
-                gpui::deferred(
-                    div()
-                        .absolute()
-                        .top_0()
-                        .left_0()
-                        .right_0()
-                        .child(AnimatedPresenceElement::new(
-                            props.state.clone(),
-                            (props.id.clone(), "dropdown"),
-                            SlideDirection::Down,
-                            distance,
-                            div().child(dropdown),
-                        )),
-                )
+                gpui::deferred(div().absolute().top_0().left_0().right_0().child(
+                    AnimatedPresenceElement::new(
+                        props.state.clone(),
+                        (props.id.clone(), "dropdown"),
+                        SlideDirection::Down,
+                        distance,
+                        div().child(dropdown),
+                    ),
+                ))
                 .with_priority(1),
             );
         }

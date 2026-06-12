@@ -9,10 +9,11 @@ use std::sync::Arc;
 use gpui::{
     AnyElement, App, AppContext, CursorStyle, Div, ElementId, Hsla, InteractiveElement,
     IntoElement, KeyDownEvent, MouseButton, MouseDownEvent, MouseMoveEvent, ParentElement, Pixels,
-    SharedString, Stateful, StatefulInteractiveElement, Styled, Window, div, hsla, prelude::FluentBuilder,
-    px,
+    SharedString, Stateful, StatefulInteractiveElement, Styled, Window, div, hsla,
+    prelude::FluentBuilder, px,
 };
 use yororen_ui_core::action_handler;
+use yororen_ui_core::animation::SlideDirection;
 use yororen_ui_core::headless::file_path_input::FilePathInputProps;
 use yororen_ui_core::headless::icon::{IconSource, icon};
 use yororen_ui_core::headless::keybinding_input::{KeybindingInputMode, KeybindingInputProps};
@@ -28,7 +29,6 @@ use yororen_ui_core::headless::text_input::{
 use yororen_ui_core::headless::text_input_element::{
     TextInputElement, start_cursor_blink, wire_input_keyboard,
 };
-use yororen_ui_core::animation::SlideDirection;
 use yororen_ui_core::renderer::spec::Edges;
 use yororen_ui_core::theme::ActiveTheme;
 use yororen_ui_core::theme::Theme;
@@ -99,12 +99,7 @@ pub use yororen_ui_core::renderer::text_input::{TextInputRenderState, TextInputR
 pub struct BrutalTextInputRenderer;
 
 impl TextInputRenderer for BrutalTextInputRenderer {
-    fn compose(
-        &self,
-        props: &TextInputProps,
-        cx: &mut App,
-        window: &mut Window,
-    ) -> AnyElement {
+    fn compose(&self, props: &TextInputProps, cx: &mut App, window: &mut Window) -> AnyElement {
         let placeholder_str = props.placeholder.clone();
         let max_length = props.max_length;
         let disabled = props.disabled;
@@ -234,12 +229,7 @@ pub use yororen_ui_core::renderer::text_area::{TextAreaRenderState, TextAreaRend
 pub struct BrutalTextAreaRenderer;
 
 impl TextAreaRenderer for BrutalTextAreaRenderer {
-    fn compose(
-        &self,
-        props: &TextAreaProps,
-        cx: &mut App,
-        window: &mut Window,
-    ) -> AnyElement {
+    fn compose(&self, props: &TextAreaProps, cx: &mut App, window: &mut Window) -> AnyElement {
         let placeholder_str = props.placeholder.clone();
         let disabled = props.disabled;
         let max_length = props.max_length;
@@ -332,13 +322,33 @@ impl TextAreaRenderer for BrutalTextAreaRenderer {
 
         let mut keyed: Stateful<Div> = base
             .key_context("UITextInput")
-            .on_action(action_handler!(state.clone(), disabled, Backspace, backspace))
+            .on_action(action_handler!(
+                state.clone(),
+                disabled,
+                Backspace,
+                backspace
+            ))
             .on_action(action_handler!(state.clone(), disabled, Delete, delete))
             .on_action(action_handler!(state.clone(), disabled, Left, left))
             .on_action(action_handler!(state.clone(), disabled, Right, right))
-            .on_action(action_handler!(state.clone(), disabled, SelectLeft, select_left))
-            .on_action(action_handler!(state.clone(), disabled, SelectRight, select_right))
-            .on_action(action_handler!(state.clone(), disabled, SelectAll, select_all))
+            .on_action(action_handler!(
+                state.clone(),
+                disabled,
+                SelectLeft,
+                select_left
+            ))
+            .on_action(action_handler!(
+                state.clone(),
+                disabled,
+                SelectRight,
+                select_right
+            ))
+            .on_action(action_handler!(
+                state.clone(),
+                disabled,
+                SelectAll,
+                select_all
+            ))
             .on_action(action_handler!(state.clone(), disabled, Home, home))
             .on_action(action_handler!(state.clone(), disabled, End, end))
             .on_action(action_handler!(
@@ -399,17 +409,14 @@ impl TextAreaRenderer for BrutalTextAreaRenderer {
 // PasswordInput
 // =====================================================================
 
-pub use yororen_ui_core::renderer::password_input::{PasswordInputRenderState, PasswordInputRenderer};
+pub use yororen_ui_core::renderer::password_input::{
+    PasswordInputRenderState, PasswordInputRenderer,
+};
 
 pub struct BrutalPasswordInputRenderer;
 
 impl PasswordInputRenderer for BrutalPasswordInputRenderer {
-    fn compose(
-        &self,
-        props: &PasswordInputProps,
-        cx: &mut App,
-        window: &mut Window,
-    ) -> AnyElement {
+    fn compose(&self, props: &PasswordInputProps, cx: &mut App, window: &mut Window) -> AnyElement {
         let placeholder_str = props.placeholder.clone();
         let disabled = props.disabled;
         let max_length = props.max_length;
@@ -509,12 +516,7 @@ pub use yororen_ui_core::renderer::number_input::{NumberInputRenderState, Number
 pub struct BrutalNumberInputRenderer;
 
 impl NumberInputRenderer for BrutalNumberInputRenderer {
-    fn compose(
-        &self,
-        props: &NumberInputProps,
-        cx: &mut App,
-        window: &mut Window,
-    ) -> AnyElement {
+    fn compose(&self, props: &NumberInputProps, cx: &mut App, window: &mut Window) -> AnyElement {
         let placeholder_str = props.placeholder.clone();
         let disabled = props.disabled;
         let on_change = props.on_change.clone();
@@ -616,13 +618,7 @@ impl NumberInputRenderer for BrutalNumberInputRenderer {
                 CursorStyle::IBeam
             })
             .track_focus(&focus_handle);
-        let keyed = wire_input_keyboard(
-            base,
-            state.clone(),
-            focus_handle.clone(),
-            disabled,
-            None,
-        );
+        let keyed = wire_input_keyboard(base, state.clone(), focus_handle.clone(), disabled, None);
 
         let state_for_dec = state.clone();
         let state_for_inc = state.clone();
@@ -706,12 +702,7 @@ pub use yororen_ui_core::renderer::file_path_input::{
 pub struct BrutalFilePathInputRenderer;
 
 impl FilePathInputRenderer for BrutalFilePathInputRenderer {
-    fn compose(
-        &self,
-        props: &FilePathInputProps,
-        cx: &mut App,
-        window: &mut Window,
-    ) -> AnyElement {
+    fn compose(&self, props: &FilePathInputProps, cx: &mut App, window: &mut Window) -> AnyElement {
         let placeholder_str = props.placeholder.clone();
         let disabled = props.disabled;
         let on_change = props.on_change.clone();
@@ -806,13 +797,7 @@ impl FilePathInputRenderer for BrutalFilePathInputRenderer {
             })
             .track_focus(&focus_handle);
 
-        let keyed = wire_input_keyboard(
-            base,
-            state.clone(),
-            focus_handle.clone(),
-            disabled,
-            None,
-        );
+        let keyed = wire_input_keyboard(base, state.clone(), focus_handle.clone(), disabled, None);
 
         let on_browse_clone = on_browse.clone();
         let window_handle = window.window_handle();
@@ -911,12 +896,7 @@ pub use yororen_ui_core::renderer::search_input::{SearchInputRenderState, Search
 pub struct BrutalSearchInputRenderer;
 
 impl SearchInputRenderer for BrutalSearchInputRenderer {
-    fn compose(
-        &self,
-        props: &SearchInputProps,
-        cx: &mut App,
-        window: &mut Window,
-    ) -> AnyElement {
+    fn compose(&self, props: &SearchInputProps, cx: &mut App, window: &mut Window) -> AnyElement {
         let placeholder_str = props.placeholder.clone();
         let disabled = props.disabled;
         let on_change = props.on_change.clone();
@@ -1144,11 +1124,7 @@ impl BrutalSelectRenderer {
 }
 
 impl SelectRenderer for BrutalSelectRenderer {
-    fn compose(
-        &self,
-        props: &yororen_ui_core::headless::select::SelectProps,
-        cx: &App,
-    ) -> Div {
+    fn compose(&self, props: &yororen_ui_core::headless::select::SelectProps, cx: &App) -> Div {
         use yororen_ui_core::theme::ActiveTheme;
         let theme = cx.theme();
         let state_read = props.state.read(cx);
@@ -1251,20 +1227,22 @@ impl SelectRenderer for BrutalSelectRenderer {
                 let state_for_opt = props.state.clone();
                 let is_selected = value.as_ref() == Some(&opt.value);
                 let item_bg = if is_selected {
-                    theme.get_color("action.primary.bg").unwrap_or(BRUTAL_BORDER)
+                    theme
+                        .get_color("action.primary.bg")
+                        .unwrap_or(BRUTAL_BORDER)
                 } else {
                     gpui::hsla(0.0, 0.0, 0.0, 0.0)
                 };
                 let hover_bg = theme.get_color("surface.hover").unwrap_or(BRUTAL_BORDER);
                 let item_fg = if is_selected {
-                    theme.get_color("action.primary.fg").unwrap_or(BRUTAL_BORDER)
+                    theme
+                        .get_color("action.primary.fg")
+                        .unwrap_or(BRUTAL_BORDER)
                 } else {
                     theme.get_color("content.primary").unwrap_or(BRUTAL_BORDER)
                 };
                 let mut item: Stateful<gpui::Div> = gpui::div()
-                    .id(ElementId::Name(
-                        format!("brutal-select-opt-{}", i).into(),
-                    ))
+                    .id(ElementId::Name(format!("brutal-select-opt-{}", i).into()))
                     .px(px(8.))
                     .py(px(6.))
                     .rounded(px(4.))
@@ -1293,26 +1271,17 @@ impl SelectRenderer for BrutalSelectRenderer {
             // wrapper is absolutely positioned at the top-left of the
             // outer relative container so the dropdown keeps its
             // original `top/left/right` offsets.
-            let distance = px(
-                theme
-                    .get_number("motion.slide_distance")
-                    .unwrap_or(10.0) as f32,
-            );
+            let distance = px(theme.get_number("motion.slide_distance").unwrap_or(10.0) as f32);
             outer = outer.child(
-                gpui::deferred(
-                    gpui::div()
-                        .absolute()
-                        .top_0()
-                        .left_0()
-                        .right_0()
-                        .child(AnimatedPresenceElement::new(
-                            props.state.clone(),
-                            (props.id.clone(), "dropdown"),
-                            SlideDirection::Down,
-                            distance,
-                            gpui::div().child(dropdown),
-                        )),
-                )
+                gpui::deferred(gpui::div().absolute().top_0().left_0().right_0().child(
+                    AnimatedPresenceElement::new(
+                        props.state.clone(),
+                        (props.id.clone(), "dropdown"),
+                        SlideDirection::Down,
+                        distance,
+                        gpui::div().child(dropdown),
+                    ),
+                ))
                 .with_priority(1),
             );
         }
@@ -1418,7 +1387,9 @@ impl ComboBoxRenderer for BrutalComboBoxRenderer {
         if focused {
             start_cursor_blink(props.state.clone(), window, cx);
         } else {
-            props.state.update(cx, |s, _cx| s.core.cursor_visible = true);
+            props
+                .state
+                .update(cx, |s, _cx| s.core.cursor_visible = true);
         }
 
         let display_str: String = if !text.is_empty() {
@@ -1532,13 +1503,17 @@ impl ComboBoxRenderer for BrutalComboBoxRenderer {
                 let state_for_opt = props.state.clone();
                 let is_selected = value.as_ref() == Some(&opt.value);
                 let item_bg = if is_selected {
-                    theme.get_color("action.primary.bg").unwrap_or(BRUTAL_BORDER)
+                    theme
+                        .get_color("action.primary.bg")
+                        .unwrap_or(BRUTAL_BORDER)
                 } else {
                     gpui::hsla(0.0, 0.0, 0.0, 0.0)
                 };
                 let hover_bg = theme.get_color("surface.hover").unwrap_or(BRUTAL_BORDER);
                 let item_fg = if is_selected {
-                    theme.get_color("action.primary.fg").unwrap_or(BRUTAL_BORDER)
+                    theme
+                        .get_color("action.primary.fg")
+                        .unwrap_or(BRUTAL_BORDER)
                 } else {
                     theme.get_color("content.primary").unwrap_or(BRUTAL_BORDER)
                 };
@@ -1575,26 +1550,17 @@ impl ComboBoxRenderer for BrutalComboBoxRenderer {
             // The animation wrapper is absolutely positioned at the
             // top-left of the outer relative container so the dropdown
             // inside keeps its original `top/left/right` offsets.
-            let distance = px(
-                theme
-                    .get_number("motion.slide_distance")
-                    .unwrap_or(10.0) as f32,
-            );
+            let distance = px(theme.get_number("motion.slide_distance").unwrap_or(10.0) as f32);
             outer = outer.child(
-                gpui::deferred(
-                    gpui::div()
-                        .absolute()
-                        .top_0()
-                        .left_0()
-                        .right_0()
-                        .child(AnimatedPresenceElement::new(
-                            props.state.clone(),
-                            (props.id.clone(), "dropdown"),
-                            SlideDirection::Down,
-                            distance,
-                            gpui::div().child(dropdown),
-                        )),
-                )
+                gpui::deferred(gpui::div().absolute().top_0().left_0().right_0().child(
+                    AnimatedPresenceElement::new(
+                        props.state.clone(),
+                        (props.id.clone(), "dropdown"),
+                        SlideDirection::Down,
+                        distance,
+                        gpui::div().child(dropdown),
+                    ),
+                ))
                 .with_priority(1),
             );
         }
@@ -1677,13 +1643,8 @@ impl KeybindingInputRenderer for BrutalKeybindingInputRenderer {
             })
             .track_focus(&focus_handle);
 
-        let mut keyed: Stateful<Div> = wire_input_keyboard(
-            base,
-            state.clone(),
-            focus_handle.clone(),
-            disabled,
-            None,
-        );
+        let mut keyed: Stateful<Div> =
+            wire_input_keyboard(base, state.clone(), focus_handle.clone(), disabled, None);
 
         if mode == KeybindingInputMode::Capturing && !disabled {
             let state_for_capture = state.clone();

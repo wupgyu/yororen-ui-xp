@@ -2,8 +2,8 @@
 //! `Card`.
 
 use gpui::{
-    App, AppContext, Context, CursorStyle, Div, Hsla, InteractiveElement, IntoElement, ParentElement,
-    Pixels, Render, StatefulInteractiveElement, Styled, Window, div, px,
+    App, AppContext, Context, CursorStyle, Div, Hsla, InteractiveElement, IntoElement,
+    ParentElement, Pixels, Render, StatefulInteractiveElement, Styled, Window, div, px,
 };
 use yororen_ui_core::renderer::spec::Edges;
 use yororen_ui_core::theme::{ActiveTheme, Theme};
@@ -94,11 +94,9 @@ impl TooltipRenderer for BrutalTooltipRenderer {
         let pad = self.padding(&state, theme);
         let fs = self.font_size(&state, theme);
         let r = self.border_radius(&state, theme);
-        let max_w = px(
-            theme
-                .get_number("tokens.control.tooltip.max_width")
-                .unwrap_or(240.0) as f32,
-        );
+        let max_w = px(theme
+            .get_number("tokens.control.tooltip.max_width")
+            .unwrap_or(240.0) as f32);
 
         // The trigger is wrapped in a `Stateful<Div>` so we can attach
         // gpui's `hoverable_tooltip`. The floating panel is created by
@@ -108,23 +106,20 @@ impl TooltipRenderer for BrutalTooltipRenderer {
         if let Some(t) = props.trigger.take() {
             let text = props.text.clone();
             let trigger_id = format!("{}-trigger", props.id);
-            outer = outer.child(
-                gpui::div()
-                    .id(trigger_id)
-                    .child(t)
-                    .hoverable_tooltip(move |_window, cx| {
-                        cx.new(|_cx| BrutalTooltipView {
-                            text: text.clone(),
-                            bg,
-                            fg,
-                            pad_top: pad.top,
-                            font_size: fs,
-                            border_radius: r,
-                            max_width: max_w,
-                        })
-                        .into()
-                    }),
-            );
+            outer = outer.child(gpui::div().id(trigger_id).child(t).hoverable_tooltip(
+                move |_window, cx| {
+                    cx.new(|_cx| BrutalTooltipView {
+                        text: text.clone(),
+                        bg,
+                        fg,
+                        pad_top: pad.top,
+                        font_size: fs,
+                        border_radius: r,
+                        max_width: max_w,
+                    })
+                    .into()
+                },
+            ));
         }
 
         outer
@@ -184,11 +179,7 @@ impl BrutalAvatarRenderer {
 }
 
 impl AvatarRenderer for BrutalAvatarRenderer {
-    fn compose(
-        &self,
-        props: &yororen_ui_core::headless::avatar::AvatarProps,
-        cx: &App,
-    ) -> Div {
+    fn compose(&self, props: &yororen_ui_core::headless::avatar::AvatarProps, cx: &App) -> Div {
         let theme = cx.theme();
         let state = AvatarRenderState {
             has_custom_bg: props.has_custom_bg,
@@ -237,7 +228,9 @@ impl AvatarRenderer for BrutalAvatarRenderer {
                     .rounded(dot / 2.)
                     .border(bw)
                     .border_color(bc)
-                    .bg(theme.get_color("status.success.bg").unwrap_or(BRUTAL_BORDER)),
+                    .bg(theme
+                        .get_color("status.success.bg")
+                        .unwrap_or(BRUTAL_BORDER)),
             );
         }
         el
@@ -330,11 +323,7 @@ impl BrutalPanelRenderer {
 }
 
 impl PanelRenderer for BrutalPanelRenderer {
-    fn compose(
-        &self,
-        props: &yororen_ui_core::headless::panel::PanelProps,
-        cx: &App,
-    ) -> Div {
+    fn compose(&self, props: &yororen_ui_core::headless::panel::PanelProps, cx: &App) -> Div {
         use yororen_ui_core::theme::ActiveTheme;
         let theme = cx.theme();
         let state = PanelRenderState {
@@ -356,12 +345,7 @@ impl PanelRenderer for BrutalPanelRenderer {
             .p(pad.top)
             .rounded(r);
         if let Some(title) = &props.title {
-            el = el.child(
-                div()
-                    .text_color(title_fg)
-                    .pb(px(6.))
-                    .child(title.clone()),
-            );
+            el = el.child(div().text_color(title_fg).pb(px(6.)).child(title.clone()));
         }
         el
     }
@@ -402,14 +386,12 @@ impl BrutalCardRenderer {
 }
 
 impl CardRenderer for BrutalCardRenderer {
-    fn compose(
-        &self,
-        props: &yororen_ui_core::headless::card::CardProps,
-        cx: &App,
-    ) -> Div {
+    fn compose(&self, props: &yororen_ui_core::headless::card::CardProps, cx: &App) -> Div {
         use yororen_ui_core::theme::ActiveTheme;
         let theme = cx.theme();
-        let state = CardRenderState { has_custom_bg: false };
+        let state = CardRenderState {
+            has_custom_bg: false,
+        };
         let bg = self.bg(&state, theme);
         let border = self.border(&state, theme);
         let pad = self.padding(&state, theme);

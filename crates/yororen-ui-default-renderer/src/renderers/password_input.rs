@@ -88,12 +88,7 @@ impl TokenPasswordInputRenderer {
 }
 
 impl PasswordInputRenderer for TokenPasswordInputRenderer {
-    fn compose(
-        &self,
-        props: &PasswordInputProps,
-        cx: &mut App,
-        window: &mut Window,
-    ) -> AnyElement {
+    fn compose(&self, props: &PasswordInputProps, cx: &mut App, window: &mut Window) -> AnyElement {
         use yororen_ui_core::theme::ActiveTheme;
 
         let placeholder_str = props.placeholder.clone();

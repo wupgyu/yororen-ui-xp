@@ -33,10 +33,5 @@ pub struct ComboBoxRenderState {
 }
 
 pub trait ComboBoxRenderer: Any + Send + Sync {
-    fn compose(
-        &self,
-        props: &ComboBoxProps,
-        cx: &mut App,
-        window: &mut Window,
-    ) -> AnyElement;
+    fn compose(&self, props: &ComboBoxProps, cx: &mut App, window: &mut Window) -> AnyElement;
 }

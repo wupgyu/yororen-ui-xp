@@ -104,8 +104,8 @@ impl SwitchProps {
     /// only layers the toggle callback on top.
     pub fn render(self, cx: &App) -> Stateful<Div> {
         use crate::renderer::RendererContext;
-        use crate::renderer::switch::SwitchRenderer;
         use crate::renderer::markers::Switch as SwitchMarker;
+        use crate::renderer::switch::SwitchRenderer;
 
         let r: &Arc<dyn SwitchRenderer> = cx
             .renderer_arc::<SwitchMarker, dyn SwitchRenderer>()

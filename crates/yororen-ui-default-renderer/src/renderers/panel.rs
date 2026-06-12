@@ -64,12 +64,7 @@ impl PanelRenderer for TokenPanelRenderer {
             .p(pad.top)
             .rounded(r);
         if let Some(title) = &props.title {
-            el = el.child(
-                div()
-                    .text_color(title_fg)
-                    .pb(px(6.))
-                    .child(title.clone()),
-            );
+            el = el.child(div().text_color(title_fg).pb(px(6.)).child(title.clone()));
         }
         el
     }

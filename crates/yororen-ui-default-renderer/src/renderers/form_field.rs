@@ -2,7 +2,9 @@
 
 use std::sync::Arc;
 
-use gpui::{InteractiveElement, App, Div, Hsla, ParentElement, Pixels, SharedString, Stateful, Styled, div};
+use gpui::{
+    App, Div, Hsla, InteractiveElement, ParentElement, Pixels, SharedString, Stateful, Styled, div,
+};
 
 use yororen_ui_core::headless::form_field::FormFieldProps;
 use yororen_ui_core::theme::{ActiveTheme, Theme};
@@ -16,7 +18,9 @@ impl TokenFormFieldRenderer {
         theme.get_color("content.primary").unwrap_or_default()
     }
     pub fn error_color(&self, _state: &FormFieldRenderState, theme: &Theme) -> Hsla {
-        theme.get_color("content.error").unwrap_or_else(|| theme.get_color("status.danger").unwrap_or_default())
+        theme
+            .get_color("content.error")
+            .unwrap_or_else(|| theme.get_color("status.danger").unwrap_or_default())
     }
     pub fn helper_color(&self, _state: &FormFieldRenderState, theme: &Theme) -> Hsla {
         theme.get_color("content.tertiary").unwrap_or_default()
@@ -25,7 +29,11 @@ impl TokenFormFieldRenderer {
         gpui::px(theme.get_number("tokens.spacing.gap_1").unwrap_or(4.0) as f32)
     }
     pub fn font_size(&self, _state: &FormFieldRenderState, theme: &Theme) -> Pixels {
-        gpui::px(theme.get_number("tokens.typography.font_size_sm").unwrap_or(12.0) as f32)
+        gpui::px(
+            theme
+                .get_number("tokens.typography.font_size_sm")
+                .unwrap_or(12.0) as f32,
+        )
     }
 }
 
@@ -42,11 +50,7 @@ impl FormFieldRenderer for TokenFormFieldRenderer {
         let gap = self.gap(&state, theme);
         let font_size = self.font_size(&state, theme);
 
-        let mut wrapper = div()
-            .id(props.id.clone())
-            .flex()
-            .flex_col()
-            .gap(gap);
+        let mut wrapper = div().id(props.id.clone()).flex().flex_col().gap(gap);
 
         // 1. Label row (with required indicator).
         if let Some(label) = &props.label {

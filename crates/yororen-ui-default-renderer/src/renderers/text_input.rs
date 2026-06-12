@@ -10,9 +10,8 @@
 use std::sync::Arc;
 
 use gpui::{
-    AnyElement, App, CursorStyle, Div, Hsla, InteractiveElement, IntoElement,
-    ParentElement, Pixels, SharedString, Stateful, StatefulInteractiveElement, Styled, Window, div,
-    hsla, px,
+    AnyElement, App, CursorStyle, Div, Hsla, InteractiveElement, IntoElement, ParentElement,
+    Pixels, SharedString, Stateful, StatefulInteractiveElement, Styled, Window, div, hsla, px,
 };
 
 use yororen_ui_core::headless::text_input::{TextInputProps, TextInputState};
@@ -152,12 +151,7 @@ impl TokenTextInputRenderer {
 }
 
 impl TextInputRenderer for TokenTextInputRenderer {
-    fn compose(
-        &self,
-        props: &TextInputProps,
-        cx: &mut App,
-        window: &mut Window,
-    ) -> AnyElement {
+    fn compose(&self, props: &TextInputProps, cx: &mut App, window: &mut Window) -> AnyElement {
         use yororen_ui_core::theme::ActiveTheme;
 
         let placeholder_str = props.placeholder.clone();
@@ -250,8 +244,13 @@ impl TextInputRenderer for TokenTextInputRenderer {
             .child(inner);
 
         // Wire the keymap.
-        let keyed =
-            wire_input_keyboard(with_child, state.clone(), focus_handle.clone(), disabled, on_submit);
+        let keyed = wire_input_keyboard(
+            with_child,
+            state.clone(),
+            focus_handle.clone(),
+            disabled,
+            on_submit,
+        );
 
         keyed.into_any_element()
     }

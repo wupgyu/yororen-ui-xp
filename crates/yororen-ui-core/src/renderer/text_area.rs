@@ -21,10 +21,5 @@ pub struct TextAreaRenderState {
 }
 
 pub trait TextAreaRenderer: Any + Send + Sync {
-    fn compose(
-        &self,
-        props: &TextAreaProps,
-        cx: &mut App,
-        window: &mut Window,
-    ) -> AnyElement;
+    fn compose(&self, props: &TextAreaProps, cx: &mut App, window: &mut Window) -> AnyElement;
 }

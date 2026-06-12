@@ -21,10 +21,6 @@ pub struct CheckboxRenderState {
 
 pub trait CheckboxRenderer: Any + Send + Sync {
     /// Build the full `Stateful<Div>` for a checkbox.
-    fn compose(
-        &self,
-        props: &CheckboxProps,
-        focus_handle: &FocusHandle,
-        cx: &App,
-    ) -> Stateful<Div>;
+    fn compose(&self, props: &CheckboxProps, focus_handle: &FocusHandle, cx: &App)
+    -> Stateful<Div>;
 }

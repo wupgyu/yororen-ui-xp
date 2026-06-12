@@ -43,14 +43,11 @@ pub fn install_locale(cx: &mut App, locale_tag: &str) {
 /// let app_map = locale::parse_bundled_translations(include_str!("../translations/en.json"));
 /// locale::install_with_translations(cx, "en", app_map);
 /// ```
-pub fn install_with_translations(
-    cx: &mut App,
-    locale_tag: &str,
-    app_translations: TranslationMap,
-) {
+pub fn install_with_translations(cx: &mut App, locale_tag: &str, app_translations: TranslationMap) {
     install_locale(cx, locale_tag);
     let locale = cx.i18n().locale().clone();
-    cx.global_mut::<I18n>().merge_translations(locale, app_translations);
+    cx.global_mut::<I18n>()
+        .merge_translations(locale, app_translations);
 }
 
 /// Return the bundled framework translation map for a locale.
