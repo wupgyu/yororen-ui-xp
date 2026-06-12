@@ -53,7 +53,7 @@ use crate::renderers::{
     },
     lists::{
         BrutalFormRenderer, BrutalListItemRenderer, BrutalTreeItemRenderer,
-        BrutalVirtualListRenderer,
+        BrutalUniformVirtualListRenderer, BrutalVirtualListRenderer,
     },
     notifications::{BrutalNotificationRenderer, BrutalToastRenderer},
     overlays::{
@@ -194,5 +194,8 @@ pub fn register_brutal_renderers(cx: &mut App) {
     cx.register_renderer_arc::<m::Form, dyn FormRenderer>(Arc::new(BrutalFormRenderer));
     cx.register_renderer_arc::<m::VirtualList, dyn VirtualListRenderer>(Arc::new(
         BrutalVirtualListRenderer,
+    ));
+    cx.register_renderer_arc::<m::UniformVirtualList, dyn UniformVirtualListRenderer>(Arc::new(
+        BrutalUniformVirtualListRenderer,
     ));
 }

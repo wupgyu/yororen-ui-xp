@@ -82,6 +82,7 @@ marker!(
     Table,
     Tree,
     VirtualList,
+    UniformVirtualList,
 );
 
 #[cfg(test)]

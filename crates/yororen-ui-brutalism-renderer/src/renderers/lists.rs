@@ -353,7 +353,7 @@ impl BrutalVirtualListRenderer {
 impl VirtualListRenderer for BrutalVirtualListRenderer {
     fn compose(
         &self,
-        props: yororen_ui_core::headless::virtual_list::VirtualListProps,
+        mut props: yororen_ui_core::headless::virtual_list::VirtualListProps,
         render_row: yororen_ui_core::headless::virtual_list::RenderRowFn,
         cx: &App,
     ) -> Stateful<Div> {
@@ -369,6 +369,17 @@ impl VirtualListRenderer for BrutalVirtualListRenderer {
         let border = self.border_color(&state, theme);
         let bw = self.border_width(&state, theme);
         let radius = self.border_radius(&state, theme);
+
+        // Wire the visible-range callback through
+        // `ListState::set_scroll_handler` (see TokenVirtualListRenderer
+        // for the rationale — same approach here).
+        if let Some(mut cb) = props.on_visible_range_change.take() {
+            props
+                .state
+                .set_scroll_handler(move |ev, window, cx_inner| {
+                    cb(ev.visible_range.clone(), ev.count, window, cx_inner);
+                });
+        }
 
         // The inner list is constructed inline and forced to
         // fill the parent — same `size_full().flex_grow().min_h_0()`
@@ -395,6 +406,94 @@ impl VirtualListRenderer for BrutalVirtualListRenderer {
         // regression the v0.3 wrapping div introduced (v0.2.0's
         // `VirtualList` was the styled list itself, no outer
         // hitbox to bubble past).
+        gpui::div()
+            .id(props.id)
+            .flex()
+            .flex_col()
+            .bg(bg)
+            .border_color(border)
+            .border_l(bw)
+            .border_r(bw)
+            .border_t(bw)
+            .border_b(bw)
+            .rounded(radius)
+            .overflow_hidden()
+            .child(inner)
+            .on_scroll_wheel(|_event, _window, cx| {
+                cx.stop_propagation();
+            })
+    }
+}
+
+// =====================================================================
+// UniformVirtualList
+// =====================================================================
+
+pub use yororen_ui_core::renderer::uniform_virtual_list::{
+    UniformVirtualListRenderState, UniformVirtualListRenderer,
+};
+
+pub struct BrutalUniformVirtualListRenderer;
+
+// Inherent helpers — *not* part of the trait surface.
+impl BrutalUniformVirtualListRenderer {
+    pub fn bg(&self, _: &UniformVirtualListRenderState, theme: &Theme) -> Hsla {
+        theme.get_color("surface.base").unwrap_or(BRUTAL_BORDER)
+    }
+    pub fn border_color(&self, _: &UniformVirtualListRenderState, theme: &Theme) -> Hsla {
+        crate::style::brutal_border_color(theme)
+    }
+    pub fn border_width(&self, _: &UniformVirtualListRenderState, _: &Theme) -> Pixels {
+        px(crate::style::BRUTAL_BORDER_WIDTH)
+    }
+    pub fn border_radius(&self, _: &UniformVirtualListRenderState, _: &Theme) -> Pixels {
+        px(BRUTAL_RADIUS)
+    }
+}
+
+impl UniformVirtualListRenderer for BrutalUniformVirtualListRenderer {
+    fn compose(
+        &self,
+        props: yororen_ui_core::headless::virtual_list::UniformVirtualListProps,
+        render_row: yororen_ui_core::headless::virtual_list::UniformRenderRowFn,
+        cx: &App,
+    ) -> Stateful<Div> {
+        use std::cell::RefCell;
+        use yororen_ui_core::theme::ActiveTheme;
+        let theme = cx.theme();
+        let state = UniformVirtualListRenderState {
+            item_count: props.item_count,
+            sizing_behavior: props.sizing_behavior,
+        };
+        let bg = self.bg(&state, theme);
+        let border = self.border_color(&state, theme);
+        let bw = self.border_width(&state, theme);
+        let radius = self.border_radius(&state, theme);
+
+        // Inner element id derived by suffixing the outer id —
+        // gpui de-duplicates by id and ElementId implements
+        // Display (gpui window.rs:5041).
+        let inner_id: ElementId = format!("{}-inner", props.id).into();
+
+        // Bridge FnMut → Fn (uniform_list's signature). Same
+        // RefCell trick the default renderer uses; brutalism only
+        // changes the styling.
+        let row_cell = RefCell::new(render_row);
+        let list_el = gpui::uniform_list(
+            inner_id,
+            props.item_count,
+            move |range, window, cx_inner| {
+                let mut f = row_cell.borrow_mut();
+                range
+                    .map(|ix| f(ix, window, cx_inner))
+                    .collect::<Vec<_>>()
+            },
+        )
+        .with_sizing_behavior(props.sizing_behavior)
+        .track_scroll(&props.handle);
+
+        let inner = list_el.size_full();
+
         gpui::div()
             .id(props.id)
             .flex()

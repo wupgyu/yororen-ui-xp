@@ -19,7 +19,8 @@ use yororen_ui::headless::tree::TreeData;
 use yororen_ui::headless::tree::node_id;
 use yororen_ui::headless::tree::tree;
 use yororen_ui::headless::tree_item::tree_item;
-use yororen_ui::headless::virtual_list::virtual_list;
+use yororen_ui::headless::virtual_list::{uniform_virtual_list, virtual_list};
+use yororen_ui::headless::button::button;
 use yororen_ui::i18n::Translate;
 
 use crate::sections::cell;
@@ -32,6 +33,33 @@ const LIST_ITEMS: &[(&str, &str)] = &[
 ];
 
 pub fn render(app: &mut GalleryApp, window: &mut Window, cx: &mut Context<GalleryApp>) -> Div {
+    // Sync the virtual_list controller's item_count to the demo's
+    // tracked `vl_item_count`. The `on_visible_range_change`
+    // callback below only bumps `vl_item_count` (a plain field
+    // update); it must NOT call `controller.reset/append(...)`
+    // directly, because the callback fires from inside
+    // `gpui::list`'s scroll path while `ListState`'s `RefCell` is
+    // already borrowed by paint — calling reset/splice (which
+    // both `borrow_mut` the same RefCell) would panic with
+    // "RefCell already borrowed". Doing the sync here at the top
+    // of `render` (one frame later) puts the borrow in a fresh
+    // stack with no outstanding aliases.
+    //
+    // For *growth* we use `controller.append(n)` (which is
+    // `splice(end..end, n)` internally) — this preserves the
+    // current `logical_scroll_top` so the user's scroll position
+    // stays put when new tail items arrive. `controller.reset(n)`
+    // would clear `logical_scroll_top = None` and snap the list
+    // back to the top, which is the wrong UX for infinite loading.
+    // For *shrink* (current > target) we fall back to `reset`
+    // because there is no "remove from tail" splice helper.
+    let current = app.list_controller.state().item_count();
+    if current < app.vl_item_count {
+        app.list_controller.append(app.vl_item_count - current);
+    } else if current > app.vl_item_count {
+        app.list_controller.reset(app.vl_item_count);
+    }
+
     // --- list_item: 3 selectable rows ---
     let mut list_col = div().flex().flex_col().gap(px(4.)).w(px(220.));
     for (i, (id, title)) in LIST_ITEMS.iter().enumerate() {
@@ -191,18 +219,30 @@ pub fn render(app: &mut GalleryApp, window: &mut Window, cx: &mut Context<Galler
     let tree_wrapped = cell("tree + tree_item (3-5 rows; click chevron or double-click row to expand, click row to select)", tree_el, cx);
 
     // --- virtual_list ---
-    // 1000 items, each rendered as a `list_item` via the row
-    // closure handed to `gpui::list`. The closure captures the
-    // GalleryApp entity so the row reads the *current* selection
-    // state on every frame and `on_click` updates it.
+    // 1000+ items (grows via infinite scroll), each rendered as
+    // a `list_item` via the row closure handed to `gpui::list`.
+    // The closure captures the GalleryApp entity so the row reads
+    // the *current* selection state on every frame and `on_click`
+    // updates it. Three new bits over the basic demo:
+    //   1. `on_visible_range_change` updates `app.vl_visible_range`
+    //      every scroll and, once the visible end approaches the
+    //      logical end, calls `controller.reset(new_count)` to
+    //      simulate infinite loading.
+    //   2. Two buttons (Top / Bottom) drive
+    //      `controller.scroll_to_top()` /
+    //      `controller.scroll_to_bottom()`.
+    //   3. A live status `label` shows the current visible range,
+    //      total item_count, and the auto-loaded batch counter.
+    //
+    // The button on_click closures route through
+    // `entity.update(cx, |s, _| s.list_controller.scroll_to_…())`
+    // because `ButtonProps::on_click` requires `Send + Sync` but
+    // `VirtualListController` is `Rc<RefCell<…>>` and thus
+    // single-threaded. Going through `Entity` keeps the closure
+    // Send + Sync (Entity is) and reaches the controller on the
+    // main thread inside the update callback.
     let app_entity_for_vl = cx.entity().clone();
-    let vl_label = label(
-        "vl-info",
-        "(1000 items; click a row to select, scroll to virtualize)",
-        cx,
-    )
-    .muted(true)
-    .render(cx);
+    let app_entity_for_range = cx.entity().clone();
     let vl = virtual_list("lists-vl", &app.list_controller, cx)
         .row(move |ix, _window, cx| {
             let app_entity = app_entity_for_vl.clone();
@@ -221,11 +261,117 @@ pub fn render(app: &mut GalleryApp, window: &mut Window, cx: &mut Context<Galler
                 .render(cx)
                 .into_any_element()
         })
+        .on_visible_range_change(move |range, total, _window, cx| {
+            // Bump the demo's tracked counts only — the actual
+            // `controller.reset(...)` happens at the top of the
+            // next `render` (see comment there). Calling reset
+            // from inside this callback would re-enter the
+            // ListState `RefCell` that the gpui scroll path is
+            // currently borrowing and panic with "RefCell already
+            // borrowed".
+            app_entity_for_range.update(cx, |s, _cx_inner| {
+                s.vl_visible_range = Some(range.clone());
+                if range.end + 50 >= total && s.vl_item_count < 5_000 {
+                    s.vl_item_count += 100;
+                    s.vl_load_count += 1;
+                }
+            });
+        })
         .render(cx)
         .w(px(240.))
-        .h(px(180.))
-        .child(vl_label);
-    let vl_wrapped = cell("virtual_list (1000 items; scroll to test virtualization)", vl, cx);
+        .h(px(180.));
+    // Control buttons + status label, stacked below the scrollable list.
+    let entity_for_vl_top = cx.entity().clone();
+    let entity_for_vl_bottom = cx.entity().clone();
+    let top_btn = button("vl-top", cx)
+        .on_click(move |_, _, cx| {
+            entity_for_vl_top.update(cx, |s, _| s.list_controller.scroll_to_top());
+        })
+        .render(cx)
+        .child("Top");
+    let bottom_btn = button("vl-bottom", cx)
+        .on_click(move |_, _, cx| {
+            entity_for_vl_bottom.update(cx, |s, _| s.list_controller.scroll_to_bottom());
+        })
+        .render(cx)
+        .child("Bottom");
+    let controls_row = div()
+        .flex()
+        .flex_row()
+        .gap(px(6.))
+        .child(top_btn)
+        .child(bottom_btn);
+    let status_label = label(
+        "vl-status",
+        format!(
+            "visible: {:?} | item_count: {} | auto-loaded batches: {}",
+            app.vl_visible_range, app.vl_item_count, app.vl_load_count
+        ),
+        cx,
+    )
+    .muted(true)
+    .render(cx);
+    let vl_col = div()
+        .flex()
+        .flex_col()
+        .gap(px(6.))
+        .child(vl)
+        .child(controls_row)
+        .child(status_label);
+    let vl_wrapped = cell(
+        "virtual_list (scroll_to_top/bottom + on_visible_range_change + infinite loading)",
+        vl_col,
+        cx,
+    );
+
+    // --- uniform_virtual_list ---
+    // 1000 fixed-height rows. `gpui::uniform_list` measures only
+    // the first row and lays out the rest in a line — much faster
+    // than `gpui::list` for large uniform-height lists. The cell
+    // also has Top / Bottom buttons wired to the
+    // `UniformVirtualListController` (via `entity.update` for the
+    // same Send + Sync reason as virtual_list above).
+    let uvl = uniform_virtual_list("lists-uvl", 1_000, &app.uniform_list_controller, cx)
+        .row(move |ix, _w, cx| {
+            let row_id: ElementId = format!("uvl-row-{ix}").into();
+            list_item(row_id, format!("Uniform row #{ix}"), cx)
+                .render(cx)
+                .into_any_element()
+        })
+        .render(cx)
+        .w(px(240.))
+        .h(px(180.));
+    let entity_for_uvl_top = cx.entity().clone();
+    let entity_for_uvl_bottom = cx.entity().clone();
+    let uvl_top_btn = button("uvl-top", cx)
+        .on_click(move |_, _, cx| {
+            entity_for_uvl_top.update(cx, |s, _| s.uniform_list_controller.scroll_to_top());
+        })
+        .render(cx)
+        .child("Top");
+    let uvl_bottom_btn = button("uvl-bottom", cx)
+        .on_click(move |_, _, cx| {
+            entity_for_uvl_bottom.update(cx, |s, _| s.uniform_list_controller.scroll_to_bottom());
+        })
+        .render(cx)
+        .child("Bottom");
+    let uvl_controls = div()
+        .flex()
+        .flex_row()
+        .gap(px(6.))
+        .child(uvl_top_btn)
+        .child(uvl_bottom_btn);
+    let uvl_col = div()
+        .flex()
+        .flex_col()
+        .gap(px(6.))
+        .child(uvl)
+        .child(uvl_controls);
+    let uvl_wrapped = cell(
+        "uniform_virtual_list (1000 items; uniform-height fast path; scroll_to_top/bottom)",
+        uvl_col,
+        cx,
+    );
 
     // --- spacer ---
     let sp = spacer("lists-spacer", cx)
@@ -250,6 +396,7 @@ pub fn render(app: &mut GalleryApp, window: &mut Window, cx: &mut Context<Galler
         .child(table_wrapped)
         .child(tree_wrapped)
         .child(vl_wrapped)
+        .child(uvl_wrapped)
         .child(sp_wrapped)
         .child(rg_wrapped)
 }

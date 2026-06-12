@@ -22,7 +22,7 @@ use yororen_ui::headless::popover::PopoverState;
 use yororen_ui::headless::select::SelectState;
 use yororen_ui::headless::tooltip::TooltipState;
 use yororen_ui::headless::tree_item::TreeNodeId;
-use yororen_ui::headless::virtual_list::VirtualListController;
+use yororen_ui::headless::virtual_list::{UniformVirtualListController, VirtualListController};
 
 use crate::theme_switcher::{DarkMode, RendererKind};
 
@@ -117,6 +117,24 @@ pub struct GalleryApp {
     // scroll position; the controller is what the caller uses to
     // reset/splice/scroll.
     pub list_controller: VirtualListController,
+
+    // Last visible row range reported by virtual_list's
+    // `on_visible_range_change` callback. The list cell renders
+    // this below the scrollable area so the user can see the
+    // callback firing in real time.
+    pub vl_visible_range: Option<std::ops::Range<usize>>,
+    // Current logical item_count for the virtual list — starts at
+    // 1_000 and grows by 100 each time on_visible_range_change
+    // detects scroll near the end (infinite-loading demo).
+    pub vl_item_count: usize,
+    // Number of batches the infinite-loading demo has appended.
+    // Displayed in the status label.
+    pub vl_load_count: usize,
+
+    // Uniform-height virtual list controller — used by the
+    // `uniform_virtual_list` cell to drive scroll_to_top /
+    // scroll_to_bottom from buttons.
+    pub uniform_list_controller: UniformVirtualListController,
 }
 
 impl GalleryApp {
@@ -238,11 +256,18 @@ impl GalleryApp {
             form_email_error: None,
             tree_expanded: BTreeSet::new(),
             tree_selected: None,
-            // 1000-item list — top-aligned, 20-px overdraw. The
+            // 100-item list — top-aligned, 20-px overdraw. The
             // controller is mutated via `reset`/`splice`/
             // `scroll_to_reveal_item`; the headless props snapshot
-            // its state on every render frame.
-            list_controller: VirtualListController::new(1_000, gpui::ListAlignment::Top, gpui::px(20.)),
+            // its state on every render frame. Starts small so the
+            // infinite-loading demo (callback bumps by +100 each
+            // time the visible end is within 50 of total) triggers
+            // quickly on first scroll-to-bottom.
+            list_controller: VirtualListController::new(100, gpui::ListAlignment::Top, gpui::px(20.)),
+            vl_visible_range: None,
+            vl_item_count: 100,
+            vl_load_count: 0,
+            uniform_list_controller: UniformVirtualListController::new(),
         }
     }
 }

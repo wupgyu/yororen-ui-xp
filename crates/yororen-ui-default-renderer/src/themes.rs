@@ -36,7 +36,8 @@ use crate::renderers::{
     TokenSliderRenderer, TokenSpacerRenderer, TokenSplitButtonRenderer, TokenSwitchRenderer,
     TokenTableRenderer, TokenTagRenderer, TokenTextAreaRenderer, TokenTextInputRenderer,
     TokenTextRenderer, TokenToastRenderer, TokenToggleButtonRenderer, TokenTooltipRenderer,
-    TokenTreeItemRenderer, TokenTreeRenderer, TokenVirtualListRenderer,
+    TokenTreeItemRenderer, TokenTreeRenderer, TokenUniformVirtualListRenderer,
+    TokenVirtualListRenderer,
 };
 
 /// Load `themes/system-light.json` as a `Theme`.
@@ -228,6 +229,9 @@ pub fn register_default_renderers(cx: &mut App) {
     );
     cx.register_renderer_arc::<markers::VirtualList, dyn crate::renderers::VirtualListRenderer>(
         Arc::new(TokenVirtualListRenderer),
+    );
+    cx.register_renderer_arc::<markers::UniformVirtualList, dyn crate::renderers::UniformVirtualListRenderer>(
+        Arc::new(TokenUniformVirtualListRenderer),
     );
     cx.register_renderer_arc::<markers::KeybindingInput, dyn crate::renderers::KeybindingInputRenderer>(
         Arc::new(TokenKeybindingInputRenderer),

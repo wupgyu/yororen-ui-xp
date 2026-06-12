@@ -85,6 +85,7 @@ use super::tooltip::TokenTooltipRenderer;
 use super::tree::TokenTreeRenderer;
 use super::tree_item::TokenTreeItemRenderer;
 use super::virtual_list::TokenVirtualListRenderer;
+use super::uniform_virtual_list::TokenUniformVirtualListRenderer;
 use yororen_ui_core::renderer::avatar::AvatarRenderer;
 use yororen_ui_core::renderer::badge::BadgeRenderer;
 use yororen_ui_core::renderer::button::ButtonRenderer;
@@ -138,6 +139,7 @@ use yororen_ui_core::renderer::tooltip::TooltipRenderer;
 use yororen_ui_core::renderer::tree::TreeRenderer;
 use yororen_ui_core::renderer::tree_item::TreeItemRenderer;
 use yororen_ui_core::renderer::virtual_list::VirtualListRenderer;
+use yororen_ui_core::renderer::uniform_virtual_list::UniformVirtualListRenderer;
 
 use yororen_ui_core::renderer::avatar::AvatarRenderState;
 use yororen_ui_core::renderer::badge::BadgeRenderState;
@@ -192,6 +194,7 @@ use yororen_ui_core::renderer::tooltip::TooltipRenderState;
 use yororen_ui_core::renderer::tree::TreeRenderState;
 use yororen_ui_core::renderer::tree_item::TreeItemRenderState;
 use yororen_ui_core::renderer::virtual_list::VirtualListRenderState;
+use yororen_ui_core::renderer::uniform_virtual_list::UniformVirtualListRenderState;
 
 /// Collection of component renderers. Looked up at render time by
 /// `XxxRenderState` `TypeId`.
@@ -310,6 +313,7 @@ impl RendererRegistry {
         .with_tree(Arc::new(TokenTreeRenderer))
         .with_tree_item(Arc::new(TokenTreeItemRenderer))
         .with_virtual_list(Arc::new(TokenVirtualListRenderer))
+        .with_uniform_virtual_list(Arc::new(TokenUniformVirtualListRenderer))
         .with_keybinding_input(Arc::new(TokenKeybindingInputRenderer))
         .with_split_button(Arc::new(TokenSplitButtonRenderer))
         .with_empty_state(Arc::new(TokenEmptyStateRenderer))
@@ -387,6 +391,11 @@ impl RendererRegistry {
     renderer_setter!(with_text, TextRenderState, TextRenderer);
     renderer_setter!(with_tree, TreeRenderState, TreeRenderer);
     renderer_setter!(with_virtual_list, VirtualListRenderState, VirtualListRenderer);
+    renderer_setter!(
+        with_uniform_virtual_list,
+        UniformVirtualListRenderState,
+        UniformVirtualListRenderer
+    );
     renderer_setter!(with_text_area, TextAreaRenderState, TextAreaRenderer);
     renderer_setter!(
         with_password_input,
@@ -514,6 +523,11 @@ impl RendererRegistry {
     renderer_getter!(get_text, TextRenderState, TextRenderer);
     renderer_getter!(get_tree, TreeRenderState, TreeRenderer);
     renderer_getter!(get_virtual_list, VirtualListRenderState, VirtualListRenderer);
+    renderer_getter!(
+        get_uniform_virtual_list,
+        UniformVirtualListRenderState,
+        UniformVirtualListRenderer
+    );
     renderer_getter!(get_text_area, TextAreaRenderState, TextAreaRenderer);
     renderer_getter!(
         get_password_input,
@@ -618,6 +632,10 @@ impl RendererRegistry {
         (TypeId::of::<TreeRenderState>(), "tree"),
         (TypeId::of::<TreeItemRenderState>(), "tree_item"),
         (TypeId::of::<VirtualListRenderState>(), "virtual_list"),
+        (
+            TypeId::of::<UniformVirtualListRenderState>(),
+            "uniform_virtual_list",
+        ),
         (
             TypeId::of::<KeybindingInputRenderState>(),
             "keybinding_input",
@@ -727,8 +745,8 @@ mod tests {
         let err = r.validate().unwrap_err();
         assert_eq!(
             err.len(),
-            53,
-            "expected 53 missing entries, got {}: {:?}",
+            54,
+            "expected 54 missing entries, got {}: {:?}",
             err.len(),
             err
         );
@@ -741,6 +759,7 @@ mod tests {
         assert!(err.contains(&"image"));
         assert!(err.contains(&"keybinding_display"));
         assert!(err.contains(&"shortcut_hint"));
+        assert!(err.contains(&"uniform_virtual_list"));
     }
 
     #[test]
@@ -749,8 +768,8 @@ mod tests {
         let err = r.validate().unwrap_err();
         assert_eq!(
             err.len(),
-            52,
-            "expected 52 missing entries, got {}: {:?}",
+            53,
+            "expected 53 missing entries, got {}: {:?}",
             err.len(),
             err
         );

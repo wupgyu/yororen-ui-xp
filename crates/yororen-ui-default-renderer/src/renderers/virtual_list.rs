@@ -8,6 +8,12 @@
 //! The inner list is forced to `size_full().flex_grow().min_h_0()`
 //! so it fills the parent — without this, `gpui::list` collapses
 //! to zero height when nested in a flex column.
+//!
+//! If the headless props carry an `on_visible_range_change`
+//! callback, we install it on the `ListState` via
+//! `set_scroll_handler` before constructing the list element. The
+//! handler is last-wins inside `ListState`, so re-installing on
+//! every frame is correct (and cheap — one `Box::new` per frame).
 
 use std::sync::Arc;
 
@@ -36,7 +42,7 @@ impl TokenVirtualListRenderer {
 impl VirtualListRenderer for TokenVirtualListRenderer {
     fn compose(
         &self,
-        props: VirtualListProps,
+        mut props: VirtualListProps,
         render_row: RenderRowFn,
         cx: &App,
     ) -> Stateful<Div> {
@@ -50,6 +56,20 @@ impl VirtualListRenderer for TokenVirtualListRenderer {
         let bg = self.bg(&state, theme);
         let border = self.border_color(&state, theme);
         let radius = self.border_radius(&state, theme);
+
+        // If the headless layer provided a visible-range callback,
+        // wire it through `ListState::set_scroll_handler`. The
+        // handler is `Some(Box<…>)` inside `ListState` — last-wins
+        // on re-install, so calling this on every render frame is
+        // correct: the new Box owns the caller's `FnMut`, and the
+        // previous frame's handler is dropped at this point.
+        if let Some(mut cb) = props.on_visible_range_change.take() {
+            props
+                .state
+                .set_scroll_handler(move |ev, window, cx_inner| {
+                    cb(ev.visible_range.clone(), ev.count, window, cx_inner);
+                });
+        }
 
         // Construct the inner list with the caller's state and
         // sizing behavior, then force it to fill the parent —
