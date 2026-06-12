@@ -2,6 +2,7 @@
 //! that labels the component above it.
 
 use gpui::{Context, Div, ParentElement, Styled, div, px};
+use yororen_ui::theme::ActiveTheme;
 
 use yororen_ui::headless::badge::{BadgeVariant, badge};
 use yororen_ui::headless::divider::divider;
@@ -125,14 +126,15 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
         .child(cell("progress (indeterminate)", progress("prg-indet", cx).indeterminate(true).render(cx), cx));
 
     // --- text + icon ---
+    let icon_color = cx.theme().get_color("content.primary").unwrap_or_default();
     let text_row = div()
         .flex()
         .flex_row()
         .items_center()
         .gap(px(12.))
         .child(cell("text", text("tx-1", "Plain text via `text`", cx).size(px(14.)).render(cx), cx))
-        .child(cell("icon (check)", icon("ic-1", yororen_ui::headless::icon::IconSource::Builtin("check".into()), cx).size(px(18.)).color(gpui::rgb(0x0A0A0A)).render(cx), cx))
-        .child(cell("icon (search)", icon("ic-2", yororen_ui::headless::icon::IconSource::Builtin("search".into()), cx).size(px(18.)).color(gpui::rgb(0x0A0A0A)).render(cx), cx));
+        .child(cell("icon (check)", icon("ic-1", yororen_ui::headless::icon::IconSource::Builtin("check".into()), cx).size(px(18.)).color(icon_color).render(cx), cx))
+        .child(cell("icon (search)", icon("ic-2", yororen_ui::headless::icon::IconSource::Builtin("search".into()), cx).size(px(18.)).color(icon_color).render(cx), cx));
 
     div()
         .flex()
