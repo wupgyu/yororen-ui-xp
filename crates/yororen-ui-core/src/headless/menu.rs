@@ -104,8 +104,7 @@ impl MenuProps {
         let r = cx
             .renderer_arc::<crate::renderer::markers::Menu, dyn crate::renderer::menu::MenuRenderer>()
             .expect("MenuRenderer registered");
-        let el = r.compose(&self, cx);
-        // Add the caller's children (menu items) are appended after this call.
-        el
+        // Caller appends menu items via `.child(...)` after this call.
+        r.compose(&self, cx)
     }
 }

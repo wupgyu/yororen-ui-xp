@@ -8573,7 +8573,7 @@ pub yororen_ui_core::renderer::uniform_virtual_list::UniformVirtualListRenderSta
 impl core::clone::Clone for yororen_ui_core::renderer::uniform_virtual_list::UniformVirtualListRenderState
 pub fn yororen_ui_core::renderer::uniform_virtual_list::UniformVirtualListRenderState::clone(&self) -> yororen_ui_core::renderer::uniform_virtual_list::UniformVirtualListRenderState
 impl core::default::Default for yororen_ui_core::renderer::uniform_virtual_list::UniformVirtualListRenderState
-pub fn yororen_ui_core::renderer::uniform_virtual_list::UniformVirtualListRenderState::default() -> Self
+pub fn yororen_ui_core::renderer::uniform_virtual_list::UniformVirtualListRenderState::default() -> yororen_ui_core::renderer::uniform_virtual_list::UniformVirtualListRenderState
 impl core::fmt::Debug for yororen_ui_core::renderer::uniform_virtual_list::UniformVirtualListRenderState
 pub fn yororen_ui_core::renderer::uniform_virtual_list::UniformVirtualListRenderState::fmt(&self, &mut core::fmt::Formatter<'_>) -> core::fmt::Result
 impl core::marker::Copy for yororen_ui_core::renderer::uniform_virtual_list::UniformVirtualListRenderState

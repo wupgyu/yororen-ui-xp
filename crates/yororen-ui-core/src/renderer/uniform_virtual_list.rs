@@ -42,19 +42,10 @@ use crate::headless::virtual_list::{UniformRenderRowFn, UniformVirtualListProps}
 /// [`UniformVirtualListProps`](crate::headless::virtual_list::UniformVirtualListProps)
 /// at render time. Renderer helpers consume this to look up theme
 /// tokens without having to re-derive everything.
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct UniformVirtualListRenderState {
     pub item_count: usize,
     pub sizing_behavior: ListSizingBehavior,
-}
-
-impl Default for UniformVirtualListRenderState {
-    fn default() -> Self {
-        Self {
-            item_count: 0,
-            sizing_behavior: ListSizingBehavior::default(),
-        }
-    }
 }
 
 pub trait UniformVirtualListRenderer: Any + Send + Sync {

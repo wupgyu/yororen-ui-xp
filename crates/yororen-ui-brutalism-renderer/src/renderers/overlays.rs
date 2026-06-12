@@ -362,14 +362,12 @@ impl BrutalOverlayRenderer {
         // Same fallback as the default renderer (50% black) so the
         // gallery shows a visible scrim even if the theme omits the
         // `surface.scrim` key.
-        theme
-            .get_color("surface.scrim")
-            .unwrap_or_else(|| Hsla {
-                h: 0.0,
-                s: 0.0,
-                l: 0.0,
-                a: 0.5,
-            })
+        theme.get_color("surface.scrim").unwrap_or(Hsla {
+            h: 0.0,
+            s: 0.0,
+            l: 0.0,
+            a: 0.5,
+        })
     }
 }
 

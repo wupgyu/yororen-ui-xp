@@ -208,10 +208,10 @@ fn initials_from_name(name: &str) -> String {
     if trimmed.is_empty() {
         return String::new();
     }
-    if let Some(first) = trimmed.chars().next() {
-        if is_cjk_char(first) {
-            return first.to_string();
-        }
+    if let Some(first) = trimmed.chars().next()
+        && is_cjk_char(first)
+    {
+        return first.to_string();
     }
     let parts: Vec<&str> = trimmed.split_whitespace().collect();
     if parts.is_empty() {
@@ -223,11 +223,11 @@ fn initials_from_name(name: &str) -> String {
             out.push(c);
         }
     }
-    if parts.len() > 1 {
-        if let Some(last) = parts.last().and_then(|w| w.chars().next()) {
-            for c in last.to_uppercase() {
-                out.push(c);
-            }
+    if parts.len() > 1
+        && let Some(last) = parts.last().and_then(|w| w.chars().next())
+    {
+        for c in last.to_uppercase() {
+            out.push(c);
         }
     }
     out

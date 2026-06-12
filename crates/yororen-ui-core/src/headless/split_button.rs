@@ -6,13 +6,11 @@
 //! - `primary`            — click handler for the main label.
 //! - `caption`            — text for the main label.
 //! - `items`              — dropdown menu items (reused from
-//!                          `dropdown_menu::DropdownItem`).
+//!   `dropdown_menu::DropdownItem`).
 //! - `on_select`          — fires when the user picks an item.
 //! - `state`              — the `Entity<DropdownMenuState>` that
-//!                          stores `open` + highlighted index.
-//!                          Caller mints it (typically in
-//!                          `App::new`) so the toggle survives
-//!                          across re-paints.
+//!   stores `open` + highlighted index. Caller mints it (typically
+//!   in `App::new`) so the toggle survives across re-paints.
 //! - `disabled`           — disables both primary + chevron.
 //!
 //! The factory mints two focus handles (`primary_focus` /

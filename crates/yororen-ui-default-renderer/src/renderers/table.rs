@@ -42,7 +42,7 @@ impl TokenTableRenderer {
 
     fn header_cell(&self, col: &TableColumn, state: &TableRenderState, theme: &Theme) -> Div {
         let mut cell = div()
-            .child(SharedString::from(col.header.clone()))
+            .child(col.header.clone())
             .text_color(self.header_text_color(state, theme))
             .text_size(self.font_size(state, theme))
             .px(self.cell_padding(state, theme))
@@ -110,10 +110,10 @@ impl TableRenderer for TokenTableRenderer {
             }
             for (cell_idx, cell_value) in row.iter().enumerate() {
                 let mut cell = self.body_cell(cell_value, &state, theme);
-                if let Some(col) = props.columns.get(cell_idx) {
-                    if let Some(w) = col.width_px {
-                        cell = cell.w(px(w));
-                    }
+                if let Some(col) = props.columns.get(cell_idx)
+                    && let Some(w) = col.width_px
+                {
+                    cell = cell.w(px(w));
                 }
                 row_el = row_el.child(cell);
             }

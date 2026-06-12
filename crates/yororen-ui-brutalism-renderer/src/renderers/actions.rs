@@ -701,7 +701,7 @@ impl SplitButtonRenderer for BrutalSplitButtonRenderer {
                 .left_0()
                 .w(menu_w)
                 .bg(panel_bg)
-                .border(px(BRUTAL_BORDER_WIDTH as f32))
+                .border(px(BRUTAL_BORDER_WIDTH))
                 .border_color(panel_border)
                 .rounded(px(BRUTAL_RADIUS))
                 .p(px(4.))

@@ -79,7 +79,7 @@ pub fn render(app: &mut GalleryApp, window: &mut Window, cx: &mut Context<Galler
         .on_change(move |new: &str, _w, cx| {
             entity_text.update(cx, |s, _cx| s.form_email_value = new.to_string());
         })
-        .render(&mut **cx, window);
+        .render(cx, window);
 
     let form_field_el = form_field("lists-ff-email", "email", cx)
         .label(cx.t("form.email"))
@@ -105,7 +105,7 @@ pub fn render(app: &mut GalleryApp, window: &mut Window, cx: &mut Context<Galler
         .submit("Submit");
 
     let submit_btn_el = form_props
-        .submit_button(&mut **cx)
+        .submit_button(cx)
         .expect("submit_label was set");
 
     let form_el = form_props
@@ -213,7 +213,7 @@ pub fn render(app: &mut GalleryApp, window: &mut Window, cx: &mut Context<Galler
                         }
                     });
                 })
-                .render(&mut **cx, window),
+                .render(cx, window),
         );
     }
     let tree_wrapped = cell("tree + tree_item (3-5 rows; click chevron or double-click row to expand, click row to select)", tree_el, cx);

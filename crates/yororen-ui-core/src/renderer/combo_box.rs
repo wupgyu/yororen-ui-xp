@@ -2,13 +2,13 @@
 //!
 //! Unlike `SelectRenderer` (which only paints a static trigger
 //! + a fixed list of options), `ComboBoxRenderer::compose`
-//! receives `&mut Window` because the trigger embeds a real
-//! `TextInputElement` so the user can type to filter the
-//! option list. The text input's state is keyed by the
-//! combo box's id via `window.use_keyed_state`. Returning
-//! `AnyElement` matches `TextInputRenderer`'s shape (the
-//! `text_input` element is an `AnyElement` and can be
-//! embedded directly into the trigger area).
+//!   receives `&mut Window` because the trigger embeds a real
+//!   `TextInputElement` so the user can type to filter the
+//!   option list. The text input's state is keyed by the
+//!   combo box's id via `window.use_keyed_state`. Returning
+//!   `AnyElement` matches `TextInputRenderer`'s shape (the
+//!   `text_input` element is an `AnyElement` and can be
+//!   embedded directly into the trigger area).
 //!
 //! Trait surface is just `compose`. Inherent helpers
 //! (bg / border / focus_border / fg / search_bg /

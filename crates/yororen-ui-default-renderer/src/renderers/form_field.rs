@@ -53,7 +53,7 @@ impl FormFieldRenderer for TokenFormFieldRenderer {
             let label_text: SharedString = if props.required {
                 SharedString::from(format!("{} *", label))
             } else {
-                SharedString::from(label.clone())
+                label.clone()
             };
             wrapper = wrapper.child(
                 div()

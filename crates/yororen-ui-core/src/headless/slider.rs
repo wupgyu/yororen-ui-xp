@@ -89,7 +89,7 @@ impl SliderProps {
             styled = styled.on_mouse_down(
                 MouseButton::Left,
                 move |event: &MouseDownEvent, window, cx| {
-                    let b = bounds_for_down.lock().unwrap().clone();
+                    let b = *bounds_for_down.lock().unwrap();
                     if let Some(b) = b
                         && let Some(local) = b.localize(&event.position)
                     {
@@ -111,7 +111,7 @@ impl SliderProps {
                     if !event.dragging() {
                         return;
                     }
-                    let b = bounds_for_move.lock().unwrap().clone();
+                    let b = *bounds_for_move.lock().unwrap();
                     if let Some(b) = b
                         && let Some(local) = b.localize(&event.position)
                     {

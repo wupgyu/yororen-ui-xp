@@ -13,7 +13,7 @@
 //! `ComboBoxState` (which embeds a real text input as part of its
 //! trigger) both need this exact state machine. By extracting it,
 //! the combo_box can compose the same `TextInputElement` painter
-//! + the same 14 keyboard actions + the same IME pipeline,
+//! plus the same 14 keyboard actions plus the same IME pipeline,
 //! without minting a separate `Entity<TextInputState>` and
 //! manually syncing its `value` with `combo_state.text`.
 //!

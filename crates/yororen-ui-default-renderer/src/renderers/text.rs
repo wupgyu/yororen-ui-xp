@@ -38,13 +38,11 @@ impl TextRenderer for TokenTextRenderer {
             has_custom_color: false,
         };
 
-        let el = div()
+        div()
             .id(props.id.clone())
             .text_size(props.size.unwrap_or_else(|| self.size(&state, theme)))
             .text_color(self.color(&state, theme))
-            .child(props.text.clone());
-
-        el
+            .child(props.text.clone())
     }
 }
 

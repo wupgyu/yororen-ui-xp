@@ -19,8 +19,6 @@ impl TokenTagRenderer {
     pub fn bg(&self, state: &TagRenderState, theme: &Theme) -> Hsla {
         if state.selected {
             theme.get_color("action.primary.bg").unwrap_or_default()
-        } else if state.has_custom_tone {
-            theme.get_color("action.neutral.bg").unwrap_or_default()
         } else {
             theme.get_color("action.neutral.bg").unwrap_or_default()
         }
