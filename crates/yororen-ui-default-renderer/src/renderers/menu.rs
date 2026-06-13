@@ -43,7 +43,9 @@ impl TokenMenuRenderer {
         // shorter in the layout context the dropdown panel
         // inherits. 180 px is the conventional menu width and
         // matches the brutalism renderer.
-        px(theme.get_number("tokens.control.menu.min_width").unwrap_or(180.0) as f32)
+        px(theme
+            .get_number("tokens.control.menu.min_width")
+            .unwrap_or(180.0) as f32)
     }
     pub fn shadow_alpha(&self, _state: &MenuRenderState, _theme: &Theme) -> f32 {
         0.12

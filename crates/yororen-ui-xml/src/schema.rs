@@ -225,7 +225,7 @@ pub enum ControlFlowDef {
 impl ComponentDef {
     /// Look up a tag by name (case-sensitive).
     pub fn lookup(tag: &str) -> Option<&'static ComponentDef> {
-    BUILTINS.iter().find(|c| c.tag == tag)
+        BUILTINS.iter().find(|c| c.tag == tag)
     }
 }
 
@@ -253,17 +253,41 @@ pub static BUILTINS: &[ComponentDef] = &[
             render: RenderMode::Default,
             needs_app: true,
             props: &[
-                PropDef { name: "caption", setter: "caption", value: PropValue::String },
-                PropDef { name: "variant", setter: "variant", value: PropValue::Variant },
-                PropDef { name: "disabled", setter: "disabled", value: PropValue::Bool },
-                PropDef { name: "clickable", setter: "clickable", value: PropValue::Bool },
+                PropDef {
+                    name: "caption",
+                    setter: "caption",
+                    value: PropValue::String,
+                },
+                PropDef {
+                    name: "variant",
+                    setter: "variant",
+                    value: PropValue::Variant,
+                },
+                PropDef {
+                    name: "disabled",
+                    setter: "disabled",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "clickable",
+                    setter: "clickable",
+                    value: PropValue::Bool,
+                },
                 // `icon` / `icon_size` are typed `IconSource` /
                 // `gpui::Pixels` in the headless. Until we have
                 // dedicated XML representations, we accept them
                 // as opaque strings and let the user pass them
                 // through as Rust expressions.
-                PropDef { name: "icon", setter: "icon", value: PropValue::Unknown },
-                PropDef { name: "icon_size", setter: "icon_size", value: PropValue::Unknown },
+                PropDef {
+                    name: "icon",
+                    setter: "icon",
+                    value: PropValue::Unknown,
+                },
+                PropDef {
+                    name: "icon_size",
+                    setter: "icon_size",
+                    value: PropValue::Unknown,
+                },
             ],
             events: &[("on_click", "on_click")],
             supports_text_child: true,
@@ -352,13 +376,41 @@ pub static BUILTINS: &[ComponentDef] = &[
             render: RenderMode::Default,
             needs_app: true,
             props: &[
-                PropDef { name: "strong", setter: "strong", value: PropValue::Bool },
-                PropDef { name: "muted", setter: "muted", value: PropValue::Bool },
-                PropDef { name: "mono", setter: "mono", value: PropValue::Bool },
-                PropDef { name: "inherit_color", setter: "inherit_color", value: PropValue::Bool },
-                PropDef { name: "ellipsis", setter: "ellipsis", value: PropValue::Bool },
-                PropDef { name: "wrap", setter: "wrap", value: PropValue::Bool },
-                PropDef { name: "max_lines", setter: "max_lines", value: PropValue::Unknown },
+                PropDef {
+                    name: "strong",
+                    setter: "strong",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "muted",
+                    setter: "muted",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "mono",
+                    setter: "mono",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "inherit_color",
+                    setter: "inherit_color",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "ellipsis",
+                    setter: "ellipsis",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "wrap",
+                    setter: "wrap",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "max_lines",
+                    setter: "max_lines",
+                    value: PropValue::Unknown,
+                },
             ],
             events: &[],
             supports_text_child: false,
@@ -386,14 +438,14 @@ pub static BUILTINS: &[ComponentDef] = &[
 /// Reserved XML attribute names consumed by the macro itself
 /// (control flow, model alias, etc.). They're not props.
 pub const RESERVED_ATTRS: &[&str] = &[
-    "id",         // element id (passed as the first factory arg)
-    "condition",  // <If condition={...}>
-    "each",       // <For each={...}>
-    "let",        // <For let:item>
-    "model",      // alias for the surrounding ViewModel
-    "key",        // reserved for Phase 2 keyed For
-    "if",         // reserved for future inline-if
-    "slot",       // reserved for Phase 2 templates
+    "id",        // element id (passed as the first factory arg)
+    "condition", // <If condition={...}>
+    "each",      // <For each={...}>
+    "let",       // <For let:item>
+    "model",     // alias for the surrounding ViewModel
+    "key",       // reserved for Phase 2 keyed For
+    "if",        // reserved for future inline-if
+    "slot",      // reserved for Phase 2 templates
 ];
 
 /// Reserved "fixed" attribute → method pairs that are valid on
@@ -403,9 +455,7 @@ pub const RESERVED_ATTRS: &[&str] = &[
 /// These are emitted **before** the `ContainerDef::fixed_methods`,
 /// so `Column` with `flex col` is `.flex().flex_col()` in that
 /// order.
-pub const GLOBAL_CONTAINER_METHODS: &[(&str, &str)] = &[
-    ("flex", "flex"),
-];
+pub const GLOBAL_CONTAINER_METHODS: &[(&str, &str)] = &[("flex", "flex")];
 
 /// Whether a string is a known shorthand suffix that we
 /// should expand to a literal method call. Examples:
@@ -463,7 +513,9 @@ pub fn is_spacing_shorthand(name: &str) -> bool {
         "0", "0p5", "1", "1p5", "2", "2p5", "3", "3p5", "4", "5", "6", "7", "8", "9", "10", "11",
         "12", "16", "20", "24", "32", "40", "48", "56", "64", "72", "80", "96",
     ];
-    const FULL: &[&str] = &["full", "1_2", "1_3", "2_3", "1_4", "3_4", "1_5", "2_5", "3_5", "4_5", "1_6", "5_6", "1_12"];
+    const FULL: &[&str] = &[
+        "full", "1_2", "1_3", "2_3", "1_4", "3_4", "1_5", "2_5", "3_5", "4_5", "1_6", "5_6", "1_12",
+    ];
 
     let prefix_end = if let Some(stripped) = name.strip_suffix("_full") {
         Some(stripped)
@@ -482,11 +534,31 @@ pub fn is_spacing_shorthand(name: &str) -> bool {
     match prefix_end {
         Some(prefix) => matches!(
             prefix,
-            "gap" | "gap_x" | "gap_y"
-            | "p" | "px" | "py" | "pt" | "pb" | "pl" | "pr"
-            | "m" | "mx" | "my" | "mt" | "mb" | "ml" | "mr"
-            | "w" | "h" | "size" | "min_w" | "min_h" | "max_w" | "max_h"
-            | "inset"
+            "gap"
+                | "gap_x"
+                | "gap_y"
+                | "p"
+                | "px"
+                | "py"
+                | "pt"
+                | "pb"
+                | "pl"
+                | "pr"
+                | "m"
+                | "mx"
+                | "my"
+                | "mt"
+                | "mb"
+                | "ml"
+                | "mr"
+                | "w"
+                | "h"
+                | "size"
+                | "min_w"
+                | "min_h"
+                | "max_w"
+                | "max_h"
+                | "inset"
         ),
         None => false,
     }
@@ -499,11 +571,31 @@ pub fn is_spacing_shorthand(name: &str) -> bool {
 pub fn is_spacing_prefix(name: &str) -> bool {
     matches!(
         name,
-        "gap" | "gap_x" | "gap_y"
-        | "p" | "px" | "py" | "pt" | "pb" | "pl" | "pr"
-        | "m" | "mx" | "my" | "mt" | "mb" | "ml" | "mr"
-        | "w" | "h" | "size" | "min_w" | "min_h" | "max_w" | "max_h"
-        | "inset"
+        "gap"
+            | "gap_x"
+            | "gap_y"
+            | "p"
+            | "px"
+            | "py"
+            | "pt"
+            | "pb"
+            | "pl"
+            | "pr"
+            | "m"
+            | "mx"
+            | "my"
+            | "mt"
+            | "mb"
+            | "ml"
+            | "mr"
+            | "w"
+            | "h"
+            | "size"
+            | "min_w"
+            | "min_h"
+            | "max_w"
+            | "max_h"
+            | "inset"
     )
 }
 

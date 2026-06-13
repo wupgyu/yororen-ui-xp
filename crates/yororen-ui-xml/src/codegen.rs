@@ -174,19 +174,20 @@ const RUNTIME_LEAF_FALLBACK: ComponentDef = ComponentDef {
 /// resolve at runtime. The trade-off is that
 /// attribute / event validation can't happen at
 /// compile time for these tags.
-fn codegen_runtime_leaf(
-    element: &AstElement,
-    cx: &TokenStream,
-) -> Result<TokenStream, XmlError> {
+fn codegen_runtime_leaf(element: &AstElement, cx: &TokenStream) -> Result<TokenStream, XmlError> {
     let tag = element.tag.clone();
-    let id_attr = element.attributes.iter().find(|a| a.name == "id").ok_or_else(|| {
-        XmlError::new(
-            XmlErrorKind::UnknownAttribute,
-            element.span,
-            format!("<{tag}> (a runtime-registered component) requires an `id` attribute"),
-        )
-        .at(element.byte_offset)
-    })?;
+    let id_attr = element
+        .attributes
+        .iter()
+        .find(|a| a.name == "id")
+        .ok_or_else(|| {
+            XmlError::new(
+                XmlErrorKind::UnknownAttribute,
+                element.span,
+                format!("<{tag}> (a runtime-registered component) requires an `id` attribute"),
+            )
+            .at(element.byte_offset)
+        })?;
     let id_expr = attr_value_tokens(id_attr)?;
     // We deliberately ignore every other attribute;
     // the user's renderer is responsible for parsing
@@ -365,13 +366,12 @@ fn apply_container_attr(
         // `gap_3={...}` or `flex_grow={...}` → `.gap_3(expr)`
         if is_known_shorthand_method(&attr.name) || is_spacing_shorthand(&attr.name) {
             let m = format_ident!("{}", attr.name);
-            let parsed =
-                parse_ts(
-                    expr,
-                    attr.span,
-                    attr.byte_offset,
-                    &format!("expression for `{}`", attr.name),
-                )?;
+            let parsed = parse_ts(
+                expr,
+                attr.span,
+                attr.byte_offset,
+                &format!("expression for `{}`", attr.name),
+            )?;
             tokens.append_all(quote! { .#m(#parsed) });
             return Ok(());
         }
@@ -426,9 +426,7 @@ fn apply_container_attr(
         attr.span,
         format!(
             "unknown attribute `{}` on <{}>; containers only accept shorthand style attributes (gap_3, p_4, w_full, flex, col, …) — see {}",
-            attr.name,
-            element.tag,
-            def.style_hint,
+            attr.name, element.tag, def.style_hint,
         ),
     ))
 }
@@ -438,7 +436,9 @@ fn is_valid_spacing_suffix(s: &str) -> bool {
         "0", "0p5", "1", "1p5", "2", "2p5", "3", "3p5", "4", "5", "6", "7", "8", "9", "10", "11",
         "12", "16", "20", "24", "32", "40", "48", "56", "64", "72", "80", "96",
     ];
-    const TEXTUAL: &[&str] = &["full", "1_2", "1_3", "2_3", "1_4", "3_4", "1_5", "2_5", "3_5", "4_5", "1_6", "5_6", "1_12"];
+    const TEXTUAL: &[&str] = &[
+        "full", "1_2", "1_3", "2_3", "1_4", "3_4", "1_5", "2_5", "3_5", "4_5", "1_6", "5_6", "1_12",
+    ];
     NUMERIC.contains(&s) || TEXTUAL.contains(&s)
 }
 
@@ -617,12 +617,7 @@ fn codegen_leaf(
         // the real event; the modifier list wraps the
         // user's closure in a filter / interceptor.
         if let Some((base_event, modifiers)) = split_event_modifiers(&attr.name) {
-            if let Some((_, setter)) = def
-                .events
-                .iter()
-                .find(|(n, _)| *n == base_event)
-                .copied()
-            {
+            if let Some((_, setter)) = def.events.iter().find(|(n, _)| *n == base_event).copied() {
                 let m = format_ident!("{}", setter);
                 let expr = attr_expr_only(attr)?;
                 let wrapped = wrap_event_with_modifiers(&modifiers, expr, attr.span)?;
@@ -633,10 +628,7 @@ fn codegen_leaf(
         return Err(XmlError::new(
             XmlErrorKind::UnknownAttribute,
             attr.span,
-            format!(
-                "unknown attribute `{}` on <{}>",
-                attr.name, element.tag
-            ),
+            format!("unknown attribute `{}` on <{}>", attr.name, element.tag),
         )
         .at(attr.byte_offset));
     }
@@ -717,14 +709,18 @@ fn codegen_if_branch(
     let condition = if matches!(kind, ControlFlowDef::Else) {
         TokenStream::new()
     } else {
-        let cond_attr = element.attributes.iter().find(|a| a.name == "condition").ok_or_else(|| {
-            XmlError::new(
-                XmlErrorKind::UnknownAttribute,
-                element.span,
-                format!("<{:?}> requires a `condition={{...}}` attribute", kind),
-            )
-            .at(element.byte_offset)
-        })?;
+        let cond_attr = element
+            .attributes
+            .iter()
+            .find(|a| a.name == "condition")
+            .ok_or_else(|| {
+                XmlError::new(
+                    XmlErrorKind::UnknownAttribute,
+                    element.span,
+                    format!("<{:?}> requires a `condition={{...}}` attribute", kind),
+                )
+                .at(element.byte_offset)
+            })?;
         let expr = attr_expr_only(cond_attr)?;
         quote! { #expr }
     };
@@ -747,7 +743,10 @@ fn codegen_if_branch(
         return Err(XmlError::new(
             XmlErrorKind::Unsupported,
             element.span,
-            format!("if/else branch has {} children; wrap in a <Column> or <Row> for now", element.children.len()),
+            format!(
+                "if/else branch has {} children; wrap in a <Column> or <Row> for now",
+                element.children.len()
+            ),
         )
         .at(element.byte_offset));
     };
@@ -766,14 +765,18 @@ fn codegen_for(
     cx: &TokenStream,
     location: &crate::parser::LocationTracker<'_>,
 ) -> Result<TokenStream, XmlError> {
-    let each = element.attributes.iter().find(|a| a.name == "each").ok_or_else(|| {
-        XmlError::new(
-            XmlErrorKind::UnknownAttribute,
-            element.span,
-            "<For> requires an `each={...}` attribute",
-        )
-        .at(element.byte_offset)
-    })?;
+    let each = element
+        .attributes
+        .iter()
+        .find(|a| a.name == "each")
+        .ok_or_else(|| {
+            XmlError::new(
+                XmlErrorKind::UnknownAttribute,
+                element.span,
+                "<For> requires an `each={...}` attribute",
+            )
+            .at(element.byte_offset)
+        })?;
     let each_parsed = attr_expr_only(each)?;
 
     // `<For each={xs} let:item>…</For>` — the `let:item` part
@@ -834,11 +837,25 @@ fn codegen_for(
     // appended so it slots into a parent.
     if has_index {
         let mut body = quote! { gpui::div() };
-        for_each_in_each(&each_parsed, &item_ident, &index_ident, true, &child_expr, &mut body);
+        for_each_in_each(
+            &each_parsed,
+            &item_ident,
+            &index_ident,
+            true,
+            &child_expr,
+            &mut body,
+        );
         Ok(body)
     } else {
         let mut body = quote! { gpui::div() };
-        for_each_in_each(&each_parsed, &item_ident, &index_ident, false, &child_expr, &mut body);
+        for_each_in_each(
+            &each_parsed,
+            &item_ident,
+            &index_ident,
+            false,
+            &child_expr,
+            &mut body,
+        );
         Ok(body)
     }
 }
@@ -932,7 +949,11 @@ fn codegen_include(
         XmlError::new(
             XmlErrorKind::ParseError,
             outer_span,
-            format!("could not read `{}` (resolved to `{}`): {e}", path, resolved.display()),
+            format!(
+                "could not read `{}` (resolved to `{}`): {e}",
+                path,
+                resolved.display()
+            ),
         )
     })?;
     // Parse the included file and emit its children as
@@ -1014,14 +1035,18 @@ fn codegen_match(
     cx: &TokenStream,
     location: &crate::parser::LocationTracker<'_>,
 ) -> Result<TokenStream, XmlError> {
-    let on_attr = element.attributes.iter().find(|a| a.name == "on").ok_or_else(|| {
-        XmlError::new(
-            XmlErrorKind::UnknownAttribute,
-            element.span,
-            "<Match> requires an `on={...}` attribute (the value being matched)",
-        )
-        .at(element.byte_offset)
-    })?;
+    let on_attr = element
+        .attributes
+        .iter()
+        .find(|a| a.name == "on")
+        .ok_or_else(|| {
+            XmlError::new(
+                XmlErrorKind::UnknownAttribute,
+                element.span,
+                "<Match> requires an `on={...}` attribute (the value being matched)",
+            )
+            .at(element.byte_offset)
+        })?;
     let on_parsed = attr_expr_only(on_attr)?;
 
     let mut arms = TokenStream::new();
@@ -1045,14 +1070,18 @@ fn codegen_match(
                 ));
             }
         };
-        let pattern_attr = arm.attributes.iter().find(|a| a.name == "pattern").ok_or_else(|| {
-            XmlError::new(
-                XmlErrorKind::UnknownAttribute,
-                arm.span,
-                "<Case> requires a `pattern={...}` attribute",
-            )
-            .at(arm.byte_offset)
-        })?;
+        let pattern_attr = arm
+            .attributes
+            .iter()
+            .find(|a| a.name == "pattern")
+            .ok_or_else(|| {
+                XmlError::new(
+                    XmlErrorKind::UnknownAttribute,
+                    arm.span,
+                    "<Case> requires a `pattern={...}` attribute",
+                )
+                .at(arm.byte_offset)
+            })?;
         let pattern_parsed = if pattern_attr.expr.is_none() && pattern_attr.raw == "_" {
             quote! { _ }
         } else if let Some(_expr) = &pattern_attr.expr {
@@ -1126,14 +1155,18 @@ fn codegen_state(
     cx: &TokenStream,
     location: &crate::parser::LocationTracker<'_>,
 ) -> Result<TokenStream, XmlError> {
-    let name_attr = element.attributes.iter().find(|a| a.name == "name").ok_or_else(|| {
-        XmlError::new(
-            XmlErrorKind::UnknownAttribute,
-            element.span,
-            "<State> requires a `name=\"...\"` attribute",
-        )
-        .at(element.byte_offset)
-    })?;
+    let name_attr = element
+        .attributes
+        .iter()
+        .find(|a| a.name == "name")
+        .ok_or_else(|| {
+            XmlError::new(
+                XmlErrorKind::UnknownAttribute,
+                element.span,
+                "<State> requires a `name=\"...\"` attribute",
+            )
+            .at(element.byte_offset)
+        })?;
     if name_attr.expr.is_some() {
         return Err(XmlError::new(
             XmlErrorKind::Unsupported,
@@ -1261,10 +1294,9 @@ fn prop_value_tokens(attr: &AstAttribute, kind: PropValue) -> Result<TokenStream
             &format!("attribute `{}`", attr.name),
         )?;
         return Ok(match kind {
-            PropValue::String
-            | PropValue::Variant
-            | PropValue::Bool
-            | PropValue::Unknown => quote! { #parsed },
+            PropValue::String | PropValue::Variant | PropValue::Bool | PropValue::Unknown => {
+                quote! { #parsed }
+            }
             PropValue::Flag => quote! { #parsed /* unreachable */ },
         });
     }
@@ -1508,10 +1540,7 @@ fn parse_string_interpolation(text: &str) -> Option<Vec<InterpPart>> {
     Some(parts)
 }
 
-fn render_string_interpolation(
-    parts: &[InterpPart],
-    attr: &AstAttribute,
-) -> TokenStream {
+fn render_string_interpolation(parts: &[InterpPart], attr: &AstAttribute) -> TokenStream {
     // Build `format!("lit1 {expr1} lit2 {expr2} …", expr1, expr2, …)`.
     let mut format_str = String::new();
     let mut args = Vec::new();
@@ -1524,10 +1553,11 @@ fn render_string_interpolation(
             }
             InterpPart::Expr(s) => {
                 format_str.push_str("{}");
-                let parsed = match parse_ts(s, attr.span, attr.byte_offset, "interpolation expression") {
-                    Ok(ts) => ts,
-                    Err(_) => continue,
-                };
+                let parsed =
+                    match parse_ts(s, attr.span, attr.byte_offset, "interpolation expression") {
+                        Ok(ts) => ts,
+                        Err(_) => continue,
+                    };
                 args.push(parsed);
             }
         }
@@ -1545,11 +1575,7 @@ fn extract_text_content(children: &[AstNode]) -> Option<String> {
             text.push_str(t);
         }
     }
-    if text.is_empty() {
-        None
-    } else {
-        Some(text)
-    }
+    if text.is_empty() { None } else { Some(text) }
 }
 
 /// Split an attribute name like `on_click.stop.enter` into
@@ -1704,9 +1730,7 @@ mod tests {
 
     #[test]
     fn button_with_on_click_closure() {
-        let s = render(
-            r#"<Button id="inc" caption="+" on_click={move |_, _, cx| { x += 1; }} />"#,
-        );
+        let s = render(r#"<Button id="inc" caption="+" on_click={move |_, _, cx| { x += 1; }} />"#);
         assert!(s.contains("headless :: button :: button"), "{s}");
         assert!(s.contains("caption ((\"+\") . to_string ())"), "{s}");
         assert!(s.contains("on_click"), "{s}");
@@ -1741,9 +1765,7 @@ mod tests {
 
     #[test]
     fn if_without_else() {
-        let s = render(
-            r#"<Column><If condition={show}><Label id="x" text="hi" /></If></Column>"#,
-        );
+        let s = render(r#"<Column><If condition={show}><Label id="x" text="hi" /></If></Column>"#);
         assert!(s.contains("if"), "{s}");
         assert!(s.contains("show"), "{s}");
     }
@@ -1807,27 +1829,43 @@ mod tests {
         // the factory — the codegen still validates
         // this even on the runtime path.
         let err = codegen("<MyWidget />", Span::call_site(), None).unwrap_err();
-        assert!(matches!(err.kind, crate::error::XmlErrorKind::UnknownAttribute), "{err:?}");
+        assert!(
+            matches!(err.kind, crate::error::XmlErrorKind::UnknownAttribute),
+            "{err:?}"
+        );
         assert!(err.message.contains("runtime-registered"));
     }
 
     #[test]
     fn unknown_attribute_on_leaf_is_an_error() {
-        let err = codegen(r#"<Label id="x" text="hi" href="bad" />"#, Span::call_site(), None)
-            .unwrap_err();
-        assert!(matches!(err.kind, crate::error::XmlErrorKind::UnknownAttribute), "{err:?}");
+        let err = codegen(
+            r#"<Label id="x" text="hi" href="bad" />"#,
+            Span::call_site(),
+            None,
+        )
+        .unwrap_err();
+        assert!(
+            matches!(err.kind, crate::error::XmlErrorKind::UnknownAttribute),
+            "{err:?}"
+        );
     }
 
     #[test]
     fn unknown_attribute_on_container_is_an_error() {
         let err = codegen(r#"<Column flex hover="red" />"#, Span::call_site(), None).unwrap_err();
-        assert!(matches!(err.kind, crate::error::XmlErrorKind::UnknownAttribute), "{err:?}");
+        assert!(
+            matches!(err.kind, crate::error::XmlErrorKind::UnknownAttribute),
+            "{err:?}"
+        );
     }
 
     #[test]
     fn missing_id_on_leaf_is_an_error() {
         let err = codegen(r#"<Label text="hi" />"#, Span::call_site(), None).unwrap_err();
-        assert!(matches!(err.kind, crate::error::XmlErrorKind::UnknownAttribute), "{err:?}");
+        assert!(
+            matches!(err.kind, crate::error::XmlErrorKind::UnknownAttribute),
+            "{err:?}"
+        );
         assert!(err.message.contains("id"));
     }
 
@@ -1845,7 +1883,10 @@ mod tests {
             None,
         )
         .unwrap_err();
-        assert!(err.message.contains("true") || err.message.contains("false"), "{err}");
+        assert!(
+            err.message.contains("true") || err.message.contains("false"),
+            "{err}"
+        );
     }
 
     #[test]
@@ -1856,13 +1897,21 @@ mod tests {
             None,
         )
         .unwrap_err();
-        assert!(err.message.contains("primary") || err.message.contains("neutral") || err.message.contains("danger"), "{err}");
+        assert!(
+            err.message.contains("primary")
+                || err.message.contains("neutral")
+                || err.message.contains("danger"),
+            "{err}"
+        );
     }
 
     #[test]
     fn xml_parse_error_propagates() {
         let err = codegen("<Column>", Span::call_site(), None).unwrap_err();
-        assert!(matches!(err.kind, crate::error::XmlErrorKind::ParseError), "{err:?}");
+        assert!(
+            matches!(err.kind, crate::error::XmlErrorKind::ParseError),
+            "{err:?}"
+        );
     }
 
     #[test]
@@ -1876,7 +1925,10 @@ mod tests {
         // pointing at the offending attribute.
         let xml = "<Column>\n  <Label id=\"a\" text=\"hi\" />\n  <Button id=\"x\" variant=\"catastrophic\" />\n</Column>";
         let err = codegen(xml, Span::call_site(), None).unwrap_err();
-        assert!(matches!(err.kind, crate::error::XmlErrorKind::InvalidExpression), "{err:?}");
+        assert!(
+            matches!(err.kind, crate::error::XmlErrorKind::InvalidExpression),
+            "{err:?}"
+        );
         assert!(err.offset.is_some(), "error should carry a byte offset");
 
         // Render the error with a location tracker and
@@ -1897,8 +1949,12 @@ mod tests {
     fn diagnostic_render_without_location_falls_back() {
         // When no LocationTracker is provided the
         // diagnostic must still be useful.
-        let err = codegen(r#"<Label id="x" text="hi" href="bad" />"#, Span::call_site(), None)
-            .unwrap_err();
+        let err = codegen(
+            r#"<Label id="x" text="hi" href="bad" />"#,
+            Span::call_site(),
+            None,
+        )
+        .unwrap_err();
         let rendered = err.render_with(None);
         assert!(rendered.contains("href"), "{rendered}");
     }
@@ -1914,14 +1970,18 @@ mod tests {
         )
         .unwrap_err();
         assert!(err.offset.is_some(), "bad-bool error should carry offset");
-        let line_starts = crate::parser::line_starts(r#"<Label id="x" text="hi" strong="maybe" />"#);
+        let line_starts =
+            crate::parser::line_starts(r#"<Label id="x" text="hi" strong="maybe" />"#);
         let loc = crate::parser::LocationTracker {
             line_starts: &line_starts,
             xml: r#"<Label id="x" text="hi" strong="maybe" />"#,
             outer_span: Span::call_site(),
         };
         let rendered = err.render_with(Some(&loc));
-        assert!(rendered.contains("true") && rendered.contains("false"), "{rendered}");
+        assert!(
+            rendered.contains("true") && rendered.contains("false"),
+            "{rendered}"
+        );
     }
 
     #[test]
@@ -1980,7 +2040,10 @@ mod tests {
         // unknown-attribute error.
         let xml = r#"<TextInput id="x" on_key_down.enter={move |_, _, _| {}} />"#;
         let err = codegen(xml, Span::call_site(), None).unwrap_err();
-        assert!(matches!(err.kind, crate::error::XmlErrorKind::UnknownAttribute));
+        assert!(matches!(
+            err.kind,
+            crate::error::XmlErrorKind::UnknownAttribute
+        ));
         assert!(err.message.contains("on_key_down.enter"));
     }
 
@@ -2032,7 +2095,10 @@ mod tests {
     fn match_without_cases_is_an_error() {
         let xml = r#"<Match on={x} />"#;
         let err = codegen(xml, Span::call_site(), None).unwrap_err();
-        assert!(matches!(err.kind, crate::error::XmlErrorKind::Unsupported), "{err:?}");
+        assert!(
+            matches!(err.kind, crate::error::XmlErrorKind::Unsupported),
+            "{err:?}"
+        );
         assert!(err.message.contains("at least one"));
     }
 
@@ -2040,7 +2106,10 @@ mod tests {
     fn case_outside_match_is_an_error() {
         let xml = r#"<Column><Case pattern={A}><Label id="x" text="hi" /></Case></Column>"#;
         let err = codegen(xml, Span::call_site(), None).unwrap_err();
-        assert!(matches!(err.kind, crate::error::XmlErrorKind::Unsupported), "{err:?}");
+        assert!(
+            matches!(err.kind, crate::error::XmlErrorKind::Unsupported),
+            "{err:?}"
+        );
     }
 
     #[test]
@@ -2078,7 +2147,10 @@ mod tests {
     fn state_without_default_is_an_error() {
         let xml = r#"<State name="x"><Label id="l" text="hi" /></State>"#;
         let err = codegen(xml, Span::call_site(), None).unwrap_err();
-        assert!(matches!(err.kind, crate::error::XmlErrorKind::UnknownAttribute), "{err:?}");
+        assert!(
+            matches!(err.kind, crate::error::XmlErrorKind::UnknownAttribute),
+            "{err:?}"
+        );
     }
 
     #[test]
@@ -2137,16 +2209,17 @@ mod tests {
         );
         assert!(s.contains("headless :: text_input :: text_input"), "{s}");
         // Needs-app = false → no `, cx` after the args.
-        assert!(!s.contains("text_input ((\"name\") . to_string () , cx)"), "{s}");
+        assert!(
+            !s.contains("text_input ((\"name\") . to_string () , cx)"),
+            "{s}"
+        );
         assert!(s.contains("text_input ((\"name\") . to_string ())"), "{s}");
         assert!(s.contains("on_change"), "{s}");
     }
 
     #[test]
     fn string_interpolation_in_text_attr() {
-        let s = render(
-            r#"<Label id="x" text="Count: {count}" />"#,
-        );
+        let s = render(r#"<Label id="x" text="Count: {count}" />"#);
         assert!(s.contains("format !"), "{s}");
         // The format string is `Count: {}` (one
         // placeholder, no literal braces to escape).
@@ -2182,9 +2255,7 @@ mod tests {
         // lives in the `Entity<TextInputState>` that the
         // renderer mints internally — so we just verify
         // the on_change side of the binding here.)
-        let s = render(
-            r#"<TextInput id="x" @bind={self.name} placeholder="Name" />"#,
-        );
+        let s = render(r#"<TextInput id="x" @bind={self.name} placeholder="Name" />"#);
         // Strip spaces to make the assertion robust
         // against `quote!`'s token-spacing behaviour.
         let compact: String = s.chars().filter(|c| !c.is_whitespace()).collect();
@@ -2272,15 +2343,11 @@ mod tests {
             .find(|c| c.tag == "Button")
             .expect("Button is in BUILTINS_GENERATED");
         let hand_props: std::collections::BTreeSet<_> = match hand.kind {
-            crate::schema::ComponentKind::Leaf(ref l) => {
-                l.props.iter().map(|p| p.name).collect()
-            }
+            crate::schema::ComponentKind::Leaf(ref l) => l.props.iter().map(|p| p.name).collect(),
             _ => panic!("Button is not a leaf"),
         };
         let gen_props: std::collections::BTreeSet<_> = match gen_entry.kind {
-            crate::schema::ComponentKind::Leaf(ref l) => {
-                l.props.iter().map(|p| p.name).collect()
-            }
+            crate::schema::ComponentKind::Leaf(ref l) => l.props.iter().map(|p| p.name).collect(),
             _ => panic!("generated Button is not a leaf"),
         };
         let hand_events: std::collections::BTreeSet<_> = match hand.kind {
@@ -2316,15 +2383,11 @@ mod tests {
             .find(|c| c.tag == "Label")
             .expect("Label is in BUILTINS_GENERATED");
         let hand_props: std::collections::BTreeSet<_> = match hand.kind {
-            crate::schema::ComponentKind::Leaf(ref l) => {
-                l.props.iter().map(|p| p.name).collect()
-            }
+            crate::schema::ComponentKind::Leaf(ref l) => l.props.iter().map(|p| p.name).collect(),
             _ => panic!("Label is not a leaf"),
         };
         let gen_props: std::collections::BTreeSet<_> = match gen_entry.kind {
-            crate::schema::ComponentKind::Leaf(ref l) => {
-                l.props.iter().map(|p| p.name).collect()
-            }
+            crate::schema::ComponentKind::Leaf(ref l) => l.props.iter().map(|p| p.name).collect(),
             _ => panic!("generated Label is not a leaf"),
         };
         // Compare the FIRST extra arg (Label only has one).

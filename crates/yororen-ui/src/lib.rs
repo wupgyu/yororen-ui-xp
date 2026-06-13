@@ -34,11 +34,11 @@ pub use yororen_ui_brutalism_renderer as brutalism_renderer;
 #[cfg(feature = "xml")]
 pub use yororen_ui_xml as xml;
 #[cfg(feature = "xml")]
-pub use yororen_ui_xml_macro::{xml, xml_file};
-#[cfg(feature = "xml")]
 pub use yororen_ui_xml::register_xml_component;
 #[cfg(feature = "xml")]
 pub use yororen_ui_xml::runtime::ComponentDescriptor;
+#[cfg(feature = "xml")]
+pub use yororen_ui_xml_macro::{xml, xml_file};
 
 pub use yororen_ui_locale_ar as locale_ar;
 pub use yororen_ui_locale_en as locale_en;

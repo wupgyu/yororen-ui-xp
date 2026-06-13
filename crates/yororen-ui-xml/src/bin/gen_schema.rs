@@ -45,7 +45,9 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 use quote::ToTokens;
-use syn::{FnArg, ImplItem, Item, ItemFn, ItemImpl, ItemStruct, Signature, Type, TypePath, Visibility};
+use syn::{
+    FnArg, ImplItem, Item, ItemFn, ItemImpl, ItemStruct, Signature, Type, TypePath, Visibility,
+};
 
 #[derive(Debug, Default, serde::Deserialize)]
 struct OverridesFile {
@@ -155,8 +157,8 @@ fn main() {
             }
         }
     }
-    let headless_dir = headless_dir
-        .unwrap_or_else(|| PathBuf::from("../yororen-ui-core/src/headless"));
+    let headless_dir =
+        headless_dir.unwrap_or_else(|| PathBuf::from("../yororen-ui-core/src/headless"));
     let out_path = out_path.unwrap_or_else(|| PathBuf::from("src/schema_generated.rs"));
 
     let mut entries: Vec<Extracted> = Vec::new();
@@ -277,10 +279,7 @@ fn load_overrides(path: &Path) -> Vec<OverrideEntry> {
     }
 }
 
-fn apply_overrides(
-    entries: Vec<Extracted>,
-    overrides: &[OverrideEntry],
-) -> Vec<Extracted> {
+fn apply_overrides(entries: Vec<Extracted>, overrides: &[OverrideEntry]) -> Vec<Extracted> {
     let by_tag: BTreeMap<String, Extracted> =
         entries.into_iter().map(|e| (e.tag.clone(), e)).collect();
     let mut out: Vec<Extracted> = by_tag
@@ -541,7 +540,11 @@ fn classify_arg(ty: &Type) -> PropValue {
             // Known variant enums.
             if matches!(
                 n.as_str(),
-                "ActionVariantKind" | "BuiltinVariantKey" | "HeadingLevel" | "SliderSize" | "TagKind"
+                "ActionVariantKind"
+                    | "BuiltinVariantKey"
+                    | "HeadingLevel"
+                    | "SliderSize"
+                    | "TagKind"
             ) {
                 return PropValue::Variant;
             }
@@ -560,9 +563,7 @@ fn classify_arg(ty: &Type) -> PropValue {
     PropValue::Unknown
 }
 
-fn analyse_factory(
-    sig: &Signature,
-) -> Result<(Vec<ExtraArgInfo>, bool), String> {
+fn analyse_factory(sig: &Signature) -> Result<(Vec<ExtraArgInfo>, bool), String> {
     // The factory takes `self`-less args. The first one is
     // always the element id (skipped — we pass it from the
     // `id` XML attribute).
@@ -793,7 +794,10 @@ fn render_entry(e: &Extracted) -> String {
     s.push_str(&format!("        kind: {},\n", render_kind(e)));
     s.push_str(&format!(
         "        doc: {:?},\n",
-        format!("auto-generated from `headless::{}`", e.factory.rsplit("::").next().unwrap_or("?"))
+        format!(
+            "auto-generated from `headless::{}`",
+            e.factory.rsplit("::").next().unwrap_or("?")
+        )
     ));
     s.push_str("    },\n");
     for note in &e.notes {

@@ -38,7 +38,10 @@ impl Parse for XmlArgs {
         // The XML literal — anything until the end of the input.
         // We slurp the remaining tokens as a string.
         let xml_tokens = input.to_string();
-        Ok(XmlArgs { cx, xml: xml_tokens })
+        Ok(XmlArgs {
+            cx,
+            xml: xml_tokens,
+        })
     }
 }
 

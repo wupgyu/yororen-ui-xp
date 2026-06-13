@@ -67,7 +67,9 @@ collect!(ComponentDescriptor);
 /// first match (insertion-order; duplicate tags are
 /// rejected at submit time by [`register_xml_component!`]).
 pub fn lookup(tag: &str) -> Option<&'static ComponentDescriptor> {
-    inventory::iter::<ComponentDescriptor>().into_iter().find(|c| c.tag == tag)
+    inventory::iter::<ComponentDescriptor>()
+        .into_iter()
+        .find(|c| c.tag == tag)
 }
 
 /// Helper for the `xml!` codegen's runtime fallback:

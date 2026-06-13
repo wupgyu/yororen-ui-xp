@@ -56,7 +56,10 @@ impl ShowcaseState {
             ("Add Match / State / event modifiers", false),
             ("Write a Phase 3 README", false),
         ] {
-            todos.push(TodoItem { label: label.to_string(), done });
+            todos.push(TodoItem {
+                label: label.to_string(),
+                done,
+            });
         }
         Self {
             counter: cx.new(|_| Counter { value: 0 }),

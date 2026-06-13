@@ -24,11 +24,11 @@ use gpui::{
     Pixels, Stateful, StatefulInteractiveElement, Styled, div, px,
 };
 
+use gpui::prelude::FluentBuilder;
 use yororen_ui_core::headless::list_navigable::ListNavigable;
 use yororen_ui_core::headless::listbox::ListboxProps;
 use yororen_ui_core::renderer::spec::Edges;
 use yororen_ui_core::theme::Theme;
-use gpui::prelude::FluentBuilder;
 
 pub use yororen_ui_core::renderer::listbox::{ListboxRenderState, ListboxRenderer};
 
@@ -114,7 +114,13 @@ impl ListboxRenderer for TokenListboxRenderer {
         let focus_handle = read.focus_handle();
         let _ = read;
 
-        let mut body: Div = div().flex().flex_col().gap(gap).bg(bg).rounded(r).p(px(2.0));
+        let mut body: Div = div()
+            .flex()
+            .flex_col()
+            .gap(gap)
+            .bg(bg)
+            .rounded(r)
+            .p(px(2.0));
 
         for (i, opt) in options.iter().enumerate() {
             let is_highlighted = highlighted == Some(i);
@@ -200,9 +206,8 @@ impl ListboxRenderer for TokenListboxRenderer {
                     }
                     "end" => {
                         state_for_keys.update(cx, |s, _cx| {
-                            if let Some(i) = (0..s.options.len())
-                                .rev()
-                                .find(|&i| s.is_selectable(i))
+                            if let Some(i) =
+                                (0..s.options.len()).rev().find(|&i| s.is_selectable(i))
                             {
                                 s.set_highlighted(i);
                             }

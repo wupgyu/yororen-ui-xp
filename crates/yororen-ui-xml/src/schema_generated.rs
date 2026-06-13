@@ -14,7 +14,10 @@
 
 #![allow(dead_code)]
 
-use crate::schema::{ComponentDef, ComponentKind, ContainerDef, ControlFlowDef, ExtraArg, ExtraArgKind, LeafDef, PropDef, PropValue, RenderMode};
+use crate::schema::{
+    ComponentDef, ComponentKind, ContainerDef, ControlFlowDef, ExtraArg, ExtraArgKind, LeafDef,
+    PropDef, PropValue, RenderMode,
+};
 
 /// Auto-generated schema entries for every leaf component
 /// extracted from the headless source. Combined with the
@@ -29,13 +32,42 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             extra_args: &[],
             render: RenderMode::Default,
             needs_app: true,
-            props: &[PropDef { name: "src", setter: "src", value: PropValue::String },
-            PropDef { name: "initials", setter: "initials", value: PropValue::String },
-            PropDef { name: "name", setter: "name", value: PropValue::String },
-            PropDef { name: "size", setter: "size", value: PropValue::String },
-            PropDef { name: "circle", setter: "circle", value: PropValue::Bool },
-            PropDef { name: "has_status", setter: "has_status", value: PropValue::Bool },
-            PropDef { name: "has_custom_bg", setter: "has_custom_bg", value: PropValue::Bool },
+            props: &[
+                PropDef {
+                    name: "src",
+                    setter: "src",
+                    value: PropValue::String,
+                },
+                PropDef {
+                    name: "initials",
+                    setter: "initials",
+                    value: PropValue::String,
+                },
+                PropDef {
+                    name: "name",
+                    setter: "name",
+                    value: PropValue::String,
+                },
+                PropDef {
+                    name: "size",
+                    setter: "size",
+                    value: PropValue::String,
+                },
+                PropDef {
+                    name: "circle",
+                    setter: "circle",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "has_status",
+                    setter: "has_status",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "has_custom_bg",
+                    setter: "has_custom_bg",
+                    value: PropValue::Bool,
+                },
             ],
             events: &[],
             supports_text_child: false,
@@ -46,11 +78,23 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
         tag: "Badge",
         kind: ComponentKind::Leaf(LeafDef {
             factory: "::yororen_ui::headless::badge::badge",
-            extra_args: &[ExtraArg { kind: ExtraArgKind::Text, attr: "text" }, ],
+            extra_args: &[ExtraArg {
+                kind: ExtraArgKind::Text,
+                attr: "text",
+            }],
             render: RenderMode::Default,
             needs_app: true,
-            props: &[PropDef { name: "variant", setter: "variant", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "icon", setter: "icon", value: PropValue::String },
+            props: &[
+                PropDef {
+                    name: "variant",
+                    setter: "variant",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "icon",
+                    setter: "icon",
+                    value: PropValue::String,
+                },
             ],
             events: &[],
             supports_text_child: false,
@@ -65,14 +109,39 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             extra_args: &[],
             render: RenderMode::Default,
             needs_app: true,
-            props: &[PropDef { name: "disabled", setter: "disabled", value: PropValue::Bool },
-            PropDef { name: "clickable", setter: "clickable", value: PropValue::Bool },
-            PropDef { name: "variant", setter: "variant", value: PropValue::Variant },
-            PropDef { name: "caption", setter: "caption", value: PropValue::String },
-            PropDef { name: "icon", setter: "icon", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "icon_size", setter: "icon_size", value: PropValue::String /* unknown — review */ },
+            props: &[
+                PropDef {
+                    name: "disabled",
+                    setter: "disabled",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "clickable",
+                    setter: "clickable",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "variant",
+                    setter: "variant",
+                    value: PropValue::Variant,
+                },
+                PropDef {
+                    name: "caption",
+                    setter: "caption",
+                    value: PropValue::String,
+                },
+                PropDef {
+                    name: "icon",
+                    setter: "icon",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "icon_size",
+                    setter: "icon_size",
+                    value: PropValue::String, /* unknown — review */
+                },
             ],
-            events: &[("on_click", "on_click"), ],
+            events: &[("on_click", "on_click")],
             supports_text_child: true,
         }),
         doc: "auto-generated from `headless::button`",
@@ -97,8 +166,17 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             extra_args: &[],
             render: RenderMode::Default,
             needs_app: true,
-            props: &[PropDef { name: "interactive", setter: "interactive", value: PropValue::Bool },
-            PropDef { name: "has_custom_bg", setter: "has_custom_bg", value: PropValue::Bool },
+            props: &[
+                PropDef {
+                    name: "interactive",
+                    setter: "interactive",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "has_custom_bg",
+                    setter: "has_custom_bg",
+                    value: PropValue::Bool,
+                },
             ],
             events: &[],
             supports_text_child: false,
@@ -112,12 +190,29 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             extra_args: &[],
             render: RenderMode::Default,
             needs_app: true,
-            props: &[PropDef { name: "checked", setter: "checked", value: PropValue::Bool },
-            PropDef { name: "disabled", setter: "disabled", value: PropValue::Bool },
-            PropDef { name: "has_custom_tone", setter: "has_custom_tone", value: PropValue::Bool },
-            PropDef { name: "custom_tone", setter: "custom_tone", value: PropValue::String /* unknown — review */ },
+            props: &[
+                PropDef {
+                    name: "checked",
+                    setter: "checked",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "disabled",
+                    setter: "disabled",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "has_custom_tone",
+                    setter: "has_custom_tone",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "custom_tone",
+                    setter: "custom_tone",
+                    value: PropValue::String, /* unknown — review */
+                },
             ],
-            events: &[("on_toggle", "on_toggle"), ],
+            events: &[("on_toggle", "on_toggle")],
             supports_text_child: false,
         }),
         doc: "auto-generated from `headless::checkbox`",
@@ -126,7 +221,10 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
         tag: "ComboBox",
         kind: ComponentKind::Leaf(LeafDef {
             factory: "::yororen_ui::headless::combo_box::combo_box",
-            extra_args: &[ExtraArg { kind: ExtraArgKind::Custom, attr: "state" }, ],
+            extra_args: &[ExtraArg {
+                kind: ExtraArgKind::Custom,
+                attr: "state",
+            }],
             render: RenderMode::Default,
             needs_app: false,
             props: &[],
@@ -140,13 +238,25 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
         tag: "Disclosure",
         kind: ComponentKind::Leaf(LeafDef {
             factory: "::yororen_ui::headless::disclosure::disclosure",
-            extra_args: &[ExtraArg { kind: ExtraArgKind::Text, attr: "title" }, ],
+            extra_args: &[ExtraArg {
+                kind: ExtraArgKind::Text,
+                attr: "title",
+            }],
             render: RenderMode::Default,
             needs_app: true,
-            props: &[PropDef { name: "open", setter: "open", value: PropValue::Bool },
-            PropDef { name: "disabled", setter: "disabled", value: PropValue::Bool },
+            props: &[
+                PropDef {
+                    name: "open",
+                    setter: "open",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "disabled",
+                    setter: "disabled",
+                    value: PropValue::Bool,
+                },
             ],
-            events: &[("on_toggle", "on_toggle"), ],
+            events: &[("on_toggle", "on_toggle")],
             supports_text_child: false,
         }),
         doc: "auto-generated from `headless::disclosure`",
@@ -159,8 +269,11 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             extra_args: &[],
             render: RenderMode::Default,
             needs_app: true,
-            props: &[PropDef { name: "vertical", setter: "vertical", value: PropValue::Flag },
-            ],
+            props: &[PropDef {
+                name: "vertical",
+                setter: "vertical",
+                value: PropValue::Flag,
+            }],
             events: &[],
             supports_text_child: false,
         }),
@@ -170,11 +283,23 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
         tag: "DropdownMenu",
         kind: ComponentKind::Leaf(LeafDef {
             factory: "::yororen_ui::headless::dropdown_menu::dropdown_menu",
-            extra_args: &[ExtraArg { kind: ExtraArgKind::Custom, attr: "state" }, ],
+            extra_args: &[ExtraArg {
+                kind: ExtraArgKind::Custom,
+                attr: "state",
+            }],
             render: RenderMode::Default,
             needs_app: false,
-            props: &[PropDef { name: "trigger", setter: "trigger", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "content", setter: "content", value: PropValue::String /* unknown — review */ },
+            props: &[
+                PropDef {
+                    name: "trigger",
+                    setter: "trigger",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "content",
+                    setter: "content",
+                    value: PropValue::String, /* unknown — review */
+                },
             ],
             events: &[],
             supports_text_child: false,
@@ -189,9 +314,22 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             extra_args: &[],
             render: RenderMode::Default,
             needs_app: true,
-            props: &[PropDef { name: "icon", setter: "icon", value: PropValue::String },
-            PropDef { name: "title", setter: "title", value: PropValue::String },
-            PropDef { name: "description", setter: "description", value: PropValue::String },
+            props: &[
+                PropDef {
+                    name: "icon",
+                    setter: "icon",
+                    value: PropValue::String,
+                },
+                PropDef {
+                    name: "title",
+                    setter: "title",
+                    value: PropValue::String,
+                },
+                PropDef {
+                    name: "description",
+                    setter: "description",
+                    value: PropValue::String,
+                },
             ],
             events: &[],
             supports_text_child: false,
@@ -205,18 +343,59 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             extra_args: &[],
             render: RenderMode::Default,
             needs_app: false,
-            props: &[PropDef { name: "placeholder", setter: "placeholder", value: PropValue::String },
-            PropDef { name: "disabled", setter: "disabled", value: PropValue::Bool },
-            PropDef { name: "value", setter: "value", value: PropValue::String },
-            PropDef { name: "has_custom_bg", setter: "has_custom_bg", value: PropValue::Bool },
-            PropDef { name: "has_custom_border", setter: "has_custom_border", value: PropValue::Bool },
-            PropDef { name: "has_custom_focus_border", setter: "has_custom_focus_border", value: PropValue::Bool },
-            PropDef { name: "custom_bg", setter: "custom_bg", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "custom_border", setter: "custom_border", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "custom_focus_border", setter: "custom_focus_border", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "custom_text_color", setter: "custom_text_color", value: PropValue::String /* unknown — review */ },
+            props: &[
+                PropDef {
+                    name: "placeholder",
+                    setter: "placeholder",
+                    value: PropValue::String,
+                },
+                PropDef {
+                    name: "disabled",
+                    setter: "disabled",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "value",
+                    setter: "value",
+                    value: PropValue::String,
+                },
+                PropDef {
+                    name: "has_custom_bg",
+                    setter: "has_custom_bg",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "has_custom_border",
+                    setter: "has_custom_border",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "has_custom_focus_border",
+                    setter: "has_custom_focus_border",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "custom_bg",
+                    setter: "custom_bg",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "custom_border",
+                    setter: "custom_border",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "custom_focus_border",
+                    setter: "custom_focus_border",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "custom_text_color",
+                    setter: "custom_text_color",
+                    value: PropValue::String, /* unknown — review */
+                },
             ],
-            events: &[("on_change", "on_change"), ("on_browse", "on_browse"), ],
+            events: &[("on_change", "on_change"), ("on_browse", "on_browse")],
             supports_text_child: false,
         }),
         doc: "auto-generated from `headless::file_path_input`",
@@ -225,11 +404,17 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
         tag: "FocusRing",
         kind: ComponentKind::Leaf(LeafDef {
             factory: "::yororen_ui::headless::focus_ring::focus_ring",
-            extra_args: &[ExtraArg { kind: ExtraArgKind::Custom, attr: "handle" }, ],
+            extra_args: &[ExtraArg {
+                kind: ExtraArgKind::Custom,
+                attr: "handle",
+            }],
             render: RenderMode::Default,
             needs_app: true,
-            props: &[PropDef { name: "has_custom_color", setter: "has_custom_color", value: PropValue::Bool },
-            ],
+            props: &[PropDef {
+                name: "has_custom_color",
+                setter: "has_custom_color",
+                value: PropValue::Bool,
+            }],
             events: &[],
             supports_text_child: false,
         }),
@@ -243,10 +428,19 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             extra_args: &[],
             render: RenderMode::Default,
             needs_app: true,
-            props: &[PropDef { name: "submit", setter: "submit", value: PropValue::String },
-            PropDef { name: "submit_button", setter: "submit_button", value: PropValue::String /* unknown — review */ },
+            props: &[
+                PropDef {
+                    name: "submit",
+                    setter: "submit",
+                    value: PropValue::String,
+                },
+                PropDef {
+                    name: "submit_button",
+                    setter: "submit_button",
+                    value: PropValue::String, /* unknown — review */
+                },
             ],
-            events: &[("on_submit", "on_submit"), ],
+            events: &[("on_submit", "on_submit")],
             supports_text_child: false,
         }),
         doc: "auto-generated from `headless::form`",
@@ -255,7 +449,10 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
         tag: "FormField",
         kind: ComponentKind::Leaf(LeafDef {
             factory: "::yororen_ui::headless::form_field::form_field",
-            extra_args: &[ExtraArg { kind: ExtraArgKind::Text, attr: "name" }, ],
+            extra_args: &[ExtraArg {
+                kind: ExtraArgKind::Text,
+                attr: "name",
+            }],
             render: RenderMode::Apply,
             needs_app: true,
             props: &[],
@@ -269,7 +466,16 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
         tag: "Heading",
         kind: ComponentKind::Leaf(LeafDef {
             factory: "::yororen_ui::headless::heading::heading",
-            extra_args: &[ExtraArg { kind: ExtraArgKind::Custom, attr: "level" }, ExtraArg { kind: ExtraArgKind::Text, attr: "text" }, ],
+            extra_args: &[
+                ExtraArg {
+                    kind: ExtraArgKind::Custom,
+                    attr: "level",
+                },
+                ExtraArg {
+                    kind: ExtraArgKind::Text,
+                    attr: "text",
+                },
+            ],
             render: RenderMode::Default,
             needs_app: true,
             props: &[],
@@ -283,11 +489,23 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
         tag: "Icon",
         kind: ComponentKind::Leaf(LeafDef {
             factory: "::yororen_ui::headless::icon::icon",
-            extra_args: &[ExtraArg { kind: ExtraArgKind::Custom, attr: "source" }, ],
+            extra_args: &[ExtraArg {
+                kind: ExtraArgKind::Custom,
+                attr: "source",
+            }],
             render: RenderMode::Default,
             needs_app: true,
-            props: &[PropDef { name: "size", setter: "size", value: PropValue::String },
-            PropDef { name: "color", setter: "color", value: PropValue::String },
+            props: &[
+                PropDef {
+                    name: "size",
+                    setter: "size",
+                    value: PropValue::String,
+                },
+                PropDef {
+                    name: "color",
+                    setter: "color",
+                    value: PropValue::String,
+                },
             ],
             events: &[],
             supports_text_child: false,
@@ -302,12 +520,29 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             extra_args: &[],
             render: RenderMode::Default,
             needs_app: true,
-            props: &[PropDef { name: "disabled", setter: "disabled", value: PropValue::Bool },
-            PropDef { name: "variant", setter: "variant", value: PropValue::Variant },
-            PropDef { name: "icon", setter: "icon", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "icon_size", setter: "icon_size", value: PropValue::String /* unknown — review */ },
+            props: &[
+                PropDef {
+                    name: "disabled",
+                    setter: "disabled",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "variant",
+                    setter: "variant",
+                    value: PropValue::Variant,
+                },
+                PropDef {
+                    name: "icon",
+                    setter: "icon",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "icon_size",
+                    setter: "icon_size",
+                    value: PropValue::String, /* unknown — review */
+                },
             ],
-            events: &[("on_click", "on_click"), ],
+            events: &[("on_click", "on_click")],
             supports_text_child: false,
         }),
         doc: "auto-generated from `headless::icon_button`",
@@ -316,11 +551,17 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
         tag: "Image",
         kind: ComponentKind::Leaf(LeafDef {
             factory: "::yororen_ui::headless::image::image",
-            extra_args: &[ExtraArg { kind: ExtraArgKind::Custom, attr: "source" }, ],
+            extra_args: &[ExtraArg {
+                kind: ExtraArgKind::Custom,
+                attr: "source",
+            }],
             render: RenderMode::Default,
             needs_app: true,
-            props: &[PropDef { name: "alt", setter: "alt", value: PropValue::String },
-            ],
+            props: &[PropDef {
+                name: "alt",
+                setter: "alt",
+                value: PropValue::String,
+            }],
             events: &[],
             supports_text_child: false,
         }),
@@ -331,7 +572,10 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
         tag: "KeybindingDisplay",
         kind: ComponentKind::Leaf(LeafDef {
             factory: "::yororen_ui::headless::keybinding_display::keybinding_display",
-            extra_args: &[ExtraArg { kind: ExtraArgKind::Text, attr: "keys" }, ],
+            extra_args: &[ExtraArg {
+                kind: ExtraArgKind::Text,
+                attr: "keys",
+            }],
             render: RenderMode::Default,
             needs_app: true,
             props: &[],
@@ -348,18 +592,63 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             extra_args: &[],
             render: RenderMode::Default,
             needs_app: false,
-            props: &[PropDef { name: "mode", setter: "mode", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "placeholder", setter: "placeholder", value: PropValue::String },
-            PropDef { name: "disabled", setter: "disabled", value: PropValue::Bool },
-            PropDef { name: "has_custom_bg", setter: "has_custom_bg", value: PropValue::Bool },
-            PropDef { name: "has_custom_border", setter: "has_custom_border", value: PropValue::Bool },
-            PropDef { name: "has_custom_focus_border", setter: "has_custom_focus_border", value: PropValue::Bool },
-            PropDef { name: "custom_bg", setter: "custom_bg", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "custom_border", setter: "custom_border", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "custom_focus_border", setter: "custom_focus_border", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "custom_text_color", setter: "custom_text_color", value: PropValue::String /* unknown — review */ },
+            props: &[
+                PropDef {
+                    name: "mode",
+                    setter: "mode",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "placeholder",
+                    setter: "placeholder",
+                    value: PropValue::String,
+                },
+                PropDef {
+                    name: "disabled",
+                    setter: "disabled",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "has_custom_bg",
+                    setter: "has_custom_bg",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "has_custom_border",
+                    setter: "has_custom_border",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "has_custom_focus_border",
+                    setter: "has_custom_focus_border",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "custom_bg",
+                    setter: "custom_bg",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "custom_border",
+                    setter: "custom_border",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "custom_focus_border",
+                    setter: "custom_focus_border",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "custom_text_color",
+                    setter: "custom_text_color",
+                    value: PropValue::String, /* unknown — review */
+                },
             ],
-            events: &[("on_change", "on_change"), ("on_start_capture", "on_start_capture"), ("on_cancel_capture", "on_cancel_capture"), ],
+            events: &[
+                ("on_change", "on_change"),
+                ("on_start_capture", "on_start_capture"),
+                ("on_cancel_capture", "on_cancel_capture"),
+            ],
             supports_text_child: false,
         }),
         doc: "auto-generated from `headless::keybinding_input`",
@@ -368,16 +657,48 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
         tag: "Label",
         kind: ComponentKind::Leaf(LeafDef {
             factory: "::yororen_ui::headless::label::label",
-            extra_args: &[ExtraArg { kind: ExtraArgKind::Text, attr: "text" }, ],
+            extra_args: &[ExtraArg {
+                kind: ExtraArgKind::Text,
+                attr: "text",
+            }],
             render: RenderMode::Default,
             needs_app: true,
-            props: &[PropDef { name: "muted", setter: "muted", value: PropValue::Bool },
-            PropDef { name: "strong", setter: "strong", value: PropValue::Bool },
-            PropDef { name: "inherit_color", setter: "inherit_color", value: PropValue::Bool },
-            PropDef { name: "mono", setter: "mono", value: PropValue::Bool },
-            PropDef { name: "ellipsis", setter: "ellipsis", value: PropValue::Bool },
-            PropDef { name: "wrap", setter: "wrap", value: PropValue::Flag },
-            PropDef { name: "max_lines", setter: "max_lines", value: PropValue::String /* unknown — review */ },
+            props: &[
+                PropDef {
+                    name: "muted",
+                    setter: "muted",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "strong",
+                    setter: "strong",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "inherit_color",
+                    setter: "inherit_color",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "mono",
+                    setter: "mono",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "ellipsis",
+                    setter: "ellipsis",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "wrap",
+                    setter: "wrap",
+                    value: PropValue::Flag,
+                },
+                PropDef {
+                    name: "max_lines",
+                    setter: "max_lines",
+                    value: PropValue::String, /* unknown — review */
+                },
             ],
             events: &[],
             supports_text_child: false,
@@ -389,7 +710,10 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
         tag: "ListItem",
         kind: ComponentKind::Leaf(LeafDef {
             factory: "::yororen_ui::headless::list_item::list_item",
-            extra_args: &[ExtraArg { kind: ExtraArgKind::Text, attr: "title" }, ],
+            extra_args: &[ExtraArg {
+                kind: ExtraArgKind::Text,
+                attr: "title",
+            }],
             render: RenderMode::Apply,
             needs_app: true,
             props: &[],
@@ -403,7 +727,10 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
         tag: "Listbox",
         kind: ComponentKind::Leaf(LeafDef {
             factory: "::yororen_ui::headless::listbox::listbox",
-            extra_args: &[ExtraArg { kind: ExtraArgKind::Custom, attr: "state" }, ],
+            extra_args: &[ExtraArg {
+                kind: ExtraArgKind::Custom,
+                attr: "state",
+            }],
             render: RenderMode::Default,
             needs_app: false,
             props: &[],
@@ -417,7 +744,10 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
         tag: "Menu",
         kind: ComponentKind::Leaf(LeafDef {
             factory: "::yororen_ui::headless::menu::menu",
-            extra_args: &[ExtraArg { kind: ExtraArgKind::Custom, attr: "state" }, ],
+            extra_args: &[ExtraArg {
+                kind: ExtraArgKind::Custom,
+                attr: "state",
+            }],
             render: RenderMode::Default,
             needs_app: false,
             props: &[],
@@ -431,11 +761,23 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
         tag: "Modal",
         kind: ComponentKind::Leaf(LeafDef {
             factory: "::yororen_ui::headless::modal::modal",
-            extra_args: &[ExtraArg { kind: ExtraArgKind::Custom, attr: "state" }, ],
+            extra_args: &[ExtraArg {
+                kind: ExtraArgKind::Custom,
+                attr: "state",
+            }],
             render: RenderMode::Default,
             needs_app: false,
-            props: &[PropDef { name: "child", setter: "child", value: PropValue::String },
-            PropDef { name: "children", setter: "children", value: PropValue::String },
+            props: &[
+                PropDef {
+                    name: "child",
+                    setter: "child",
+                    value: PropValue::String,
+                },
+                PropDef {
+                    name: "children",
+                    setter: "children",
+                    value: PropValue::String,
+                },
             ],
             events: &[],
             supports_text_child: false,
@@ -450,21 +792,78 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             extra_args: &[],
             render: RenderMode::Default,
             needs_app: false,
-            props: &[PropDef { name: "placeholder", setter: "placeholder", value: PropValue::String },
-            PropDef { name: "disabled", setter: "disabled", value: PropValue::Bool },
-            PropDef { name: "min", setter: "min", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "max", setter: "max", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "step", setter: "step", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "value", setter: "value", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "has_custom_bg", setter: "has_custom_bg", value: PropValue::Bool },
-            PropDef { name: "has_custom_border", setter: "has_custom_border", value: PropValue::Bool },
-            PropDef { name: "has_custom_focus_border", setter: "has_custom_focus_border", value: PropValue::Bool },
-            PropDef { name: "custom_bg", setter: "custom_bg", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "custom_border", setter: "custom_border", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "custom_focus_border", setter: "custom_focus_border", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "custom_text_color", setter: "custom_text_color", value: PropValue::String /* unknown — review */ },
+            props: &[
+                PropDef {
+                    name: "placeholder",
+                    setter: "placeholder",
+                    value: PropValue::String,
+                },
+                PropDef {
+                    name: "disabled",
+                    setter: "disabled",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "min",
+                    setter: "min",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "max",
+                    setter: "max",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "step",
+                    setter: "step",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "value",
+                    setter: "value",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "has_custom_bg",
+                    setter: "has_custom_bg",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "has_custom_border",
+                    setter: "has_custom_border",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "has_custom_focus_border",
+                    setter: "has_custom_focus_border",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "custom_bg",
+                    setter: "custom_bg",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "custom_border",
+                    setter: "custom_border",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "custom_focus_border",
+                    setter: "custom_focus_border",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "custom_text_color",
+                    setter: "custom_text_color",
+                    value: PropValue::String, /* unknown — review */
+                },
             ],
-            events: &[("on_change", "on_change"), ("on_increment", "on_increment"), ("on_decrement", "on_decrement"), ],
+            events: &[
+                ("on_change", "on_change"),
+                ("on_increment", "on_increment"),
+                ("on_decrement", "on_decrement"),
+            ],
             supports_text_child: false,
         }),
         doc: "auto-generated from `headless::number_input`",
@@ -476,11 +875,24 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             extra_args: &[],
             render: RenderMode::Default,
             needs_app: true,
-            props: &[PropDef { name: "open", setter: "open", value: PropValue::Bool },
-            PropDef { name: "dismiss_on_escape", setter: "dismiss_on_escape", value: PropValue::Bool },
-            PropDef { name: "dismiss_on_scrim", setter: "dismiss_on_scrim", value: PropValue::Bool },
+            props: &[
+                PropDef {
+                    name: "open",
+                    setter: "open",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "dismiss_on_escape",
+                    setter: "dismiss_on_escape",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "dismiss_on_scrim",
+                    setter: "dismiss_on_scrim",
+                    value: PropValue::Bool,
+                },
             ],
-            events: &[("on_close", "on_close"), ],
+            events: &[("on_close", "on_close")],
             supports_text_child: false,
         }),
         doc: "auto-generated from `headless::overlay`",
@@ -492,11 +904,32 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             extra_args: &[],
             render: RenderMode::Default,
             needs_app: true,
-            props: &[PropDef { name: "title", setter: "title", value: PropValue::String },
-            PropDef { name: "padded", setter: "padded", value: PropValue::Bool },
-            PropDef { name: "has_custom_bg", setter: "has_custom_bg", value: PropValue::Bool },
-            PropDef { name: "has_custom_border", setter: "has_custom_border", value: PropValue::Bool },
-            PropDef { name: "has_custom_padding", setter: "has_custom_padding", value: PropValue::Bool },
+            props: &[
+                PropDef {
+                    name: "title",
+                    setter: "title",
+                    value: PropValue::String,
+                },
+                PropDef {
+                    name: "padded",
+                    setter: "padded",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "has_custom_bg",
+                    setter: "has_custom_bg",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "has_custom_border",
+                    setter: "has_custom_border",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "has_custom_padding",
+                    setter: "has_custom_padding",
+                    value: PropValue::Bool,
+                },
             ],
             events: &[],
             supports_text_child: false,
@@ -510,19 +943,64 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             extra_args: &[],
             render: RenderMode::Default,
             needs_app: false,
-            props: &[PropDef { name: "placeholder", setter: "placeholder", value: PropValue::String },
-            PropDef { name: "disabled", setter: "disabled", value: PropValue::Bool },
-            PropDef { name: "max_length", setter: "max_length", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "mask_char", setter: "mask_char", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "has_custom_bg", setter: "has_custom_bg", value: PropValue::Bool },
-            PropDef { name: "has_custom_border", setter: "has_custom_border", value: PropValue::Bool },
-            PropDef { name: "has_custom_focus_border", setter: "has_custom_focus_border", value: PropValue::Bool },
-            PropDef { name: "custom_bg", setter: "custom_bg", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "custom_border", setter: "custom_border", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "custom_focus_border", setter: "custom_focus_border", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "custom_text_color", setter: "custom_text_color", value: PropValue::String /* unknown — review */ },
+            props: &[
+                PropDef {
+                    name: "placeholder",
+                    setter: "placeholder",
+                    value: PropValue::String,
+                },
+                PropDef {
+                    name: "disabled",
+                    setter: "disabled",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "max_length",
+                    setter: "max_length",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "mask_char",
+                    setter: "mask_char",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "has_custom_bg",
+                    setter: "has_custom_bg",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "has_custom_border",
+                    setter: "has_custom_border",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "has_custom_focus_border",
+                    setter: "has_custom_focus_border",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "custom_bg",
+                    setter: "custom_bg",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "custom_border",
+                    setter: "custom_border",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "custom_focus_border",
+                    setter: "custom_focus_border",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "custom_text_color",
+                    setter: "custom_text_color",
+                    value: PropValue::String, /* unknown — review */
+                },
             ],
-            events: &[("on_change", "on_change"), ("on_submit", "on_submit"), ],
+            events: &[("on_change", "on_change"), ("on_submit", "on_submit")],
             supports_text_child: false,
         }),
         doc: "auto-generated from `headless::password_input`",
@@ -531,11 +1009,23 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
         tag: "Popover",
         kind: ComponentKind::Leaf(LeafDef {
             factory: "::yororen_ui::headless::popover::popover",
-            extra_args: &[ExtraArg { kind: ExtraArgKind::Custom, attr: "state" }, ],
+            extra_args: &[ExtraArg {
+                kind: ExtraArgKind::Custom,
+                attr: "state",
+            }],
             render: RenderMode::Default,
             needs_app: false,
-            props: &[PropDef { name: "trigger", setter: "trigger", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "content", setter: "content", value: PropValue::String /* unknown — review */ },
+            props: &[
+                PropDef {
+                    name: "trigger",
+                    setter: "trigger",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "content",
+                    setter: "content",
+                    value: PropValue::String, /* unknown — review */
+                },
             ],
             events: &[],
             supports_text_child: false,
@@ -550,11 +1040,32 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             extra_args: &[],
             render: RenderMode::Default,
             needs_app: true,
-            props: &[PropDef { name: "value", setter: "value", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "max", setter: "max", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "label", setter: "label", value: PropValue::String },
-            PropDef { name: "indeterminate", setter: "indeterminate", value: PropValue::Bool },
-            PropDef { name: "has_custom_height", setter: "has_custom_height", value: PropValue::Bool },
+            props: &[
+                PropDef {
+                    name: "value",
+                    setter: "value",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "max",
+                    setter: "max",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "label",
+                    setter: "label",
+                    value: PropValue::String,
+                },
+                PropDef {
+                    name: "indeterminate",
+                    setter: "indeterminate",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "has_custom_height",
+                    setter: "has_custom_height",
+                    value: PropValue::Bool,
+                },
             ],
             events: &[],
             supports_text_child: false,
@@ -568,12 +1079,29 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             extra_args: &[],
             render: RenderMode::Default,
             needs_app: true,
-            props: &[PropDef { name: "checked", setter: "checked", value: PropValue::Bool },
-            PropDef { name: "disabled", setter: "disabled", value: PropValue::Bool },
-            PropDef { name: "has_custom_tone", setter: "has_custom_tone", value: PropValue::Bool },
-            PropDef { name: "custom_tone", setter: "custom_tone", value: PropValue::String /* unknown — review */ },
+            props: &[
+                PropDef {
+                    name: "checked",
+                    setter: "checked",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "disabled",
+                    setter: "disabled",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "has_custom_tone",
+                    setter: "has_custom_tone",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "custom_tone",
+                    setter: "custom_tone",
+                    value: PropValue::String, /* unknown — review */
+                },
             ],
-            events: &[("on_toggle", "on_toggle"), ],
+            events: &[("on_toggle", "on_toggle")],
             supports_text_child: false,
         }),
         doc: "auto-generated from `headless::radio`",
@@ -585,10 +1113,19 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             extra_args: &[],
             render: RenderMode::Default,
             needs_app: true,
-            props: &[PropDef { name: "name", setter: "name", value: PropValue::String },
-            PropDef { name: "selected", setter: "selected", value: PropValue::String /* unknown — review */ },
+            props: &[
+                PropDef {
+                    name: "name",
+                    setter: "name",
+                    value: PropValue::String,
+                },
+                PropDef {
+                    name: "selected",
+                    setter: "selected",
+                    value: PropValue::String, /* unknown — review */
+                },
             ],
-            events: &[("on_change", "on_change"), ],
+            events: &[("on_change", "on_change")],
             supports_text_child: false,
         }),
         doc: "auto-generated from `headless::radio_group`",
@@ -600,18 +1137,63 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             extra_args: &[],
             render: RenderMode::Default,
             needs_app: false,
-            props: &[PropDef { name: "placeholder", setter: "placeholder", value: PropValue::String },
-            PropDef { name: "disabled", setter: "disabled", value: PropValue::Bool },
-            PropDef { name: "value", setter: "value", value: PropValue::String },
-            PropDef { name: "has_custom_bg", setter: "has_custom_bg", value: PropValue::Bool },
-            PropDef { name: "has_custom_border", setter: "has_custom_border", value: PropValue::Bool },
-            PropDef { name: "has_custom_focus_border", setter: "has_custom_focus_border", value: PropValue::Bool },
-            PropDef { name: "custom_bg", setter: "custom_bg", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "custom_border", setter: "custom_border", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "custom_focus_border", setter: "custom_focus_border", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "custom_text_color", setter: "custom_text_color", value: PropValue::String /* unknown — review */ },
+            props: &[
+                PropDef {
+                    name: "placeholder",
+                    setter: "placeholder",
+                    value: PropValue::String,
+                },
+                PropDef {
+                    name: "disabled",
+                    setter: "disabled",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "value",
+                    setter: "value",
+                    value: PropValue::String,
+                },
+                PropDef {
+                    name: "has_custom_bg",
+                    setter: "has_custom_bg",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "has_custom_border",
+                    setter: "has_custom_border",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "has_custom_focus_border",
+                    setter: "has_custom_focus_border",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "custom_bg",
+                    setter: "custom_bg",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "custom_border",
+                    setter: "custom_border",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "custom_focus_border",
+                    setter: "custom_focus_border",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "custom_text_color",
+                    setter: "custom_text_color",
+                    value: PropValue::String, /* unknown — review */
+                },
             ],
-            events: &[("on_change", "on_change"), ("on_submit", "on_submit"), ("on_clear", "on_clear"), ],
+            events: &[
+                ("on_change", "on_change"),
+                ("on_submit", "on_submit"),
+                ("on_clear", "on_clear"),
+            ],
             supports_text_child: false,
         }),
         doc: "auto-generated from `headless::search_input`",
@@ -620,7 +1202,10 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
         tag: "Select",
         kind: ComponentKind::Leaf(LeafDef {
             factory: "::yororen_ui::headless::select::select",
-            extra_args: &[ExtraArg { kind: ExtraArgKind::Custom, attr: "state" }, ],
+            extra_args: &[ExtraArg {
+                kind: ExtraArgKind::Custom,
+                attr: "state",
+            }],
             render: RenderMode::Default,
             needs_app: false,
             props: &[],
@@ -634,7 +1219,16 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
         tag: "ShortcutHint",
         kind: ComponentKind::Leaf(LeafDef {
             factory: "::yororen_ui::headless::shortcut_hint::shortcut_hint",
-            extra_args: &[ExtraArg { kind: ExtraArgKind::Text, attr: "label" }, ExtraArg { kind: ExtraArgKind::Text, attr: "keys" }, ],
+            extra_args: &[
+                ExtraArg {
+                    kind: ExtraArgKind::Text,
+                    attr: "label",
+                },
+                ExtraArg {
+                    kind: ExtraArgKind::Text,
+                    attr: "keys",
+                },
+            ],
             render: RenderMode::Default,
             needs_app: true,
             props: &[],
@@ -651,8 +1245,17 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             extra_args: &[],
             render: RenderMode::Default,
             needs_app: true,
-            props: &[PropDef { name: "block", setter: "block", value: PropValue::Bool },
-            PropDef { name: "block_sharp", setter: "block_sharp", value: PropValue::Bool },
+            props: &[
+                PropDef {
+                    name: "block",
+                    setter: "block",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "block_sharp",
+                    setter: "block_sharp",
+                    value: PropValue::Bool,
+                },
             ],
             events: &[],
             supports_text_child: false,
@@ -666,11 +1269,24 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             extra_args: &[],
             render: RenderMode::Default,
             needs_app: true,
-            props: &[PropDef { name: "value", setter: "value", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "step", setter: "step", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "disabled", setter: "disabled", value: PropValue::Bool },
+            props: &[
+                PropDef {
+                    name: "value",
+                    setter: "value",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "step",
+                    setter: "step",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "disabled",
+                    setter: "disabled",
+                    value: PropValue::Bool,
+                },
             ],
-            events: &[("on_change", "on_change"), ],
+            events: &[("on_change", "on_change")],
             supports_text_child: false,
         }),
         doc: "auto-generated from `headless::slider`",
@@ -692,15 +1308,35 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
         tag: "SplitButton",
         kind: ComponentKind::Leaf(LeafDef {
             factory: "::yororen_ui::headless::split_button::split_button",
-            extra_args: &[ExtraArg { kind: ExtraArgKind::Custom, attr: "primary" }, ],
+            extra_args: &[ExtraArg {
+                kind: ExtraArgKind::Custom,
+                attr: "primary",
+            }],
             render: RenderMode::Default,
             needs_app: true,
-            props: &[PropDef { name: "disabled", setter: "disabled", value: PropValue::Bool },
-            PropDef { name: "caption", setter: "caption", value: PropValue::String },
-            PropDef { name: "items", setter: "items", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "state", setter: "state", value: PropValue::String /* unknown — review */ },
+            props: &[
+                PropDef {
+                    name: "disabled",
+                    setter: "disabled",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "caption",
+                    setter: "caption",
+                    value: PropValue::String,
+                },
+                PropDef {
+                    name: "items",
+                    setter: "items",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "state",
+                    setter: "state",
+                    value: PropValue::String, /* unknown — review */
+                },
             ],
-            events: &[("on_select", "on_select"), ],
+            events: &[("on_select", "on_select")],
             supports_text_child: true,
         }),
         doc: "auto-generated from `headless::split_button`",
@@ -713,12 +1349,29 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             extra_args: &[],
             render: RenderMode::Default,
             needs_app: true,
-            props: &[PropDef { name: "checked", setter: "checked", value: PropValue::Bool },
-            PropDef { name: "disabled", setter: "disabled", value: PropValue::Bool },
-            PropDef { name: "has_custom_tone", setter: "has_custom_tone", value: PropValue::Bool },
-            PropDef { name: "custom_tone", setter: "custom_tone", value: PropValue::String /* unknown — review */ },
+            props: &[
+                PropDef {
+                    name: "checked",
+                    setter: "checked",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "disabled",
+                    setter: "disabled",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "has_custom_tone",
+                    setter: "has_custom_tone",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "custom_tone",
+                    setter: "custom_tone",
+                    value: PropValue::String, /* unknown — review */
+                },
             ],
-            events: &[("on_toggle", "on_toggle"), ],
+            events: &[("on_toggle", "on_toggle")],
             supports_text_child: false,
         }),
         doc: "auto-generated from `headless::switch`",
@@ -730,13 +1383,34 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             extra_args: &[],
             render: RenderMode::Default,
             needs_app: true,
-            props: &[PropDef { name: "column", setter: "column", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "columns", setter: "columns", value: PropValue::String },
-            PropDef { name: "row", setter: "row", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "rows", setter: "rows", value: PropValue::String },
-            PropDef { name: "selected", setter: "selected", value: PropValue::String /* unknown — review */ },
+            props: &[
+                PropDef {
+                    name: "column",
+                    setter: "column",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "columns",
+                    setter: "columns",
+                    value: PropValue::String,
+                },
+                PropDef {
+                    name: "row",
+                    setter: "row",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "rows",
+                    setter: "rows",
+                    value: PropValue::String,
+                },
+                PropDef {
+                    name: "selected",
+                    setter: "selected",
+                    value: PropValue::String, /* unknown — review */
+                },
             ],
-            events: &[("on_select", "on_select"), ],
+            events: &[("on_select", "on_select")],
             supports_text_child: false,
         }),
         doc: "auto-generated from `headless::table`",
@@ -745,14 +1419,30 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
         tag: "Tag",
         kind: ComponentKind::Leaf(LeafDef {
             factory: "::yororen_ui::headless::tag::tag",
-            extra_args: &[ExtraArg { kind: ExtraArgKind::Text, attr: "label" }, ],
+            extra_args: &[ExtraArg {
+                kind: ExtraArgKind::Text,
+                attr: "label",
+            }],
             render: RenderMode::Default,
             needs_app: true,
-            props: &[PropDef { name: "disabled", setter: "disabled", value: PropValue::Bool },
-            PropDef { name: "closable", setter: "closable", value: PropValue::Bool },
-            PropDef { name: "selected", setter: "selected", value: PropValue::Bool },
+            props: &[
+                PropDef {
+                    name: "disabled",
+                    setter: "disabled",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "closable",
+                    setter: "closable",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "selected",
+                    setter: "selected",
+                    value: PropValue::Bool,
+                },
             ],
-            events: &[("on_click", "on_click"), ("on_close", "on_close"), ],
+            events: &[("on_click", "on_click"), ("on_close", "on_close")],
             supports_text_child: false,
         }),
         doc: "auto-generated from `headless::tag`",
@@ -762,11 +1452,17 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
         tag: "Text",
         kind: ComponentKind::Leaf(LeafDef {
             factory: "::yororen_ui::headless::text::text",
-            extra_args: &[ExtraArg { kind: ExtraArgKind::Text, attr: "text" }, ],
+            extra_args: &[ExtraArg {
+                kind: ExtraArgKind::Text,
+                attr: "text",
+            }],
             render: RenderMode::Default,
             needs_app: true,
-            props: &[PropDef { name: "size", setter: "size", value: PropValue::String },
-            ],
+            props: &[PropDef {
+                name: "size",
+                setter: "size",
+                value: PropValue::String,
+            }],
             events: &[],
             supports_text_child: false,
         }),
@@ -780,18 +1476,59 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             extra_args: &[],
             render: RenderMode::Default,
             needs_app: false,
-            props: &[PropDef { name: "placeholder", setter: "placeholder", value: PropValue::String },
-            PropDef { name: "disabled", setter: "disabled", value: PropValue::Bool },
-            PropDef { name: "max_length", setter: "max_length", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "has_custom_bg", setter: "has_custom_bg", value: PropValue::Bool },
-            PropDef { name: "has_custom_border", setter: "has_custom_border", value: PropValue::Bool },
-            PropDef { name: "has_custom_focus_border", setter: "has_custom_focus_border", value: PropValue::Bool },
-            PropDef { name: "custom_bg", setter: "custom_bg", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "custom_border", setter: "custom_border", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "custom_focus_border", setter: "custom_focus_border", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "custom_text_color", setter: "custom_text_color", value: PropValue::String /* unknown — review */ },
+            props: &[
+                PropDef {
+                    name: "placeholder",
+                    setter: "placeholder",
+                    value: PropValue::String,
+                },
+                PropDef {
+                    name: "disabled",
+                    setter: "disabled",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "max_length",
+                    setter: "max_length",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "has_custom_bg",
+                    setter: "has_custom_bg",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "has_custom_border",
+                    setter: "has_custom_border",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "has_custom_focus_border",
+                    setter: "has_custom_focus_border",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "custom_bg",
+                    setter: "custom_bg",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "custom_border",
+                    setter: "custom_border",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "custom_focus_border",
+                    setter: "custom_focus_border",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "custom_text_color",
+                    setter: "custom_text_color",
+                    value: PropValue::String, /* unknown — review */
+                },
             ],
-            events: &[("on_change", "on_change"), ],
+            events: &[("on_change", "on_change")],
             supports_text_child: false,
         }),
         doc: "auto-generated from `headless::text_area`",
@@ -803,18 +1540,59 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             extra_args: &[],
             render: RenderMode::Default,
             needs_app: false,
-            props: &[PropDef { name: "placeholder", setter: "placeholder", value: PropValue::String },
-            PropDef { name: "disabled", setter: "disabled", value: PropValue::Bool },
-            PropDef { name: "max_length", setter: "max_length", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "has_custom_bg", setter: "has_custom_bg", value: PropValue::Bool },
-            PropDef { name: "has_custom_border", setter: "has_custom_border", value: PropValue::Bool },
-            PropDef { name: "has_custom_focus_border", setter: "has_custom_focus_border", value: PropValue::Bool },
-            PropDef { name: "custom_bg", setter: "custom_bg", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "custom_border", setter: "custom_border", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "custom_focus_border", setter: "custom_focus_border", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "custom_text_color", setter: "custom_text_color", value: PropValue::String /* unknown — review */ },
+            props: &[
+                PropDef {
+                    name: "placeholder",
+                    setter: "placeholder",
+                    value: PropValue::String,
+                },
+                PropDef {
+                    name: "disabled",
+                    setter: "disabled",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "max_length",
+                    setter: "max_length",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "has_custom_bg",
+                    setter: "has_custom_bg",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "has_custom_border",
+                    setter: "has_custom_border",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "has_custom_focus_border",
+                    setter: "has_custom_focus_border",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "custom_bg",
+                    setter: "custom_bg",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "custom_border",
+                    setter: "custom_border",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "custom_focus_border",
+                    setter: "custom_focus_border",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "custom_text_color",
+                    setter: "custom_text_color",
+                    value: PropValue::String, /* unknown — review */
+                },
             ],
-            events: &[("on_change", "on_change"), ("on_submit", "on_submit"), ],
+            events: &[("on_change", "on_change"), ("on_submit", "on_submit")],
             supports_text_child: false,
         }),
         doc: "auto-generated from `headless::text_input`",
@@ -826,14 +1604,39 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             extra_args: &[],
             render: RenderMode::Default,
             needs_app: true,
-            props: &[PropDef { name: "disabled", setter: "disabled", value: PropValue::Bool },
-            PropDef { name: "selected", setter: "selected", value: PropValue::Bool },
-            PropDef { name: "variant", setter: "variant", value: PropValue::Variant },
-            PropDef { name: "caption", setter: "caption", value: PropValue::String },
-            PropDef { name: "icon", setter: "icon", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "icon_size", setter: "icon_size", value: PropValue::String /* unknown — review */ },
+            props: &[
+                PropDef {
+                    name: "disabled",
+                    setter: "disabled",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "selected",
+                    setter: "selected",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "variant",
+                    setter: "variant",
+                    value: PropValue::Variant,
+                },
+                PropDef {
+                    name: "caption",
+                    setter: "caption",
+                    value: PropValue::String,
+                },
+                PropDef {
+                    name: "icon",
+                    setter: "icon",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "icon_size",
+                    setter: "icon_size",
+                    value: PropValue::String, /* unknown — review */
+                },
             ],
-            events: &[("on_toggle", "on_toggle"), ],
+            events: &[("on_toggle", "on_toggle")],
             supports_text_child: true,
         }),
         doc: "auto-generated from `headless::toggle_button`",
@@ -842,12 +1645,34 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
         tag: "Tooltip",
         kind: ComponentKind::Leaf(LeafDef {
             factory: "::yororen_ui::headless::tooltip::tooltip",
-            extra_args: &[ExtraArg { kind: ExtraArgKind::Text, attr: "text" }, ExtraArg { kind: ExtraArgKind::Custom, attr: "state" }, ],
+            extra_args: &[
+                ExtraArg {
+                    kind: ExtraArgKind::Text,
+                    attr: "text",
+                },
+                ExtraArg {
+                    kind: ExtraArgKind::Custom,
+                    attr: "state",
+                },
+            ],
             render: RenderMode::Default,
             needs_app: false,
-            props: &[PropDef { name: "has_custom_bg", setter: "has_custom_bg", value: PropValue::Bool },
-            PropDef { name: "has_custom_fg", setter: "has_custom_fg", value: PropValue::Bool },
-            PropDef { name: "trigger", setter: "trigger", value: PropValue::String /* unknown — review */ },
+            props: &[
+                PropDef {
+                    name: "has_custom_bg",
+                    setter: "has_custom_bg",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "has_custom_fg",
+                    setter: "has_custom_fg",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "trigger",
+                    setter: "trigger",
+                    value: PropValue::String, /* unknown — review */
+                },
             ],
             events: &[],
             supports_text_child: false,
@@ -862,9 +1687,22 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             extra_args: &[],
             render: RenderMode::Default,
             needs_app: true,
-            props: &[PropDef { name: "data", setter: "data", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "expanded", setter: "expanded", value: PropValue::String },
-            PropDef { name: "selected", setter: "selected", value: PropValue::String },
+            props: &[
+                PropDef {
+                    name: "data",
+                    setter: "data",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "expanded",
+                    setter: "expanded",
+                    value: PropValue::String,
+                },
+                PropDef {
+                    name: "selected",
+                    setter: "selected",
+                    value: PropValue::String,
+                },
             ],
             events: &[],
             supports_text_child: false,
@@ -875,16 +1713,50 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
         tag: "TreeItem",
         kind: ComponentKind::Leaf(LeafDef {
             factory: "::yororen_ui::headless::tree_item::tree_item",
-            extra_args: &[ExtraArg { kind: ExtraArgKind::Text, attr: "node_id" }, ExtraArg { kind: ExtraArgKind::Text, attr: "label" }, ],
+            extra_args: &[
+                ExtraArg {
+                    kind: ExtraArgKind::Text,
+                    attr: "node_id",
+                },
+                ExtraArg {
+                    kind: ExtraArgKind::Text,
+                    attr: "label",
+                },
+            ],
             render: RenderMode::Default,
             needs_app: true,
-            props: &[PropDef { name: "depth", setter: "depth", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "has_children", setter: "has_children", value: PropValue::Bool },
-            PropDef { name: "expanded", setter: "expanded", value: PropValue::Bool },
-            PropDef { name: "selected", setter: "selected", value: PropValue::Bool },
-            PropDef { name: "disabled", setter: "disabled", value: PropValue::Bool },
+            props: &[
+                PropDef {
+                    name: "depth",
+                    setter: "depth",
+                    value: PropValue::String, /* unknown — review */
+                },
+                PropDef {
+                    name: "has_children",
+                    setter: "has_children",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "expanded",
+                    setter: "expanded",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "selected",
+                    setter: "selected",
+                    value: PropValue::Bool,
+                },
+                PropDef {
+                    name: "disabled",
+                    setter: "disabled",
+                    value: PropValue::Bool,
+                },
             ],
-            events: &[("on_click", "on_click"), ("on_toggle", "on_toggle"), ("on_double_click", "on_double_click"), ],
+            events: &[
+                ("on_click", "on_click"),
+                ("on_toggle", "on_toggle"),
+                ("on_double_click", "on_double_click"),
+            ],
             supports_text_child: false,
         }),
         doc: "auto-generated from `headless::tree_item`",
@@ -894,7 +1766,10 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
         tag: "VirtualList",
         kind: ComponentKind::Leaf(LeafDef {
             factory: "::yororen_ui::headless::virtual_list::virtual_list",
-            extra_args: &[ExtraArg { kind: ExtraArgKind::Custom, attr: "controller" }, ],
+            extra_args: &[ExtraArg {
+                kind: ExtraArgKind::Custom,
+                attr: "controller",
+            }],
             render: RenderMode::Apply,
             needs_app: true,
             props: &[],
@@ -911,75 +1786,75 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
 /// (they're XML-only pseudo-tags or layout containers).
 pub static BUILTINS_OVERRIDES: &[ComponentDef] = &[
     ComponentDef {
-            tag: "Column",
-            kind: ComponentKind::Container(ContainerDef {
-                fixed_methods: &[("col", "flex_col"), ],
-                style_hint: "the gpui Styled trait (`.flex`, `.items_center`, `.gap_3()`, …)",
-            }),
-            doc: "from `overrides.toml`",
-        },
+        tag: "Column",
+        kind: ComponentKind::Container(ContainerDef {
+            fixed_methods: &[("col", "flex_col")],
+            style_hint: "the gpui Styled trait (`.flex`, `.items_center`, `.gap_3()`, …)",
+        }),
+        doc: "from `overrides.toml`",
+    },
     ComponentDef {
-            tag: "Row",
-            kind: ComponentKind::Container(ContainerDef {
-                fixed_methods: &[("row", "flex_row"), ],
-                style_hint: "the gpui Styled trait (`.flex`, `.items_center`, `.gap_3()`, …)",
-            }),
-            doc: "from `overrides.toml`",
-        },
+        tag: "Row",
+        kind: ComponentKind::Container(ContainerDef {
+            fixed_methods: &[("row", "flex_row")],
+            style_hint: "the gpui Styled trait (`.flex`, `.items_center`, `.gap_3()`, …)",
+        }),
+        doc: "from `overrides.toml`",
+    },
     ComponentDef {
-            tag: "Div",
-            kind: ComponentKind::Container(ContainerDef {
-                fixed_methods: &[],
-                style_hint: "the gpui Styled trait (`.flex`, `.items_center`, `.gap_3()`, …)",
-            }),
-            doc: "from `overrides.toml`",
-        },
+        tag: "Div",
+        kind: ComponentKind::Container(ContainerDef {
+            fixed_methods: &[],
+            style_hint: "the gpui Styled trait (`.flex`, `.items_center`, `.gap_3()`, …)",
+        }),
+        doc: "from `overrides.toml`",
+    },
     ComponentDef {
-            tag: "Stack",
-            kind: ComponentKind::Container(ContainerDef {
-                fixed_methods: &[],
-                style_hint: "the gpui Styled trait (`.flex`, `.items_center`, `.gap_3()`, …)",
-            }),
-            doc: "from `overrides.toml`",
-        },
+        tag: "Stack",
+        kind: ComponentKind::Container(ContainerDef {
+            fixed_methods: &[],
+            style_hint: "the gpui Styled trait (`.flex`, `.items_center`, `.gap_3()`, …)",
+        }),
+        doc: "from `overrides.toml`",
+    },
     ComponentDef {
-            tag: "If",
-            kind: ComponentKind::ControlFlow(ControlFlowDef::If),
-            doc: "from `overrides.toml`",
-        },
+        tag: "If",
+        kind: ComponentKind::ControlFlow(ControlFlowDef::If),
+        doc: "from `overrides.toml`",
+    },
     ComponentDef {
-            tag: "ElseIf",
-            kind: ComponentKind::ControlFlow(ControlFlowDef::ElseIf),
-            doc: "from `overrides.toml`",
-        },
+        tag: "ElseIf",
+        kind: ComponentKind::ControlFlow(ControlFlowDef::ElseIf),
+        doc: "from `overrides.toml`",
+    },
     ComponentDef {
-            tag: "Else",
-            kind: ComponentKind::ControlFlow(ControlFlowDef::Else),
-            doc: "from `overrides.toml`",
-        },
+        tag: "Else",
+        kind: ComponentKind::ControlFlow(ControlFlowDef::Else),
+        doc: "from `overrides.toml`",
+    },
     ComponentDef {
-            tag: "For",
-            kind: ComponentKind::ControlFlow(ControlFlowDef::For),
-            doc: "from `overrides.toml`",
-        },
+        tag: "For",
+        kind: ComponentKind::ControlFlow(ControlFlowDef::For),
+        doc: "from `overrides.toml`",
+    },
     ComponentDef {
-            tag: "Fragment",
-            kind: ComponentKind::ControlFlow(ControlFlowDef::Fragment),
-            doc: "from `overrides.toml`",
-        },
+        tag: "Fragment",
+        kind: ComponentKind::ControlFlow(ControlFlowDef::Fragment),
+        doc: "from `overrides.toml`",
+    },
     ComponentDef {
-            tag: "Include",
-            kind: ComponentKind::ControlFlow(ControlFlowDef::Include),
-            doc: "from `overrides.toml`",
-        },
+        tag: "Include",
+        kind: ComponentKind::ControlFlow(ControlFlowDef::Include),
+        doc: "from `overrides.toml`",
+    },
     ComponentDef {
-            tag: "Template",
-            kind: ComponentKind::ControlFlow(ControlFlowDef::Template),
-            doc: "from `overrides.toml`",
-        },
+        tag: "Template",
+        kind: ComponentKind::ControlFlow(ControlFlowDef::Template),
+        doc: "from `overrides.toml`",
+    },
     ComponentDef {
-            tag: "Slot",
-            kind: ComponentKind::ControlFlow(ControlFlowDef::Slot),
-            doc: "from `overrides.toml`",
-        },
+        tag: "Slot",
+        kind: ComponentKind::ControlFlow(ControlFlowDef::Slot),
+        doc: "from `overrides.toml`",
+    },
 ];

@@ -206,9 +206,9 @@ pub fn register_default_renderers(cx: &mut App) {
     cx.register_renderer_arc::<markers::ListItem, dyn crate::renderers::ListItemRenderer>(
         Arc::new(TokenListItemRenderer),
     );
-    cx.register_renderer_arc::<markers::Listbox, dyn crate::renderers::ListboxRenderer>(
-        Arc::new(TokenListboxRenderer),
-    );
+    cx.register_renderer_arc::<markers::Listbox, dyn crate::renderers::ListboxRenderer>(Arc::new(
+        TokenListboxRenderer,
+    ));
     cx.register_renderer_arc::<markers::Menu, dyn crate::renderers::MenuRenderer>(Arc::new(
         TokenMenuRenderer,
     ));

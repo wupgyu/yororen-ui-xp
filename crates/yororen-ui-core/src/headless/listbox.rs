@@ -137,10 +137,7 @@ impl ListNavigable for ListboxState {
     /// shared `highlight_next` / `highlight_prev` will skip over
     /// them rather than land on them.
     fn is_selectable(&self, i: usize) -> bool {
-        self.options
-            .get(i)
-            .map(|o| !o.disabled)
-            .unwrap_or(false)
+        self.options.get(i).map(|o| !o.disabled).unwrap_or(false)
     }
 }
 

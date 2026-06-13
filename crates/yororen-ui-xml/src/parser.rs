@@ -51,8 +51,7 @@ pub fn parse(
         // offset. If that fails, fall back to offset 0
         // (the whole literal).
         let offset = parse_roxmltree_offset(&format!("{e}"), &normalized).unwrap_or(0);
-        XmlError::new(XmlErrorKind::ParseError, outer_span, format!("{e}"))
-            .at(offset)
+        XmlError::new(XmlErrorKind::ParseError, outer_span, format!("{e}")).at(offset)
     })?;
 
     let root = doc.root_element();
@@ -160,7 +159,11 @@ impl<'a> LocationTracker<'a> {
     /// offending column.
     pub fn snippet(&self, offset: usize) -> String {
         let (line, col) = self.line_col(offset);
-        let line_start = self.line_starts.get(line.saturating_sub(1)).copied().unwrap_or(0);
+        let line_start = self
+            .line_starts
+            .get(line.saturating_sub(1))
+            .copied()
+            .unwrap_or(0);
         let line_end = self
             .line_starts
             .get(line)
@@ -210,9 +213,7 @@ pub(crate) fn rewrite_let_attrs(input: &str) -> String {
             // start tag, so this is safe in practice.
             out.push_str("let_");
             i += 4;
-            while i < bytes.len()
-                && (bytes[i].is_ascii_alphanumeric() || bytes[i] == b'_')
-            {
+            while i < bytes.len() && (bytes[i].is_ascii_alphanumeric() || bytes[i] == b'_') {
                 out.push(bytes[i] as char);
                 i += 1;
             }
@@ -311,9 +312,7 @@ pub(crate) fn normalise_bool_attrs(input: &str) -> String {
                 }
                 // Attribute: read name until `=`, whitespace, or `/`.
                 let name_start = i;
-                while i < bytes.len()
-                    && !is_attr_name_end(bytes[i])
-                {
+                while i < bytes.len() && !is_attr_name_end(bytes[i]) {
                     i += 1;
                 }
                 let name = &input[name_start..i];
@@ -402,9 +401,7 @@ pub(crate) fn normalise_bool_attrs(input: &str) -> String {
                         // roxmltree tolerates it for some
                         // inputs). We don't expect it from
                         // the macro; treat conservatively.
-                        while i < bytes.len()
-                            && !bytes[i].is_ascii_whitespace()
-                            && bytes[i] != b'>'
+                        while i < bytes.len() && !bytes[i].is_ascii_whitespace() && bytes[i] != b'>'
                         {
                             out.push(bytes[i] as char);
                             i += 1;
@@ -470,7 +467,8 @@ mod tests {
         );
         // The result must be valid XML: the brace value is
         // wrapped in double quotes so roxmltree accepts it.
-        let expected = r#"<Button on_click="{move |_, _, cx| { x.update(cx, |v, _| *v += 1); }}" />"#;
+        let expected =
+            r#"<Button on_click="{move |_, _, cx| { x.update(cx, |v, _| *v += 1); }}" />"#;
         assert_eq!(s, expected);
     }
 
@@ -511,7 +509,11 @@ mod tests {
     }
 }
 
-fn element_from(node: roxmltree::Node, fallback_span: Span, location: &LocationTracker) -> AstElement {
+fn element_from(
+    node: roxmltree::Node,
+    fallback_span: Span,
+    location: &LocationTracker,
+) -> AstElement {
     let tag = node.tag_name().name().to_string();
     let span = span_for_node(node, fallback_span);
     let byte_offset = byte_offset_for_node(node, location);
@@ -616,7 +618,10 @@ fn strip_brace_expression(s: &str) -> (Option<String>, String) {
         trimmed
     };
     if unquoted.starts_with('{') && unquoted.ends_with('}') {
-        (Some(unquoted[1..unquoted.len() - 1].to_string()), s.to_string())
+        (
+            Some(unquoted[1..unquoted.len() - 1].to_string()),
+            s.to_string(),
+        )
     } else {
         (None, s.to_string())
     }

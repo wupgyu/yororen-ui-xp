@@ -272,9 +272,8 @@ impl ListboxRenderer for BrutalListboxRenderer {
                     }
                     "end" => {
                         state_for_keys.update(cx, |s, _cx| {
-                            if let Some(i) = (0..s.options.len())
-                                .rev()
-                                .find(|&i| s.is_selectable(i))
+                            if let Some(i) =
+                                (0..s.options.len()).rev().find(|&i| s.is_selectable(i))
                             {
                                 s.set_highlighted(i);
                             }
