@@ -1,5 +1,5 @@
 <!--
-  Showcase XML — the SINGLE source of truth for the
+  Showcase XML - the SINGLE source of truth for the
   interface. Every event handler here is a method
   reference on `controller` (see src/controller.rs);
   the codegen auto-wraps bare paths into closures so
@@ -17,7 +17,7 @@
       `on={connection}`, `id={name_input_id}` (a
       dynamic id built at render time)
     - Two-way binding: `@bind={entity}` on every
-      toggleable leaf — each checkbox / switch has
+      toggleable leaf - each checkbox / switch has
       its OWN entity, so they don't sync with each
       other. Per-row `done` lives on `TodoItem`.
     - <If> / <ElseIf> / <Else> control flow
@@ -30,15 +30,15 @@
     - <CustomWidget id="..." /> (runtime-registered)
 
   All identifiers referenced here are bound in the
-  surrounding Rust scope — see `src/view.rs`.
+  surrounding Rust scope - see `src/view.rs`.
 -->
 <Column flex col p="4" gap="4">
 
-    <!-- Heading + intro -->
+    <!-- SECTION: Heading -->
     <Label id="title"    text="yororen-ui XML Showcase" strong />
     <Label id="subtitle" text="Logic in Rust, layout in XML — pure declarative" muted />
 
-    <!-- ─── Counter ─────────────────────────────────────────────────── -->
+    <!-- SECTION: Counter -->
     <Row flex gap="2" items_center>
         <Label id="count" text="Count: {counter}" strong />
         <Button id="dec"   caption="-"     on_click={controller.decrement} />
@@ -47,7 +47,7 @@
                 on_click={controller.increment} />
     </Row>
 
-    <!-- ─── Two-way bindings: each toggle is INDEPENDENT ────────────── -->
+    <!-- SECTION: Two-way bindings (each toggle independent) -->
     <Column flex col gap="2">
         <Label id="bindings_label" text="Two-way bindings (@bind) — independent" strong />
         <Row flex gap="2" items_center>
@@ -69,7 +69,7 @@
         </Else>
     </Column>
 
-    <!-- ─── TextInput: dynamic id + flex_1 width ─────────────────────── -->
+    <!-- SECTION: TextInput (dynamic id, flex_1 width) -->
     <Column flex col gap="2">
         <Label id="input_label" text="TextInput (with @bind + Clear)" strong />
         <Row flex gap="2" items_center w_full>
@@ -93,7 +93,7 @@
         <Label id="name_value" text="Typed: {name}" muted />
     </Column>
 
-    <!-- ─── Match / Case over a Rust enum ────────────────────────────── -->
+    <!-- SECTION: Match / Case over a Rust enum -->
     <Column flex col gap="1">
         <Label id="match_label" text="Match / Case (status enum)" strong />
         <Match on={connection}>
@@ -114,18 +114,24 @@
                 on_click={controller.advance_connection} />
     </Column>
 
-    <!-- ─── For / let:item — each row has its OWN done entity ───────── -->
+    <!-- SECTION: For (per-row @bind, dynamic id) -->
     <Column flex col gap="1">
-        <Label id="todos_label" text="For (per-row @bind)" strong />
-        <For each={todos} let:item>
+        <Label id="todos_label" text="For (per-row @bind, dynamic id)" strong />
+        <!-- `let:index={i}` exposes the row index so
+             the `id` is unique per row. Without this
+             every row's Checkbox would share the same
+             ElementId, and gpui's focus tracking
+             would let only the first row toggle. -->
+        <For each={todos} let:item let:index={i}>
             <Row flex gap="2" items_center>
-                <Checkbox id="todo" @bind={item.done} />
-                <Label    id="todo_label" text={item.label} />
+                <Checkbox id={format!("todo_{}", i)} @bind={item.done} />
+                <Label    id={format!("todo_label_{}", i)}
+                         text={item.label} />
             </Row>
         </For>
     </Column>
 
-    <!-- ─── State: local Entity, re-created every render ─────────────── -->
+    <!-- SECTION: State (local Entity, re-minted every render) -->
     <Column flex col gap="1">
         <Label id="state_label"
                text="State (local Entity, default = outer × 7)" strong />
@@ -134,7 +140,7 @@
              minted fresh inside this closure on each
              render, so its initial value reflects the
              latest outer counter. The label inside
-             reads `count.read(cx)` — proves the local
+             reads `count.read(cx)` - proves the local
              entity is the source of truth for the
              inner scope. -->
         <State name="count" default={counter * 7}>
@@ -144,7 +150,7 @@
         </State>
     </Column>
 
-    <!-- ─── Custom runtime-registered tag ────────────────────────────── -->
+    <!-- SECTION: Custom runtime-registered tag -->
     <Column flex col gap="1">
         <Label id="custom_label" text="Custom (register_xml_component!)" strong />
         <CustomWidget id="custom" />

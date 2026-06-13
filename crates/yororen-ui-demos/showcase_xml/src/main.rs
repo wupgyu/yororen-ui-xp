@@ -65,6 +65,15 @@ fn main() {
         // Install the default theme + renderers.
         renderer::install(cx, cx.window_appearance());
 
+        // Bind the global keymap for text-input
+        // actions (Backspace, Delete, Left/Right,
+        // SelectAll, Paste, etc.). Without this the
+        // TextInput can't accept backspace or other
+        // editing keys - they're bound to the
+        // "UITextInput" key context that this
+        // registers (idempotent — safe to call once).
+        yororen_ui::headless::text_input::init(cx);
+
         // English translations.
         locale_en::install(cx);
 

@@ -358,6 +358,30 @@ pub(crate) fn normalise_bool_attrs(input: &str) -> String {
                                 if depth == 0 {
                                     break;
                                 }
+                            } else if b == b'<' {
+                                // `<` inside a brace
+                                // expression would start
+                                // an XML tag — escape as
+                                // `&lt;` so the wrapping
+                                // attribute stays valid.
+                                out.push_str("&lt;");
+                                i += 1;
+                            } else if b == b'>' {
+                                // `>` is technically
+                                // allowed in attributes
+                                // (no entity issue), but
+                                // we escape it for
+                                // symmetry / safety.
+                                out.push_str("&gt;");
+                                i += 1;
+                            } else if b == b'&' {
+                                // `&` is the start of an
+                                // XML entity — escape as
+                                // `&amp;` so the
+                                // wrapping attribute
+                                // stays valid.
+                                out.push_str("&amp;");
+                                i += 1;
                             } else if b == b'"' {
                                 // Inner `"` inside a brace
                                 // expression — escape with
@@ -478,6 +502,24 @@ mod tests {
     }
 
     #[test]
+    fn escapes_xml_specials_in_brace_expressions() {
+        // `<`, `>` and `&` would start / terminate
+        // XML elements if left unescaped inside the
+        // wrapping attribute. The preprocessor
+        // encodes them as `&lt;`, `&gt;`, `&amp;`.
+        let s = normalise_bool_attrs(
+            r#"<Label text={if a < b { c } else { d }} />"#,
+        );
+        assert_eq!(
+            s,
+            r#"<Label text="{if a &lt; b { c } else { d }}" />"#
+        );
+
+        let s2 = normalise_bool_attrs(r#"<Label text={x & 0xFF} />"#);
+        assert_eq!(s2, r#"<Label text="{x &amp; 0xFF}" />"#);
+    }
+
+    #[test]
     fn leaves_text_content_alone() {
         let s = normalise_bool_attrs(r#"<Button>Click me</Button>"#);
         assert_eq!(s, r#"<Button>Click me</Button>"#);
@@ -510,6 +552,12 @@ mod tests {
         let (expr, _raw) =
             strip_brace_expression(r#""{format!(&quot;hi {name}&quot;)}""#);
         assert_eq!(expr.as_deref(), Some(r#"format!("hi {name}")"#));
+
+        // `&amp;` and `&lt;` / `&gt;` also round-trip.
+        let (expr, _raw) = strip_brace_expression(r#""{x &amp; 0xFF}""#);
+        assert_eq!(expr.as_deref(), Some("x & 0xFF"));
+        let (expr, _raw) = strip_brace_expression(r#""{if a &lt; b { 1 } else { 0 }}""#);
+        assert_eq!(expr.as_deref(), Some("if a < b { 1 } else { 0 }"));
     }
 
     #[test]
@@ -653,15 +701,18 @@ fn strip_brace_expression(s: &str) -> (Option<String>, String) {
     if unquoted.starts_with('{') && unquoted.ends_with('}') {
         // Convert XML entity escapes back to literal
         // characters. The preprocessor encodes inner
-        // `"` and `'` inside brace expressions as
-        // `&quot;` / `&apos;` (XML attribute escape
-        // sequences) so the wrapping XML attribute
+        // `<`, `>`, `&`, `"` and `'` inside brace
+        // expressions as their XML attribute escape
+        // sequences so the wrapping XML attribute
         // doesn't terminate prematurely; we reverse
         // the encoding here before handing the
         // expression to the Rust parser.
         let inner = unquoted[1..unquoted.len() - 1]
             .replace("&quot;", "\"")
-            .replace("&apos;", "'");
+            .replace("&apos;", "'")
+            .replace("&lt;", "<")
+            .replace("&gt;", ">")
+            .replace("&amp;", "&");
         (Some(inner), s.to_string())
     } else {
         (None, s.to_string())
