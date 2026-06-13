@@ -100,7 +100,7 @@ pub fn xml_file(input: TokenStream) -> TokenStream {
             cx,
             path: path.value(),
             path_span: path.span(),
-            source_file: source_file,
+            source_file,
         })
     };
     let args = match parser.parse2(input.into()) {

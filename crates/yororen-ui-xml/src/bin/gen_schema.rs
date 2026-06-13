@@ -229,10 +229,10 @@ fn main() {
     //      equivalent). These come last so they sort to the
     //      end of the generated file.
     for o in &overrides {
-        if !entries.iter().any(|e| e.tag == o.tag) {
-            if let Some(e) = override_to_extracted(o) {
-                entries.push(e);
-            }
+        if !entries.iter().any(|e| e.tag == o.tag)
+            && let Some(e) = override_to_extracted(o)
+        {
+            entries.push(e);
         }
     }
     entries.sort_by(|a, b| a.tag.cmp(&b.tag));
@@ -510,7 +510,7 @@ fn render_takes_window(sig: &Signature) -> bool {
         })
         .rev()
         .take(2)
-        .any(|ty| is_mut_window_ty(ty))
+        .any(is_mut_window_ty)
 }
 
 fn is_mut_window_ty(ty: &syn::Type) -> bool {
@@ -524,10 +524,11 @@ fn is_mut_window_ty(ty: &syn::Type) -> bool {
 
 fn find_factory<'a>(ast: &'a syn::File, name: &str) -> Option<&'a ItemFn> {
     for item in &ast.items {
-        if let Item::Fn(f) = item {
-            if f.sig.ident == name && is_public(&f.vis) {
-                return Some(f);
-            }
+        if let Item::Fn(f) = item
+            && f.sig.ident == name
+            && is_public(&f.vis)
+        {
+            return Some(f);
         }
     }
     None
@@ -553,17 +554,14 @@ fn find_struct<'a>(ast: &'a syn::File, prefix: &str) -> Option<&'a ItemStruct> {
 
 fn find_impl<'a>(ast: &'a syn::File, struct_name: &str) -> Option<&'a ItemImpl> {
     for item in &ast.items {
-        if let Item::Impl(imp) = item {
-            if let Type::Path(TypePath { qself: None, path }) = &*imp.self_ty {
-                if path
-                    .segments
-                    .last()
-                    .map(|s| s.ident == struct_name)
-                    .unwrap_or(false)
-                {
-                    return Some(imp);
-                }
-            }
+        if let Item::Impl(imp) = item
+            && let Type::Path(TypePath { qself: None, path }) = &*imp.self_ty
+            && path
+                .segments
+                .last()
+                .is_some_and(|s| s.ident == struct_name)
+        {
+            return Some(imp);
         }
     }
     None
@@ -589,23 +587,23 @@ fn is_event_generic(_method: &syn::ImplItemFn) -> bool {
 
 fn classify_arg(ty: &Type) -> PropValue {
     // `bool` literal.
-    if let Type::Path(tp) = ty {
-        if let Some(seg) = tp.path.segments.last() {
-            let n = seg.ident.to_string();
-            if n == "bool" {
-                return PropValue::Bool;
-            }
-            // Known variant enums.
-            if matches!(
-                n.as_str(),
-                "ActionVariantKind"
-                    | "BuiltinVariantKey"
-                    | "HeadingLevel"
-                    | "SliderSize"
-                    | "TagKind"
-            ) {
-                return PropValue::Variant;
-            }
+    if let Type::Path(tp) = ty
+        && let Some(seg) = tp.path.segments.last()
+    {
+        let n = seg.ident.to_string();
+        if n == "bool" {
+            return PropValue::Bool;
+        }
+        // Known variant enums.
+        if matches!(
+            n.as_str(),
+            "ActionVariantKind"
+                | "BuiltinVariantKey"
+                | "HeadingLevel"
+                | "SliderSize"
+                | "TagKind"
+        ) {
+            return PropValue::Variant;
         }
     }
     // `impl Into<SharedString>` / `impl Into<String>` / `&str` / `String`.
@@ -638,7 +636,7 @@ fn analyse_factory(sig: &Signature) -> Result<(Vec<ExtraArgInfo>, bool), String>
     };
 
     // Drop the leading `id` arg.
-    let extra_arg_args: &[&FnArg] = if rest.len() >= 1 { &rest[1..] } else { &[] };
+    let extra_arg_args: &[&FnArg] = if !rest.is_empty() { &rest[1..] } else { &[] };
 
     let mut extra_args = Vec::new();
     for arg in extra_arg_args {
@@ -666,23 +664,16 @@ fn is_cx_arg(arg: &FnArg) -> bool {
 }
 
 fn is_app_type(ty: &Type) -> bool {
-    if let Type::Reference(tr) = ty {
-        if tr.mutability.is_some() {
-            if let Type::Path(tp) = &*tr.elem {
-                if let Some(seg) = tp.path.segments.last() {
-                    let n = seg.ident.to_string();
-                    if n == "App" {
-                        return true;
-                    }
-                    if n == "Context" {
-                        // `Context<T>` is Deref<Target = App>.
-                        return true;
-                    }
-                }
-            }
-        }
+    if let Type::Reference(tr) = ty
+        && tr.mutability.is_some()
+        && let Type::Path(tp) = &*tr.elem
+        && let Some(seg) = tp.path.segments.last()
+    {
+        let n = seg.ident.to_string();
+        n == "App" || n == "Context"
+    } else {
+        false
     }
-    false
 }
 
 fn is_string_like(ty: &Type) -> bool {
@@ -754,7 +745,7 @@ fn render_module(
     for (stem, reason) in skipped {
         out.push_str(&format!("//! - `{stem}`: {reason}\n"));
     }
-    out.push_str("\n");
+    out.push('\n');
     out.push_str("#![allow(dead_code)]\n\n");
     out.push_str("use crate::schema::{ComponentDef, ComponentKind, ContainerDef, ControlFlowDef, ExtraArg, ExtraArgKind, LeafDef, PropDef, PropValue, RenderMode};\n\n");
 

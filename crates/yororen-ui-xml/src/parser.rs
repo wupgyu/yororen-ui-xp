@@ -622,7 +622,7 @@ fn element_from(
         let value = attr.value();
         let attr_span = span_for_attr(attr, span);
         let attr_offset = byte_offset_for_attr(attr, location);
-        let (expr, raw) = strip_brace_expression(&value);
+        let (expr, raw) = strip_brace_expression(value);
         attributes.push(AstAttribute {
             name: attr.name().to_string(),
             raw,

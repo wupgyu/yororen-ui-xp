@@ -559,7 +559,7 @@ fn codegen_leaf(
                     attr.byte_offset,
                     "@bind requires a brace expression, e.g. `@bind={self.name}`",
                 )?;
-                tokens.append_all(emit_bind(&parsed, def));
+                tokens.append_all(emit_bind(&parsed, def, cx));
                 continue;
             } else {
                 return Err(XmlError::new(
@@ -579,7 +579,7 @@ fn codegen_leaf(
                     // trigger: `<Label wrap />` enables it;
                     // `wrap="false"` is a no-op; `wrap={…}` is
                     // a type error (the user is on the hook).
-                    if let Some(_) = &attr.expr {
+                    if attr.expr.is_some() {
                         return Err(XmlError::new(
                             XmlErrorKind::InvalidExpression,
                             attr.span,
@@ -626,15 +626,15 @@ fn codegen_leaf(
         // `on_key_down.enter={...}`. The base name is
         // the real event; the modifier list wraps the
         // user's closure in a filter / interceptor.
-        if let Some((base_event, modifiers)) = split_event_modifiers(&attr.name) {
-            if let Some((_, setter)) = def.events.iter().find(|(n, _)| *n == base_event).copied() {
-                let m = format_ident!("{}", setter);
-                let expr = attr_expr_only(attr)?;
-                let expr = auto_wrap_event_expr(attr, expr);
-                let wrapped = wrap_event_with_modifiers(&modifiers, expr, attr.span)?;
-                tokens.append_all(quote! { .#m(#wrapped) });
-                continue;
-            }
+        if let Some((base_event, modifiers)) = split_event_modifiers(&attr.name)
+            && let Some((_, setter)) = def.events.iter().find(|(n, _)| *n == base_event).copied()
+        {
+            let m = format_ident!("{}", setter);
+            let expr = attr_expr_only(attr)?;
+            let expr = auto_wrap_event_expr(attr, expr);
+            let wrapped = wrap_event_with_modifiers(&modifiers, expr, attr.span)?;
+            tokens.append_all(quote! { .#m(#wrapped) });
+            continue;
         }
         return Err(XmlError::new(
             XmlErrorKind::UnknownAttribute,
@@ -669,10 +669,10 @@ fn codegen_leaf(
     }
 
     // 5. Optional text child.
-    if def.supports_text_child {
-        if let Some(text) = extract_text_content(&element.children) {
-            tokens.append_all(quote! { .child(#text) });
-        }
+    if def.supports_text_child
+        && let Some(text) = extract_text_content(&element.children)
+    {
+        tokens.append_all(quote! { .child(#text) });
     }
 
     // 6. Wrap to AnyElement so the result composes into a parent.
@@ -1355,7 +1355,7 @@ fn prop_value_tokens(attr: &AstAttribute, kind: PropValue) -> Result<TokenStream
 /// `value` / `text` named prop) and the change event
 /// (preferring `on_change`). The resulting token stream
 /// appends both calls to the props builder.
-fn emit_bind(entity: &TokenStream, def: LeafDef) -> TokenStream {
+fn emit_bind(entity: &TokenStream, def: LeafDef, cx: &TokenStream) -> TokenStream {
     // Pick the value prop. Prefer `value` (TextInput,
     // SearchInput, NumberInput, …); fall back to
     // `checked` (Checkbox, Switch, ToggleButton); then
@@ -1386,7 +1386,7 @@ fn emit_bind(entity: &TokenStream, def: LeafDef) -> TokenStream {
         out.append_all(quote! {
             .#m({
                 let __bind = (#entity).clone();
-                __bind.read(cx).clone()
+                __bind.read(#cx).clone()
             })
         });
     }

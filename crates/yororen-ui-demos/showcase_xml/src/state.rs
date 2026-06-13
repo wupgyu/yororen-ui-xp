@@ -19,18 +19,13 @@ pub struct Counter {
 }
 
 /// Connection status — used to drive the `<Match>` demo.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum ConnectionStatus {
+    #[default]
     Disconnected,
     Connecting,
     Connected,
     Failed,
-}
-
-impl Default for ConnectionStatus {
-    fn default() -> Self {
-        Self::Disconnected
-    }
 }
 
 /// A todo item — each row owns its own `done` entity
