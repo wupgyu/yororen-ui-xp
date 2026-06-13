@@ -1,4 +1,4 @@
-//! From https://github.com/zed-industries/zed/blob/392b6184bfd9368e3db0faec69735d3955b10cbd/crates/title_bar/build.rs
+//! From <https://github.com/zed-industries/zed/blob/392b6184bfd9368e3db0faec69735d3955b10cbd/crates/title_bar/build.rs>
 
 #![allow(clippy::disallowed_methods, reason = "build scripts are exempt")]
 
