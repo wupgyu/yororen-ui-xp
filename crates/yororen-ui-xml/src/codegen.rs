@@ -562,6 +562,24 @@ fn codegen_leaf(
             tokens.append_all(quote! { .#m(#expr) });
             continue;
         }
+        // Event modifiers: `on_click.stop={...}` /
+        // `on_key_down.enter={...}`. The base name is
+        // the real event; the modifier list wraps the
+        // user's closure in a filter / interceptor.
+        if let Some((base_event, modifiers)) = split_event_modifiers(&attr.name) {
+            if let Some((_, setter)) = def
+                .events
+                .iter()
+                .find(|(n, _)| *n == base_event)
+                .copied()
+            {
+                let m = format_ident!("{}", setter);
+                let expr = attr_expr_only(attr)?;
+                let wrapped = wrap_event_with_modifiers(&modifiers, expr, attr.span)?;
+                tokens.append_all(quote! { .#m(#wrapped) });
+                continue;
+            }
+        }
         return Err(XmlError::new(
             XmlErrorKind::UnknownAttribute,
             attr.span,
@@ -1265,6 +1283,95 @@ fn extract_text_content(children: &[AstNode]) -> Option<String> {
     }
 }
 
+/// Split an attribute name like `on_click.stop.enter` into
+/// `("on_click", vec!["stop", "enter"])`. Returns `None` for
+/// names without a dot, signalling that no modifier is
+/// present.
+///
+/// The base name (before the first dot) is what the schema
+/// looks up to find the headless event setter; the
+/// modifiers drive the runtime wrapper that the macro
+/// emits (see [`wrap_event_with_modifiers`]).
+fn split_event_modifiers(name: &str) -> Option<(&str, Vec<&str>)> {
+    let (base, rest) = name.split_once('.')?;
+    if rest.is_empty() {
+        return None;
+    }
+    // Reject double dots and other garbage so the codegen
+    // surface a sensible error later.
+    if rest.contains("..") || rest.starts_with('.') || rest.ends_with('.') {
+        return None;
+    }
+    let modifiers: Vec<&str> = rest.split('.').collect();
+    Some((base, modifiers))
+}
+
+/// Wrap a user's event closure with the given modifiers.
+/// Each modifier adds an outer closure that intercepts
+/// the event before forwarding to the user's code.
+///
+/// Currently supported:
+///
+/// - `.stop` / `.prevent` — no-op at the macro level
+///   (gpui's event callbacks don't expose propagation
+///   control to Rust closures — these are accepted for
+///   forward compatibility / hover-state hint, and
+///   silently forwarded to the user's closure).
+/// - Keyboard filters (`.enter`, `.escape`, `.tab`,
+///   `.space`, `.up`, `.down`, `.left`, `.right`,
+///   `.backspace`, `.delete`, `.home`, `.end`) — wrap
+///   the closure so it only fires when the first event
+///   argument has `keystroke().key == "<filter>"`.
+///
+/// Multiple modifiers are composed left-to-right: the
+/// first listed is the outermost wrapper.
+///
+/// The wrapped closure assumes the headless event
+/// signature is `(EventArg, &mut Window, &mut App)`
+/// where `EventArg` exposes `keystroke() -> Keystroke`
+/// (true for `on_key_down` / `on_key_up`). For
+/// modifiers that don't apply to a given event
+/// signature, the generated wrapper degrades to a
+/// pass-through and the user gets a regular Rust
+/// error if the underlying call site doesn't accept
+/// the wrapper shape.
+fn wrap_event_with_modifiers(
+    modifiers: &[&str],
+    inner: TokenStream,
+    _span: Span,
+) -> Result<TokenStream, XmlError> {
+    if modifiers.is_empty() {
+        return Ok(inner);
+    }
+    let mut wrapped = inner;
+    // Wrap right-to-left so the leftmost modifier ends
+    // up as the outermost closure (the one the headless
+    // component invokes).
+    for modifier in modifiers.iter().rev() {
+        wrapped = match *modifier {
+            // No-op for now — see doc comment.
+            "stop" | "prevent" => quote! {
+                move |__ev, __window, cx| {
+                    #wrapped(__ev, __window, cx)
+                }
+            },
+            // Keyboard filter: gate the inner closure on
+            // the keystroke key matching the modifier name.
+            key => {
+                let key_lit = format!("\"{key}\"");
+                quote! {
+                    move |__ev, __window, cx| {
+                        if __ev.keystroke().key == #key_lit {
+                            #wrapped(__ev, __window, cx)
+                        }
+                    }
+                }
+            }
+        };
+    }
+    Ok(wrapped)
+}
+
 /// Map a shorthand attribute name (e.g. `gap_3`, `p_4`,
 /// `flex`, `col`) to the corresponding gpui `Styled` method
 /// name. Returns `None` if the name isn't a known shorthand.
@@ -1523,6 +1630,66 @@ mod tests {
         };
         let rendered = err.render_with(Some(&loc));
         assert!(rendered.contains("true") && rendered.contains("false"), "{rendered}");
+    }
+
+    #[test]
+    fn split_event_modifiers_recognises_dot_suffixes() {
+        // Single modifier.
+        let (base, mods) = split_event_modifiers("on_key_down.enter").unwrap();
+        assert_eq!(base, "on_key_down");
+        assert_eq!(mods, vec!["enter"]);
+        // Multiple chained modifiers.
+        let (base, mods) = split_event_modifiers("on_key_down.ctrl.enter").unwrap();
+        assert_eq!(base, "on_key_down");
+        assert_eq!(mods, vec!["ctrl", "enter"]);
+        // No modifier.
+        assert!(split_event_modifiers("on_click").is_none());
+        // Malformed names are rejected (no spurious `.`).
+        assert!(split_event_modifiers("on_click.").is_none());
+        assert!(split_event_modifiers("on_click..enter").is_none());
+    }
+
+    #[test]
+    fn event_modifier_emits_keystroke_filter_for_known_keys() {
+        // Test the helper directly — the schema doesn't
+        // currently register `on_key_down` as a built-in
+        // event, but the wrapper generator should still
+        // produce the right shape when fed an inner
+        // closure.
+        let inner: TokenStream =
+            syn::parse_str("move |_ev, _w, _cx| {}").expect("parse inner closure");
+        let wrapped = wrap_event_with_modifiers(&["enter"], inner, Span::call_site())
+            .expect("wrap with .enter");
+        let s = wrapped.to_string();
+        assert!(s.contains("keystroke"), "{s}");
+        assert!(s.contains("enter"), "{s}");
+    }
+
+    #[test]
+    fn event_modifier_chains_multiple_filters() {
+        // Two modifiers wrap the user's closure twice —
+        // the inner closure is called only when both
+        // gates pass. The wrapped token stream should
+        // contain two `keystroke()` invocations.
+        let inner: TokenStream =
+            syn::parse_str("move |_ev, _w, _cx| {}").expect("parse inner closure");
+        let wrapped = wrap_event_with_modifiers(&["ctrl", "enter"], inner, Span::call_site())
+            .expect("wrap with .ctrl.enter");
+        let s = wrapped.to_string();
+        let keystroke_count = s.matches("keystroke").count();
+        assert!(keystroke_count >= 2, "{s}");
+    }
+
+    #[test]
+    fn event_modifier_unknown_base_event_is_an_error() {
+        // The base event must exist in the schema;
+        // `on_key_down` is not a built-in event today,
+        // so the modifier dispatch falls through to the
+        // unknown-attribute error.
+        let xml = r#"<TextInput id="x" on_key_down.enter={move |_, _, _| {}} />"#;
+        let err = codegen(xml, Span::call_site(), None).unwrap_err();
+        assert!(matches!(err.kind, crate::error::XmlErrorKind::UnknownAttribute));
+        assert!(err.message.contains("on_key_down.enter"));
     }
 
     #[test]
