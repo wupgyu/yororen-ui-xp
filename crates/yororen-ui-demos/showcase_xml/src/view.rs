@@ -35,13 +35,25 @@ impl Render for ShowcaseApp {
         // it references is bound here.
         let state = cx.global::<StateRef>().state.read(cx);
         let counter = state.counter.read(cx).value;
-        let flag = *state.flag.read(cx);
-        let _name = state.name.read(cx).clone();
+        let notifications = *state.notifications.read(cx);
+        let agree = *state.agree.read(cx);
+        let name = state.name.read(cx).clone();
         let todos = state.todos.clone();
         let connection = *state.connection.read(cx);
+
+        // Build a fresh `TextInput` id per `Clear`
+        // press. The renderer mints `TextInputState`
+        // via `window.use_keyed_state(props.id, …)`,
+        // so bumping the id forces a brand-new state
+        // — the input appears empty, regardless of
+        // what the user typed before.
+        let name_input_key = state.name_input_key.read(cx).value;
+        let name_input_id = format!("name_input_{name_input_key}");
+
         // Entity handles for `@bind` and the controller
         // for `on_click={...}` references.
-        let flag_entity = state.flag.clone();
+        let notifications_entity = state.notifications.clone();
+        let agree_entity = state.agree.clone();
         let name_entity = state.name.clone();
         let controller = self.controller.clone();
 

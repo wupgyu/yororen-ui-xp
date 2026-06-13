@@ -4,10 +4,11 @@
 //! The `xml!` macro's `@bind={entity}` and brace
 //! expressions read individual sub-entities, so each
 //! field that needs two-way binding or event-driven
-//! mutation is itself wrapped in an entity. Field
-//! reads that are pure values (like `todos: Vec<TodoItem>`)
-//! stay plain — they're cloned per render, which is
-//! fine for a small fixed list.
+//! mutation is itself wrapped in an entity.
+//!
+//! Each toggleable flag has its **own** entity — this
+//! way multiple switches / checkboxes / per-row
+//! checkboxes don't all read the same value.
 
 use gpui::{App, AppContext, Entity, Global};
 
@@ -32,12 +33,14 @@ impl Default for ConnectionStatus {
     }
 }
 
-/// A todo item.
+/// A todo item — each row owns its own `done` entity
+/// so two checkboxes in different rows don't share
+/// state. (`Entity<bool>` per row lets the macro's
+/// `@bind={item.done}` target the right slot.)
 #[derive(Debug, Clone)]
 pub struct TodoItem {
     pub label: String,
-    #[allow(dead_code)]
-    pub done: bool,
+    pub done: Entity<bool>,
 }
 
 /// The application state. Each mutable field that the
@@ -46,8 +49,15 @@ pub struct TodoItem {
 /// the controller can update it via `cx.update(...)`.
 pub struct ShowcaseState {
     pub counter: Entity<Counter>,
-    pub flag: Entity<bool>,
+    pub notifications: Entity<bool>,
+    pub agree: Entity<bool>,
     pub name: Entity<String>,
+    /// Monotonic counter used to mint a fresh
+    /// `TextInputState` whenever the user presses
+    /// Clear — the renderer's keyed state is keyed
+    /// by the input's `id`, so bumping it forces a
+    /// fresh, empty input.
+    pub name_input_key: Entity<Counter>,
     pub todos: Vec<TodoItem>,
     pub connection: Entity<ConnectionStatus>,
 }
@@ -66,13 +76,15 @@ impl ShowcaseState {
         ] {
             todos.push(TodoItem {
                 label: label.to_string(),
-                done,
+                done: cx.new(|_| done),
             });
         }
         Self {
             counter: cx.new(|_| Counter { value: 0 }),
-            flag: cx.new(|_| false),
+            notifications: cx.new(|_| false),
+            agree: cx.new(|_| false),
             name: cx.new(|_| String::from("")),
+            name_input_key: cx.new(|_| Counter { value: 0 }),
             todos,
             connection: cx.new(|_| ConnectionStatus::Disconnected),
         }

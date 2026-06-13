@@ -48,6 +48,7 @@ impl Controller {
                 c.value += 1;
                 cx.notify();
             });
+            cx.notify();
         });
     }
 
@@ -57,6 +58,7 @@ impl Controller {
                 c.value -= 1;
                 cx.notify();
             });
+            cx.notify();
         });
     }
 
@@ -66,17 +68,34 @@ impl Controller {
                 c.value = 0;
                 cx.notify();
             });
+            cx.notify();
         });
     }
 
-    // -- name (string binding) ---------------------------------------------
+    // -- two-way bindings (each toggleable has its own entity) --------------
 
+    // -- name (string binding) + Clear --------------------------------------
+
+    /// Clear the name input. The TextInput's internal
+    /// state is renderer-private, so we can't reach
+    /// in to wipe its buffer. Instead we bump
+    /// `name_input_key`; the view reads it and uses
+    /// it to build a fresh `id` for the input, which
+    /// forces the renderer to mint a new
+    /// `TextInputState` (keyed by `id`). The name
+    /// entity is also cleared in case other UI
+    /// elements read it.
     pub fn clear_name(&self, _ev: &ClickEvent, _w: &mut Window, cx: &mut App) {
         self.state.update(cx, |s, cx| {
+            s.name_input_key.update(cx, |k, cx| {
+                k.value += 1;
+                cx.notify();
+            });
             s.name.update(cx, |n, cx| {
                 n.clear();
                 cx.notify();
             });
+            cx.notify();
         });
     }
 
@@ -93,6 +112,7 @@ impl Controller {
                 };
                 cx.notify();
             });
+            cx.notify();
         });
     }
 }

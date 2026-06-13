@@ -13,14 +13,19 @@
       boolean props), <Switch>, <Checkbox>, <TextInput>
     - String interpolation: `text="Count: {counter}"`
     - Brace expressions: `text={item.label}`,
-      `condition={flag}`, `each={todos}`, `on={connection}`
-    - Two-way binding: `@bind={flag_entity}` on
-      <Switch>, <Checkbox>, and `@bind={name_entity}` on
-      <TextInput>
+      `condition={notifications}`, `each={todos}`,
+      `on={connection}`, `id={name_input_id}` (a
+      dynamic id built at render time)
+    - Two-way binding: `@bind={entity}` on every
+      toggleable leaf — note that each checkbox /
+      switch has its OWN entity, so they don't
+      sync with each other.
     - <If> / <ElseIf> / <Else> control flow
-    - <For each={...} let:item> with optional let:index
+    - <For each={...} let:item> with per-row
+      `@bind={item.done}` (each row is independent)
     - <Match on={...}> with <Case pattern={...}> arms
-    - <State name="x" default="0"> for local entities
+    - <State name="x" default="0"> for a local entity
+      mutated by a separate Row of buttons
     - <CustomWidget id="..." /> (runtime-registered)
 
   All identifiers referenced here are bound in the
@@ -32,33 +37,30 @@
     <Label id="title"    text="yororen-ui XML Showcase" strong />
     <Label id="subtitle" text="Logic in Rust, layout in XML — pure declarative" muted />
 
-    <!-- ─── Containers & leaves ───────────────────────────────────── -->
+    <!-- ─── Counter ─────────────────────────────────────────────────── -->
     <Row flex gap="2" items_center>
         <Label id="count" text="Count: {counter}" strong />
-        <Button id="dec"    caption="-"     on_click={controller.decrement} />
-        <Button id="reset"  caption="Reset" on_click={controller.reset_counter} />
-        <Button id="inc"    caption="+"     variant="primary"
+        <Button id="dec"   caption="-"     on_click={controller.decrement} />
+        <Button id="reset" caption="Reset" on_click={controller.reset_counter} />
+        <Button id="inc"   caption="+"     variant="primary"
                 on_click={controller.increment} />
     </Row>
 
-    <!-- ─── Two-way binding: @bind on Switch, Checkbox, TextInput ── -->
+    <!-- ─── Two-way bindings: each toggle is INDEPENDENT ────────────── -->
     <Column flex col gap="2">
-        <Label id="bindings_label" text="Two-way bindings (@bind)" strong />
-        <Switch    id="notifications" @bind={flag_entity} />
-        <Checkbox  id="agree"         @bind={flag_entity} />
+        <Label id="bindings_label" text="Two-way bindings (@bind) — independent" strong />
         <Row flex gap="2" items_center>
-            <Label id="name_label" text="Name:" />
-            <TextInput id="name_input" placeholder="Type here…" @bind={name_entity} />
-            <Button    id="name_clear" caption="Clear" on_click={controller.clear_name} />
+            <Switch   id="notifications" @bind={notifications_entity} />
+            <Label    id="notifications_label" text="Notifications" />
         </Row>
-    </Column>
-
-    <!-- ─── If / ElseIf / Else ───────────────────────────────────── -->
-    <Column flex col gap="1">
-        <If condition={flag}>
+        <Row flex gap="2" items_center>
+            <Checkbox id="agree"         @bind={agree_entity} />
+            <Label    id="agree_label"   text={if agree { "Agreed ✓" } else { "Not agreed" }} />
+        </Row>
+        <If condition={notifications}>
             <Label id="on" text="Notifications ON" strong />
         </If>
-        <ElseIf condition={!flag}>
+        <ElseIf condition={!notifications}>
             <Label id="off" text="Notifications OFF" muted />
         </ElseIf>
         <Else>
@@ -66,7 +68,31 @@
         </Else>
     </Column>
 
-    <!-- ─── Match / Case over a Rust enum ────────────────────────── -->
+    <!-- ─── TextInput: dynamic id + flex_1 width ─────────────────────── -->
+    <Column flex col gap="2">
+        <Label id="input_label" text="TextInput (with @bind + Clear)" strong />
+        <Row flex gap="2" items_center w_full>
+            <Label id="name_label" text="Name:" />
+            <!-- `Div flex_1` grows to fill remaining
+                 width so the TextInput isn't squashed.
+                 TextInput itself is a leaf and can't
+                 take container-only style attrs. -->
+            <Div flex_1>
+                <!-- The id is a brace expression
+                     evaluated every render. Bumping
+                     `name_input_key` in the controller
+                     mints a fresh TextInputState, so
+                     Clear truly empties the input. -->
+                <TextInput id={name_input_id} placeholder="Type here…"
+                           @bind={name_entity} />
+            </Div>
+            <Button    id="name_clear" caption="Clear"
+                       on_click={controller.clear_name} />
+        </Row>
+        <Label id="name_value" text="Typed: {name}" muted />
+    </Column>
+
+    <!-- ─── Match / Case over a Rust enum ────────────────────────────── -->
     <Column flex col gap="1">
         <Label id="match_label" text="Match / Case (status enum)" strong />
         <Match on={connection}>
@@ -87,26 +113,37 @@
                 on_click={controller.advance_connection} />
     </Column>
 
-    <!-- ─── For / let:item ───────────────────────────────────────── -->
+    <!-- ─── For / let:item — each row has its OWN done entity ───────── -->
     <Column flex col gap="1">
-        <Label id="todos_label" text="For (list rendering with let:item)" strong />
+        <Label id="todos_label" text="For (per-row @bind)" strong />
         <For each={todos} let:item>
             <Row flex gap="2" items_center>
-                <Checkbox id="todo" @bind={flag_entity} />
+                <Checkbox id="todo" @bind={item.done} />
                 <Label    id="todo_label" text={item.label} />
             </Row>
         </For>
     </Column>
 
-    <!-- ─── State: local Entity inside the closure ───────────────── -->
+    <!-- ─── State: local Entity, re-created every render ─────────────── -->
     <Column flex col gap="1">
-        <Label id="state_label" text="State (local Entity)" strong />
-        <State name="count" default="42">
-            <Label id="state_value" text={count.read(cx).to_string()} />
+        <Label id="state_label"
+               text="State (local Entity, default = outer × 7)" strong />
+        <!-- `default` is a brace expression evaluated
+             every render. The local `count` Entity is
+             minted fresh inside this closure on each
+             render, so its initial value reflects the
+             latest outer counter. The label inside
+             reads `count.read(cx)` — proves the local
+             entity is the source of truth for the
+             inner scope. -->
+        <State name="count" default={counter * 7}>
+            <Label id="state_value"
+                   text={format!("Local count = {}", count.read(cx))}
+                   strong />
         </State>
     </Column>
 
-    <!-- ─── Custom runtime-registered tag ────────────────────────── -->
+    <!-- ─── Custom runtime-registered tag ────────────────────────────── -->
     <Column flex col gap="1">
         <Label id="custom_label" text="Custom (register_xml_component!)" strong />
         <CustomWidget id="custom" />

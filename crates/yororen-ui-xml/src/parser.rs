@@ -345,32 +345,36 @@ pub(crate) fn normalise_bool_attrs(input: &str) -> String {
                         out.push('{');
                         i += 1;
                         let mut depth: usize = 1;
-                        let mut in_str: Option<u8> = None;
                         while i < bytes.len() && depth > 0 {
                             let b = bytes[i];
-                            if let Some(q) = in_str {
-                                if b == b'\\' && i + 1 < bytes.len() {
-                                    out.push(b as char);
-                                    out.push(bytes[i + 1] as char);
-                                    i += 2;
-                                    continue;
-                                }
-                                if b == q {
-                                    in_str = None;
-                                }
-                                out.push(b as char);
-                                i += 1;
-                            } else if b == b'"' || b == b'\'' {
-                                in_str = Some(b);
-                                out.push(b as char);
-                                i += 1;
-                            } else if b == b'{' {
+                            if b == b'{' {
                                 depth += 1;
                                 out.push(b as char);
                                 i += 1;
                             } else if b == b'}' {
                                 depth -= 1;
                                 out.push(b as char);
+                                i += 1;
+                                if depth == 0 {
+                                    break;
+                                }
+                            } else if b == b'"' {
+                                // Inner `"` inside a brace
+                                // expression — escape with
+                                // XML's `&quot;` so the
+                                // wrapping quote doesn't
+                                // terminate. The
+                                // `strip_brace_expression`
+                                // helper later converts it
+                                // back to a plain `"` for
+                                // Rust.
+                                out.push_str("&quot;");
+                                i += 1;
+                            } else if b == b'\'' {
+                                // Inner `'` — same
+                                // treatment (XML attribute
+                                // values use `&apos;`).
+                                out.push_str("&apos;");
                                 i += 1;
                             } else {
                                 out.push(b as char);
@@ -455,6 +459,25 @@ mod tests {
     }
 
     #[test]
+    fn escapes_inner_quotes_in_brace_expressions() {
+        // The preprocessor wraps `{...}` in quotes so
+        // roxmltree accepts the result. Inner string
+        // literal quotes are escaped with the XML
+        // entity sequences `&quot;` / `&apos;` so the
+        // wrapping quote doesn't terminate early. The
+        // `strip_brace_expression` helper reverses
+        // the encoding before handing the expression
+        // to the Rust parser.
+        let s = normalise_bool_attrs(
+            r#"<Label text={format!("hi {}", name)} />"#,
+        );
+        assert_eq!(
+            s,
+            r#"<Label text="{format!(&quot;hi {}&quot;, name)}" />"#
+        );
+    }
+
+    #[test]
     fn leaves_text_content_alone() {
         let s = normalise_bool_attrs(r#"<Button>Click me</Button>"#);
         assert_eq!(s, r#"<Button>Click me</Button>"#);
@@ -477,6 +500,16 @@ mod tests {
         let (expr, raw) = strip_brace_expression(r#""{count.to_string()}""#);
         assert_eq!(expr.as_deref(), Some("count.to_string()"));
         assert_eq!(raw, r#""{count.to_string()}""#);
+    }
+
+    #[test]
+    fn strips_brace_expression_decodes_xml_entities() {
+        // `&quot;` inside the wrapped attribute value
+        // is decoded back to a literal `"` so the
+        // expression is valid Rust source.
+        let (expr, _raw) =
+            strip_brace_expression(r#""{format!(&quot;hi {name}&quot;)}""#);
+        assert_eq!(expr.as_deref(), Some(r#"format!("hi {name}")"#));
     }
 
     #[test]
@@ -618,10 +651,18 @@ fn strip_brace_expression(s: &str) -> (Option<String>, String) {
         trimmed
     };
     if unquoted.starts_with('{') && unquoted.ends_with('}') {
-        (
-            Some(unquoted[1..unquoted.len() - 1].to_string()),
-            s.to_string(),
-        )
+        // Convert XML entity escapes back to literal
+        // characters. The preprocessor encodes inner
+        // `"` and `'` inside brace expressions as
+        // `&quot;` / `&apos;` (XML attribute escape
+        // sequences) so the wrapping XML attribute
+        // doesn't terminate prematurely; we reverse
+        // the encoding here before handing the
+        // expression to the Rust parser.
+        let inner = unquoted[1..unquoted.len() - 1]
+            .replace("&quot;", "\"")
+            .replace("&apos;", "'");
+        (Some(inner), s.to_string())
     } else {
         (None, s.to_string())
     }
