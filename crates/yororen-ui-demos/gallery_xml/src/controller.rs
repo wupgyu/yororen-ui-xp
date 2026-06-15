@@ -374,8 +374,13 @@ impl Controller {
     }
 
     pub fn set_locale(&self, choice: LocaleChoice, _w: &mut Window, cx: &mut App) {
-        self.state.update(cx, |s, _cx| s.current_locale = choice);
         crate::i18n::install_for_locale(cx, choice);
+        self.state.update(cx, |s, cx| {
+            s.current_locale = choice;
+            // Re-resolve translated labels so the tree stays in
+            // sync with the new locale.
+            s.tree_data = GalleryState::build_tree_data(&**cx);
+        });
     }
 
     toggle_selectors! {
@@ -785,14 +790,13 @@ impl Controller {
     }
 
     pub fn tree_label(&self, id: &TreeNodeId, cx: &App) -> String {
-        self.tree_data(cx)
-            .label_of(id)
-            .unwrap_or("")
-            .to_string()
+        let state = self.state.read(cx);
+        state.tree_data.label_of(id).unwrap_or("").to_string()
     }
 
     pub fn tree_has_children(&self, id: &TreeNodeId, cx: &App) -> bool {
-        !self.tree_data(cx).children_of(id).is_empty()
+        let state = self.state.read(cx);
+        !state.tree_data.children_of(id).is_empty()
     }
 
     pub fn toggle_tree_node_for(
@@ -928,34 +932,11 @@ impl Controller {
     }
 
     pub fn tree_data(&self, cx: &App) -> TreeData {
-        let mut data = TreeData::new();
-        let root = yororen_ui::headless::tree::node_id("root");
-        let child1 = yororen_ui::headless::tree::node_id("child1");
-        let child2 = yororen_ui::headless::tree::node_id("child2");
-        let leaf1 = yororen_ui::headless::tree::node_id("leaf1");
-        let leaf2 = yororen_ui::headless::tree::node_id("leaf2");
-        data.add(None, root.clone(), cx.t("demo.lists.tree_root"));
-        data.add(
-            Some(root.clone()),
-            child1.clone(),
-            cx.t("demo.lists.tree_child1"),
-        );
-        data.add(
-            Some(root.clone()),
-            child2.clone(),
-            cx.t("demo.lists.tree_child2"),
-        );
-        data.add(
-            Some(child1.clone()),
-            leaf1.clone(),
-            cx.t("demo.lists.tree_leaf1"),
-        );
-        data.add(
-            Some(child1.clone()),
-            leaf2.clone(),
-            cx.t("demo.lists.tree_leaf2"),
-        );
-        data
+        // Tree data is built once in `GalleryState::new_data` and
+        // refreshed in `set_locale`. Cloning the cached value is
+        // cheaper than rebuilding the maps and resolving translations
+        // on every frame.
+        self.state.read(cx).tree_data.clone()
     }
 
     // -------- Internal wiring --------
