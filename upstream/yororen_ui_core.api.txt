@@ -3615,12 +3615,16 @@ pub mod yororen_ui_core::headless::skeleton
 pub struct yororen_ui_core::headless::skeleton::SkeletonProps
 pub yororen_ui_core::headless::skeleton::SkeletonProps::block: bool
 pub yororen_ui_core::headless::skeleton::SkeletonProps::block_sharp: bool
+pub yororen_ui_core::headless::skeleton::SkeletonProps::h: core::option::Option<gpui::geometry::Pixels>
 pub yororen_ui_core::headless::skeleton::SkeletonProps::id: gpui::window::ElementId
+pub yororen_ui_core::headless::skeleton::SkeletonProps::w: core::option::Option<gpui::geometry::Pixels>
 impl yororen_ui_core::headless::skeleton::SkeletonProps
 pub fn yororen_ui_core::headless::skeleton::SkeletonProps::apply(self, gpui::elements::div::Div) -> gpui::elements::div::Stateful<gpui::elements::div::Div>
 pub fn yororen_ui_core::headless::skeleton::SkeletonProps::block(self, bool) -> Self
 pub fn yororen_ui_core::headless::skeleton::SkeletonProps::block_sharp(self, bool) -> Self
+pub fn yororen_ui_core::headless::skeleton::SkeletonProps::h(self, impl core::convert::Into<gpui::geometry::Pixels>) -> Self
 pub fn yororen_ui_core::headless::skeleton::SkeletonProps::render(self, &gpui::app::App) -> gpui::elements::div::Div
+pub fn yororen_ui_core::headless::skeleton::SkeletonProps::w(self, impl core::convert::Into<gpui::geometry::Pixels>) -> Self
 impl core::clone::Clone for yororen_ui_core::headless::skeleton::SkeletonProps
 pub fn yororen_ui_core::headless::skeleton::SkeletonProps::clone(&self) -> yororen_ui_core::headless::skeleton::SkeletonProps
 impl core::fmt::Debug for yororen_ui_core::headless::skeleton::SkeletonProps

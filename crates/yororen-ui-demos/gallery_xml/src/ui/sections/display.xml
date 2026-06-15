@@ -99,15 +99,15 @@
     <Row flex row flex_wrap items_start gap="3">
         <Cell>
             <Slot name="label"><Label id="lbl-sk-line" text={t!(cx, "demo.display.cell_skeleton_line")} muted /></Slot>
-            <Div w={gpui::px(180.0)} h={gpui::px(12.0)}><Skeleton id="sk-line" /></Div>
+            <Skeleton id="sk-line" w={gpui::px(180.0)} h={gpui::px(12.0)} />
         </Cell>
         <Cell>
             <Slot name="label"><Label id="lbl-sk-block" text={t!(cx, "demo.display.cell_skeleton_block")} muted /></Slot>
-            <Div w={gpui::px(180.0)} h={gpui::px(60.0)}><Skeleton id="sk-block" block /></Div>
+            <Skeleton id="sk-block" block w={gpui::px(180.0)} h={gpui::px(60.0)} />
         </Cell>
         <Cell>
             <Slot name="label"><Label id="lbl-sk-block-sharp" text={t!(cx, "demo.display.cell_skeleton_block_sharp")} muted /></Slot>
-            <Div w={gpui::px(180.0)} h={gpui::px(40.0)}><Skeleton id="sk-block-sharp" block block_sharp /></Div>
+            <Skeleton id="sk-block-sharp" block block_sharp w={gpui::px(180.0)} h={gpui::px(40.0)} />
         </Cell>
     </Row>
 

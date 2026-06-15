@@ -663,14 +663,20 @@ impl SkeletonRenderer for BrutalSkeletonRenderer {
             .get_number("motion.duration_skeleton_pulse")
             .unwrap_or(1100.0) as u64;
 
-        gpui::div()
-            .min_h(min_h)
-            .rounded(radius)
-            .child(BrutalSkeletonPulseElement {
-                bg,
-                radius,
-                duration_ms,
-            })
+        let mut el = gpui::div().rounded(radius);
+        if let Some(w) = props.w {
+            el = el.w(w);
+        }
+        if let Some(h) = props.h {
+            el = el.h(h);
+        } else {
+            el = el.min_h(min_h);
+        }
+        el.child(BrutalSkeletonPulseElement {
+            bg,
+            radius,
+            duration_ms,
+        })
     }
 }
 

@@ -816,6 +816,8 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             needs_window: false,
             props: &[PropDef { name: "block", setter: "block", value: PropValue::Bool },
             PropDef { name: "block_sharp", setter: "block_sharp", value: PropValue::Bool },
+            PropDef { name: "w", setter: "w", value: PropValue::Float32 },
+            PropDef { name: "h", setter: "h", value: PropValue::Float32 },
             ],
             events: &[],
             supports_text_child: false,

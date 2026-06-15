@@ -202,16 +202,19 @@ impl SkeletonRenderer for TokenSkeletonRenderer {
             .get_number("motion.duration_skeleton_pulse")
             .unwrap_or(1100.0) as u64;
 
-        // The outer Div sets the size + radius (the caller's
-        // `.w(...)`/`.h(...)` chain lands on this). The pulse
-        // element is `position: absolute; inset: 0` so it fills
-        // the Div exactly.
-        //
-        // For block skeletons we fill the caller-provided height
-        // instead of enforcing a minimum, so short containers are
-        // not overflowed.
+        // The outer Div sets the size + radius. The pulse element
+        // is `position: absolute; inset: 0` so it fills the Div
+        // exactly. Explicit `w`/`h` props take precedence; for block
+        // skeletons without an explicit height we fill the parent,
+        // and for line skeletons without an explicit height we fall
+        // back to the theme's line height.
         let mut el = div().rounded(radius);
-        if props.block {
+        if let Some(w) = props.w {
+            el = el.w(w);
+        }
+        if let Some(h) = props.h {
+            el = el.h(h);
+        } else if props.block {
             el = el.h_full();
         } else {
             el = el.min_h(min_h);

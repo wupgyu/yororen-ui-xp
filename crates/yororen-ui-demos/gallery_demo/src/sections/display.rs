@@ -193,16 +193,16 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
         .gap(px(8.))
         .child(cell(
             cx.t("demo.display.cell_skeleton_line"),
-            skeleton("sk-line", cx).render(cx).w(px(180.)).h(px(12.)),
+            skeleton("sk-line", cx).w(px(180.)).h(px(12.)).render(cx),
             cx,
         ))
         .child(cell(
             cx.t("demo.display.cell_skeleton_block"),
             skeleton("sk-block", cx)
                 .block(true)
-                .render(cx)
                 .w(px(180.))
-                .h(px(60.)),
+                .h(px(60.))
+                .render(cx),
             cx,
         ))
         .child(cell(
@@ -210,9 +210,9 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
             skeleton("sk-block-sharp", cx)
                 .block(true)
                 .block_sharp(true)
-                .render(cx)
                 .w(px(180.))
-                .h(px(40.)),
+                .h(px(40.))
+                .render(cx),
             cx,
         ));
 
