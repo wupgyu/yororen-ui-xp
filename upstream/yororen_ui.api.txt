@@ -30,6 +30,8 @@ pub use yororen_ui::markers
 pub use yororen_ui::notification
 pub use yororen_ui::renderer
 pub use yororen_ui::rtl
+pub use yororen_ui::t
+pub use yororen_ui::t_named
 pub use yororen_ui::theme
 pub mod yororen_ui::locale
 pub const yororen_ui::locale::SUPPORTED_LOCALE_TAGS: &[&str]

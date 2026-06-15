@@ -1,44 +1,44 @@
 <!-- Section 6 — Overlays. -->
 <Column flex col gap="4">
-    <Heading id="overlays-title" level="H2" text={controller.t("demo.section_overlays", cx)} />
+    <Heading id="overlays-title" level="H2" text={t!(cx, "demo.section_overlays")} />
 
     <Cell>
-        <Slot name="label"><Label id="lbl-modal" text={controller.t("demo.modal.cell", cx)} muted /></Slot>
-        <Button id="ov-modal-open" caption={controller.t("demo.modal.open", cx)}
+        <Slot name="label"><Label id="lbl-modal" text={t!(cx, "demo.modal.cell")} muted /></Slot>
+        <Button id="ov-modal-open" caption={t!(cx, "demo.modal.open")}
                 on_click={controller.open_modal} />
     </Cell>
 
     <Cell>
-        <Slot name="label"><Label id="lbl-popover" text={controller.t("demo.overlays.popover_trigger", cx)} muted /></Slot>
+        <Slot name="label"><Label id="lbl-popover" text={t!(cx, "demo.overlays.popover_trigger")} muted /></Slot>
         <Popover id="ov-popover" state={controller.popover_state(cx)}>
             <Button slot="trigger" id="ov-popover-trigger"
-                    caption={if controller.popover_visible(cx) { controller.t("demo.overlays.popover_close", cx) } else { controller.t("demo.overlays.popover_open", cx) }}
+                    caption={if controller.popover_visible(cx) { t!(cx, "demo.overlays.popover_close") } else { t!(cx, "demo.overlays.popover_open") }}
                     on_click={controller.toggle_popover} />
             <Menu slot="content" id="ov-menu" state={controller.menu_state(cx)} />
         </Popover>
     </Cell>
 
     <Cell>
-        <Slot name="label"><Label id="lbl-tooltip" text={controller.t("demo.tooltip.cell", cx)} muted /></Slot>
-        <Tooltip id="ov-tooltip" text={controller.t("demo.tooltip.text", cx)}
+        <Slot name="label"><Label id="lbl-tooltip" text={t!(cx, "demo.tooltip.cell")} muted /></Slot>
+        <Tooltip id="ov-tooltip" text={t!(cx, "demo.tooltip.text")}
                  state={controller.tooltip_state(cx)}>
-            <Label slot="trigger" id="ov-tt-target" text={controller.t("demo.tooltip.hover_target", cx)} />
+            <Label slot="trigger" id="ov-tt-target" text={t!(cx, "demo.tooltip.hover_target")} />
         </Tooltip>
     </Cell>
 
     <Cell>
-        <Slot name="label"><Label id="lbl-dropdown" text={controller.t("demo.overlays.dropdown_trigger", cx)} muted /></Slot>
+        <Slot name="label"><Label id="lbl-dropdown" text={t!(cx, "demo.overlays.dropdown_trigger")} muted /></Slot>
         <DropdownMenu id="ov-dropdown" state={controller.dropdown_state(cx)}>
             <Button slot="trigger" id="ov-dropdown-trigger"
-                    caption={controller.t("demo.overlays.dropdown_open", cx)}
+                    caption={t!(cx, "demo.overlays.dropdown_open")}
                     on_click={controller.toggle_dropdown} />
             <Menu slot="content" id="ov-dropdown-body" state={controller.menu_state(cx)} />
         </DropdownMenu>
     </Cell>
 
     <Cell>
-        <Slot name="label"><Label id="lbl-disclosure" text={controller.t("demo.disclosure.cell", cx)} muted /></Slot>
-        <Disclosure id="ov-disc" title={controller.t("demo.disclosure.title", cx)}
+        <Slot name="label"><Label id="lbl-disclosure" text={t!(cx, "demo.disclosure.cell")} muted /></Slot>
+        <Disclosure id="ov-disc" title={t!(cx, "demo.disclosure.title")}
                     open={controller.disclosure_open(cx)}
                     on_toggle={controller.toggle_disclosure}>
             {controller.disclosure_body(cx)}
@@ -46,13 +46,15 @@
     </Cell>
 
     <Cell>
-        <Slot name="label"><Label id="lbl-overlay" text={controller.t("demo.overlays.scrim", cx)} muted /></Slot>
+        <Slot name="label"><Label id="lbl-overlay" text={t!(cx, "demo.overlays.scrim")} muted /></Slot>
         <Overlay id="ov-overlay" open={controller.is_modal_open(cx)}>
-            <Label id="ov-overlay-info" text={controller.t("demo.overlays.scrim_info", cx)} muted />
+            <Label id="ov-overlay-info" text={t!(cx, "demo.overlays.scrim_info")} muted />
         </Overlay>
     </Cell>
 
     <Label id="ov-summary"
-           text={controller.t("demo.overlays.summary", cx).replacen("{}", &controller.dropdown_demo_value(cx), 1).replacen("{}", &controller.menu_demo_value(cx), 1)}
+           text={t_named!(cx, "demo.overlays.summary",
+                           dropdown => controller.dropdown_demo_value(cx),
+                           menu => controller.menu_demo_value(cx))}
            muted />
 </Column>

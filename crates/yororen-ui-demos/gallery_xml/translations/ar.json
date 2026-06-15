@@ -172,7 +172,7 @@
       "dropdown_trigger": "dropdown_menu (انقر للمشغّل)",
       "scrim_info": "scrim يتبع حالة modal",
       "scrim": "overlay (scrim)",
-      "summary": "dropdown: {} | menu: {}"
+      "summary": "dropdown: {dropdown} | menu: {menu}"
     },
     "lists": {
       "first_item": "العنصر الأول",

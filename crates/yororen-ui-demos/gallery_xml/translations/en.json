@@ -172,7 +172,7 @@
       "dropdown_trigger": "dropdown_menu (click trigger)",
       "scrim_info": "scrim follows modal state",
       "scrim": "overlay (scrim)",
-      "summary": "dropdown: {} | menu: {}"
+      "summary": "dropdown: {dropdown} | menu: {menu}"
     },
     "lists": {
       "first_item": "First item",

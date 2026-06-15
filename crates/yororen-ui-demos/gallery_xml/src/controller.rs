@@ -241,14 +241,6 @@ impl Controller {
         self.state.read(cx).current_locale
     }
 
-    pub fn t(&self, key: &str, cx: &App) -> String {
-        cx.t(key).to_string()
-    }
-
-    pub fn t_with_args(&self, key: &str, cx: &App, args: &[&str]) -> String {
-        cx.t_with_args(key, args).to_string()
-    }
-
     /// Reusable demo "cell" wrapper: a small muted label above the
     /// component inside a 1px-bordered rounded box. Mirrors
     /// `gallery_demo::sections::cell`.
@@ -349,8 +341,8 @@ impl Controller {
         let id_str = id.to_string();
         let center = cx.global::<NotificationCenter>().clone();
         center.notify(
-            Notification::new(self.t_with_args("demo.toast_message", cx, &[&id_str]))
-                .title(self.t("demo.toast_title", cx))
+            Notification::new(cx.t_with_args("demo.toast_message", &[&id_str]))
+                .title(cx.t("demo.toast_title"))
                 .kind(ToastKind::Info),
             cx,
         );
@@ -364,8 +356,8 @@ impl Controller {
         let id_str = id.to_string();
         let center = cx.global::<NotificationCenter>().clone();
         center.notify(
-            Notification::new(self.t_with_args("demo.notification_message", cx, &[&id_str]))
-                .title(self.t("demo.notification_title", cx))
+            Notification::new(cx.t_with_args("demo.notification_message", &[&id_str]))
+                .title(cx.t("demo.notification_title"))
                 .kind(ToastKind::Success)
                 .sticky(true),
             cx,
@@ -378,15 +370,15 @@ impl Controller {
         vec![
             DropdownItem::Item(DropdownMenuItem::new(
                 "save",
-                self.t("demo.actions.save", _cx),
+                _cx.t("demo.actions.save"),
             )),
             DropdownItem::Item(DropdownMenuItem::new(
                 "save_as",
-                self.t("demo.actions.save_as", _cx),
+                _cx.t("demo.actions.save_as"),
             )),
             DropdownItem::Item(DropdownMenuItem::new(
                 "save_all",
-                self.t("demo.actions.save_all", _cx),
+                _cx.t("demo.actions.save_all"),
             )),
         ]
     }
@@ -574,7 +566,7 @@ impl Controller {
             .child(
                 yororen_ui::headless::label::label(
                     "ov-disc-body",
-                    self.t("demo.disclosure.body", cx),
+                    cx.t("demo.disclosure.body"),
                     cx,
                 )
                 .render(cx),
@@ -585,14 +577,14 @@ impl Controller {
     // -------- Lists section --------
 
     pub fn submit_form(&self, vals: HashMap<SharedString, String>, _w: &mut Window, cx: &mut App) {
-        let must_contain = self.t("demo.form.must_contain_at", cx);
+        let must_contain = cx.t("demo.form.must_contain_at");
         self.state.update(cx, |s, _cx| {
             s.form_submit_count += 1;
             if let Some(e) = vals.get("email") {
                 s.form_email_error = if e.contains('@') {
                     None
                 } else {
-                    Some(must_contain.clone())
+                    Some(must_contain.to_string())
                 };
             }
         });
@@ -740,7 +732,7 @@ impl Controller {
         } else {
             value
         };
-        self.t("demo.lists.listbox_selected", cx)
+        cx.t("demo.lists.listbox_selected")
             .replacen("{}", &status, 1)
     }
 
@@ -748,7 +740,7 @@ impl Controller {
         let entity = self.state.read(cx).form_email_value.clone();
         let value = entity.read(cx).clone();
         yororen_ui::headless::text_input::text_input("lists-ff-email-input")
-            .placeholder(self.t("demo.form.email_placeholder", cx))
+            .placeholder(cx.t("demo.form.email_placeholder"))
             .value(value)
             .on_change(move |new: &str, _w, cx| {
                 entity.update(cx, |s, _cx| *s = new.to_string());
@@ -761,7 +753,7 @@ impl Controller {
         let email_input = self.email_input_element(cx, window);
         let form_field =
             yororen_ui::headless::form_field::form_field("lists-ff-email", "email", cx)
-                .label(self.t("demo.form.email_label", cx))
+                .label(cx.t("demo.form.email_label"))
                 .required(true)
                 .input(email_input)
                 .render(cx);
@@ -775,7 +767,7 @@ impl Controller {
                 let controller = self.clone();
                 move |vals, _w, cx| controller.submit_form(vals, _w, cx)
             })
-            .submit(self.t("demo.form.email_label", cx));
+            .submit(cx.t("demo.form.email_label"));
 
         let submit_btn = form_props.submit_button(cx).expect("submit_label set");
         let submit_count = self.state.read(cx).form_submit_count;
@@ -791,9 +783,9 @@ impl Controller {
                     "form-submit-count",
                     format!(
                         "{} {} | {} {:?}",
-                        self.t("demo.form.submitted", cx),
+                        cx.t("demo.form.submitted"),
                         submit_count,
-                        self.t("demo.form.last_error", cx),
+                        cx.t("demo.form.last_error"),
                         email_error
                     ),
                     cx,
@@ -802,7 +794,7 @@ impl Controller {
                 .render(cx),
             )
             .into_any_element();
-        self.cell(self.t("demo.form.cell", cx), el, cx)
+        self.cell(cx.t("demo.form.cell"), el, cx)
     }
 
     pub fn tree_element(&self, cx: &mut App, window: &mut Window) -> AnyElement {
@@ -863,7 +855,7 @@ impl Controller {
         }
 
         self.cell(
-            self.t("demo.lists.cell_tree", cx),
+            cx.t("demo.lists.cell_tree"),
             tree.into_any_element(),
             cx,
         )
@@ -873,7 +865,7 @@ impl Controller {
         self.sync_virtual_list(cx);
         let state_for_row = self.state.clone();
         let state_for_range = self.state.clone();
-        let vl_item_template = self.t("demo.lists.vl_item", cx);
+        let vl_item_template = cx.t("demo.lists.vl_item");
         let vl = yororen_ui::headless::virtual_list::virtual_list(
             "lists-vl",
             &self.list_controller(cx),
@@ -919,13 +911,13 @@ impl Controller {
                 top_state.update(cx, |s, _| s.list_controller.scroll_to_top());
             })
             .render(cx)
-            .child(self.t("demo.common.top", cx));
+            .child(cx.t("demo.common.top"));
         let bottom_btn = yororen_ui::headless::button::button("vl-bottom", cx)
             .on_click(move |_, _, cx| {
                 bottom_state.update(cx, |s, _| s.list_controller.scroll_to_bottom());
             })
             .render(cx)
-            .child(self.t("demo.common.bottom", cx));
+            .child(cx.t("demo.common.bottom"));
         let controls = div()
             .flex()
             .flex_row()
@@ -936,8 +928,8 @@ impl Controller {
         let visible = format!("{:?}", self.state.read(cx).vl_visible_range);
         let item_count = self.state.read(cx).vl_item_count;
         let load_count = self.state.read(cx).vl_load_count;
-        let status = self
-            .t("demo.lists.vl_status", cx)
+        let status = cx
+            .t("demo.lists.vl_status")
             .replacen("{:?}", &visible, 1)
             .replacen("{}", &item_count.to_string(), 1)
             .replacen("{}", &load_count.to_string(), 1);
@@ -953,12 +945,12 @@ impl Controller {
             .child(controls)
             .child(status_label)
             .into_any_element();
-        self.cell(self.t("demo.lists.cell_vl", cx), el, cx)
+        self.cell(cx.t("demo.lists.cell_vl"), el, cx)
     }
 
     pub fn uniform_list_element(&self, cx: &mut App, _window: &mut Window) -> AnyElement {
         let _state = self.state.clone();
-        let uvl_item_template = self.t("demo.lists.uvl_item", cx);
+        let uvl_item_template = cx.t("demo.lists.uvl_item");
         let uvl = yororen_ui::headless::virtual_list::uniform_virtual_list(
             "lists-uvl",
             1_000,
@@ -983,13 +975,13 @@ impl Controller {
                 top_state.update(cx, |s, _| s.uniform_list_controller.scroll_to_top());
             })
             .render(cx)
-            .child(self.t("demo.common.top", cx));
+            .child(cx.t("demo.common.top"));
         let bottom_btn = yororen_ui::headless::button::button("uvl-bottom", cx)
             .on_click(move |_, _, cx| {
                 bottom_state.update(cx, |s, _| s.uniform_list_controller.scroll_to_bottom());
             })
             .render(cx)
-            .child(self.t("demo.common.bottom", cx));
+            .child(cx.t("demo.common.bottom"));
         let controls = div()
             .flex()
             .flex_row()
@@ -1004,7 +996,7 @@ impl Controller {
             .child(uvl)
             .child(controls)
             .into_any_element();
-        self.cell(self.t("demo.lists.cell_uvl", cx), el, cx)
+        self.cell(cx.t("demo.lists.cell_uvl"), el, cx)
     }
 
     pub fn spacer_element(&self, cx: &mut App) -> AnyElement {
@@ -1013,7 +1005,7 @@ impl Controller {
             .h(px(16.))
             .w_full()
             .into_any_element();
-        self.cell(self.t("demo.lists.cell_spacer", cx), el, cx)
+        self.cell(cx.t("demo.lists.cell_spacer"), el, cx)
     }
 
     // -------- Data helpers used by XML --------
@@ -1028,28 +1020,28 @@ impl Controller {
 
     pub fn table_columns(&self, cx: &App) -> Vec<TableColumn> {
         vec![
-            TableColumn::new("name", self.t("demo.lists.table_col_name", cx)).width(120.),
-            TableColumn::new("age", self.t("demo.lists.table_col_age", cx)).width(60.),
-            TableColumn::new("city", self.t("demo.lists.table_col_city", cx)).width(120.),
+            TableColumn::new("name", cx.t("demo.lists.table_col_name")).width(120.),
+            TableColumn::new("age", cx.t("demo.lists.table_col_age")).width(60.),
+            TableColumn::new("city", cx.t("demo.lists.table_col_city")).width(120.),
         ]
     }
 
     pub fn table_rows(&self, cx: &App) -> Vec<Vec<SharedString>> {
         vec![
             vec![
-                self.t("demo.lists.table_row_alice", cx).into(),
-                self.t("demo.lists.table_row_age_30", cx).into(),
-                self.t("demo.lists.table_row_beijing", cx).into(),
+                cx.t("demo.lists.table_row_alice").into(),
+                cx.t("demo.lists.table_row_age_30").into(),
+                cx.t("demo.lists.table_row_beijing").into(),
             ],
             vec![
-                self.t("demo.lists.table_row_bob", cx).into(),
-                self.t("demo.lists.table_row_age_25", cx).into(),
-                self.t("demo.lists.table_row_shanghai", cx).into(),
+                cx.t("demo.lists.table_row_bob").into(),
+                cx.t("demo.lists.table_row_age_25").into(),
+                cx.t("demo.lists.table_row_shanghai").into(),
             ],
             vec![
-                self.t("demo.lists.table_row_carol", cx).into(),
-                self.t("demo.lists.table_row_age_28", cx).into(),
-                self.t("demo.lists.table_row_shenzhen", cx).into(),
+                cx.t("demo.lists.table_row_carol").into(),
+                cx.t("demo.lists.table_row_age_28").into(),
+                cx.t("demo.lists.table_row_shenzhen").into(),
             ],
         ]
     }
@@ -1061,26 +1053,26 @@ impl Controller {
         let child2 = yororen_ui::headless::tree::node_id("child2");
         let leaf1 = yororen_ui::headless::tree::node_id("leaf1");
         let leaf2 = yororen_ui::headless::tree::node_id("leaf2");
-        data.add(None, root.clone(), self.t("demo.lists.tree_root", cx));
+        data.add(None, root.clone(), cx.t("demo.lists.tree_root"));
         data.add(
             Some(root.clone()),
             child1.clone(),
-            self.t("demo.lists.tree_child1", cx),
+            cx.t("demo.lists.tree_child1"),
         );
         data.add(
             Some(root.clone()),
             child2.clone(),
-            self.t("demo.lists.tree_child2", cx),
+            cx.t("demo.lists.tree_child2"),
         );
         data.add(
             Some(child1.clone()),
             leaf1.clone(),
-            self.t("demo.lists.tree_leaf1", cx),
+            cx.t("demo.lists.tree_leaf1"),
         );
         data.add(
             Some(child1.clone()),
             leaf2.clone(),
-            self.t("demo.lists.tree_leaf2", cx),
+            cx.t("demo.lists.tree_leaf2"),
         );
         data
     }

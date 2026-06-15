@@ -172,7 +172,7 @@
       "dropdown_trigger": "dropdown_menu (点击触发器)",
       "scrim_info": "scrim 跟随 modal 状态",
       "scrim": "overlay (scrim)",
-      "summary": "dropdown: {} | menu: {}"
+      "summary": "dropdown: {dropdown} | menu: {menu}"
     },
     "lists": {
       "first_item": "第一项",

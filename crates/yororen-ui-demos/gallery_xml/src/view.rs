@@ -14,6 +14,7 @@ use yororen_ui::theme::ActiveTheme;
 use yororen_ui::headless::modal::modal;
 use yororen_ui::notification::center::NotificationCenter;
 use yororen_ui::xml_file;
+use yororen_ui::{t, t_named};
 
 use crate::controller::Controller;
 use crate::state::StateRef;

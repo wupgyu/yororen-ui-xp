@@ -22,14 +22,19 @@
 //!
 //! ## With Placeholders
 //!
-//! ```ignore
-//! use std::collections::HashMap;
-//! use gpui::App;
-//! use yororen_ui::i18n::I18nContext;
+//! Positional (`{}`) substitutions:
 //!
-//! let mut args = HashMap::new();
-//! args.insert("name", "World");
-//! let text = cx.t_with_args("greeting", &args);
+//! ```ignore
+//! let text = cx.t_with_args("greeting", &["World"]);
+//! ```
+//!
+//! Named placeholders (`{name}`) — preferred for i18n because order
+//! can vary across languages:
+//!
+//! ```ignore
+//! use yororen_ui::{t, t_named};
+//!
+//! let text = t_named!(cx, "greeting", name => "World");
 //! ```
 //!
 //! ## Plural Forms
@@ -72,6 +77,9 @@ pub use placeholder::{
     PlaceholderResolver,
 };
 pub use runtime::{I18n, I18nContext, Translate, TranslationMap};
+// `t!` and `t_named!` are #[macro_export], so they live at crate root;
+// pull them into the `i18n` module as well for discoverability.
+pub use crate::{t, t_named};
 pub use translate::{PluralCategory, TranslatedString, Translator};
 
 // Re-export commonly used types

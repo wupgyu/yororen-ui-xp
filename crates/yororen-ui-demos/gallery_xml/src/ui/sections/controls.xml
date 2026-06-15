@@ -1,23 +1,23 @@
 <!-- Section 5 — Controls. -->
 <Column flex col gap="4">
-    <Heading id="controls-title" level="H2" text={controller.t("demo.section_controls", cx)} />
+    <Heading id="controls-title" level="H2" text={t!(cx, "demo.section_controls")} />
 
     <Row flex row flex_wrap items_center gap="3">
         <InputCell>
-            <Slot name="name"><Label id="lbl-cb" text={controller.t("demo.controls.cell_checkbox", cx)} muted /></Slot>
+            <Slot name="name"><Label id="lbl-cb" text={t!(cx, "demo.controls.cell_checkbox")} muted /></Slot>
             <Checkbox id="ctrl-cb" @bind={controller.checkbox_value_entity(cx)} />
-            <Slot name="status"><Label id="status-cb" text={format!("{} {}", controller.t("demo.input.value", cx), controller.checkbox_value(cx))} muted /></Slot>
+            <Slot name="status"><Label id="status-cb" text={format!("{} {}", t!(cx, "demo.input.value"), controller.checkbox_value(cx))} muted /></Slot>
         </InputCell>
 
         <InputCell>
-            <Slot name="name"><Label id="lbl-sw" text={controller.t("demo.controls.cell_switch", cx)} muted /></Slot>
+            <Slot name="name"><Label id="lbl-sw" text={t!(cx, "demo.controls.cell_switch")} muted /></Slot>
             <Switch id="ctrl-sw" @bind={controller.switch_value_entity(cx)} />
-            <Slot name="status"><Label id="status-sw" text={format!("{} {}", controller.t("demo.input.value", cx), controller.switch_value(cx))} muted /></Slot>
+            <Slot name="status"><Label id="status-sw" text={format!("{} {}", t!(cx, "demo.input.value"), controller.switch_value(cx))} muted /></Slot>
         </InputCell>
     </Row>
 
     <InputCell>
-        <Slot name="name"><Label id="lbl-rg" text={controller.t("demo.controls.cell_radio_group", cx)} muted /></Slot>
+        <Slot name="name"><Label id="lbl-rg" text={t!(cx, "demo.controls.cell_radio_group")} muted /></Slot>
         <RadioGroup id="ctrl-rg" name="choice" selected={controller.radio_value(cx)}>
             <Radio id="ctrl-radio-0" checked={controller.radio_value(cx) == 0}
                    on_toggle={{ let c = controller.clone(); move |_v,_ev,w,cx| c.set_radio(0, w, cx) }} />
@@ -27,12 +27,12 @@
                    on_toggle={{ let c = controller.clone(); move |_v,_ev,w,cx| c.set_radio(2, w, cx) }} />
         </RadioGroup>
     </InputCell>
-    <Label id="rg-current" text={format!("{} {}", controller.t("demo.controls.selected", cx), controller.radio_value(cx))} muted />
+    <Label id="rg-current" text={format!("{} {}", t!(cx, "demo.controls.selected"), controller.radio_value(cx))} muted />
 
     <InputCell>
-        <Slot name="name"><Label id="lbl-slider" text={controller.t("demo.controls.cell_slider", cx)} muted /></Slot>
+        <Slot name="name"><Label id="lbl-slider" text={t!(cx, "demo.controls.cell_slider")} muted /></Slot>
         <Slider id="ctrl-slider" min={0.0} max={100.0} step={1.0}
                 @bind={controller.slider_value_entity(cx)} />
     </InputCell>
-    <Label id="slider-lbl" text={controller.t("demo.controls.slider_value", cx).replace("{}", &format!("{:.1}", controller.slider_value(cx)))} muted />
+    <Label id="slider-lbl" text={t!(cx, "demo.controls.slider_value").replace("{}", &format!("{:.1}", controller.slider_value(cx)))} muted />
 </Column>

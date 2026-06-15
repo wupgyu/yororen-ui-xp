@@ -1,140 +1,140 @@
 <!-- Section 2 — Display. -->
 <Column flex col gap="4">
-    <Heading id="display-title" level="H2" text={controller.t("demo.section_display", cx)} />
+    <Heading id="display-title" level="H2" text={t!(cx, "demo.section_display")} />
 
     <Row flex row flex_wrap items_center gap="3">
         <Cell>
-            <Slot name="label"><Label id="lbl-lbl-default" text={controller.t("demo.display.cell_label_default", cx)} muted /></Slot>
-            <Label id="lbl-default" text={controller.t("demo.display.label_default", cx)} />
+            <Slot name="label"><Label id="lbl-lbl-default" text={t!(cx, "demo.display.cell_label_default")} muted /></Slot>
+            <Label id="lbl-default" text={t!(cx, "demo.display.label_default")} />
         </Cell>
         <Cell>
-            <Slot name="label"><Label id="lbl-lbl-strong" text={controller.t("demo.display.cell_label_strong", cx)} muted /></Slot>
-            <Label id="lbl-strong" text={controller.t("demo.display.label_strong", cx)} strong />
+            <Slot name="label"><Label id="lbl-lbl-strong" text={t!(cx, "demo.display.cell_label_strong")} muted /></Slot>
+            <Label id="lbl-strong" text={t!(cx, "demo.display.label_strong")} strong />
         </Cell>
         <Cell>
-            <Slot name="label"><Label id="lbl-lbl-muted" text={controller.t("demo.display.cell_label_muted", cx)} muted /></Slot>
-            <Label id="lbl-muted" text={controller.t("demo.display.label_muted", cx)} muted />
+            <Slot name="label"><Label id="lbl-lbl-muted" text={t!(cx, "demo.display.cell_label_muted")} muted /></Slot>
+            <Label id="lbl-muted" text={t!(cx, "demo.display.label_muted")} muted />
         </Cell>
         <Cell>
-            <Slot name="label"><Label id="lbl-lbl-mono" text={controller.t("demo.display.cell_label_mono", cx)} muted /></Slot>
-            <Label id="lbl-mono" text={controller.t("demo.display.label_mono", cx)} mono />
+            <Slot name="label"><Label id="lbl-lbl-mono" text={t!(cx, "demo.display.cell_label_mono")} muted /></Slot>
+            <Label id="lbl-mono" text={t!(cx, "demo.display.label_mono")} mono />
         </Cell>
     </Row>
 
     <Column flex col gap="2">
         <Cell>
-            <Slot name="label"><Label id="lbl-heading-h1" text={controller.t("demo.display.cell_heading_h1", cx)} muted /></Slot>
-            <Heading id="h-1" level="H1" text={controller.t("demo.display.heading_h1", cx)} />
+            <Slot name="label"><Label id="lbl-heading-h1" text={t!(cx, "demo.display.cell_heading_h1")} muted /></Slot>
+            <Heading id="h-1" level="H1" text={t!(cx, "demo.display.heading_h1")} />
         </Cell>
         <Cell>
-            <Slot name="label"><Label id="lbl-heading-h2" text={controller.t("demo.display.cell_heading_h2", cx)} muted /></Slot>
-            <Heading id="h-2" level="H2" text={controller.t("demo.display.heading_h2", cx)} />
+            <Slot name="label"><Label id="lbl-heading-h2" text={t!(cx, "demo.display.cell_heading_h2")} muted /></Slot>
+            <Heading id="h-2" level="H2" text={t!(cx, "demo.display.heading_h2")} />
         </Cell>
         <Cell>
-            <Slot name="label"><Label id="lbl-heading-h3" text={controller.t("demo.display.cell_heading_h3", cx)} muted /></Slot>
-            <Heading id="h-3" level="H3" text={controller.t("demo.display.heading_h3", cx)} />
+            <Slot name="label"><Label id="lbl-heading-h3" text={t!(cx, "demo.display.cell_heading_h3")} muted /></Slot>
+            <Heading id="h-3" level="H3" text={t!(cx, "demo.display.heading_h3")} />
         </Cell>
         <Cell>
-            <Slot name="label"><Label id="lbl-heading-h4" text={controller.t("demo.display.cell_heading_h4", cx)} muted /></Slot>
-            <Heading id="h-4" level="H4" text={controller.t("demo.display.heading_h4", cx)} />
+            <Slot name="label"><Label id="lbl-heading-h4" text={t!(cx, "demo.display.cell_heading_h4")} muted /></Slot>
+            <Heading id="h-4" level="H4" text={t!(cx, "demo.display.heading_h4")} />
         </Cell>
     </Column>
 
     <Column flex col gap="2">
         <Cell>
-            <Slot name="label"><Label id="lbl-divider-h" text={controller.t("demo.display.divider_h", cx)} muted /></Slot>
+            <Slot name="label"><Label id="lbl-divider-h" text={t!(cx, "demo.display.divider_h")} muted /></Slot>
             <Divider id="d-h1" />
         </Cell>
         <Cell>
-            <Slot name="label"><Label id="lbl-divider-v" text={controller.t("demo.display.divider_v", cx)} muted /></Slot>
+            <Slot name="label"><Label id="lbl-divider-v" text={t!(cx, "demo.display.divider_v")} muted /></Slot>
             <Divider id="d-v1" vertical />
         </Cell>
     </Column>
 
     <Row flex row flex_wrap items_center gap="2">
         <Cell>
-            <Slot name="label"><Label id="lbl-badge-neutral" text={controller.t("demo.display.badge_neutral", cx)} muted /></Slot>
-            <Badge id="bd-n" text={controller.t("demo.display.badge_neutral", cx)}
+            <Slot name="label"><Label id="lbl-badge-neutral" text={t!(cx, "demo.display.badge_neutral")} muted /></Slot>
+            <Badge id="bd-n" text={t!(cx, "demo.display.badge_neutral")}
                    variant={::yororen_ui::headless::badge::BadgeVariant::Neutral} />
         </Cell>
         <Cell>
-            <Slot name="label"><Label id="lbl-badge-success" text={controller.t("demo.display.badge_success", cx)} muted /></Slot>
-            <Badge id="bd-s" text={controller.t("demo.display.badge_success", cx)}
+            <Slot name="label"><Label id="lbl-badge-success" text={t!(cx, "demo.display.badge_success")} muted /></Slot>
+            <Badge id="bd-s" text={t!(cx, "demo.display.badge_success")}
                    variant={::yororen_ui::headless::badge::BadgeVariant::Success} />
         </Cell>
         <Cell>
-            <Slot name="label"><Label id="lbl-badge-warning" text={controller.t("demo.display.badge_warning", cx)} muted /></Slot>
-            <Badge id="bd-w" text={controller.t("demo.display.badge_warning", cx)}
+            <Slot name="label"><Label id="lbl-badge-warning" text={t!(cx, "demo.display.badge_warning")} muted /></Slot>
+            <Badge id="bd-w" text={t!(cx, "demo.display.badge_warning")}
                    variant={::yororen_ui::headless::badge::BadgeVariant::Warning} />
         </Cell>
         <Cell>
-            <Slot name="label"><Label id="lbl-badge-danger" text={controller.t("demo.display.badge_danger", cx)} muted /></Slot>
-            <Badge id="bd-d" text={controller.t("demo.display.badge_danger", cx)}
+            <Slot name="label"><Label id="lbl-badge-danger" text={t!(cx, "demo.display.badge_danger")} muted /></Slot>
+            <Badge id="bd-d" text={t!(cx, "demo.display.badge_danger")}
                    variant={::yororen_ui::headless::badge::BadgeVariant::Danger} />
         </Cell>
         <Cell>
-            <Slot name="label"><Label id="lbl-badge-info" text={controller.t("demo.display.badge_info", cx)} muted /></Slot>
-            <Badge id="bd-i" text={controller.t("demo.display.badge_info", cx)}
+            <Slot name="label"><Label id="lbl-badge-info" text={t!(cx, "demo.display.badge_info")} muted /></Slot>
+            <Badge id="bd-i" text={t!(cx, "demo.display.badge_info")}
                    variant={::yororen_ui::headless::badge::BadgeVariant::Info} />
         </Cell>
     </Row>
 
     <Row flex row flex_wrap items_center gap="3">
         <Cell>
-            <Slot name="label"><Label id="lbl-tag-selected" text={controller.t("demo.display.cell_tag_selected", cx)} muted /></Slot>
-            <Tag id="tg-1" label={controller.t("demo.display.tag_toggle", cx)}
+            <Slot name="label"><Label id="lbl-tag-selected" text={t!(cx, "demo.display.cell_tag_selected")} muted /></Slot>
+            <Tag id="tg-1" label={t!(cx, "demo.display.tag_toggle")}
                  selected={controller.tag_selected(cx)}
                  on_click={controller.toggle_tag_selected} />
         </Cell>
         <Cell>
-            <Slot name="label"><Label id="lbl-tag-closable" text={controller.t("demo.display.cell_tag_closable", cx)} muted /></Slot>
-            <Tag id="tg-2" label={controller.t("demo.display.tag_closable", cx)}
+            <Slot name="label"><Label id="lbl-tag-closable" text={t!(cx, "demo.display.cell_tag_closable")} muted /></Slot>
+            <Tag id="tg-2" label={t!(cx, "demo.display.tag_closable")}
                  closable on_close={controller.close_tag} />
         </Cell>
         <Label id="tg-closable-count"
-               text={format!("{} {}", controller.t("demo.display.tag_close_events", cx), controller.tag_close_count(cx))}
+               text={format!("{} {}", t!(cx, "demo.display.tag_close_events"), controller.tag_close_count(cx))}
                muted />
     </Row>
 
     <Row flex row flex_wrap items_start gap="3">
         <Cell>
-            <Slot name="label"><Label id="lbl-sk-line" text={controller.t("demo.display.cell_skeleton_line", cx)} muted /></Slot>
+            <Slot name="label"><Label id="lbl-sk-line" text={t!(cx, "demo.display.cell_skeleton_line")} muted /></Slot>
             <Div w={gpui::px(180.0)} h={gpui::px(12.0)}><Skeleton id="sk-line" /></Div>
         </Cell>
         <Cell>
-            <Slot name="label"><Label id="lbl-sk-block" text={controller.t("demo.display.cell_skeleton_block", cx)} muted /></Slot>
+            <Slot name="label"><Label id="lbl-sk-block" text={t!(cx, "demo.display.cell_skeleton_block")} muted /></Slot>
             <Div w={gpui::px(180.0)} h={gpui::px(60.0)}><Skeleton id="sk-block" block /></Div>
         </Cell>
         <Cell>
-            <Slot name="label"><Label id="lbl-sk-block-sharp" text={controller.t("demo.display.cell_skeleton_block_sharp", cx)} muted /></Slot>
+            <Slot name="label"><Label id="lbl-sk-block-sharp" text={t!(cx, "demo.display.cell_skeleton_block_sharp")} muted /></Slot>
             <Div w={gpui::px(180.0)} h={gpui::px(40.0)}><Skeleton id="sk-block-sharp" block block_sharp /></Div>
         </Cell>
     </Row>
 
     <Column flex col gap="2">
         <Cell>
-            <Slot name="label"><Label id="lbl-progress-det" text={controller.t("demo.display.cell_progress_determinate", cx)} muted /></Slot>
+            <Slot name="label"><Label id="lbl-progress-det" text={t!(cx, "demo.display.cell_progress_determinate")} muted /></Slot>
             <Progress id="prg-1" value={controller.progress(cx)} max={1.0}
-                      label={controller.t("demo.display.loading", cx)} />
+                      label={t!(cx, "demo.display.loading")} />
         </Cell>
         <Cell>
-            <Slot name="label"><Label id="lbl-progress-indet" text={controller.t("demo.display.cell_progress_indeterminate", cx)} muted /></Slot>
+            <Slot name="label"><Label id="lbl-progress-indet" text={t!(cx, "demo.display.cell_progress_indeterminate")} muted /></Slot>
             <Progress id="prg-indet" indeterminate />
         </Cell>
     </Column>
 
     <Row flex row flex_wrap items_center gap="3">
         <Cell>
-            <Slot name="label"><Label id="lbl-text" text={controller.t("demo.display.cell_text", cx)} muted /></Slot>
-            <Text id="tx-1" text={controller.t("demo.display.plain_text", cx)} size={14.0} />
+            <Slot name="label"><Label id="lbl-text" text={t!(cx, "demo.display.cell_text")} muted /></Slot>
+            <Text id="tx-1" text={t!(cx, "demo.display.plain_text")} size={14.0} />
         </Cell>
         <Cell>
-            <Slot name="label"><Label id="lbl-icon-check" text={controller.t("demo.display.cell_icon_check", cx)} muted /></Slot>
+            <Slot name="label"><Label id="lbl-icon-check" text={t!(cx, "demo.display.cell_icon_check")} muted /></Slot>
             <Icon id="ic-1" source={::yororen_ui::headless::icon::IconSource::Builtin("check".into())} size={18.0}
                   color={cx.theme().get_color("content.primary").unwrap_or_default()} />
         </Cell>
         <Cell>
-            <Slot name="label"><Label id="lbl-icon-search" text={controller.t("demo.display.cell_icon_search", cx)} muted /></Slot>
+            <Slot name="label"><Label id="lbl-icon-search" text={t!(cx, "demo.display.cell_icon_search")} muted /></Slot>
             <Icon id="ic-2" source={::yororen_ui::headless::icon::IconSource::Builtin("search".into())} size={18.0}
                   color={cx.theme().get_color("content.primary").unwrap_or_default()} />
         </Cell>

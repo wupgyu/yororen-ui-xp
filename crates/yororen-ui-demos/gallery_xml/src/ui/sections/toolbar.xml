@@ -1,23 +1,23 @@
 <!-- Toolbar: localized title, renderer/theme/locale toggles, toasts. -->
 <Column flex col gap="3">
     <Row flex items_center gap="3">
-        <Heading id="title" level="H1" text={controller.t("demo.title", cx)} />
+        <Heading id="title" level="H1" text={t!(cx, "demo.title")} />
     </Row>
 
     <Row flex items_center gap="2" flex_wrap>
-        <ToggleButton id="renderer-default" caption={controller.t("demo.renderer_default", cx)}
+        <ToggleButton id="renderer-default" caption={t!(cx, "demo.renderer_default")}
                       selected={controller.current_renderer(cx) == crate::state::RendererKind::Default}
                       variant="primary"
                       on_toggle={{ let c = controller.clone(); move |_v,_ev,w,cx| c.set_renderer(crate::state::RendererKind::Default, w, cx) }} />
-        <ToggleButton id="renderer-brutalism" caption={controller.t("demo.renderer_brutalism", cx)}
+        <ToggleButton id="renderer-brutalism" caption={t!(cx, "demo.renderer_brutalism")}
                       selected={controller.current_renderer(cx) == crate::state::RendererKind::Brutalism}
                       variant="primary"
                       on_toggle={{ let c = controller.clone(); move |_v,_ev,w,cx| c.set_renderer(crate::state::RendererKind::Brutalism, w, cx) }} />
 
-        <ToggleButton id="dark-light" caption={controller.t("demo.theme_light", cx)}
+        <ToggleButton id="dark-light" caption={t!(cx, "demo.theme_light")}
                       selected={controller.dark_mode(cx) == crate::state::DarkMode::Light}
                       on_toggle={{ let c = controller.clone(); move |_v,_ev,w,cx| c.set_dark_mode(crate::state::DarkMode::Light, w, cx) }} />
-        <ToggleButton id="dark-dark" caption={controller.t("demo.theme_dark", cx)}
+        <ToggleButton id="dark-dark" caption={t!(cx, "demo.theme_dark")}
                       selected={controller.dark_mode(cx) == crate::state::DarkMode::Dark}
                       on_toggle={{ let c = controller.clone(); move |_v,_ev,w,cx| c.set_dark_mode(crate::state::DarkMode::Dark, w, cx) }} />
 
@@ -33,10 +33,10 @@
 
         <Div flex_1 />
 
-        <Button id="show-toast" caption={controller.t("demo.show_toast", cx)}
+        <Button id="show-toast" caption={t!(cx, "demo.show_toast")}
                 variant="danger"
                 on_click={controller.show_toast} />
-        <Button id="show-notification" caption={controller.t("demo.show_notification", cx)}
+        <Button id="show-notification" caption={t!(cx, "demo.show_notification")}
                 variant="primary"
                 on_click={controller.show_notification} />
     </Row>

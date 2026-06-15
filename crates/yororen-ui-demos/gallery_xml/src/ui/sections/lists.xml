@@ -1,14 +1,14 @@
 <!-- Section 7 — Lists, Tables, Trees, Forms. -->
 <Column flex col gap="4">
-    <Heading id="lists-title" level="H2" text={controller.t("demo.section_lists", cx)} />
+    <Heading id="lists-title" level="H2" text={t!(cx, "demo.section_lists")} />
 
     <Cell>
-        <Slot name="label"><Label id="lbl-list-items" text={controller.t("demo.lists.cell_list", cx)} muted /></Slot>
+        <Slot name="label"><Label id="lbl-list-items" text={t!(cx, "demo.lists.cell_list")} muted /></Slot>
         <Column flex col gap="2" w={gpui::px(220.)}>
             <For each={vec![
-                controller.t("demo.lists.first_item", cx),
-                controller.t("demo.lists.second_item", cx),
-                controller.t("demo.lists.third_item", cx),
+                t!(cx, "demo.lists.first_item"),
+                t!(cx, "demo.lists.second_item"),
+                t!(cx, "demo.lists.third_item"),
             ]} let:item let:index={i} key={i}>
                 <ListItem id={format!("li-{}", i + 1)} title={item.clone()}
                           selected={controller.selected_list_item(cx) == Some(i)}
@@ -18,7 +18,7 @@
     </Cell>
 
     <Cell>
-        <Slot name="label"><Label id="lbl-listbox" text={controller.t("demo.lists.cell_listbox", cx)} muted /></Slot>
+        <Slot name="label"><Label id="lbl-listbox" text={t!(cx, "demo.lists.cell_listbox")} muted /></Slot>
         <Column flex col gap="3" w={gpui::px(240.)}>
             <Listbox id="lists-listbox" state={controller.listbox_state(cx)} />
             <Label id="lists-listbox-status" text={controller.listbox_status_text(cx)} muted />
@@ -27,7 +27,7 @@
 
     {controller.form_element(cx, window)}
     <Cell>
-        <Slot name="label"><Label id="lbl-table" text={controller.t("demo.lists.cell_table", cx)} muted /></Slot>
+        <Slot name="label"><Label id="lbl-table" text={t!(cx, "demo.lists.cell_table")} muted /></Slot>
         <Table id="lists-table" columns={controller.table_columns(cx)} rows={controller.table_rows(cx)}
                selected={controller.selected_table_row(cx).unwrap_or(0)}
                on_select={controller.table_row_handler()} />
@@ -39,9 +39,9 @@
     {controller.spacer_element(cx)}
 
     <Cell>
-        <Slot name="label"><Label id="lbl-rg-empty" text={controller.t("demo.controls.cell_radio_group_empty", cx)} muted /></Slot>
+        <Slot name="label"><Label id="lbl-rg-empty" text={t!(cx, "demo.controls.cell_radio_group_empty")} muted /></Slot>
         <RadioGroup id="lists-rg" name="rg-2">
-            <Label id="rg-2-info" text={controller.t("demo.controls.radio_group_empty_label", cx)} muted />
+            <Label id="rg-2-info" text={t!(cx, "demo.controls.radio_group_empty_label")} muted />
         </RadioGroup>
     </Cell>
 </Column>

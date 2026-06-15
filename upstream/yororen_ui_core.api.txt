@@ -5594,10 +5594,17 @@ pub trait yororen_ui_core::i18n::runtime::Translate
 pub fn yororen_ui_core::i18n::runtime::Translate::lookup(&self, &str) -> core::option::Option<gpui::shared_string::SharedString>
 pub fn yororen_ui_core::i18n::runtime::Translate::t(&self, &str) -> gpui::shared_string::SharedString
 pub fn yororen_ui_core::i18n::runtime::Translate::t_with_args(&self, &str, &[&str]) -> gpui::shared_string::SharedString
+pub fn yororen_ui_core::i18n::runtime::Translate::t_with_named_args<V: core::fmt::Display>(&self, &str, &std::collections::hash::map::HashMap<&str, V>) -> gpui::shared_string::SharedString
 impl yororen_ui_core::i18n::runtime::Translate for gpui::app::App
 pub fn gpui::app::App::lookup(&self, &str) -> core::option::Option<gpui::shared_string::SharedString>
 pub fn gpui::app::App::t(&self, &str) -> gpui::shared_string::SharedString
 pub fn gpui::app::App::t_with_args(&self, &str, &[&str]) -> gpui::shared_string::SharedString
+pub fn gpui::app::App::t_with_named_args<V: core::fmt::Display>(&self, &str, &std::collections::hash::map::HashMap<&str, V>) -> gpui::shared_string::SharedString
+impl<'a, T> yororen_ui_core::i18n::runtime::Translate for gpui::app::context::Context<'a, T>
+pub fn gpui::app::context::Context<'a, T>::lookup(&self, &str) -> core::option::Option<gpui::shared_string::SharedString>
+pub fn gpui::app::context::Context<'a, T>::t(&self, &str) -> gpui::shared_string::SharedString
+pub fn gpui::app::context::Context<'a, T>::t_with_args(&self, &str, &[&str]) -> gpui::shared_string::SharedString
+pub fn gpui::app::context::Context<'a, T>::t_with_named_args<V: core::fmt::Display>(&self, &str, &std::collections::hash::map::HashMap<&str, V>) -> gpui::shared_string::SharedString
 pub mod yororen_ui_core::i18n::translate
 pub enum yororen_ui_core::i18n::translate::PluralCategory
 pub yororen_ui_core::i18n::translate::PluralCategory::Few
@@ -5650,6 +5657,8 @@ impl yororen_ui_core::i18n::translate::Translator for yororen_ui_core::i18n::run
 pub fn yororen_ui_core::i18n::runtime::TranslationMap::t(&self, &str) -> core::option::Option<&str>
 pub fn yororen_ui_core::i18n::runtime::TranslationMap::tf(&self, &str, &std::collections::hash::map::HashMap<&str, impl core::fmt::Display>) -> alloc::string::String
 pub fn yororen_ui_core::i18n::runtime::TranslationMap::tn(&self, &str, usize) -> core::option::Option<&str>
+pub macro yororen_ui_core::i18n::t!
+pub macro yororen_ui_core::i18n::t_named!
 pub enum yororen_ui_core::i18n::CurrencyDisplay
 pub yororen_ui_core::i18n::CurrencyDisplay::Code
 pub yororen_ui_core::i18n::CurrencyDisplay::Name
@@ -6110,10 +6119,17 @@ pub trait yororen_ui_core::i18n::Translate
 pub fn yororen_ui_core::i18n::Translate::lookup(&self, &str) -> core::option::Option<gpui::shared_string::SharedString>
 pub fn yororen_ui_core::i18n::Translate::t(&self, &str) -> gpui::shared_string::SharedString
 pub fn yororen_ui_core::i18n::Translate::t_with_args(&self, &str, &[&str]) -> gpui::shared_string::SharedString
+pub fn yororen_ui_core::i18n::Translate::t_with_named_args<V: core::fmt::Display>(&self, &str, &std::collections::hash::map::HashMap<&str, V>) -> gpui::shared_string::SharedString
 impl yororen_ui_core::i18n::runtime::Translate for gpui::app::App
 pub fn gpui::app::App::lookup(&self, &str) -> core::option::Option<gpui::shared_string::SharedString>
 pub fn gpui::app::App::t(&self, &str) -> gpui::shared_string::SharedString
 pub fn gpui::app::App::t_with_args(&self, &str, &[&str]) -> gpui::shared_string::SharedString
+pub fn gpui::app::App::t_with_named_args<V: core::fmt::Display>(&self, &str, &std::collections::hash::map::HashMap<&str, V>) -> gpui::shared_string::SharedString
+impl<'a, T> yororen_ui_core::i18n::runtime::Translate for gpui::app::context::Context<'a, T>
+pub fn gpui::app::context::Context<'a, T>::lookup(&self, &str) -> core::option::Option<gpui::shared_string::SharedString>
+pub fn gpui::app::context::Context<'a, T>::t(&self, &str) -> gpui::shared_string::SharedString
+pub fn gpui::app::context::Context<'a, T>::t_with_args(&self, &str, &[&str]) -> gpui::shared_string::SharedString
+pub fn gpui::app::context::Context<'a, T>::t_with_named_args<V: core::fmt::Display>(&self, &str, &std::collections::hash::map::HashMap<&str, V>) -> gpui::shared_string::SharedString
 pub trait yororen_ui_core::i18n::TranslationLoader
 pub fn yororen_ui_core::i18n::TranslationLoader::is_available(&self, &yororen_ui_core::i18n::locale::Locale) -> bool
 pub fn yororen_ui_core::i18n::TranslationLoader::load(&self, &yororen_ui_core::i18n::locale::Locale) -> core::result::Result<yororen_ui_core::i18n::runtime::TranslationMap, yororen_ui_core::i18n::loader::LoadError>
@@ -10481,3 +10497,5 @@ pub fn gpui::app::context::Context<'a, T>::theme(&self) -> &alloc::sync::Arc<yor
 pub fn yororen_ui_core::theme::install(&mut gpui::app::App, yororen_ui_core::theme::Theme)
 pub fn yororen_ui_core::theme::value_to_hsla(&serde_json::value::Value) -> core::option::Option<gpui::color::Hsla>
 pub macro yororen_ui_core::action_handler!
+pub macro yororen_ui_core::t!
+pub macro yororen_ui_core::t_named!

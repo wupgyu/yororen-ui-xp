@@ -3,7 +3,7 @@
 use std::collections::{HashMap, HashSet};
 use std::sync::{Arc, Mutex, OnceLock};
 
-use gpui::{App, Global, SharedString};
+use gpui::{App, Context, Global, SharedString};
 
 use super::locale::{Locale, SupportedLocale, TextDirection};
 
@@ -250,6 +250,18 @@ pub trait Translate {
     /// substring of another key would corrupt the output).
     fn t_with_args(&self, key: &str, args: &[&str]) -> SharedString;
 
+    /// Translate with named placeholders.
+    ///
+    /// The template uses `{name}` style placeholders and the map
+    /// supplies the replacement for each name. Unlike positional
+    /// substitution, named placeholders survive reordering and are
+    /// i18n-toolchain friendly.
+    fn t_with_named_args<V: std::fmt::Display>(
+        &self,
+        key: &str,
+        args: &HashMap<&str, V>,
+    ) -> SharedString;
+
     /// Look up a translation, returning `None` if the key is missing.
     ///
     /// Production code that needs to distinguish "no translation"
@@ -284,9 +296,88 @@ impl Translate for App {
         replace_placeholders(&base, args).into()
     }
 
+    fn t_with_named_args<V: std::fmt::Display>(
+        &self,
+        key: &str,
+        args: &HashMap<&str, V>,
+    ) -> SharedString {
+        let i18n = self.i18n();
+        let mut result = match i18n.t(key) {
+            Some(s) => s.to_string(),
+            None => {
+                warn_missing_key(key);
+                key.to_string()
+            }
+        };
+
+        for (name, value) in args {
+            let placeholder = format!("{{{}}}", name);
+            result = result.replace(&placeholder, &value.to_string());
+        }
+
+        result.into()
+    }
+
     fn lookup(&self, key: &str) -> Option<SharedString> {
         self.i18n().t(key).map(|s| s.to_string().into())
     }
+}
+
+impl<'a, T> Translate for Context<'a, T> {
+    fn t(&self, key: &str) -> SharedString {
+        (**self).t(key)
+    }
+
+    fn t_with_args(&self, key: &str, args: &[&str]) -> SharedString {
+        (**self).t_with_args(key, args)
+    }
+
+    fn t_with_named_args<V: std::fmt::Display>(
+        &self,
+        key: &str,
+        args: &HashMap<&str, V>,
+    ) -> SharedString {
+        (**self).t_with_named_args(key, args)
+    }
+
+    fn lookup(&self, key: &str) -> Option<SharedString> {
+        (**self).lookup(key)
+    }
+}
+
+/// Convenience macro for simple translations.
+///
+/// Equivalent to `cx.t(key)` but uses a fully-qualified trait call
+/// so the `Translate` trait does not need to be in scope. The
+/// expression is deref-coerced, so `&mut Context<_>` works as well
+/// as `&App`.
+#[macro_export]
+macro_rules! t {
+    ($cx:expr, $key:expr) => {
+        $crate::i18n::Translate::t(&*$cx, $key)
+    };
+}
+
+/// Convenience macro for named-placeholder translations.
+///
+/// Builds the argument map inline so call sites stay readable:
+///
+/// ```ignore
+/// let text = t_named!(cx, "demo.overlays.summary",
+///     dropdown => app.dropdown_demo_value.clone(),
+///     menu     => app.menu_demo_value.clone(),
+/// );
+/// ```
+#[macro_export]
+macro_rules! t_named {
+    ($cx:expr, $key:expr $(, $name:tt => $value:expr)+ $(,)?) => {{
+        let mut args: ::std::collections::HashMap<
+            &str,
+            ::std::boxed::Box<dyn ::std::fmt::Display>,
+        > = ::std::collections::HashMap::new();
+        $(args.insert(stringify!($name), ::std::boxed::Box::new($value));)+
+        $crate::i18n::Translate::t_with_named_args(&*$cx, $key, &args)
+    }};
 }
 
 /// Emit a one-shot `eprintln!` warning for a missing translation

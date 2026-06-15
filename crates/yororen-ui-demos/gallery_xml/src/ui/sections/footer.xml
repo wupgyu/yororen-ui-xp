@@ -1,23 +1,23 @@
 <!-- Footer: live state counters. -->
 <Column flex col gap="2" mt_4 p_3 rounded_md border_1>
-    <Label id="footer-title" text={controller.t("demo.footer.live_counters", cx)} strong />
+    <Label id="footer-title" text={t!(cx, "demo.footer.live_counters")} strong />
     <Label id="footer-form"
            text={format!("{} {}  |  {} {:?}  |  {} {:?}",
-                         controller.t("demo.footer.form_submit_count", cx), controller.form_submit_count(cx),
-                         controller.t("demo.footer.email", cx), controller.form_email_value(cx),
-                         controller.t("demo.footer.error", cx), controller.form_email_error(cx))}
+                         t!(cx, "demo.footer.form_submit_count"), controller.form_submit_count(cx),
+                         t!(cx, "demo.footer.email"), controller.form_email_value(cx),
+                         t!(cx, "demo.footer.error"), controller.form_email_error(cx))}
            muted />
     <Label id="footer-controls"
            text={format!("{} {}  |  {} {}  |  {} {}  |  {} {:.1}",
-                         controller.t("demo.footer.checkbox", cx), controller.checkbox_value(cx),
-                         controller.t("demo.footer.switch", cx), controller.switch_value(cx),
-                         controller.t("demo.footer.radio", cx), controller.radio_value(cx),
-                         controller.t("demo.footer.slider", cx), controller.slider_value(cx))}
+                         t!(cx, "demo.footer.checkbox"), controller.checkbox_value(cx),
+                         t!(cx, "demo.footer.switch"), controller.switch_value(cx),
+                         t!(cx, "demo.footer.radio"), controller.radio_value(cx),
+                         t!(cx, "demo.footer.slider"), controller.slider_value(cx))}
            muted />
     <Label id="footer-toast"
            text={format!("{} {}  |  {} {}",
-                         controller.t("demo.footer.toast_count", cx), controller.toast_count(cx),
-                         controller.t("demo.footer.locale", cx), controller.current_locale(cx).tag())}
+                         t!(cx, "demo.footer.toast_count"), controller.toast_count(cx),
+                         t!(cx, "demo.footer.locale"), controller.current_locale(cx).tag())}
            muted />
     <CounterWidget id={"footer-counter"} />
 </Column>

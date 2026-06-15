@@ -27,6 +27,8 @@ pub use yororen_ui_default_renderer as renderer;
 /// (the canonical home in v0.3). Also reachable via
 /// `yororen_ui::renderer::ActionVariantKind`.
 pub use yororen_ui_default_renderer::renderers::button::ActionVariantKind;
+/// Translation helper macros.
+pub use yororen_ui_core::{t, t_named};
 
 #[cfg(feature = "brutalism")]
 pub use yororen_ui_brutalism_renderer as brutalism_renderer;

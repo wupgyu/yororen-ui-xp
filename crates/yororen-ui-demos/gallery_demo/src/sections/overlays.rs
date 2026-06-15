@@ -1,6 +1,8 @@
 //! Section 6 — Overlays. Each component is wrapped in a
 //! labelled `cell`.
 
+use std::collections::HashMap;
+
 use gpui::{Context, Div, IntoElement, ParentElement, Styled, div, px};
 
 use yororen_ui::headless::button::button;
@@ -183,7 +185,10 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
         );
     let overlay_wrapped = cell(cx.t("demo.overlays.scrim"), overlay_el, cx);
 
-    let summary_template = cx.t("demo.overlays.summary").to_string();
+    let mut summary_args = HashMap::new();
+    summary_args.insert("dropdown", app.dropdown_demo_value.clone());
+    summary_args.insert("menu", app.menu_demo_value.clone());
+    let summary_text = cx.t_with_named_args("demo.overlays.summary", &summary_args);
     div()
         .flex()
         .flex_col()
@@ -195,14 +200,8 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
         .child(disc_wrapped)
         .child(overlay_wrapped)
         .child(
-            label(
-                "ov-summary",
-                summary_template
-                    .replacen("{}", &app.dropdown_demo_value, 1)
-                    .replacen("{}", &app.menu_demo_value, 1),
-                cx,
-            )
-            .muted(true)
-            .render(cx),
+            label("ov-summary", summary_text, cx)
+                .muted(true)
+                .render(cx),
         )
 }
