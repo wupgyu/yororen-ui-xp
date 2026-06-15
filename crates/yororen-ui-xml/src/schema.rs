@@ -110,6 +110,32 @@ pub struct LeafDef {
     /// call (true for `Button` so users can do
     /// `<Button>Click me</Button>`).
     pub supports_text_child: bool,
+    /// If `true`, element children are added via `.child(...)`
+    /// **before** `.render(cx)` is called. Required for
+    /// components whose renderer consumes children at compose
+    /// time (e.g. `ButtonGroup`, `Modal`).
+    pub children_before_render: bool,
+    /// If `children_before_render` is `true`, this flag decides
+    /// whether the child expressions are emitted in their raw
+    /// rendered type (`false`, default) or without the final
+    /// `.into_any_element()` wrapper (`true`). Set to `true` for
+    /// `ButtonGroup`, whose `.child()` method expects the
+    /// `Stateful<Div>` returned by `button(...).render(cx)`.
+    pub unwrap_children: bool,
+    /// Named slots for components that pass specific children to
+    /// builder methods before rendering (e.g. `Popover`'s
+    /// `trigger` / `content`, `Tooltip`'s `trigger`).
+    pub slots: &'static [SlotDef],
+}
+
+/// A named slot on a leaf component.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct SlotDef {
+    /// Slot name used in XML: `<Button slot="trigger">`.
+    pub name: &'static str,
+    /// Builder method called with the slotted child:
+    /// `__el.trigger(child)`.
+    pub setter: &'static str,
 }
 
 /// How the codegen should turn an XML attribute value into a
@@ -137,6 +163,19 @@ pub enum PropValue {
     /// The codegen emits `f32` writes through `XmlBinding<f32>`
     /// when this kind is paired with `on_change`.
     Float32,
+    /// A `usize`-typed setter (e.g. `Table::selected` or
+    /// `VirtualList::item_count`).
+    UInt,
+    /// A `BadgeVariant` setter (e.g. `Badge::variant`).
+    BadgeVariant,
+    /// `yororen_ui::headless::heading::HeadingLevel`.
+    HeadingLevel,
+    /// `yororen_ui::headless::icon::IconSource`.
+    IconSource,
+    /// `yororen_ui::headless::image::ImageSource`.
+    ImageSource,
+    /// `yororen_ui::headless::keybinding_input::KeybindingInputMode`.
+    KeybindingInputMode,
     /// A zero-arg setter (`fn wrap(self) -> Self`). The
     /// codegen emits `.setter()` when the attribute is
     /// present (regardless of value). Used for flag-style
@@ -174,6 +213,26 @@ pub enum ExtraArgKind {
     /// The label's text: prefer the `text` XML attribute,
     /// fall back to the element's inner text content.
     Text,
+    /// A `usize` positional argument (e.g. the `item_count`
+    /// of `uniform_virtual_list`). Raw string values are
+    /// parsed as decimal integers; brace expressions pass
+    /// through verbatim.
+    UInt,
+    /// A `HeadingLevel` positional argument (e.g. `Heading`'s
+    /// `level`). Raw string values are mapped to
+    /// `::yororen_ui::headless::heading::HeadingLevel::H1..H6`.
+    HeadingLevel,
+    /// An `IconSource` positional argument (e.g. `Icon`'s
+    /// `source`). Raw string values become
+    /// `IconSource::Builtin(...)`.
+    IconSource,
+    /// An `ImageSource` positional argument (e.g. `Image`'s
+    /// `source`). Raw string values become
+    /// `ImageSource::Resource(...)`.
+    ImageSource,
+    /// A `KeybindingInputMode` positional argument. Raw string
+    /// values are mapped to the enum variants.
+    KeybindingInputMode,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -253,7 +312,7 @@ impl ComponentDef {
 pub const fn builtin_tags() -> &'static [&'static str] {
     &[
         "Button", "Column", "Div", "Else", "ElseIf", "For", "Fragment", "If", "Label", "Row",
-        "Stack",
+        "Stack", "UniformVirtualList",
     ]
 }
 
@@ -309,6 +368,9 @@ pub static BUILTINS: &[ComponentDef] = &[
             ],
             events: &[("on_click", "on_click")],
             supports_text_child: true,
+            children_before_render: false,
+            unwrap_children: false,
+            slots: &[],
         }),
         doc: "Headless `Button` — see `yororen_ui_core::headless::button`.",
     },
@@ -433,6 +495,9 @@ pub static BUILTINS: &[ComponentDef] = &[
             ],
             events: &[],
             supports_text_child: false,
+            children_before_render: false,
+            unwrap_children: false,
+            slots: &[],
         }),
         doc: "Headless `Label` — see `yororen_ui_core::headless::label`.",
     },
@@ -452,6 +517,43 @@ pub static BUILTINS: &[ComponentDef] = &[
         }),
         doc: "Plain `div()` — use `.relative()` / `.absolute()` for stacking.",
     },
+    ComponentDef {
+        tag: "UniformVirtualList",
+        kind: ComponentKind::Leaf(LeafDef {
+            factory: "::yororen_ui::headless::virtual_list::uniform_virtual_list",
+            extra_args: &[
+                ExtraArg {
+                    kind: ExtraArgKind::UInt,
+                    attr: "item_count",
+                },
+                ExtraArg {
+                    kind: ExtraArgKind::Custom,
+                    attr: "controller",
+                },
+            ],
+            render: RenderMode::Default,
+            needs_app: true,
+            needs_window: false,
+            props: &[
+                PropDef {
+                    name: "sizing",
+                    setter: "sizing",
+                    value: PropValue::Unknown,
+                },
+                PropDef {
+                    name: "row",
+                    setter: "row",
+                    value: PropValue::Unknown,
+                },
+            ],
+            events: &[],
+            supports_text_child: false,
+            children_before_render: false,
+            unwrap_children: false,
+            slots: &[],
+        }),
+        doc: "Headless uniform virtual list — see `yororen_ui_core::headless::virtual_list::uniform_virtual_list`.",
+    },
 ];
 
 /// Reserved XML attribute names consumed by the macro itself
@@ -464,7 +566,6 @@ pub const RESERVED_ATTRS: &[&str] = &[
     "model",     // alias for the surrounding ViewModel
     "key",       // reserved for Phase 2 keyed For
     "if",        // reserved for future inline-if
-    "slot",      // reserved for Phase 2 templates
 ];
 
 /// Reserved "fixed" attribute → method pairs that are valid on
@@ -505,6 +606,8 @@ pub fn is_known_shorthand_method(name: &str) -> bool {
         | "overflow_hidden" | "overflow_x_hidden" | "overflow_y_hidden"
         | "visible" | "invisible" | "block" | "inline_block" | "inline_flex"
         | "hidden"
+        // background
+        | "bg"
         // position
         | "relative" | "absolute"
         // cursor

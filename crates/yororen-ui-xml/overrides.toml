@@ -107,3 +107,67 @@ tag = "NumberInput"
 kind = "Leaf"
 needs_window = true
 
+# `ComboBox::render` also needs `&mut Window`.
+[[override_]]
+tag = "ComboBox"
+kind = "Leaf"
+needs_window = true
+
+# Text-like inputs whose render signature was missed by the
+# generator's `render_takes_window` heuristic.
+[[override_]]
+tag = "PasswordInput"
+kind = "Leaf"
+needs_window = true
+
+[[override_]]
+tag = "SearchInput"
+kind = "Leaf"
+needs_window = true
+
+[[override_]]
+tag = "FilePathInput"
+kind = "Leaf"
+needs_window = true
+
+[[override_]]
+tag = "KeybindingInput"
+kind = "Leaf"
+needs_window = true
+
+[[override_]]
+tag = "TextArea"
+kind = "Leaf"
+needs_window = true
+
+# `ButtonGroup` consumes its children at compose time; each child
+# must be the `Stateful<Div>` returned by `button(...).render(cx)`.
+[[override_]]
+tag = "ButtonGroup"
+kind = "Leaf"
+children_before_render = true
+unwrap_children = true
+
+# `Modal` consumes its children at compose time.
+[[override_]]
+tag = "Modal"
+kind = "Leaf"
+children_before_render = true
+
+# `Popover` / `DropdownMenu` pass trigger/content to builder methods.
+[[override_]]
+tag = "Popover"
+kind = "Leaf"
+slots = [["trigger", "trigger"], ["content", "content"]]
+
+[[override_]]
+tag = "DropdownMenu"
+kind = "Leaf"
+slots = [["trigger", "trigger"], ["content", "content"]]
+
+# `Tooltip` passes its trigger to a builder method.
+[[override_]]
+tag = "Tooltip"
+kind = "Leaf"
+slots = [["trigger", "trigger"]]
+

@@ -420,7 +420,7 @@ fn codegen_element(
 
     match def.kind {
         ComponentKind::Container(c) => codegen_container(element, c, cx, location, source_file),
-        ComponentKind::Leaf(l) => codegen_leaf(element, l, cx, location),
+        ComponentKind::Leaf(l) => codegen_leaf(element, l, cx, location, source_file, true),
         ComponentKind::ControlFlow(c) => {
             codegen_control_flow(element, c, cx, location, source_file)
         }
@@ -750,6 +750,8 @@ fn codegen_leaf(
     def: LeafDef,
     cx: &TokenStream,
     location: &crate::parser::LocationTracker<'_>,
+    source_file: Option<&str>,
+    wrap_to_any: bool,
 ) -> Result<TokenStream, XmlError> {
     let _ = location; // Currently unused — byte_offset lives on AST nodes.
     // 1. Resolve the id (first factory arg).
@@ -801,6 +803,143 @@ fn codegen_leaf(
             }
             (ExtraArgKind::Custom, Some(a)) => attr_value_tokens(a)?,
             (ExtraArgKind::Custom, None) => {
+                return Err(XmlError::new(
+                    XmlErrorKind::UnknownAttribute,
+                    element.span,
+                    format!("<{}> requires a `{}` attribute", element.tag, extra.attr),
+                )
+                .at(element.byte_offset));
+            }
+            (ExtraArgKind::UInt, Some(a)) => {
+                if let Some(expr) = &a.expr {
+                    parse_ts(
+                        expr,
+                        a.span,
+                        a.byte_offset,
+                        &format!("attribute `{}`", a.name),
+                    )?
+                } else {
+                    let raw = a.raw.as_str();
+                    let value = raw.parse::<usize>().map_err(|_| {
+                        XmlError::new(
+                            XmlErrorKind::InvalidExpression,
+                            a.span,
+                            format!(
+                                "attribute `{}` expects a usize literal, got `{raw}`",
+                                a.name
+                            ),
+                        )
+                        .at(a.byte_offset)
+                    })?;
+                    let lit = proc_macro2::Literal::usize_unsuffixed(value);
+                    quote! { #lit }
+                }
+            }
+            (ExtraArgKind::UInt, None) => {
+                return Err(XmlError::new(
+                    XmlErrorKind::UnknownAttribute,
+                    element.span,
+                    format!("<{}> requires a `{}` attribute", element.tag, extra.attr),
+                )
+                .at(element.byte_offset));
+            }
+            (ExtraArgKind::HeadingLevel, Some(a)) => {
+                if let Some(expr) = &a.expr {
+                    parse_ts(expr, a.span, a.byte_offset, &format!("attribute `{}`", a.name))?
+                } else {
+                    let raw = a.raw.as_str();
+                    let variant = match raw {
+                        "H1" | "h1" => "H1",
+                        "H2" | "h2" => "H2",
+                        "H3" | "h3" => "H3",
+                        "H4" | "h4" => "H4",
+                        "H5" | "h5" => "H5",
+                        "H6" | "h6" => "H6",
+                        other => {
+                            return Err(XmlError::new(
+                                XmlErrorKind::InvalidExpression,
+                                a.span,
+                                format!(
+                                    "attribute `{}` expects H1..H6, got `{other}`",
+                                    a.name
+                                ),
+                            )
+                            .at(a.byte_offset));
+                        }
+                    };
+                    let variant = format_ident!("{variant}");
+                    quote! { ::yororen_ui::headless::heading::HeadingLevel::#variant }
+                }
+            }
+            (ExtraArgKind::HeadingLevel, None) => {
+                return Err(XmlError::new(
+                    XmlErrorKind::UnknownAttribute,
+                    element.span,
+                    format!("<{}> requires a `{}` attribute", element.tag, extra.attr),
+                )
+                .at(element.byte_offset));
+            }
+            (ExtraArgKind::IconSource, Some(a)) => {
+                if let Some(expr) = &a.expr {
+                    parse_ts(expr, a.span, a.byte_offset, &format!("attribute `{}`", a.name))?
+                } else {
+                    let raw = a.raw.as_str();
+                    quote! {
+                        ::yororen_ui::headless::icon::IconSource::Builtin((#raw).into())
+                    }
+                }
+            }
+            (ExtraArgKind::IconSource, None) => {
+                return Err(XmlError::new(
+                    XmlErrorKind::UnknownAttribute,
+                    element.span,
+                    format!("<{}> requires a `{}` attribute", element.tag, extra.attr),
+                )
+                .at(element.byte_offset));
+            }
+            (ExtraArgKind::ImageSource, Some(a)) => {
+                if let Some(expr) = &a.expr {
+                    parse_ts(expr, a.span, a.byte_offset, &format!("attribute `{}`", a.name))?
+                } else {
+                    let raw = a.raw.as_str();
+                    quote! {
+                        ::yororen_ui::headless::image::ImageSource::Resource((#raw).into())
+                    }
+                }
+            }
+            (ExtraArgKind::ImageSource, None) => {
+                return Err(XmlError::new(
+                    XmlErrorKind::UnknownAttribute,
+                    element.span,
+                    format!("<{}> requires a `{}` attribute", element.tag, extra.attr),
+                )
+                .at(element.byte_offset));
+            }
+            (ExtraArgKind::KeybindingInputMode, Some(a)) => {
+                if let Some(expr) = &a.expr {
+                    parse_ts(expr, a.span, a.byte_offset, &format!("attribute `{}`", a.name))?
+                } else {
+                    let raw = a.raw.as_str();
+                    let variant = match raw {
+                        "Idle" | "idle" => "Idle",
+                        "Capturing" | "capturing" => "Capturing",
+                        other => {
+                            return Err(XmlError::new(
+                                XmlErrorKind::InvalidExpression,
+                                a.span,
+                                format!(
+                                    "attribute `{}` expects Idle or Capturing, got `{other}`",
+                                    a.name
+                                ),
+                            )
+                            .at(a.byte_offset));
+                        }
+                    };
+                    let variant = format_ident!("{variant}");
+                    quote! { ::yororen_ui::headless::keybinding_input::KeybindingInputMode::#variant }
+                }
+            }
+            (ExtraArgKind::KeybindingInputMode, None) => {
                 return Err(XmlError::new(
                     XmlErrorKind::UnknownAttribute,
                     element.span,
@@ -927,7 +1066,7 @@ fn codegen_leaf(
             // `on_click={controller.increment}` instead
             // of `move |ev, w, cx| controller.increment(ev, w, cx)`.
             let expr = attr_expr_only(attr)?;
-            let expr = auto_wrap_event_expr(attr, expr);
+            let expr = auto_wrap_event_expr(attr, expr, setter, &element.tag);
             // Component event setters are inherent methods on
             // the component builder (e.g. `ButtonProps::on_click`),
             // so a normal method call is enough and avoids
@@ -980,7 +1119,73 @@ fn codegen_leaf(
         .at(attr.byte_offset));
     }
 
-    // 4. Apply render mode.
+    // 4. Named slots (e.g. Popover trigger/content, Tooltip trigger).
+    // These builder methods are called before `.render(cx)`.
+    let mut slotted_children: Vec<(&str, AstElement)> = Vec::new();
+    let mut remaining_children: Vec<AstNode> = Vec::new();
+    for child in &element.children {
+        if let AstNode::Element(child_el) = child {
+            if let Some(slot_attr) = child_el.attributes.iter().find(|a| a.name == "slot") {
+                let slot_name = slot_attr.raw.as_str();
+                if let Some(slot_def) = def.slots.iter().find(|s| s.name == slot_name) {
+                    let mut stripped = child_el.clone();
+                    stripped.attributes.retain(|a| a.name != "slot");
+                    slotted_children.push((slot_def.setter, stripped));
+                    continue;
+                }
+            }
+        }
+        remaining_children.push(child.clone());
+    }
+    for (setter, child_el) in &slotted_children {
+        let setter = format_ident!("{setter}");
+        let child_expr = codegen_child(
+            &AstNode::Element(child_el.clone()),
+            cx,
+            location,
+            source_file,
+        )?;
+        stmts.push(quote! { __el = __el.#setter(#child_expr); });
+    }
+
+    // 5. Children consumed before render (ButtonGroup, Modal).
+    if def.children_before_render {
+        for child in &remaining_children {
+            match child {
+                AstNode::Text { .. } => {
+                    return Err(XmlError::new(
+                        XmlErrorKind::Unsupported,
+                        element.span,
+                        format!(
+                            "<{tag}> does not support text content; use a <Label> child",
+                            tag = element.tag
+                        ),
+                    )
+                    .at(element.byte_offset));
+                }
+                AstNode::Element(_) => {
+                    let child_expr = if def.unwrap_children {
+                        codegen_child_unwrapped(child, cx, location, source_file)?
+                    } else {
+                        codegen_child(child, cx, location, source_file)?
+                    };
+                    stmts.push(quote! {
+                        __el = __el.child(#child_expr);
+                    });
+                }
+            }
+        }
+    }
+
+    // 6. Form submit button is built from the props before render,
+    //    then attached after render.
+    let is_form = element.tag == "Form";
+    let has_submit = is_form && element.attributes.iter().any(|a| a.name == "submit");
+    if has_submit {
+        stmts.push(quote! { let __form_submit_btn = __el.submit_button(&mut *#cx); });
+    }
+
+    // 7. Apply render mode.
     // After `.render(...)` the type changes from the
     // component's props/builder to `AnyElement`, so we
     // shadow `__el` with a fresh `let` rather than
@@ -1008,17 +1213,71 @@ fn codegen_leaf(
         }
     }
 
-    // 5. Optional text child.
-    if def.supports_text_child
-        && let Some(text) = extract_text_content(&element.children)
-    {
+    // 8. Children added after render (the default path).
+    // For Default-rendered leaves, the rendered element is
+    // typically a `Stateful<Div>` that accepts `.child(...)`.
+    // Text children are only allowed for components that explicitly
+    // opt in (e.g. `<Button>Click me</Button>`); other text inside a
+    // leaf is an error.
+    if def.render == RenderMode::Default && !def.children_before_render && !remaining_children.is_empty() {
+        let text_opt = extract_text_content(&remaining_children);
+        let mut text_added = false;
+        let mut child_stmts: Vec<TokenStream> = Vec::new();
+        for child in &remaining_children {
+            match child {
+                AstNode::Text { .. } => {
+                    if def.supports_text_child {
+                        if let Some(text) = &text_opt {
+                            if !text_added {
+                                text_added = true;
+                                child_stmts.push(quote! {
+                                    let __el = ::gpui::ParentElement::child(__el, #text);
+                                });
+                            }
+                        }
+                    } else {
+                        return Err(XmlError::new(
+                            XmlErrorKind::Unsupported,
+                            element.span,
+                            format!(
+                                "<{tag}> does not support text content; wrap text in a <Label>",
+                                tag = element.tag
+                            ),
+                        )
+                        .at(element.byte_offset));
+                    }
+                }
+                AstNode::Element(_) => {
+                    let child_expr = codegen_child(child, cx, location, source_file)?;
+                    child_stmts.push(quote! {
+                        let __el = ::gpui::ParentElement::child(__el, #child_expr);
+                    });
+                }
+            }
+        }
+        stmts.extend(child_stmts);
+    }
+
+    // 9. Attach the Form submit button after render.
+    if has_submit {
         stmts.push(quote! {
-            let __el = ::gpui::ParentElement::child(__el, #text);
+            let __el = if let Some(__btn) = __form_submit_btn {
+                ::gpui::ParentElement::child(__el, __btn)
+            } else {
+                __el
+            };
         });
     }
 
-    // 6. Wrap to AnyElement so the result composes into a parent.
-    stmts.push(quote! { ::gpui::IntoElement::into_any_element(__el) });
+    // 10. Wrap to AnyElement so the result composes into a parent.
+    // When called for an unwrapped child (e.g. ButtonGroup children),
+    // leave the concrete leaf type (`Stateful<Div>`) so the parent
+    // builder's `.child()` receives the right argument.
+    if wrap_to_any {
+        stmts.push(quote! { ::gpui::IntoElement::into_any_element(__el) });
+    } else {
+        stmts.push(quote! { __el });
+    }
 
     Ok(quote! {
         {
@@ -1728,6 +1987,27 @@ fn codegen_child(
     }
 }
 
+/// Codegen a child element without the final `.into_any_element()`
+/// wrapper. Used by components whose builder `.child()` expects the
+/// rendered leaf type directly (e.g. `ButtonGroup`).
+fn codegen_child_unwrapped(
+    node: &AstNode,
+    cx: &TokenStream,
+    location: &crate::parser::LocationTracker<'_>,
+    source_file: Option<&str>,
+) -> Result<TokenStream, XmlError> {
+    match node {
+        AstNode::Element(e) => {
+            let def = lookup_component(&e.tag).unwrap_or(&RUNTIME_LEAF_FALLBACK);
+            match def.kind {
+                ComponentKind::Leaf(l) => codegen_leaf(e, l, cx, location, source_file, false),
+                _ => codegen_element(e, cx, location, source_file),
+            }
+        }
+        AstNode::Text { text, .. } => Ok(quote! { #text }),
+    }
+}
+
 // --- helpers ----------------------------------------------------------------
 
 fn attr_value_tokens(attr: &AstAttribute) -> Result<TokenStream, XmlError> {
@@ -1762,7 +2042,13 @@ fn prop_value_tokens(attr: &AstAttribute, kind: PropValue) -> Result<TokenStream
         return Ok(match kind {
             PropValue::String
             | PropValue::Variant
+            | PropValue::BadgeVariant
+            | PropValue::HeadingLevel
+            | PropValue::IconSource
+            | PropValue::ImageSource
+            | PropValue::KeybindingInputMode
             | PropValue::Bool
+            | PropValue::UInt
             | PropValue::Float32
             | PropValue::Float64
             | PropValue::Unknown => {
@@ -1810,9 +2096,106 @@ fn prop_value_tokens(attr: &AstAttribute, kind: PropValue) -> Result<TokenStream
                 .at(attr.byte_offset));
             }
         }),
+        PropValue::BadgeVariant => Ok(match raw {
+            "neutral" => quote! { ::yororen_ui::headless::badge::BadgeVariant::Neutral },
+            "success" => quote! { ::yororen_ui::headless::badge::BadgeVariant::Success },
+            "warning" => quote! { ::yororen_ui::headless::badge::BadgeVariant::Warning },
+            "danger" => quote! { ::yororen_ui::headless::badge::BadgeVariant::Danger },
+            "info" => quote! { ::yororen_ui::headless::badge::BadgeVariant::Info },
+            other => {
+                return Err(XmlError::new(
+                    XmlErrorKind::InvalidExpression,
+                    attr.span,
+                    format!(
+                        "attribute `{}` expects one of `neutral`, `success`, `warning`, `danger`, `info`, got `{other}`",
+                        attr.name
+                    ),
+                )
+                .at(attr.byte_offset));
+            }
+        }),
+        PropValue::HeadingLevel => {
+            let variant = match raw {
+                "H1" | "h1" => "H1",
+                "H2" | "h2" => "H2",
+                "H3" | "h3" => "H3",
+                "H4" | "h4" => "H4",
+                "H5" | "h5" => "H5",
+                "H6" | "h6" => "H6",
+                other => {
+                    return Err(XmlError::new(
+                        XmlErrorKind::InvalidExpression,
+                        attr.span,
+                        format!("attribute `{}` expects H1..H6, got `{other}`", attr.name),
+                    )
+                    .at(attr.byte_offset));
+                }
+            };
+            let variant = format_ident!("{variant}");
+            Ok(quote! { ::yororen_ui::headless::heading::HeadingLevel::#variant })
+        }
+        PropValue::IconSource => Ok(quote! {
+            ::yororen_ui::headless::icon::IconSource::Builtin((#raw).into())
+        }),
+        PropValue::ImageSource => Ok(quote! {
+            ::yororen_ui::headless::image::ImageSource::Resource((#raw).into())
+        }),
+        PropValue::KeybindingInputMode => {
+            let variant = match raw {
+                "Idle" | "idle" => "Idle",
+                "Capturing" | "capturing" => "Capturing",
+                other => {
+                    return Err(XmlError::new(
+                        XmlErrorKind::InvalidExpression,
+                        attr.span,
+                        format!(
+                            "attribute `{}` expects Idle or Capturing, got `{other}`",
+                            attr.name
+                        ),
+                    )
+                    .at(attr.byte_offset));
+                }
+            };
+            let variant = format_ident!("{variant}");
+            Ok(quote! { ::yororen_ui::headless::keybinding_input::KeybindingInputMode::#variant })
+        }
         PropValue::Unknown => Ok(quote! { (#raw).to_string() }),
-        PropValue::Float64 => Ok(quote! { (#raw).to_string() }),
-        PropValue::Float32 => Ok(quote! { (#raw).to_string() }),
+        PropValue::Float64 => {
+            let value = raw.parse::<f64>().map_err(|_| {
+                XmlError::new(
+                    XmlErrorKind::InvalidExpression,
+                    attr.span,
+                    format!("attribute `{}` expects an f64 literal, got `{raw}`", attr.name),
+                )
+                .at(attr.byte_offset)
+            })?;
+            let lit = proc_macro2::Literal::f64_suffixed(value);
+            Ok(quote! { #lit })
+        }
+        PropValue::Float32 => {
+            let value = raw.parse::<f32>().map_err(|_| {
+                XmlError::new(
+                    XmlErrorKind::InvalidExpression,
+                    attr.span,
+                    format!("attribute `{}` expects an f32 literal, got `{raw}`", attr.name),
+                )
+                .at(attr.byte_offset)
+            })?;
+            let lit = proc_macro2::Literal::f32_suffixed(value);
+            Ok(quote! { #lit })
+        }
+        PropValue::UInt => {
+            let value = raw.parse::<usize>().map_err(|_| {
+                XmlError::new(
+                    XmlErrorKind::InvalidExpression,
+                    attr.span,
+                    format!("attribute `{}` expects a usize literal, got `{raw}`", attr.name),
+                )
+                .at(attr.byte_offset)
+            })?;
+            let lit = proc_macro2::Literal::usize_unsuffixed(value);
+            Ok(quote! { #lit })
+        }
     }
 }
 
@@ -1844,6 +2227,7 @@ fn emit_bind(entity: &TokenStream, def: LeafDef, cx: &TokenStream) -> Vec<TokenS
         .iter()
         .find(|p| p.name == "value")
         .or_else(|| def.props.iter().find(|p| p.name == "checked"))
+        .or_else(|| def.props.iter().find(|p| p.name == "selected"))
         .or_else(|| def.props.iter().find(|p| p.name == "text"));
     // Pick the change event. Prefer `on_change`; fall
     // back to `on_toggle` for boolean-style components.
@@ -1888,6 +2272,10 @@ fn emit_bind(entity: &TokenStream, def: LeafDef, cx: &TokenStream) -> Vec<TokenS
             value_prop.map(|p| p.value),
             Some(PropValue::Float64)
         );
+        let value_is_usize = matches!(
+            value_prop.map(|p| p.value),
+            Some(PropValue::UInt)
+        );
         let writeback = if event_name == "on_toggle" {
             quote! {
                 __el = __el.#m({
@@ -1912,6 +2300,15 @@ fn emit_bind(entity: &TokenStream, def: LeafDef, cx: &TokenStream) -> Vec<TokenS
                     let __bind = (#entity).clone();
                     move |__v: f32, _window: &mut gpui::Window, cx: &mut gpui::App| {
                         ::yororen_ui::headless::XmlBinding::<f32>::xml_write(&__bind, __v, cx);
+                    }
+                });
+            }
+        } else if value_is_usize {
+            quote! {
+                __el = __el.#m({
+                    let __bind = (#entity).clone();
+                    move |__v: usize, _window: &mut gpui::Window, cx: &mut gpui::App| {
+                        ::yororen_ui::headless::XmlBinding::<usize>::xml_write(&__bind, __v, cx);
                     }
                 });
             }
@@ -1984,12 +2381,16 @@ fn attr_expr_only(attr: &AstAttribute) -> Result<TokenStream, XmlError> {
 /// `Clone` (cheap clones are typical — `Arc<_>`,
 /// `Entity<_>`, or a small data struct).
 ///
-/// **Limitation**: events with 4-arg signatures
-/// (e.g. `on_toggle` on Checkbox/Switch — `Fn(bool,
-/// Option<&ClickEvent>, &mut Window, &mut App)`) don't
-/// fit the 3-arg wrapper. For those, the user must
-/// write a manual closure.
-fn auto_wrap_event_expr(attr: &AstAttribute, expr: TokenStream) -> TokenStream {
+/// **4-arg events**: `on_toggle` on Checkbox / Switch /
+/// Radio uses `(bool, Option<&ClickEvent>, &mut Window,
+/// &mut App)`. When `event_name` is `on_toggle`, the
+/// wrapper emits a 4-arg closure.
+fn auto_wrap_event_expr(
+    attr: &AstAttribute,
+    expr: TokenStream,
+    event_name: &str,
+    tag: &str,
+) -> TokenStream {
     let Some(raw) = &attr.expr else {
         return expr;
     };
@@ -2019,6 +2420,29 @@ fn auto_wrap_event_expr(attr: &AstAttribute, expr: TokenStream) -> TokenStream {
     if !looks_like_path {
         return expr;
     }
+    // Closure shape depends on the event and component tag.
+    let (params, call_args): (TokenStream, TokenStream) = match event_name {
+        "on_toggle" if matches!(tag, "Checkbox" | "Switch" | "Radio" | "ToggleButton") => (
+            quote! { __arg0: bool, __ev: Option<&gpui::ClickEvent>, __w: &mut gpui::Window, __cx: &mut gpui::App },
+            quote! { __arg0, __ev, __w, __cx },
+        ),
+        "on_toggle" => (
+            quote! { __ev: &gpui::ClickEvent, __w: &mut gpui::Window, __cx: &mut gpui::App },
+            quote! { __ev, __w, __cx },
+        ),
+        "on_clear" => (
+            quote! { __w: &mut gpui::Window, __cx: &mut gpui::App },
+            quote! { __w, __cx },
+        ),
+        "on_visible_range_change" => (
+            quote! { __range: std::ops::Range<usize>, __total: usize, __w: &mut gpui::Window, __cx: &mut gpui::App },
+            quote! { __range, __total, __w, __cx },
+        ),
+        _ => (
+            quote! { __arg0, __w: &mut gpui::Window, __cx: &mut gpui::App },
+            quote! { __arg0, __w, __cx },
+        ),
+    };
     // Parse the expression so we can detect a
     // field-access (`controller.method`) and pre-clone
     // the receiver outside the closure. Pre-cloning
@@ -2029,8 +2453,8 @@ fn auto_wrap_event_expr(attr: &AstAttribute, expr: TokenStream) -> TokenStream {
     // available for the next handler.
     let Ok(parsed) = syn::parse_str::<syn::Expr>(trimmed) else {
         return quote! {
-            move |__arg0, __w: &mut gpui::Window, __cx: &mut gpui::App| {
-                #expr(__arg0, __w, __cx)
+            move |#params| {
+                #expr(#call_args)
             }
         };
     };
@@ -2038,8 +2462,8 @@ fn auto_wrap_event_expr(attr: &AstAttribute, expr: TokenStream) -> TokenStream {
         // Associated function (`Module::function`) —
         // no receiver, no clone needed.
         syn::Expr::Path(_) => quote! {
-            move |__arg0, __w: &mut gpui::Window, __cx: &mut gpui::App| {
-                #expr(__arg0, __w, __cx)
+            move |#params| {
+                #expr(#call_args)
             }
         },
         // `controller.method(args)` — a method call whose
@@ -2078,7 +2502,7 @@ fn auto_wrap_event_expr(attr: &AstAttribute, expr: TokenStream) -> TokenStream {
             }
         }
         // `controller.method` — bare field access. Wrap
-        // into a 3-arg closure that calls the method.
+        // into the right closure shape for the event.
         syn::Expr::Field(field) => {
             let receiver = field.base;
             let member = field.member;
@@ -2090,8 +2514,8 @@ fn auto_wrap_event_expr(attr: &AstAttribute, expr: TokenStream) -> TokenStream {
             quote! {
                 {
                     let #clone_ident = (#receiver).clone();
-                    move |__arg0, __w: &mut gpui::Window, __cx: &mut gpui::App| {
-                        #clone_ident.#member(__arg0, __w, __cx)
+                    move |#params| {
+                        #clone_ident.#member(#call_args)
                     }
                 }
             }

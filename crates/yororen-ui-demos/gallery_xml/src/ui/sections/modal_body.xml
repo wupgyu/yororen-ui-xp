@@ -1,0 +1,7 @@
+<!-- Modal body content. -->
+<Column flex col gap="3">
+    <Heading id="modal-title" level="H2" text={controller.t("demo.modal.title", cx)} />
+    <Label id="modal-body" text={controller.t("demo.modal.body", cx)} />
+    <Button id="modal-close" caption={controller.t("common.close", cx)} variant="primary"
+            on_click={controller.close_modal} />
+</Column>

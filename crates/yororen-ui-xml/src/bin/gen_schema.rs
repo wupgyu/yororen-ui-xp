@@ -77,6 +77,18 @@ struct OverrideEntry {
     /// the heuristic doesn't yet recognise).
     #[serde(default)]
     needs_window: Option<bool>,
+    /// Add children before `.render(cx)` (e.g. `ButtonGroup`, `Modal`).
+    #[serde(default)]
+    children_before_render: Option<bool>,
+    /// For children-before-render leaves whose `.child()` expects
+    /// the unwrapped rendered type (`Stateful<Div>`) rather than
+    /// `AnyElement`. Set for `ButtonGroup`.
+    #[serde(default)]
+    unwrap_children: Option<bool>,
+    /// Named slots: each entry is `["trigger", "trigger"]`
+    /// (XML slot name, builder method name).
+    #[serde(default)]
+    slots: Option<Vec<[String; 2]>>,
 }
 
 #[derive(Debug, Default, serde::Deserialize)]
@@ -104,8 +116,17 @@ struct Extracted {
     props: Vec<PropInfo>,
     events: Vec<(String, String)>,
     supports_text_child: bool,
+    children_before_render: bool,
+    unwrap_children: bool,
+    slots: Vec<SlotInfo>,
     /// Free-form notes (manual overrides needed).
     notes: Vec<String>,
+}
+
+#[derive(Debug, Clone)]
+struct SlotInfo {
+    name: String,
+    setter: String,
 }
 
 #[derive(Debug, Clone)]
@@ -122,6 +143,17 @@ enum ExtraArgKind {
     /// Factory arg is anything else; the macro should pass
     /// the `attr` XML attribute's value verbatim.
     Custom,
+    /// Factory arg is `usize`; raw string literals are parsed
+    /// as decimal integers.
+    UInt,
+    /// Factory arg is `HeadingLevel`.
+    HeadingLevel,
+    /// Factory arg is `IconSource`.
+    IconSource,
+    /// Factory arg is `ImageSource`.
+    ImageSource,
+    /// Factory arg is `KeybindingInputMode`.
+    KeybindingInputMode,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -155,6 +187,19 @@ enum PropValue {
     /// The codegen pairs this with `on_change` to emit
     /// a `f32`-typed `XmlBinding::xml_write` call.
     Float32,
+    /// `usize` setter (e.g. `Table::selected` or
+    /// `VirtualList::item_count`).
+    UInt,
+    /// `BadgeVariant` setter (e.g. `Badge::variant`).
+    BadgeVariant,
+    /// `HeadingLevel` setter (e.g. `Heading::level`).
+    HeadingLevel,
+    /// `IconSource` setter (e.g. `Icon::source`, `EmptyState::icon`).
+    IconSource,
+    /// `ImageSource` setter (e.g. `Image::source`).
+    ImageSource,
+    /// `KeybindingInputMode` setter (e.g. `KeybindingInput::mode`).
+    KeybindingInputMode,
     /// Zero-arg flag setter (`fn X(self) -> Self`).
     Flag,
     /// Not a recognised type — the user must annotate.
@@ -319,6 +364,21 @@ fn apply_overrides(entries: Vec<Extracted>, overrides: &[OverrideEntry]) -> Vec<
                 if let Some(v) = o.needs_window {
                     e.needs_window = v;
                 }
+                if let Some(v) = o.children_before_render {
+                    e.children_before_render = v;
+                }
+                if let Some(v) = o.unwrap_children {
+                    e.unwrap_children = v;
+                }
+                if let Some(slots) = &o.slots {
+                    e.slots = slots
+                        .iter()
+                        .map(|s| SlotInfo {
+                            name: s[0].clone(),
+                            setter: s[1].clone(),
+                        })
+                        .collect();
+                }
             }
             e
         })
@@ -348,6 +408,9 @@ fn override_to_extracted(o: &OverrideEntry) -> Option<Extracted> {
                 props: vec![],
                 events: vec![],
                 supports_text_child: false,
+                children_before_render: false,
+                unwrap_children: false,
+                slots: vec![],
                 notes: vec![format!("control flow: {:?}", o.control_flow)],
             })
         }
@@ -503,6 +566,9 @@ fn extract(ast: &syn::File, module_name: &str) -> Result<Option<Extracted>, Stri
         props,
         events,
         supports_text_child,
+        children_before_render: false,
+        unwrap_children: false,
+        slots: vec![],
         notes,
     }))
 }
@@ -574,6 +640,7 @@ fn find_impl<'a>(ast: &'a syn::File, struct_name: &str) -> Option<&'a ItemImpl> 
         if let Item::Impl(imp) = item
             && let Type::Path(TypePath { qself: None, path }) = &*imp.self_ty
             && path.segments.last().is_some_and(|s| s.ident == struct_name)
+            && imp.trait_.is_none()
         {
             return Some(imp);
         }
@@ -614,21 +681,60 @@ fn classify_arg(ty: &Type) -> PropValue {
         if n == "f32" {
             return PropValue::Float32;
         }
+        if n == "usize" {
+            return PropValue::UInt;
+        }
         // Known variant enums.
         if matches!(
             n.as_str(),
-            "ActionVariantKind" | "BuiltinVariantKey" | "HeadingLevel" | "SliderSize" | "TagKind"
+            "ActionVariantKind" | "BuiltinVariantKey" | "SliderSize" | "TagKind"
         ) {
             return PropValue::Variant;
         }
+        if n == "BadgeVariant" {
+            return PropValue::BadgeVariant;
+        }
+        if n == "HeadingLevel" {
+            return PropValue::HeadingLevel;
+        }
+        if n == "IconSource" {
+            return PropValue::IconSource;
+        }
+        if n == "ImageSource" {
+            return PropValue::ImageSource;
+        }
+        if n == "KeybindingInputMode" {
+            return PropValue::KeybindingInputMode;
+        }
+    }
+    let rendered = ty.to_token_stream().to_string();
+    // `impl Into<gpui::Pixels>` / `Pixels` — `f32` works because
+    // `f32: Into<gpui::Pixels>`.
+    if rendered.contains("Pixels") {
+        return PropValue::Float32;
+    }
+    // `Hsla` / `impl Into<Hsla>` — requires a Rust brace expression;
+    // no useful literal form at the XML level.
+    if rendered.contains("Hsla") {
+        return PropValue::Unknown;
+    }
+    if rendered.contains("IconSource") {
+        return PropValue::IconSource;
+    }
+    if rendered.contains("ImageSource") {
+        return PropValue::ImageSource;
+    }
+    if rendered.contains("KeybindingInputMode") {
+        return PropValue::KeybindingInputMode;
     }
     // `impl Into<SharedString>` / `impl Into<String>` / `&str` / `String`.
-    let rendered = ty.to_token_stream().to_string();
-    if rendered.contains("Into")
-        || rendered.contains("SharedString")
-        || rendered == "String"
-        || rendered == "& str"
-        || rendered == "&'static str"
+    // Exclude `IntoIterator` (e.g. `keys: impl IntoIterator<Item = impl Into<String>>`).
+    if !rendered.contains("IntoIterator")
+        && (rendered.contains("Into")
+            || rendered.contains("SharedString")
+            || rendered == "String"
+            || rendered == "& str"
+            || rendered == "&'static str")
     {
         return PropValue::String;
     }
@@ -661,7 +767,17 @@ fn analyse_factory(sig: &Signature) -> Result<(Vec<ExtraArgInfo>, bool), String>
             _ => return Err("unexpected receiver in factory arg".to_string()),
         };
         let attr = param_name.unwrap_or_else(|| "value".to_string());
-        let kind = if is_string_like(ty) {
+        let kind = if is_usize(ty) {
+            ExtraArgKind::UInt
+        } else if is_heading_level(ty) {
+            ExtraArgKind::HeadingLevel
+        } else if is_icon_source(ty) {
+            ExtraArgKind::IconSource
+        } else if is_image_source(ty) {
+            ExtraArgKind::ImageSource
+        } else if is_keybinding_mode(ty) {
+            ExtraArgKind::KeybindingInputMode
+        } else if is_string_like(ty) {
             ExtraArgKind::Text
         } else {
             ExtraArgKind::Custom
@@ -694,11 +810,42 @@ fn is_app_type(ty: &Type) -> bool {
 
 fn is_string_like(ty: &Type) -> bool {
     let rendered = ty.to_token_stream().to_string();
-    rendered.contains("Into")
-        || rendered.contains("SharedString")
-        || rendered == "String"
-        || rendered == "& str"
-        || rendered == "&'static str"
+    !rendered.contains("IntoIterator")
+        && (rendered.contains("Into")
+            || rendered.contains("SharedString")
+            || rendered == "String"
+            || rendered == "& str"
+            || rendered == "&'static str")
+}
+
+fn is_usize(ty: &Type) -> bool {
+    if let Type::Path(tp) = ty
+        && let Some(seg) = tp.path.segments.last()
+    {
+        seg.ident == "usize"
+    } else {
+        false
+    }
+}
+
+fn is_heading_level(ty: &Type) -> bool {
+    let rendered = ty.to_token_stream().to_string();
+    rendered.contains("HeadingLevel")
+}
+
+fn is_icon_source(ty: &Type) -> bool {
+    let rendered = ty.to_token_stream().to_string();
+    rendered.contains("IconSource")
+}
+
+fn is_image_source(ty: &Type) -> bool {
+    let rendered = ty.to_token_stream().to_string();
+    rendered.contains("ImageSource")
+}
+
+fn is_keybinding_mode(ty: &Type) -> bool {
+    let rendered = ty.to_token_stream().to_string();
+    rendered.contains("KeybindingInputMode")
 }
 
 fn param_name_from_pat(pat: &syn::Pat) -> Option<String> {
@@ -764,7 +911,7 @@ fn render_module(
     out.push('\n');
     out.push_str("#![cfg_attr(rustfmt, rustfmt::skip)]\n");
     out.push_str("#![allow(dead_code)]\n\n");
-    out.push_str("use crate::schema::{ComponentDef, ComponentKind, ContainerDef, ControlFlowDef, ExtraArg, ExtraArgKind, LeafDef, PropDef, PropValue, RenderMode};\n\n");
+    out.push_str("use crate::schema::{ComponentDef, ComponentKind, ContainerDef, ControlFlowDef, ExtraArg, ExtraArgKind, LeafDef, PropDef, PropValue, RenderMode, SlotDef};\n\n");
 
     out.push_str("/// Auto-generated schema entries for every leaf component\n");
     out.push_str("/// extracted from the headless source. Combined with the\n");
@@ -878,6 +1025,12 @@ fn render_kind(e: &Extracted) -> String {
         RenderKind::Apply => "RenderMode::Apply",
         RenderKind::Compose => "RenderMode::Apply",
     };
+    let slots = e
+        .slots
+        .iter()
+        .map(|s| format!("SlotDef {{ name: {:?}, setter: {:?} }}", s.name, s.setter))
+        .collect::<Vec<_>>()
+        .join(", ");
     format!(
         "ComponentKind::Leaf(LeafDef {{\n\
          \x20\x20\x20\x20        factory: {:?},\n\
@@ -888,6 +1041,9 @@ fn render_kind(e: &Extracted) -> String {
          \x20\x20\x20\x20        props: &[{}],\n\
          \x20\x20\x20\x20        events: &[{}],\n\
          \x20\x20\x20\x20        supports_text_child: {},\n\
+         \x20\x20\x20\x20        children_before_render: {},\n\
+         \x20\x20\x20\x20        unwrap_children: {},\n\
+         \x20\x20\x20\x20        slots: &[{}],\n\
          \x20\x20\x20\x20    }})",
         e.factory,
         render_extra_args(&e.extra_args),
@@ -897,6 +1053,9 @@ fn render_kind(e: &Extracted) -> String {
         render_props(&e.props),
         render_events(&e.events),
         e.supports_text_child,
+        e.children_before_render,
+        e.unwrap_children,
+        slots,
     )
 }
 
@@ -906,6 +1065,11 @@ fn render_extra_args(args: &[ExtraArgInfo]) -> String {
         let kind = match ea.kind {
             ExtraArgKind::Text => "ExtraArgKind::Text",
             ExtraArgKind::Custom => "ExtraArgKind::Custom",
+            ExtraArgKind::UInt => "ExtraArgKind::UInt",
+            ExtraArgKind::HeadingLevel => "ExtraArgKind::HeadingLevel",
+            ExtraArgKind::IconSource => "ExtraArgKind::IconSource",
+            ExtraArgKind::ImageSource => "ExtraArgKind::ImageSource",
+            ExtraArgKind::KeybindingInputMode => "ExtraArgKind::KeybindingInputMode",
         };
         s.push_str(&format!(
             "ExtraArg {{ kind: {}, attr: {:?} }}, ",
@@ -926,6 +1090,12 @@ fn render_props(props: &[PropInfo]) -> String {
             PropValue::Unknown => "PropValue::String /* unknown — review */",
             PropValue::Float64 => "PropValue::Float64",
             PropValue::Float32 => "PropValue::Float32",
+            PropValue::UInt => "PropValue::UInt",
+            PropValue::BadgeVariant => "PropValue::BadgeVariant",
+            PropValue::HeadingLevel => "PropValue::HeadingLevel",
+            PropValue::IconSource => "PropValue::IconSource",
+            PropValue::ImageSource => "PropValue::ImageSource",
+            PropValue::KeybindingInputMode => "PropValue::KeybindingInputMode",
         };
         s.push_str(&format!(
             "PropDef {{ name: {:?}, setter: {:?}, value: {} }},\n            ",

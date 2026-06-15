@@ -3,111 +3,263 @@
 //! `@bind` and brace expressions can read and write it
 //! without races.
 //!
-//! The shape mirrors `showcase_xml`'s `ShowcaseState`:
-//! every toggleable / input field is its own entity
-//! so that two switches in different sections don't
-//! share state.
+//! The shape mirrors `gallery_demo::state::GalleryApp`,
+//! but the XML view reads it through a global `StateRef`.
 
-use gpui::{App, AppContext, Entity, Global};
+#![allow(dead_code)]
 
-/// A simple counter — the action section's "Press me"
-/// toggle button bumps it, the footer shows the live
-/// value.
+use std::collections::BTreeSet;
+
+use gpui::{App, Entity, Global};
+
+use yororen_ui::headless::combo_box::ComboBoxState;
+use yororen_ui::headless::dropdown_menu::DropdownMenuState;
+use yororen_ui::headless::keybinding_input::KeybindingInputMode;
+use yororen_ui::headless::listbox::{ListboxOption, ListboxState};
+use yororen_ui::headless::menu::MenuState;
+use yororen_ui::headless::modal::ModalState;
+use yororen_ui::headless::popover::PopoverState;
+use yororen_ui::headless::select::SelectState;
+use yororen_ui::headless::tooltip::TooltipState;
+use yororen_ui::headless::tree_item::TreeNodeId;
+use yororen_ui::headless::virtual_list::{UniformVirtualListController, VirtualListController};
+
+/// The 3 locales the toolbar can switch between.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum LocaleChoice {
+    #[default]
+    En,
+    ZhCn,
+    Ar,
+}
+
+impl LocaleChoice {
+    /// BCP-47 tag used by the `yororen_ui_locale_*` installers.
+    pub fn tag(self) -> &'static str {
+        match self {
+            LocaleChoice::En => "en",
+            LocaleChoice::ZhCn => "zh-CN",
+            LocaleChoice::Ar => "ar",
+        }
+    }
+}
+
+pub use crate::theme_switcher::{DarkMode, RendererKind};
+
+/// A simple counter used by the toolbar toast counter and the
+/// closable-tag demo.
 #[derive(Debug, Clone, Copy, Default)]
 pub struct Counter {
     pub value: usize,
 }
 
-/// A todo row — mirrors the showcase_xml design where
-/// each row owns its own `done` entity so two checkboxes
-/// in different rows never sync with each other.
+/// A todo row — each row owns its own `done` entity so two
+/// checkboxes in different rows never sync with each other.
 #[derive(Debug, Clone)]
 pub struct TodoItem {
     pub label: String,
     pub done: Entity<bool>,
 }
 
-/// The 3 sections the user can switch between via the
-/// `state.section` field. `<Match on={section}>` in the
-/// XML drives the "what's currently in focus" indicator.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub enum Section {
-    #[default]
-    Actions,
-    Display,
-    Inputs,
-    Controls,
-    Lists,
-}
-
-/// The application state. Each toggleable flag is its
-/// own entity; each text input mirrors its value into
-/// the `Entity<String>` so the XML can read and the
-/// controller can write.
+/// The application state. Plain-value fields are read directly by
+/// the XML; `Entity<T>` fields are used for `@bind` and for
+/// composite state handles.
 pub struct GalleryState {
-    // ---- Toolbar state ----
-    pub toast_count: Entity<Counter>,
+    // -------- Toolbar state --------
+    pub current_renderer: RendererKind,
+    pub dark_mode: DarkMode,
+    pub current_locale: LocaleChoice,
+    pub toast_count: Counter,
 
-    // ---- Actions section ----
-    pub toggle_btn_selected: Entity<bool>,
-    pub last_action_label: Entity<String>,
+    // -------- Composite `Entity<XxxState>` --------
+    pub modal_state: Entity<ModalState>,
+    pub popover_state: Entity<PopoverState>,
+    pub tooltip_state: Entity<TooltipState>,
+    pub select_state: Entity<SelectState>,
+    pub combo_state: Entity<ComboBoxState>,
+    pub dropdown_state: Entity<DropdownMenuState>,
+    pub split_dropdown_state: Entity<DropdownMenuState>,
+    pub menu_state: Entity<MenuState>,
+    pub listbox_state: Entity<ListboxState>,
 
-    // ---- Display section ----
-    pub progress_value: Entity<f32>,
-    pub tag_closable_count: Entity<Counter>,
+    // -------- Input values (mirrored via on_change) --------
+    pub text_value: String,
+    pub password_value: String,
+    pub number_value: f64,
+    pub search_value: String,
+    pub file_path_value: String,
+    pub keybinding_value: String,
+    pub keybinding_mode: KeybindingInputMode,
+    pub text_area_value: String,
 
-    // ---- Inputs section ----
-    pub text_value: Entity<String>,
-    pub search_value: Entity<String>,
-    pub number_value: Entity<f64>,
+    // -------- Composite on_change values --------
+    pub select_demo_value: String,
+    pub combo_demo_value: String,
+    pub dropdown_demo_value: String,
+    pub menu_demo_value: String,
+    pub listbox_demo_value: String,
 
-    // ---- Controls section ----
-    pub checkbox_value: Entity<bool>,
-    pub switch_value: Entity<bool>,
-    pub radio_value: Entity<usize>,
-    pub slider_value: Entity<f32>,
+    // -------- Controls --------
+    pub checkbox_value: bool,
+    pub switch_value: bool,
+    pub radio_value: usize, // 0/1/2
+    pub slider_value: f32,
 
-    // ---- Lists section ----
-    pub todos: Vec<TodoItem>,
+    // -------- Display --------
+    pub progress_value: f32,
+    pub progress_indeterminate: bool,
+    pub toggle_btn_selected: bool,
+    pub tag_selected: bool,
+    pub tag_closable_count: Counter,
 
-    // ---- Routing / focus ----
-    pub section: Entity<Section>,
+    // -------- Overlays --------
+    pub disclosure_open: bool,
+
+    // -------- Lists --------
+    pub selected_list_item: Option<usize>,
+    pub selected_table_row: Option<usize>,
+    pub form_submit_count: usize,
+    pub form_email_value: String,
+    pub form_password_value: String,
+    pub form_email_error: Option<String>,
+    pub tree_expanded: BTreeSet<TreeNodeId>,
+    pub tree_selected: Option<TreeNodeId>,
+    pub list_controller: VirtualListController,
+    pub vl_visible_range: Option<std::ops::Range<usize>>,
+    pub vl_item_count: usize,
+    pub vl_load_count: usize,
+    pub uniform_list_controller: UniformVirtualListController,
+    pub section_list_controller: VirtualListController,
+
 }
 
 impl GalleryState {
     pub fn new_data(cx: &mut App) -> Self {
-        // Each todo row mints its own `done` entity so
-        // the per-row `<Checkbox @bind={item.done}>`
-        // never collides with another row's state.
-        let todos = [
-            ("Build the XML layer", true),
-            ("Add @bind + Match + For", true),
-            ("Add Template / Slot", false),
-            ("Replace gallery_demo with XML", false),
-            ("Ship v0.7", false),
-        ]
-        .into_iter()
-        .map(|(label, done)| TodoItem {
-            label: label.to_string(),
-            done: cx.new(|_| done),
-        })
-        .collect();
+        // Mint all composite `Entity<XxxState>`s here. Each
+        // `&mut **cx` is a temporary borrow that drops before the
+        // next call, so successive `XxxState::new(&mut **cx)` calls
+        // do not alias.
+        let modal_state = ModalState::new(cx);
+        let popover_state = PopoverState::new(cx);
+        let tooltip_state = TooltipState::new(cx);
+        let select_state = SelectState::new(cx);
+        let combo_state = ComboBoxState::new(cx);
+        let dropdown_state = DropdownMenuState::new(cx);
+        let split_dropdown_state = DropdownMenuState::new(cx);
+        let menu_state = MenuState::new(cx);
+        let listbox_state = ListboxState::new(cx);
+
+        select_state.update(cx, |s, _cx| {
+            s.set_options(vec![
+                yororen_ui::headless::select::SelectOption::new("apple", "Apple"),
+                yororen_ui::headless::select::SelectOption::new("banana", "Banana"),
+                yororen_ui::headless::select::SelectOption::new("cherry", "Cherry"),
+                yororen_ui::headless::select::SelectOption::new("durian", "Durian"),
+            ]);
+        });
+        combo_state.update(cx, |s, _cx| {
+            s.set_options(vec![
+                yororen_ui::headless::combo_box::ComboBoxOption::new("rust", "Rust"),
+                yororen_ui::headless::combo_box::ComboBoxOption::new("go", "Go"),
+                yororen_ui::headless::combo_box::ComboBoxOption::new("python", "Python"),
+                yororen_ui::headless::combo_box::ComboBoxOption::new("zig", "Zig"),
+            ]);
+        });
+        dropdown_state.update(cx, |s, _cx| {
+            use yororen_ui::headless::dropdown_menu::{DropdownItem, DropdownMenuItem};
+            s.set_items(vec![
+                DropdownItem::Item(DropdownMenuItem::new("cut", "Cut")),
+                DropdownItem::Item(DropdownMenuItem::new("copy", "Copy")),
+                DropdownItem::Item(DropdownMenuItem::new("paste", "Paste")),
+                DropdownItem::Separator,
+                DropdownItem::Item(DropdownMenuItem::new("select_all", "Select all")),
+            ]);
+        });
+        menu_state.update(cx, |s, _cx| {
+            use yororen_ui::headless::dropdown_menu::{DropdownItem, DropdownMenuItem};
+            s.set_items(vec![
+                DropdownItem::Item(DropdownMenuItem::new("profile", "Profile")),
+                DropdownItem::Item(DropdownMenuItem::new("settings", "Settings")),
+                DropdownItem::Separator,
+                DropdownItem::Item(DropdownMenuItem::new("logout", "Log out")),
+            ]);
+        });
+        listbox_state.update(cx, |s, _cx| {
+            s.set_options(vec![
+                ListboxOption::new("apple", "Apple"),
+                ListboxOption::new("banana", "Banana"),
+                ListboxOption::new("cherry", "Cherry").disabled(true),
+                ListboxOption::new("durian", "Durian"),
+                ListboxOption::new("elderberry", "Elderberry"),
+            ]);
+        });
 
         Self {
-            toast_count: cx.new(|_| Counter { value: 0 }),
-            toggle_btn_selected: cx.new(|_| false),
-            last_action_label: cx.new(|_| String::from("(none yet)")),
-            progress_value: cx.new(|_| 0.42_f32),
-            tag_closable_count: cx.new(|_| Counter { value: 0 }),
-            text_value: cx.new(|_| String::new()),
-            search_value: cx.new(|_| String::new()),
-            number_value: cx.new(|_| 3.14_f64),
-            checkbox_value: cx.new(|_| false),
-            switch_value: cx.new(|_| true),
-            radio_value: cx.new(|_| 1_usize),
-            slider_value: cx.new(|_| 0.5_f32),
-            todos,
-            section: cx.new(|_| Section::default()),
+            current_renderer: RendererKind::default(),
+            dark_mode: DarkMode::default(),
+            current_locale: LocaleChoice::default(),
+            toast_count: Counter { value: 0 },
+
+            modal_state,
+            popover_state,
+            tooltip_state,
+            select_state,
+            combo_state,
+            dropdown_state,
+            split_dropdown_state,
+            menu_state,
+            listbox_state,
+
+            text_value: String::new(),
+            password_value: String::new(),
+            number_value: 42.0,
+            search_value: String::new(),
+            file_path_value: String::new(),
+            keybinding_value: String::new(),
+            keybinding_mode: KeybindingInputMode::Idle,
+            text_area_value: String::new(),
+
+            select_demo_value: String::new(),
+            combo_demo_value: String::new(),
+            dropdown_demo_value: String::new(),
+            menu_demo_value: String::new(),
+            listbox_demo_value: String::new(),
+
+            checkbox_value: false,
+            switch_value: false,
+            radio_value: 0,
+            slider_value: 40.0,
+
+            progress_value: 0.65,
+            progress_indeterminate: false,
+            toggle_btn_selected: false,
+            tag_selected: true,
+            tag_closable_count: Counter { value: 0 },
+
+            disclosure_open: false,
+
+            selected_list_item: Some(0),
+            selected_table_row: Some(1),
+            form_submit_count: 0,
+            form_email_value: String::new(),
+            form_password_value: String::new(),
+            form_email_error: None,
+            tree_expanded: BTreeSet::new(),
+            tree_selected: None,
+            list_controller: VirtualListController::new(
+                100,
+                gpui::ListAlignment::Top,
+                gpui::px(20.),
+            ),
+            vl_visible_range: None,
+            vl_item_count: 100,
+            vl_load_count: 0,
+            uniform_list_controller: UniformVirtualListController::new(),
+            section_list_controller: VirtualListController::new(
+                crate::view::SECTION_ROW_COUNT,
+                gpui::ListAlignment::Top,
+                gpui::px(400.),
+            ),
         }
     }
 }

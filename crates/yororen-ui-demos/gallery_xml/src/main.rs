@@ -1,46 +1,19 @@
-//! Gallery Demo (XML edition) — minimal port of the
-//! `gallery_demo` binary that drives the same UI but
-//! describes its layout entirely in XML. The state
-//! and event-handler layout mirror `showcase_xml`'s
-//! controller pattern: data lives in pure structs
-//! wrapped in entities, business logic in a `Controller`
-//! the XML references by method name.
-//!
-//! Compared to the full `gallery_demo` we make two
-//! pragmatic simplifications to keep the XML readable:
-//!
-//! 1. **No renderer switcher** — the default renderer is
-//!    installed once at startup. Hot-swapping renderers
-//!    per render is a Rust-side concern that the XML
-//!    layer doesn't need to express.
-//! 2. **No locale switcher** — the English locale is
-//!    installed once; section titles / cell labels use
-//!    plain string literals.
-//!
-//! Everything else — the toolbar, the 7 sections, the
-//! inputs, the controls, the lists — is XML. The
-//! `controller` field is `Clone` so the auto-wrap in
-//! `<Button on_click={controller.foo}>` captures one
-//! clone per handler.
-//!
-//! ## Run
-//!
-//! ```bash
-//! cargo run -p gallery-xml-demo
-//! ```
+//! Gallery Demo (XML edition) — a 1:1 XML-driven port of
+//! `gallery_demo`. The layout lives in `src/ui/*.xml`; the
+//! runtime renderer / locale switching and composite state
+//! seeding live in Rust scaffolding.
 
 mod controller;
+mod i18n;
+mod notifications_host;
 mod state;
+mod theme_switcher;
 mod view;
 
-use gpui::{
-    App, AppContext, Application, InteractiveElement, IntoElement, WindowBounds, WindowOptions,
-    div, px, size,
-};
+use gpui::{App, AppContext, Application, InteractiveElement, IntoElement, WindowBounds, WindowOptions, div, px, size};
 
 use yororen_ui::assets::UiAsset;
 use yororen_ui::notification::center::NotificationCenter;
-use yororen_ui::renderer;
 
 use crate::controller::Controller;
 use crate::state::{GalleryState, StateRef};
@@ -59,33 +32,37 @@ fn main() {
     let app = Application::new().with_assets(UiAsset);
 
     app.run(|cx: &mut App| {
-        // 1. Install the default theme + renderers (light).
-        renderer::install(cx, cx.window_appearance());
+        // 1. Install the default renderer + theme (light).
+        //    The view will reinstall per render so toolbar
+        //    toggles take effect immediately.
+        theme_switcher::install_renderer(
+            cx,
+            theme_switcher::RendererKind::default(),
+            theme_switcher::DarkMode::default(),
+        );
 
         // 2. Bind the text-input keymap once (idempotent).
-        //    Without this, the TextInput can't accept
-        //    backspace or other editing keys.
         yororen_ui::headless::text_input::init(cx);
 
         // 3. Install the notification center (toast /
         //    notification trigger from the toolbar).
         cx.set_global(NotificationCenter::new());
 
-        // 4. Build the state + the controller that owns
-        //    it. The controller is `Clone` so the XML's
-        //    event handlers each get their own handle.
-        let state = cx.new(|cx| GalleryState::new_data(cx));
-        let controller = Controller::new(state.clone());
+        // 4. Install English locale + the demo's own translations.
+        crate::i18n::install_for_locale(cx, crate::state::LocaleChoice::En);
 
-        // 5. Make the state available to the view as a
-        //    global (read via `cx.global::<StateRef>()`).
+        // 5. Build the state + the controller that owns it.
+        let state = cx.new(|cx| GalleryState::new_data(cx));
+        let controller = Controller::new(state.clone(), cx);
+
+        // 6. Make the state available to the view as a global.
         cx.set_global(StateRef { state });
 
-        // 6. Open the main window.
+        // 7. Open the main window.
         let options = WindowOptions {
             window_bounds: Some(WindowBounds::Windowed(gpui::Bounds::centered(
                 None,
-                size(px(1100.0), px(820.0)),
+                size(px(1280.0), px(900.0)),
                 cx,
             ))),
             ..Default::default()
