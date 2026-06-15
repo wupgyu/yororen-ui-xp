@@ -599,6 +599,12 @@ fn extract(ast: &syn::File, module_name: &str) -> Result<Option<Extracted>, Stri
                     });
                 } else if let Some(arg_ty) = arg {
                     let value = classify_arg(arg_ty);
+                    if matches!(value, PropValue::Unknown) {
+                        notes.push(format!(
+                            "review needed: prop `{name}` has unclassified type `{}`",
+                            arg_ty.to_token_stream()
+                        ));
+                    }
                     props.push(PropInfo {
                         name: name.clone(),
                         setter: name.clone(),
@@ -1214,7 +1220,7 @@ fn render_props(props: &[PropInfo]) -> String {
             PropValue::Bool => "PropValue::Bool",
             PropValue::Variant => "PropValue::Variant",
             PropValue::Flag => "PropValue::Flag",
-            PropValue::Unknown => "PropValue::String",
+            PropValue::Unknown => "PropValue::Unknown",
             PropValue::Float64 => "PropValue::Float64",
             PropValue::Float32 => "PropValue::Float32",
             PropValue::UInt => "PropValue::UInt",
