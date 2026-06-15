@@ -3147,9 +3147,13 @@ fn attr_expr_only(attr: &AstAttribute) -> Result<TokenStream, XmlError> {
 /// `Entity<_>`, or a small data struct).
 ///
 /// **4-arg events**: `on_toggle` on Checkbox / Switch /
-/// Radio uses `(bool, Option<&ClickEvent>, &mut Window,
-/// &mut App)`. When `event_name` is `on_toggle`, the
-/// wrapper emits a 4-arg closure.
+/// Radio / ToggleButton uses `(bool, Option<&ClickEvent>,
+/// &mut Window, &mut App)`. For all other components
+/// (including `TreeItem`), `on_toggle` is treated as a
+/// click-style event: `(&ClickEvent, &mut Window,
+/// &mut App)`. Callers writing bare controller methods
+/// must ensure the method signature matches the emitted
+/// closure shape.
 fn auto_wrap_event_expr(
     attr: &AstAttribute,
     expr: TokenStream,
@@ -3163,6 +3167,11 @@ fn auto_wrap_event_expr(
             quote! { __arg0, __ev, __w, __cx },
         ),
         "on_toggle" => (
+            // TreeItem and any future non-toggle component:
+            // on_toggle is conceptually a click on the row /
+            // chevron, so it uses the standard 3-arg click
+            // signature. Auto-wrapped bare methods receive
+            // `&ClickEvent` as the first argument.
             quote! { __ev: &gpui::ClickEvent, __w: &mut gpui::Window, __cx: &mut gpui::App },
             quote! { __ev, __w, __cx },
         ),
@@ -4511,6 +4520,21 @@ mod tests {
         let s = ts.to_string();
         assert!(!s.contains("__arg0"), "{s}");
         assert!(s.contains("build_handler ()"), "{s}");
+    }
+
+    #[test]
+    fn tree_item_on_toggle_uses_click_event_signature() {
+        // `on_toggle` on TreeItem is a click-style event
+        // (`&ClickEvent, &mut Window, &mut App`), not the
+        // 4-arg boolean toggle used by Checkbox/Switch.
+        // Bare controller methods are auto-wrapped with the
+        // click signature, so the method must match it.
+        let xml = r#"<TreeItem id="x" node_id="x" label="x" on_toggle={controller.handle_toggle} />"#;
+        let ts = codegen(xml, Span::call_site(), None, None, &[]).expect("codegen ok");
+        let s = ts.to_string();
+        assert!(s.contains("on_toggle"), "{s}");
+        assert!(s.contains("__ev : & gpui :: ClickEvent"), "{s}");
+        assert!(!s.contains("__arg0 : bool"), "{s}");
     }
 
     #[test]
