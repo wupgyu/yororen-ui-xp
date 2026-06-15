@@ -119,6 +119,14 @@ pub fn codegen(
         outer_span,
     };
     let mut element = crate::parser::parse(xml_text, outer_span, &location)?;
+    // Resolve `<Include src="…">` before template processing
+    // so that shared templates and other compile-time definitions
+    // can live in included XML files. Errors inside an included
+    // file are rendered with that file's own line/col location.
+    {
+        let mut visited = std::collections::HashSet::new();
+        expand_includes(&mut element, source_file, &mut visited)?;
+    }
     // Template pre-pass: collect every `<Template name="…">`
     // in the root's children, then walk the rest of the tree
     // and substitute `<X>` invocations with the template body,
@@ -1349,7 +1357,6 @@ fn codegen_control_flow(
         }
         ControlFlowDef::For => codegen_for(element, cx, location, source_file),
         ControlFlowDef::Fragment => codegen_fragment(element, cx, location, source_file),
-        ControlFlowDef::Include => codegen_include(element, cx, location, source_file),
         ControlFlowDef::Template => codegen_template(element, cx, location, source_file),
         ControlFlowDef::Slot => codegen_slot(element, cx),
         ControlFlowDef::Match => codegen_match(element, cx, location, source_file),
@@ -1360,6 +1367,11 @@ fn codegen_control_flow(
         )
         .at(element.byte_offset)),
         ControlFlowDef::State => codegen_state(element, cx, location, source_file),
+        ControlFlowDef::Include => Err(XmlError::new(
+            XmlErrorKind::Unsupported,
+            element.span,
+            "internal error: <Include> should have been expanded before codegen",
+        )),
     }
 }
 
@@ -1628,93 +1640,6 @@ fn codegen_fragment(
     codegen_children_as_element(&element.children, cx, location, source_file)
 }
 
-/// Compile-time file inclusion. The `src` attribute is
-/// read at proc-macro time, the file is parsed, and
-/// its children are spliced into the current
-/// `xml! { … }` invocation as additional sibling
-/// elements. This is the file-include sibling of
-/// `xml_file!` — useful inside a larger XML literal.
-///
-/// `source_file` is the path of the file that invoked
-/// the enclosing `xml!` macro. Relative `src` paths
-/// are resolved against this file's parent directory,
-/// matching `xml_file!`'s convention. When `None`
-/// (the runtime / test path), we fall back to CWD.
-fn codegen_include(
-    element: &AstElement,
-    cx: &TokenStream,
-    location: &crate::parser::LocationTracker<'_>,
-    source_file: Option<&str>,
-) -> Result<TokenStream, XmlError> {
-    let src_attr = element
-        .attributes
-        .iter()
-        .find(|a| a.name == "src")
-        .ok_or_else(|| {
-            XmlError::new(
-                XmlErrorKind::UnknownAttribute,
-                element.span,
-                "<Include> requires a `src=\"...\"` attribute",
-            )
-            .at(element.byte_offset)
-        })?;
-    // For now, the only way to get a `&str` path is via
-    // a string literal in the XML. (`Include>` does not
-    // accept brace expressions for `src` — the file
-    // must be known at macro-expansion time.)
-    if src_attr.expr.is_some() {
-        return Err(XmlError::new(
-            XmlErrorKind::Unsupported,
-            src_attr.span,
-            "<Include src> requires a string literal, not a brace expression",
-        )
-        .at(src_attr.byte_offset));
-    }
-    let path = src_attr.raw.as_str();
-    let outer_span = location.span_outer();
-    let resolved = resolve_include_path(path, source_file)?;
-    let contents = std::fs::read_to_string(&resolved).map_err(|e| {
-        XmlError::new(
-            XmlErrorKind::ParseError,
-            outer_span,
-            format!(
-                "could not read `{}` (resolved to `{}`): {e}",
-                path,
-                resolved.display()
-            ),
-        )
-    })?;
-    // Parse the included file and emit its children as
-    // a comma-separated sequence of expressions. The
-    // included file gets its own `LocationTracker` so
-    // error offsets are local to the included XML, not
-    // the parent. Children of the included file are
-    // resolved relative to the included file itself
-    // (a relative `<Include>` inside an included file
-    // is relative to the includee, not the includer).
-    let line_starts = crate::parser::line_starts(&contents);
-    let included_root = {
-        let included_location = crate::parser::LocationTracker {
-            line_starts: &line_starts,
-            xml: &contents,
-            outer_span,
-        };
-        crate::parser::parse(&contents, outer_span, &included_location)?
-    };
-    let resolved_path_str = resolved.to_str();
-    let included_location = crate::parser::LocationTracker {
-        line_starts: &line_starts,
-        xml: &contents,
-        outer_span,
-    };
-    codegen_children_as_element(
-        &included_root.children,
-        cx,
-        &included_location,
-        resolved_path_str,
-    )
-}
-
 /// Try to resolve a relative `path` against the
 /// `source_file` (the path of the `.rs` file that
 /// invoked the enclosing `xml!` macro). Absolute paths
@@ -1750,6 +1675,122 @@ fn resolve_include_path(
         }
         None => Ok(Path::new(".").join(path)),
     }
+}
+
+/// Read and parse the XML file referenced by an `<Include>` element.
+///
+/// Errors are reported against the included file itself and wrapped
+/// in a pre-rendered diagnostic so the caller's [`LocationTracker`]
+/// does not accidentally map offsets into the parent XML.
+fn parse_include(
+    element: &AstElement,
+    source_file: Option<&str>,
+) -> Result<(std::path::PathBuf, AstElement), XmlError> {
+    let src_attr = element
+        .attributes
+        .iter()
+        .find(|a| a.name == "src")
+        .ok_or_else(|| {
+            XmlError::new(
+                XmlErrorKind::UnknownAttribute,
+                element.span,
+                "<Include> requires a `src=\"...\"` attribute",
+            )
+            .at(element.byte_offset)
+        })?;
+    if src_attr.expr.is_some() {
+        return Err(XmlError::new(
+            XmlErrorKind::Unsupported,
+            src_attr.span,
+            "<Include src> requires a string literal, not a brace expression",
+        )
+        .at(src_attr.byte_offset));
+    }
+    let path = src_attr.raw.as_str();
+    let resolved = resolve_include_path(path, source_file)?;
+    let contents = std::fs::read_to_string(&resolved).map_err(|e| {
+        XmlError::new(
+            XmlErrorKind::ParseError,
+            element.span,
+            format!(
+                "could not read `{}` (resolved to `{}`): {e}",
+                path,
+                resolved.display()
+            ),
+        )
+    })?;
+
+    let line_starts = crate::parser::line_starts(&contents);
+    let included_location = crate::parser::LocationTracker {
+        line_starts: &line_starts,
+        xml: &contents,
+        outer_span: element.span,
+    };
+    match crate::parser::parse(&contents, element.span, &included_location) {
+        Ok(root) => Ok((resolved, root)),
+        Err(err) => {
+            let diagnostic = err.render_with(Some(&included_location));
+            let rendered = format!(
+                "{diagnostic}\n  = note: in included file `{}`",
+                resolved.display()
+            );
+            Err(XmlError::new(
+                XmlErrorKind::ParseError,
+                element.span,
+                format!("in included file `{}`", resolved.display()),
+            )
+            .rendered(rendered))
+        }
+    }
+}
+
+/// Recursively expand every `<Include src="…">` in the AST so
+/// templates and other compile-time constructs can be shared
+/// across XML files. Detects include cycles.
+fn expand_includes(
+    element: &mut AstElement,
+    source_file: Option<&str>,
+    visited: &mut std::collections::HashSet<std::path::PathBuf>,
+) -> Result<(), XmlError> {
+    let mut i = 0;
+    while i < element.children.len() {
+        let include_info = if let AstNode::Element(child) = &element.children[i] {
+            if child.tag == "Include" {
+                let span = child.span;
+                Some((span, parse_include(child, source_file)?))
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+
+        if let Some((span, (path, mut included_root))) = include_info {
+            if !visited.insert(path.clone()) {
+                return Err(XmlError::new(
+                    XmlErrorKind::Unsupported,
+                    span,
+                    format!(
+                        "cyclic <Include> detected: `{}` is already being included",
+                        path.display()
+                    ),
+                ));
+            }
+            let path_str = path.to_str();
+            expand_includes(&mut included_root, path_str, visited)?;
+            visited.remove(&path);
+            let nodes = included_root.children;
+            element.children.splice(i..i + 1, nodes);
+            // Re-process the newly spliced children from this index.
+            continue;
+        }
+
+        if let AstNode::Element(child) = &mut element.children[i] {
+            expand_includes(child, source_file, visited)?;
+        }
+        i += 1;
+    }
+    Ok(())
 }
 
 /// `<Template name="X">…</Template>` for the MVP
@@ -4148,6 +4189,57 @@ mod tests {
         let resolved =
             resolve_include_path("ui/header.xml", None).expect("resolve");
         assert_eq!(resolved, PathBuf::from("./ui/header.xml"));
+    }
+
+    #[test]
+    fn include_provides_templates_to_the_including_file() {
+        // Templates defined in an included XML file must be
+        // visible to invocations in the parent file. This lets
+        // shared layout components live in a single place.
+        use std::fs;
+
+        let dir = std::env::temp_dir().join("yororen_ui_xml_include_template_test");
+        fs::create_dir_all(&dir).expect("create temp dir");
+
+        let shared = dir.join("shared.xml");
+        let main = dir.join("main.xml");
+        fs::write(
+            &shared,
+            r#"<Fragment>
+    <Template name="Card">
+        <Div>
+            <Slot name="title"/>
+            <Slot/>
+        </Div>
+    </Template>
+</Fragment>"#,
+        )
+        .expect("write shared.xml");
+        fs::write(
+            &main,
+            r#"<Column>
+    <Include src="shared.xml" />
+    <Card>
+        <Slot name="title"><Label id="t" text="Title" /></Slot>
+        <Label id="b" text="Body" />
+    </Card>
+</Column>"#,
+        )
+        .expect("write main.xml");
+
+        let source = dir.join("view.rs");
+        let contents = fs::read_to_string(&main).expect("read main.xml");
+        let ts = codegen(
+            &contents,
+            Span::call_site(),
+            None,
+            source.to_str(),
+        )
+        .expect("codegen should succeed");
+        let s = ts.to_string();
+        let compact: String = s.chars().filter(|c| !c.is_whitespace()).collect();
+        assert!(compact.contains("Title"), "{s}");
+        assert!(compact.contains("Body"), "{s}");
     }
 
     #[test]

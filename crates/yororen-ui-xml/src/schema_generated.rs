@@ -834,6 +834,8 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             needs_app: true,
             needs_window: false,
             props: &[PropDef { name: "value", setter: "value", value: PropValue::Float32 },
+            PropDef { name: "min", setter: "min", value: PropValue::Float32 },
+            PropDef { name: "max", setter: "max", value: PropValue::Float32 },
             PropDef { name: "step", setter: "step", value: PropValue::Float32 },
             PropDef { name: "disabled", setter: "disabled", value: PropValue::Bool },
             ],

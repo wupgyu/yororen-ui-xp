@@ -3645,6 +3645,8 @@ pub yororen_ui_core::headless::slider::SliderProps::value: f32
 impl yororen_ui_core::headless::slider::SliderProps
 pub fn yororen_ui_core::headless::slider::SliderProps::apply(self, gpui::elements::div::Div) -> gpui::elements::div::Stateful<gpui::elements::div::Div>
 pub fn yororen_ui_core::headless::slider::SliderProps::disabled(self, bool) -> Self
+pub fn yororen_ui_core::headless::slider::SliderProps::max(self, f32) -> Self
+pub fn yororen_ui_core::headless::slider::SliderProps::min(self, f32) -> Self
 pub fn yororen_ui_core::headless::slider::SliderProps::on_change<F>(self, F) -> Self where F: 'static + core::marker::Send + core::marker::Sync + core::ops::function::Fn(f32, &mut gpui::window::Window, &mut gpui::app::App)
 pub fn yororen_ui_core::headless::slider::SliderProps::range(self, f32, f32) -> Self
 pub fn yororen_ui_core::headless::slider::SliderProps::render(self, &gpui::app::App) -> gpui::elements::div::Stateful<gpui::elements::div::Div>

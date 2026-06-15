@@ -49,9 +49,7 @@
         <Disclosure id="ov-disc" title={controller.t("demo.disclosure.title", cx)}
                     open={controller.disclosure_open(cx)}
                     on_toggle={controller.toggle_disclosure}>
-            <Column flex col pl="4">
-                <Label id="ov-disc-body" text={controller.t("demo.disclosure.body", cx)} />
-            </Column>
+            {controller.disclosure_body(cx)}
         </Disclosure>
     </Cell>
 

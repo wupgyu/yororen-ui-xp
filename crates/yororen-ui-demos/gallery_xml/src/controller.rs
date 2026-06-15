@@ -121,6 +121,10 @@ impl Controller {
     }
 
     pub fn form_email_value(&self, cx: &App) -> String {
+        self.state.read(cx).form_email_value.read(cx).clone()
+    }
+
+    pub fn form_email_value_entity(&self, cx: &App) -> Entity<String> {
         self.state.read(cx).form_email_value.clone()
     }
 
@@ -155,27 +159,51 @@ impl Controller {
     }
 
     pub fn checkbox_value(&self, cx: &App) -> bool {
-        self.state.read(cx).checkbox_value
+        *self.state.read(cx).checkbox_value.read(cx)
+    }
+
+    pub fn checkbox_value_entity(&self, cx: &App) -> Entity<bool> {
+        self.state.read(cx).checkbox_value.clone()
     }
 
     pub fn switch_value(&self, cx: &App) -> bool {
-        self.state.read(cx).switch_value
+        *self.state.read(cx).switch_value.read(cx)
+    }
+
+    pub fn switch_value_entity(&self, cx: &App) -> Entity<bool> {
+        self.state.read(cx).switch_value.clone()
     }
 
     pub fn slider_value(&self, cx: &App) -> f32 {
-        self.state.read(cx).slider_value
+        *self.state.read(cx).slider_value.read(cx)
+    }
+
+    pub fn slider_value_entity(&self, cx: &App) -> Entity<f32> {
+        self.state.read(cx).slider_value.clone()
     }
 
     pub fn text_value(&self, cx: &App) -> String {
+        self.state.read(cx).text_value.read(cx).clone()
+    }
+
+    pub fn text_value_entity(&self, cx: &App) -> Entity<String> {
         self.state.read(cx).text_value.clone()
     }
 
     pub fn search_value(&self, cx: &App) -> String {
+        self.state.read(cx).search_value.read(cx).clone()
+    }
+
+    pub fn search_value_entity(&self, cx: &App) -> Entity<String> {
         self.state.read(cx).search_value.clone()
     }
 
     pub fn number_value(&self, cx: &App) -> f64 {
-        self.state.read(cx).number_value
+        *self.state.read(cx).number_value.read(cx)
+    }
+
+    pub fn number_value_entity(&self, cx: &App) -> Entity<f64> {
+        self.state.read(cx).number_value.clone()
     }
 
     pub fn keybinding_value(&self, cx: &App) -> String {
@@ -187,14 +215,26 @@ impl Controller {
     }
 
     pub fn text_area_value(&self, cx: &App) -> String {
+        self.state.read(cx).text_area_value.read(cx).clone()
+    }
+
+    pub fn text_area_value_entity(&self, cx: &App) -> Entity<String> {
         self.state.read(cx).text_area_value.clone()
     }
 
     pub fn password_value(&self, cx: &App) -> String {
+        self.state.read(cx).password_value.read(cx).clone()
+    }
+
+    pub fn password_value_entity(&self, cx: &App) -> Entity<String> {
         self.state.read(cx).password_value.clone()
     }
 
     pub fn file_path_value(&self, cx: &App) -> String {
+        self.state.read(cx).file_path_value.read(cx).clone()
+    }
+
+    pub fn file_path_value_entity(&self, cx: &App) -> Entity<String> {
         self.state.read(cx).file_path_value.clone()
     }
 
@@ -411,9 +451,8 @@ impl Controller {
         _w: &mut Window,
         cx: &mut App,
     ) {
-        self.state.update(cx, |s, _cx| {
-            s.checkbox_value = value;
-        });
+        let entity = self.state.read(cx).checkbox_value.clone();
+        entity.update(cx, |s, _cx| *s = value);
     }
 
     pub fn set_switch(
@@ -423,53 +462,45 @@ impl Controller {
         _w: &mut Window,
         cx: &mut App,
     ) {
-        self.state.update(cx, |s, _cx| {
-            s.switch_value = value;
-        });
+        let entity = self.state.read(cx).switch_value.clone();
+        entity.update(cx, |s, _cx| *s = value);
     }
 
     pub fn set_slider(&self, value: f32, _w: &mut Window, cx: &mut App) {
-        self.state.update(cx, |s, _cx| {
-            s.slider_value = value;
-        });
+        let entity = self.state.read(cx).slider_value.clone();
+        entity.update(cx, |s, _cx| *s = value);
     }
 
     // -------- Inputs section --------
 
     pub fn set_text_value(&self, value: &str, _w: &mut Window, cx: &mut App) {
-        self.state.update(cx, |s, _cx| {
-            s.text_value = value.to_string();
-        });
+        let entity = self.state.read(cx).text_value.clone();
+        entity.update(cx, |s, _cx| *s = value.to_string());
     }
 
     pub fn set_password_value(&self, value: &str, _w: &mut Window, cx: &mut App) {
-        self.state.update(cx, |s, _cx| {
-            s.password_value = value.to_string();
-        });
+        let entity = self.state.read(cx).password_value.clone();
+        entity.update(cx, |s, _cx| *s = value.to_string());
     }
 
     pub fn set_search_value(&self, value: &str, _w: &mut Window, cx: &mut App) {
-        self.state.update(cx, |s, _cx| {
-            s.search_value = value.to_string();
-        });
+        let entity = self.state.read(cx).search_value.clone();
+        entity.update(cx, |s, _cx| *s = value.to_string());
     }
 
     pub fn clear_search(&self, _w: &mut Window, cx: &mut App) {
-        self.state.update(cx, |s, _cx| {
-            s.search_value.clear();
-        });
+        let entity = self.state.read(cx).search_value.clone();
+        entity.update(cx, |s, _cx| s.clear());
     }
 
     pub fn set_number_value(&self, value: f64, _w: &mut Window, cx: &mut App) {
-        self.state.update(cx, |s, _cx| {
-            s.number_value = value;
-        });
+        let entity = self.state.read(cx).number_value.clone();
+        entity.update(cx, |s, _cx| *s = value);
     }
 
     pub fn set_text_area_value(&self, value: &str, _w: &mut Window, cx: &mut App) {
-        self.state.update(cx, |s, _cx| {
-            s.text_area_value = value.to_string();
-        });
+        let entity = self.state.read(cx).text_area_value.clone();
+        entity.update(cx, |s, _cx| *s = value.to_string());
     }
 
     pub fn set_keybinding_value(&self, value: &str, _w: &mut Window, cx: &mut App) {
@@ -479,15 +510,13 @@ impl Controller {
     }
 
     pub fn set_file_path_value(&self, value: &str, _w: &mut Window, cx: &mut App) {
-        self.state.update(cx, |s, _cx| {
-            s.file_path_value = value.to_string();
-        });
+        let entity = self.state.read(cx).file_path_value.clone();
+        entity.update(cx, |s, _cx| *s = value.to_string());
     }
 
     pub fn browse_file_path(&self, _value: &str, _w: &mut Window, cx: &mut App) {
-        self.state.update(cx, |s, _cx| {
-            s.file_path_value = "/tmp/example.txt".to_string();
-        });
+        let entity = self.state.read(cx).file_path_value.clone();
+        entity.update(cx, |s, _cx| *s = "/tmp/example.txt".to_string());
     }
 
     pub fn start_keybinding_capture(&self, _w: &mut Window, cx: &mut App) {
@@ -534,27 +563,43 @@ impl Controller {
         });
     }
 
+    pub fn disclosure_body(&self, cx: &mut App) -> AnyElement {
+        if !self.disclosure_open(cx) {
+            return div().into_any_element();
+        }
+        div()
+            .flex()
+            .flex_col()
+            .pl(px(16.0))
+            .child(
+                yororen_ui::headless::label::label(
+                    "ov-disc-body",
+                    self.t("demo.disclosure.body", cx),
+                    cx,
+                )
+                .render(cx),
+            )
+            .into_any_element()
+    }
+
     // -------- Lists section --------
 
     pub fn submit_form(
         &self,
-        _vals: HashMap<SharedString, String>,
+        vals: HashMap<SharedString, String>,
         _w: &mut Window,
         cx: &mut App,
     ) {
+        let must_contain = self.t("demo.form.must_contain_at", cx);
         self.state.update(cx, |s, _cx| {
             s.form_submit_count += 1;
-            s.form_email_error = if s.form_email_value.contains('@') {
-                None
-            } else {
-                Some("Must contain @".to_string())
-            };
-        });
-    }
-
-    pub fn set_form_email(&self, value: &str, _w: &mut Window, cx: &mut App) {
-        self.state.update(cx, |s, _cx| {
-            s.form_email_value = value.to_string();
+            if let Some(e) = vals.get("email") {
+                s.form_email_error = if e.contains('@') {
+                    None
+                } else {
+                    Some(must_contain.clone())
+                };
+            }
         });
     }
 
@@ -749,22 +794,19 @@ impl Controller {
     }
 
     pub fn email_input_element(&self, cx: &mut App, window: &mut Window) -> AnyElement {
-        let state = self.state.clone();
-        let value = self.state.read(cx).form_email_value.clone();
+        let entity = self.state.read(cx).form_email_value.clone();
+        let value = entity.read(cx).clone();
         yororen_ui::headless::text_input::text_input("lists-ff-email-input")
             .placeholder(self.t("demo.form.email_placeholder", cx))
             .value(value)
             .on_change(move |new: &str, _w, cx| {
-                state.update(cx, |s, _cx| {
-                    s.form_email_value = new.to_string();
-                });
+                entity.update(cx, |s, _cx| *s = new.to_string());
             })
             .render(cx, window)
             .into_any_element()
     }
 
     pub fn form_element(&self, cx: &mut App, window: &mut Window) -> AnyElement {
-        let state = self.state.clone();
         let email_input = self.email_input_element(cx, window);
         let form_field = yororen_ui::headless::form_field::form_field("lists-ff-email", "email", cx)
             .label(self.t("demo.form.email_label", cx))
@@ -772,21 +814,11 @@ impl Controller {
             .input(email_input)
             .render(cx);
 
-        let must_contain = self.t("demo.form.must_contain_at", cx);
         let form_props = yororen_ui::headless::form::form("lists-form", cx)
-            .value("email", self.state.read(cx).form_email_value.clone())
-            .on_submit(move |vals, _w, cx| {
-                state.update(cx, |s, _cx| {
-                    s.form_submit_count += 1;
-                    if let Some(e) = vals.get("email") {
-                        s.form_email_value = e.to_string();
-                        s.form_email_error = if e.contains('@') {
-                            None
-                        } else {
-                            Some(must_contain.clone())
-                        };
-                    }
-                });
+            .value("email", self.state.read(cx).form_email_value.read(cx).clone())
+            .on_submit({
+                let controller = self.clone();
+                move |vals, _w, cx| controller.submit_form(vals, _w, cx)
             })
             .submit(self.t("demo.form.email_label", cx));
 

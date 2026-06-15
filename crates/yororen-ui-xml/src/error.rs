@@ -28,6 +28,10 @@ pub struct XmlError {
     /// caught at a higher level).
     pub offset: Option<usize>,
     pub message: String,
+    /// Optional pre-rendered diagnostic, used when the error
+    /// originates inside an included XML file and needs its
+    /// own `line:col` location rather than the caller's.
+    pub rendered: Option<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -55,6 +59,7 @@ impl XmlError {
             span,
             offset: None,
             message: message.into(),
+            rendered: None,
         }
     }
 
@@ -63,6 +68,14 @@ impl XmlError {
     /// macro entry point can render `line:col` diagnostics.
     pub fn at(mut self, offset: usize) -> Self {
         self.offset = Some(offset);
+        self
+    }
+
+    /// Builder: supply a fully-rendered diagnostic that bypasses
+    /// the caller's [`LocationTracker`]. Used for errors inside
+    /// included XML files so their own line/col are preserved.
+    pub fn rendered(mut self, rendered: impl Into<String>) -> Self {
+        self.rendered = Some(rendered.into());
         self
     }
 
@@ -93,6 +106,9 @@ impl XmlError {
     /// The fallback (no offset, or out-of-range offset) is
     /// the same single-line message as [`Self::render`].
     pub fn render_with(&self, location: Option<&LocationTracker<'_>>) -> String {
+        if let Some(rendered) = &self.rendered {
+            return rendered.clone();
+        }
         let kind = match self.kind {
             XmlErrorKind::ParseError => "XML parse error",
             XmlErrorKind::UnknownTag => "unknown xml tag",

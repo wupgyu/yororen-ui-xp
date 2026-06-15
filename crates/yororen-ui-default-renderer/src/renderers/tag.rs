@@ -43,7 +43,19 @@ impl TokenTagRenderer {
     }
 
     pub fn padding_x(&self, _state: &TagRenderState, theme: &Theme) -> Pixels {
-        gpui::px(theme.get_number("tokens.spacing.inset_sm").unwrap_or(0.0) as f32)
+        gpui::px(
+            theme
+                .get_number("tokens.control.tag.horizontal_padding")
+                .unwrap_or(8.0) as f32,
+        )
+    }
+
+    pub fn gap(&self, _state: &TagRenderState, theme: &Theme) -> Pixels {
+        gpui::px(
+            theme
+                .get_number("tokens.control.tag.gap")
+                .unwrap_or(4.0) as f32,
+        )
     }
 
     pub fn font_size(&self, _state: &TagRenderState, theme: &Theme) -> Pixels {
@@ -63,7 +75,11 @@ impl TokenTagRenderer {
     }
 
     pub fn border_radius(&self, _state: &TagRenderState, theme: &Theme) -> Pixels {
-        gpui::px(theme.get_number("tokens.radii.pill").unwrap_or(0.0) as f32)
+        gpui::px(
+            theme
+                .get_number("tokens.control.tag.radius")
+                .unwrap_or(4.0) as f32,
+        )
     }
 
     pub fn close_size(&self, _state: &TagRenderState, _theme: &Theme) -> Pixels {
@@ -90,6 +106,7 @@ impl TagRenderer for TokenTagRenderer {
         let fg = self.fg(&state, theme);
         let h = self.min_height(&state, theme);
         let p = self.padding_x(&state, theme);
+        let gap = self.gap(&state, theme);
         let fs = self.font_size(&state, theme);
         let fw = self.font_weight(&state, theme);
         let r = self.border_radius(&state, theme);
@@ -103,7 +120,7 @@ impl TagRenderer for TokenTagRenderer {
             .text_size(fs)
             .font_weight(fw)
             .rounded(r)
-            .gap(p / 2.)
+            .gap(gap)
             .cursor(if props.disabled {
                 CursorStyle::OperationNotAllowed
             } else if props.on_click.is_some() {

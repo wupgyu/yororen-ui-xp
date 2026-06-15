@@ -1,28 +1,19 @@
 <!-- Section 5 — Controls. -->
 <Column flex col gap="4">
-    <Template name="InputCell">
-        <Div flex flex_col gap="1" p="2" rounded_md border_1
-             border_color={gpui::hsla(0.0, 0.0, 0.5, 0.15)}>
-            <Slot name="name" />
-            <Slot />
-            <Slot name="status" />
-        </Div>
-    </Template>
+    <Include src="ui/shared/input_cell.xml" />
 
     <Heading id="controls-title" level="H2" text={controller.t("demo.section_controls", cx)} />
 
     <Row flex row flex_wrap items_center gap="3">
         <InputCell>
             <Slot name="name"><Label id="lbl-cb" text={controller.t("demo.controls.cell_checkbox", cx)} muted /></Slot>
-            <Checkbox id="ctrl-cb" checked={controller.checkbox_value(cx)}
-                      on_toggle={controller.set_checkbox} />
+            <Checkbox id="ctrl-cb" @bind={controller.checkbox_value_entity(cx)} />
             <Slot name="status"><Label id="status-cb" text={format!("{} {}", controller.t("demo.input.value", cx), controller.checkbox_value(cx))} muted /></Slot>
         </InputCell>
 
         <InputCell>
             <Slot name="name"><Label id="lbl-sw" text={controller.t("demo.controls.cell_switch", cx)} muted /></Slot>
-            <Switch id="ctrl-sw" checked={controller.switch_value(cx)}
-                    on_toggle={controller.set_switch} />
+            <Switch id="ctrl-sw" @bind={controller.switch_value_entity(cx)} />
             <Slot name="status"><Label id="status-sw" text={format!("{} {}", controller.t("demo.input.value", cx), controller.switch_value(cx))} muted /></Slot>
         </InputCell>
     </Row>
@@ -30,20 +21,20 @@
     <InputCell>
         <Slot name="name"><Label id="lbl-rg" text={controller.t("demo.controls.cell_radio_group", cx)} muted /></Slot>
         <RadioGroup id="ctrl-rg" name="choice" selected={controller.radio_value(cx)}>
-            <Row flex row items_center gap="2">
-                <For each={vec![0usize, 1, 2]} let:item key={item}>
-                    <Radio id={format!("ctrl-radio-{}", item)} checked={controller.radio_value(cx) == *item}
-                           on_toggle={{ let c = controller.clone(); let i = *item; move |_v,_ev,w,cx| c.set_radio(i, w, cx) }} />
-                </For>
-            </Row>
+            <Radio id="ctrl-radio-0" checked={controller.radio_value(cx) == 0}
+                   on_toggle={{ let c = controller.clone(); move |_v,_ev,w,cx| c.set_radio(0, w, cx) }} />
+            <Radio id="ctrl-radio-1" checked={controller.radio_value(cx) == 1}
+                   on_toggle={{ let c = controller.clone(); move |_v,_ev,w,cx| c.set_radio(1, w, cx) }} />
+            <Radio id="ctrl-radio-2" checked={controller.radio_value(cx) == 2}
+                   on_toggle={{ let c = controller.clone(); move |_v,_ev,w,cx| c.set_radio(2, w, cx) }} />
         </RadioGroup>
     </InputCell>
     <Label id="rg-current" text={format!("{} {}", controller.t("demo.controls.selected", cx), controller.radio_value(cx))} muted />
 
     <InputCell>
         <Slot name="name"><Label id="lbl-slider" text={controller.t("demo.controls.cell_slider", cx)} muted /></Slot>
-        <Slider id="ctrl-slider" value={controller.slider_value(cx)} step={1.0}
-                on_change={controller.set_slider} />
+        <Slider id="ctrl-slider" min={0.0} max={100.0} step={1.0}
+                @bind={controller.slider_value_entity(cx)} />
     </InputCell>
     <Label id="slider-lbl" text={controller.t("demo.controls.slider_value", cx).replace("{}", &format!("{:.1}", controller.slider_value(cx)))} muted />
 </Column>

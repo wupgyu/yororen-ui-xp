@@ -206,14 +206,21 @@ impl SkeletonRenderer for TokenSkeletonRenderer {
         // `.w(...)`/`.h(...)` chain lands on this). The pulse
         // element is `position: absolute; inset: 0` so it fills
         // the Div exactly.
-        div()
-            .min_h(min_h)
-            .rounded(radius)
-            .child(SkeletonPulseElement {
-                bg,
-                radius,
-                duration_ms,
-            })
+        //
+        // For block skeletons we fill the caller-provided height
+        // instead of enforcing a minimum, so short containers are
+        // not overflowed.
+        let mut el = div().rounded(radius);
+        if props.block {
+            el = el.h_full();
+        } else {
+            el = el.min_h(min_h);
+        }
+        el.child(SkeletonPulseElement {
+            bg,
+            radius,
+            duration_ms,
+        })
     }
 }
 

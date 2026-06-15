@@ -10,7 +10,7 @@
 
 use std::collections::BTreeSet;
 
-use gpui::{App, Entity, Global};
+use gpui::{App, AppContext, Entity, Global};
 
 use yororen_ui::headless::combo_box::ComboBoxState;
 use yororen_ui::headless::dropdown_menu::DropdownMenuState;
@@ -82,15 +82,15 @@ pub struct GalleryState {
     pub menu_state: Entity<MenuState>,
     pub listbox_state: Entity<ListboxState>,
 
-    // -------- Input values (mirrored via on_change) --------
-    pub text_value: String,
-    pub password_value: String,
-    pub number_value: f64,
-    pub search_value: String,
-    pub file_path_value: String,
+    // -------- Input values (bound via `@bind`) --------
+    pub text_value: Entity<String>,
+    pub password_value: Entity<String>,
+    pub number_value: Entity<f64>,
+    pub search_value: Entity<String>,
+    pub file_path_value: Entity<String>,
     pub keybinding_value: String,
     pub keybinding_mode: KeybindingInputMode,
-    pub text_area_value: String,
+    pub text_area_value: Entity<String>,
 
     // -------- Composite on_change values --------
     pub select_demo_value: String,
@@ -100,10 +100,10 @@ pub struct GalleryState {
     pub listbox_demo_value: String,
 
     // -------- Controls --------
-    pub checkbox_value: bool,
-    pub switch_value: bool,
+    pub checkbox_value: Entity<bool>,
+    pub switch_value: Entity<bool>,
     pub radio_value: usize, // 0/1/2
-    pub slider_value: f32,
+    pub slider_value: Entity<f32>,
 
     // -------- Display --------
     pub progress_value: f32,
@@ -119,8 +119,7 @@ pub struct GalleryState {
     pub selected_list_item: Option<usize>,
     pub selected_table_row: Option<usize>,
     pub form_submit_count: usize,
-    pub form_email_value: String,
-    pub form_password_value: String,
+    pub form_email_value: Entity<String>,
     pub form_email_error: Option<String>,
     pub tree_expanded: BTreeSet<TreeNodeId>,
     pub tree_selected: Option<TreeNodeId>,
@@ -210,14 +209,14 @@ impl GalleryState {
             menu_state,
             listbox_state,
 
-            text_value: String::new(),
-            password_value: String::new(),
-            number_value: 42.0,
-            search_value: String::new(),
-            file_path_value: String::new(),
+            text_value: cx.new(|_| String::new()),
+            password_value: cx.new(|_| String::new()),
+            number_value: cx.new(|_| 42.0),
+            search_value: cx.new(|_| String::new()),
+            file_path_value: cx.new(|_| String::new()),
             keybinding_value: String::new(),
             keybinding_mode: KeybindingInputMode::Idle,
-            text_area_value: String::new(),
+            text_area_value: cx.new(|_| String::new()),
 
             select_demo_value: String::new(),
             combo_demo_value: String::new(),
@@ -225,10 +224,10 @@ impl GalleryState {
             menu_demo_value: String::new(),
             listbox_demo_value: String::new(),
 
-            checkbox_value: false,
-            switch_value: false,
+            checkbox_value: cx.new(|_| false),
+            switch_value: cx.new(|_| false),
             radio_value: 0,
-            slider_value: 40.0,
+            slider_value: cx.new(|_| 40.0),
 
             progress_value: 0.65,
             progress_indeterminate: false,
@@ -241,8 +240,7 @@ impl GalleryState {
             selected_list_item: Some(0),
             selected_table_row: Some(1),
             form_submit_count: 0,
-            form_email_value: String::new(),
-            form_password_value: String::new(),
+            form_email_value: cx.new(|_| String::new()),
             form_email_error: None,
             tree_expanded: BTreeSet::new(),
             tree_selected: None,

@@ -9,7 +9,7 @@ use gpui::{
 };
 
 use yororen_ui_core::headless::keybinding_input::{KeybindingInputMode, KeybindingInputProps};
-use yororen_ui_core::headless::text_input::TextInputState;
+use yororen_ui_core::headless::text_input::{Escape, TextInputState};
 use yororen_ui_core::headless::text_input_element::{start_cursor_blink, wire_input_keyboard};
 use yororen_ui_core::renderer::keybinding_input::{
     KeybindingInputRenderState, KeybindingInputRenderer,
@@ -135,14 +135,17 @@ impl KeybindingInputRenderer for TokenKeybindingInputRenderer {
             let state_for_capture = state.clone();
             let on_change_for_capture = on_change.clone();
             let on_cancel_for_capture = on_cancel_capture.clone();
+            // `wire_input_keyboard` registers an Escape action that
+            // consumes the keystroke before `.on_key_down` can see it.
+            // Intercept Escape at the action layer so the user can
+            // cancel capture with the Esc key.
+            keyed = keyed.on_action(move |_: &Escape, window, cx| {
+                if let Some(cb) = on_cancel_for_capture.as_ref() {
+                    cb(window, cx);
+                }
+            });
             keyed = keyed.on_key_down(move |ev: &KeyDownEvent, window, cx| {
                 let ks = &ev.keystroke;
-                if ks.key.as_str() == "escape" {
-                    if let Some(cb) = on_cancel_for_capture.as_ref() {
-                        cb(window, cx);
-                    }
-                    return;
-                }
                 let mut parts: Vec<String> = Vec::new();
                 if ks.modifiers.control {
                     parts.push("ctrl".into());

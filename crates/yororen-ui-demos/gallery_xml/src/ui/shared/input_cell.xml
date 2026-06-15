@@ -1,0 +1,11 @@
+<!-- Shared InputCell layout used by Inputs and Controls sections. -->
+<Fragment>
+    <Template name="InputCell">
+        <Div flex flex_col gap="1" p="2" rounded_md border_1
+             border_color={gpui::hsla(0.0, 0.0, 0.5, 0.15)}>
+            <Slot name="name" />
+            <Slot />
+            <Slot name="status" />
+        </Div>
+    </Template>
+</Fragment>

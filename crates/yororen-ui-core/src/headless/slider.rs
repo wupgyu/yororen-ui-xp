@@ -42,6 +42,14 @@ impl SliderProps {
         self.max = max;
         self
     }
+    pub fn min(mut self, min: f32) -> Self {
+        self.min = min;
+        self
+    }
+    pub fn max(mut self, max: f32) -> Self {
+        self.max = max;
+        self
+    }
     pub fn step(mut self, s: f32) -> Self {
         self.step = s;
         self
