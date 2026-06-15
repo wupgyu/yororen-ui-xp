@@ -55,8 +55,8 @@ use crate::view::ShowcaseApp;
 /// A trivial custom widget used to exercise
 /// `register_xml_component!` — the user-facing extension
 /// point for adding new XML tags at runtime.
-fn render_custom_widget(id: &str, _cx: &mut gpui::App) -> gpui::AnyElement {
-    div().id(id.to_string()).into_any_element()
+fn render_custom_widget(id: String, _cx: &mut gpui::App) -> gpui::AnyElement {
+    div().id(id).into_any_element()
 }
 
 yororen_ui::register_xml_component!(CustomWidget => render_custom_widget);

@@ -25,8 +25,8 @@ use crate::view::GalleryApp;
 /// Trivial custom widget used to exercise
 /// `register_xml_component!` — the extension hook for
 /// adding tags without touching the codegen schema.
-fn render_counter_widget(id: &str, _cx: &mut gpui::App) -> gpui::AnyElement {
-    div().id(id.to_string()).into_any_element()
+fn render_counter_widget(id: String, _cx: &mut gpui::App) -> gpui::AnyElement {
+    div().id(id).into_any_element()
 }
 
 yororen_ui::register_xml_component!(CounterWidget => render_counter_widget);

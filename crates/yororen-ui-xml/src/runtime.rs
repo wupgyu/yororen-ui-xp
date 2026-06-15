@@ -72,7 +72,7 @@ pub struct ComponentDescriptor {
     pub tag: &'static str,
     /// The factory function: takes `(id, cx)`, returns an
     /// element that gets spliced into the parent.
-    pub factory: fn(&str, &mut gpui::App) -> AnyElement,
+    pub factory: fn(String, &mut gpui::App) -> AnyElement,
 }
 
 // `inventory::collect!` populates a static slice of
@@ -104,14 +104,11 @@ pub fn lookup(tag: &str) -> Option<&'static ComponentDescriptor> {
 /// temporary runtime string; the lookup accepts `&str`
 /// even though the static registry stores `&'static str`
 /// tags (required by `inventory::submit!`). The `id` is
-/// passed by `String` (not `&str`) because the codegen
-/// always coerces the `id="…"` attribute to an owned
-/// `String` (to match the typical headless factory
-/// signature). Callers that need a `&str` can call
-/// `.as_str()` inside the factory.
+/// passed as an owned `String` so the factory can convert
+/// it directly into an `ElementId` without an extra clone.
 pub fn render_or_empty(tag: &str, id: String, cx: &mut gpui::App) -> AnyElement {
     match lookup(tag) {
-        Some(d) => (d.factory)(&id, cx),
+        Some(d) => (d.factory)(id, cx),
         None => {
             eprintln!("yororen-ui-xml: unknown xml component tag `{tag}` at runtime");
             gpui::div().into_any_element()
@@ -444,7 +441,7 @@ use crate::parser;
 /// tag. Each invocation registers exactly one tag.
 ///
 /// The factory must have the signature
-/// `fn(&str, &mut gpui::App) -> gpui::AnyElement`.
+/// `fn(String, &mut gpui::App) -> gpui::AnyElement`.
 #[macro_export]
 macro_rules! register_xml_component {
     ($tag:literal => $factory:path) => {
@@ -484,7 +481,7 @@ mod tests {
         // inventory static), so the literal works directly.
         // The factory returns an empty div — we don't need
         // any actual rendering for the lookup test.
-        fn empty(_id: &str, _cx: &mut gpui::App) -> gpui::AnyElement {
+        fn empty(_id: String, _cx: &mut gpui::App) -> gpui::AnyElement {
             gpui::div().into_any_element()
         }
         inventory::submit! {

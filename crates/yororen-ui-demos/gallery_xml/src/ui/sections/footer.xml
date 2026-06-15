@@ -10,5 +10,5 @@
     <Label id="footer-toast"
            text={controller.footer_toast_text(cx)}
            muted />
-    <CounterWidget id={"footer-counter"} />
+    <CounterWidget id="footer-counter" />
 </Column>
