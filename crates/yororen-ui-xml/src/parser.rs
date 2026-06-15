@@ -477,126 +477,6 @@ fn is_tag_name_end(b: u8) -> bool {
 fn is_attr_name_end(b: u8) -> bool {
     b.is_ascii_whitespace() || b == b'>' || b == b'/' || b == b'='
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn normalise_bare_attrs() {
-        let s = normalise_bool_attrs(r#"<Column flex col gap="3" />"#);
-        assert_eq!(s, r#"<Column flex="true" col="true" gap="3" />"#);
-    }
-
-    #[test]
-    fn leaves_quoted_attrs_untouched() {
-        let s = normalise_bool_attrs(r#"<Label text="hello" />"#);
-        assert_eq!(s, r#"<Label text="hello" />"#);
-    }
-
-    #[test]
-    fn wraps_brace_expressions() {
-        let s = normalise_bool_attrs(r#"<Label text={value} />"#);
-        assert_eq!(s, r#"<Label text="{value}" />"#);
-    }
-
-    #[test]
-    fn escapes_inner_quotes_in_brace_expressions() {
-        // The preprocessor wraps `{...}` in quotes so
-        // roxmltree accepts the result. Inner string
-        // literal quotes are escaped with the XML
-        // entity sequences `&quot;` / `&apos;` so the
-        // wrapping quote doesn't terminate early. The
-        // `strip_brace_expression` helper reverses
-        // the encoding before handing the expression
-        // to the Rust parser.
-        let s = normalise_bool_attrs(r#"<Label text={format!("hi {}", name)} />"#);
-        assert_eq!(s, r#"<Label text="{format!(&quot;hi {}&quot;, name)}" />"#);
-    }
-
-    #[test]
-    fn escapes_xml_specials_in_brace_expressions() {
-        // `<`, `>` and `&` would start / terminate
-        // XML elements if left unescaped inside the
-        // wrapping attribute. The preprocessor
-        // encodes them as `&lt;`, `&gt;`, `&amp;`.
-        let s = normalise_bool_attrs(r#"<Label text={if a < b { c } else { d }} />"#);
-        assert_eq!(s, r#"<Label text="{if a &lt; b { c } else { d }}" />"#);
-
-        let s2 = normalise_bool_attrs(r#"<Label text={x & 0xFF} />"#);
-        assert_eq!(s2, r#"<Label text="{x &amp; 0xFF}" />"#);
-    }
-
-    #[test]
-    fn leaves_text_content_alone() {
-        let s = normalise_bool_attrs(r#"<Button>Click me</Button>"#);
-        assert_eq!(s, r#"<Button>Click me</Button>"#);
-    }
-
-    #[test]
-    fn handles_brace_with_closure() {
-        let s = normalise_bool_attrs(
-            r#"<Button on_click={move |_, _, cx| { x.update(cx, |v, _| *v += 1); }} />"#,
-        );
-        // The result must be valid XML: the brace value is
-        // wrapped in double quotes so roxmltree accepts it.
-        let expected =
-            r#"<Button on_click="{move |_, _, cx| { x.update(cx, |v, _| *v += 1); }}" />"#;
-        assert_eq!(s, expected);
-    }
-
-    #[test]
-    fn strips_brace_expression_with_quotes() {
-        let (expr, raw) = strip_brace_expression(r#""{count.to_string()}""#);
-        assert_eq!(expr.as_deref(), Some("count.to_string()"));
-        assert_eq!(raw, r#""{count.to_string()}""#);
-    }
-
-    #[test]
-    fn strips_brace_expression_decodes_xml_entities() {
-        // `&quot;` inside the wrapped attribute value
-        // is decoded back to a literal `"` so the
-        // expression is valid Rust source.
-        let (expr, _raw) = strip_brace_expression(r#""{format!(&quot;hi {name}&quot;)}""#);
-        assert_eq!(expr.as_deref(), Some(r#"format!("hi {name}")"#));
-
-        // `&amp;` and `&lt;` / `&gt;` also round-trip.
-        let (expr, _raw) = strip_brace_expression(r#""{x &amp; 0xFF}""#);
-        assert_eq!(expr.as_deref(), Some("x & 0xFF"));
-        let (expr, _raw) = strip_brace_expression(r#""{if a &lt; b { 1 } else { 0 }}""#);
-        assert_eq!(expr.as_deref(), Some("if a < b { 1 } else { 0 }"));
-    }
-
-    #[test]
-    fn line_starts_table_works() {
-        let starts = line_starts("a\nb\nc");
-        assert_eq!(starts, vec![0, 2, 4]);
-
-        // Single line.
-        assert_eq!(line_starts("hello"), vec![0]);
-
-        // Empty.
-        assert_eq!(line_starts(""), vec![0]);
-    }
-
-    #[test]
-    fn location_tracker_snippet() {
-        let xml = "<Column>\n    <BadTag />\n</Column>";
-        let starts = line_starts(xml);
-        let loc = LocationTracker {
-            line_starts: &starts,
-            xml,
-            outer_span: Span::call_site(),
-        };
-        let (line, _col) = loc.line_col(20); // inside <BadTag />
-        assert_eq!(line, 2);
-        let snippet = loc.snippet(20);
-        // The snippet includes the offending line and a caret.
-        assert!(snippet.contains("<BadTag"), "{snippet}");
-        assert!(snippet.contains('^'), "{snippet}");
-    }
-}
-
 fn element_from(
     node: roxmltree::Node,
     fallback_span: Span,
@@ -780,3 +660,123 @@ fn strip_brace_expression(s: &str) -> (Option<String>, String) {
         (None, s.to_string())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn normalise_bare_attrs() {
+        let s = normalise_bool_attrs(r#"<Column flex col gap="3" />"#);
+        assert_eq!(s, r#"<Column flex="true" col="true" gap="3" />"#);
+    }
+
+    #[test]
+    fn leaves_quoted_attrs_untouched() {
+        let s = normalise_bool_attrs(r#"<Label text="hello" />"#);
+        assert_eq!(s, r#"<Label text="hello" />"#);
+    }
+
+    #[test]
+    fn wraps_brace_expressions() {
+        let s = normalise_bool_attrs(r#"<Label text={value} />"#);
+        assert_eq!(s, r#"<Label text="{value}" />"#);
+    }
+
+    #[test]
+    fn escapes_inner_quotes_in_brace_expressions() {
+        // The preprocessor wraps `{...}` in quotes so
+        // roxmltree accepts the result. Inner string
+        // literal quotes are escaped with the XML
+        // entity sequences `&quot;` / `&apos;` so the
+        // wrapping quote doesn't terminate early. The
+        // `strip_brace_expression` helper reverses
+        // the encoding before handing the expression
+        // to the Rust parser.
+        let s = normalise_bool_attrs(r#"<Label text={format!("hi {}", name)} />"#);
+        assert_eq!(s, r#"<Label text="{format!(&quot;hi {}&quot;, name)}" />"#);
+    }
+
+    #[test]
+    fn escapes_xml_specials_in_brace_expressions() {
+        // `<`, `>` and `&` would start / terminate
+        // XML elements if left unescaped inside the
+        // wrapping attribute. The preprocessor
+        // encodes them as `&lt;`, `&gt;`, `&amp;`.
+        let s = normalise_bool_attrs(r#"<Label text={if a < b { c } else { d }} />"#);
+        assert_eq!(s, r#"<Label text="{if a &lt; b { c } else { d }}" />"#);
+
+        let s2 = normalise_bool_attrs(r#"<Label text={x & 0xFF} />"#);
+        assert_eq!(s2, r#"<Label text="{x &amp; 0xFF}" />"#);
+    }
+
+    #[test]
+    fn leaves_text_content_alone() {
+        let s = normalise_bool_attrs(r#"<Button>Click me</Button>"#);
+        assert_eq!(s, r#"<Button>Click me</Button>"#);
+    }
+
+    #[test]
+    fn handles_brace_with_closure() {
+        let s = normalise_bool_attrs(
+            r#"<Button on_click={move |_, _, cx| { x.update(cx, |v, _| *v += 1); }} />"#,
+        );
+        // The result must be valid XML: the brace value is
+        // wrapped in double quotes so roxmltree accepts it.
+        let expected =
+            r#"<Button on_click="{move |_, _, cx| { x.update(cx, |v, _| *v += 1); }}" />"#;
+        assert_eq!(s, expected);
+    }
+
+    #[test]
+    fn strips_brace_expression_with_quotes() {
+        let (expr, raw) = strip_brace_expression(r#""{count.to_string()}""#);
+        assert_eq!(expr.as_deref(), Some("count.to_string()"));
+        assert_eq!(raw, r#""{count.to_string()}""#);
+    }
+
+    #[test]
+    fn strips_brace_expression_decodes_xml_entities() {
+        // `&quot;` inside the wrapped attribute value
+        // is decoded back to a literal `"` so the
+        // expression is valid Rust source.
+        let (expr, _raw) = strip_brace_expression(r#""{format!(&quot;hi {name}&quot;)}""#);
+        assert_eq!(expr.as_deref(), Some(r#"format!("hi {name}")"#));
+
+        // `&amp;` and `&lt;` / `&gt;` also round-trip.
+        let (expr, _raw) = strip_brace_expression(r#""{x &amp; 0xFF}""#);
+        assert_eq!(expr.as_deref(), Some("x & 0xFF"));
+        let (expr, _raw) = strip_brace_expression(r#""{if a &lt; b { 1 } else { 0 }}""#);
+        assert_eq!(expr.as_deref(), Some("if a < b { 1 } else { 0 }"));
+    }
+
+    #[test]
+    fn line_starts_table_works() {
+        let starts = line_starts("a\nb\nc");
+        assert_eq!(starts, vec![0, 2, 4]);
+
+        // Single line.
+        assert_eq!(line_starts("hello"), vec![0]);
+
+        // Empty.
+        assert_eq!(line_starts(""), vec![0]);
+    }
+
+    #[test]
+    fn location_tracker_snippet() {
+        let xml = "<Column>\n    <BadTag />\n</Column>";
+        let starts = line_starts(xml);
+        let loc = LocationTracker {
+            line_starts: &starts,
+            xml,
+            outer_span: Span::call_site(),
+        };
+        let (line, _col) = loc.line_col(20); // inside <BadTag />
+        assert_eq!(line, 2);
+        let snippet = loc.snippet(20);
+        // The snippet includes the offending line and a caret.
+        assert!(snippet.contains("<BadTag"), "{snippet}");
+        assert!(snippet.contains('^'), "{snippet}");
+    }
+}
+

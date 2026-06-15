@@ -423,6 +423,31 @@ fn attr_heading_level(
 // `load_xml` flow only.
 use crate::ast;
 use crate::parser;
+/// Declarative macro companion to [`register_xml_component!`].
+/// Place this in the user's crate to register a custom
+/// tag. Each invocation registers exactly one tag.
+///
+/// The factory must have the signature
+/// `fn(&str, &mut gpui::App) -> gpui::AnyElement`.
+#[macro_export]
+macro_rules! register_xml_component {
+    ($tag:literal => $factory:path) => {
+        $crate::inventory::submit! {
+            $crate::runtime::ComponentDescriptor {
+                tag: $tag,
+                factory: $factory,
+            }
+        }
+    };
+    ($tag:ident => $factory:path) => {
+        $crate::inventory::submit! {
+            $crate::runtime::ComponentDescriptor {
+                tag: stringify!($tag),
+                factory: $factory,
+            }
+        }
+    };
+}
 
 #[cfg(test)]
 mod tests {
@@ -468,28 +493,3 @@ mod tests {
     }
 }
 
-/// Declarative macro companion to [`register_xml_component!`].
-/// Place this in the user's crate to register a custom
-/// tag. Each invocation registers exactly one tag.
-///
-/// The factory must have the signature
-/// `fn(&str, &mut gpui::App) -> gpui::AnyElement`.
-#[macro_export]
-macro_rules! register_xml_component {
-    ($tag:literal => $factory:path) => {
-        $crate::inventory::submit! {
-            $crate::runtime::ComponentDescriptor {
-                tag: $tag,
-                factory: $factory,
-            }
-        }
-    };
-    ($tag:ident => $factory:path) => {
-        $crate::inventory::submit! {
-            $crate::runtime::ComponentDescriptor {
-                tag: stringify!($tag),
-                factory: $factory,
-            }
-        }
-    };
-}
