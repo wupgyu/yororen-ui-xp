@@ -85,6 +85,20 @@ tag = "Slot"
 kind = "ControlFlow"
 control_flow = "Slot"
 
+# `VirtualList` / `UniformVirtualList` are control-flow tags: they
+# own a row-template body and an auto-persisted controller (see
+# `codegen_virtual_list` / `codegen_uniform_virtual_list`). They are
+# NOT headless Leaves — the row body is declared as XML children.
+[[override_]]
+tag = "VirtualList"
+kind = "ControlFlow"
+control_flow = "VirtualList"
+
+[[override_]]
+tag = "UniformVirtualList"
+kind = "ControlFlow"
+control_flow = "UniformVirtualList"
+
 # ----- Custom modifications -----
 
 # `Button` has a `caption` setter that the generator uses

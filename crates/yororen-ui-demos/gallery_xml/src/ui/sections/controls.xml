@@ -1,7 +1,5 @@
 <!-- Section 5 — Controls. -->
 <Column flex col gap="4">
-    <Include src="ui/shared/input_cell.xml" />
-
     <Heading id="controls-title" level="H2" text={controller.t("demo.section_controls", cx)} />
 
     <Row flex row flex_wrap items_center gap="3">

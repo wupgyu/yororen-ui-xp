@@ -128,7 +128,6 @@ pub struct GalleryState {
     pub vl_item_count: usize,
     pub vl_load_count: usize,
     pub uniform_list_controller: UniformVirtualListController,
-    pub section_list_controller: VirtualListController,
 }
 
 impl GalleryState {
@@ -252,11 +251,6 @@ impl GalleryState {
             vl_item_count: 100,
             vl_load_count: 0,
             uniform_list_controller: UniformVirtualListController::new(),
-            section_list_controller: VirtualListController::new(
-                crate::view::SECTION_ROW_COUNT,
-                gpui::ListAlignment::Top,
-                gpui::px(400.),
-            ),
         }
     }
 }

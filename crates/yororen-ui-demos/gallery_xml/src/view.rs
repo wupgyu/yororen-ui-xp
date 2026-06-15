@@ -1,26 +1,23 @@
 //! The `GalleryApp` view. The per-section UI lives in XML
-//! files under `src/ui/sections/`; this file owns the
-//! scroll-root, the top-level section virtual list, the
-//! modal overlay, and the notification host.
+//! files under `src/ui/sections/`; the top-level section
+//! virtual list itself is declared in `src/ui/sections.xml`
+//! as a `<VirtualList>` whose row body dispatches to those
+//! files via `controller.section_element`. This file owns
+//! only the scroll-root, the modal overlay, and the
+//! notification host.
 
 use gpui::{
-    AnyElement, Context, InteractiveElement, IntoElement, ParentElement, Render, Styled, Window,
-    div, hsla, px,
+    Context, InteractiveElement, IntoElement, ParentElement, Render, Styled, Window, div, hsla, px,
 };
 use yororen_ui::theme::ActiveTheme;
 
-use yororen_ui::headless::divider::divider;
 use yororen_ui::headless::modal::modal;
-use yororen_ui::headless::virtual_list::virtual_list;
 use yororen_ui::notification::center::NotificationCenter;
 use yororen_ui::xml_file;
 
 use crate::controller::Controller;
 use crate::state::StateRef;
 use crate::theme_switcher::install_renderer;
-
-/// Number of rows in the top-level section virtual list.
-pub const SECTION_ROW_COUNT: usize = 9;
 
 pub struct GalleryApp {
     controller: Controller,
@@ -58,67 +55,24 @@ impl Render for GalleryApp {
         //    virtualization.
         let modal_overlay = build_modal_overlay(self, window, cx);
 
-        // 5. Section virtual list. The row closure dispatches to the
-        //    matching XML section file.
-        let entity = cx.entity().clone();
-        let section_vl = virtual_list(
-            "gallery-sections-vl",
-            &self.controller.section_list_controller(cx),
-            cx,
-        )
-        .row(move |ix, window, cx| section_row(ix, &entity, window, cx))
-        .render(cx)
-        .size_full()
-        .border_color(surface)
-        .rounded(px(0.));
+        // 5. Section virtual list — declared in `ui/sections.xml`.
+        //    The `<VirtualList>` tag mints and persists its own
+        //    `VirtualListController` (keyed by element id), so this
+        //    view no longer owns a controller field or a per-row
+        //    dispatch match. `controller` is bound into scope for
+        //    the XML's row body (`controller.section_element`).
+        let controller = self.controller.clone();
+        let sections = xml_file!(cx = cx, window = window, "ui/sections.xml");
 
         div()
             .id("gallery-scroll")
             .relative()
             .size_full()
             .bg(surface)
-            .child(section_vl)
+            .child(sections)
             .child(modal_overlay)
             .child(crate::notifications_host::deferred_host(cx))
     }
-}
-
-fn section_row(
-    ix: usize,
-    entity: &gpui::Entity<GalleryApp>,
-    window: &mut Window,
-    cx: &mut gpui::App,
-) -> AnyElement {
-    let entity = entity.clone();
-    entity.update(cx, |app, cx| {
-        let controller = app.controller.clone();
-        let inner: AnyElement = match ix {
-            0 => {
-                let tb = xml_file!(cx = cx, window = window, "ui/sections/toolbar.xml");
-                let div_pair = div()
-                    .flex()
-                    .flex_col()
-                    .child(tb)
-                    .child(divider("toolbar-divider", cx).render(cx));
-                div_pair.into_any_element()
-            }
-            1 => xml_file!(cx = cx, window = window, "ui/sections/actions.xml").into_any_element(),
-            2 => xml_file!(cx = cx, window = window, "ui/sections/display.xml").into_any_element(),
-            3 => xml_file!(cx = cx, window = window, "ui/sections/surfaces.xml").into_any_element(),
-            4 => xml_file!(cx = cx, window = window, "ui/sections/inputs.xml").into_any_element(),
-            5 => xml_file!(cx = cx, window = window, "ui/sections/controls.xml").into_any_element(),
-            6 => xml_file!(cx = cx, window = window, "ui/sections/overlays.xml").into_any_element(),
-            7 => xml_file!(cx = cx, window = window, "ui/sections/lists.xml").into_any_element(),
-            8 => xml_file!(cx = cx, window = window, "ui/sections/footer.xml").into_any_element(),
-            _ => div().into_any_element(),
-        };
-
-        let mut wrapper = div().px(px(24.)).pb(px(24.));
-        if ix == 0 {
-            wrapper = wrapper.pt(px(24.));
-        }
-        wrapper.child(inner).into_any_element()
-    })
 }
 
 fn build_modal_overlay(
@@ -130,6 +84,9 @@ fn build_modal_overlay(
         return gpui::deferred(div()).with_priority(2);
     }
 
+    // `controller` is bound for the modal body XML, which
+    // references it by name (`controller.t(...)`,
+    // `controller.close_modal`).
     let controller = app.controller.clone();
     let modal_panel = modal("ov-modal", app.controller.modal_state(cx))
         .child(xml_file!(
@@ -152,3 +109,4 @@ fn build_modal_overlay(
     )
     .with_priority(2)
 }
+

@@ -3,7 +3,7 @@
 //!
 //! Source of truth: `yororen-ui-core/src/headless/*.rs`
 //! plus `yororen-ui-xml/overrides.toml`.
-//! Last regenerated with: 60 entries (25 from overrides), 4 skipped.
+//! Last regenerated with: 61 entries (27 from overrides), 4 skipped.
 //!
 //! Skipped files (need manual schema entry or a schema
 //! extension — see `gen_schema.rs` notes):
@@ -1111,29 +1111,6 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
         doc: "auto-generated from `headless::tree_item`",
     },
     // NOTE: extra_args = 2 entries
-    ComponentDef {
-        tag: "VirtualList",
-        kind: ComponentKind::Leaf(LeafDef {
-            factory: "::yororen_ui::headless::virtual_list::virtual_list",
-            extra_args: &[ExtraArg { kind: ExtraArgKind::Custom, attr: "controller" }, ],
-            render: RenderMode::Default,
-            needs_app: true,
-            needs_window: false,
-            props: &[PropDef { name: "item_count", setter: "item_count", value: PropValue::UInt },
-            PropDef { name: "alignment", setter: "alignment", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "overdraw", setter: "overdraw", value: PropValue::Float32 },
-            PropDef { name: "sizing", setter: "sizing", value: PropValue::String /* unknown — review */ },
-            PropDef { name: "row", setter: "row", value: PropValue::String /* unknown — review */ },
-            ],
-            events: &[("on_visible_range_change", "on_visible_range_change"), ],
-            supports_text_child: false,
-            children_before_render: false,
-            unwrap_children: false,
-            slots: &[],
-        }),
-        doc: "auto-generated from `headless::virtual_list`",
-    },
-    // NOTE: extra_args = 1 entries
 ];
 
 /// Container / control-flow entries sourced from
@@ -1210,6 +1187,16 @@ pub static BUILTINS_OVERRIDES: &[ComponentDef] = &[
     ComponentDef {
             tag: "Slot",
             kind: ComponentKind::ControlFlow(ControlFlowDef::Slot),
+            doc: "from `overrides.toml`",
+        },
+    ComponentDef {
+            tag: "VirtualList",
+            kind: ComponentKind::ControlFlow(ControlFlowDef::VirtualList),
+            doc: "from `overrides.toml`",
+        },
+    ComponentDef {
+            tag: "UniformVirtualList",
+            kind: ComponentKind::ControlFlow(ControlFlowDef::UniformVirtualList),
             doc: "from `overrides.toml`",
         },
 ];

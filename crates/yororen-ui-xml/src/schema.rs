@@ -291,6 +291,28 @@ pub enum ControlFlowDef {
     /// last `<Case _>` (with literal `_` as the pattern
     /// attribute) becomes the wildcard arm.
     Match,
+    /// `<VirtualList id="…" item_count={n} let:index={i}>…</VirtualList>`
+    /// — a heterogeneous-height gpui virtual list. The
+    /// codegen mints and persists a `VirtualListController`
+    /// via `window.use_keyed_state(id, …)` so the host
+    /// view never needs to carry a controller field. The
+    /// children become the row-template body, re-invoked
+    /// per visible index (so off-screen rows are never
+    /// built). `let:index={name}` binds the visible row
+    /// index inside the body (defaults to `index`); an
+    /// optional `let:item` binds the `usize` itself.
+    /// Optional `overdraw` (default `px(16.)`), `alignment`
+    /// (`"top"` / `"bottom"`, default `"top"`), and
+    /// `on_visible_range_change={…}` are forwarded.
+    VirtualList,
+    /// `<UniformVirtualList id="…" item_count={n} let:index={i}>…</UniformVirtualList>`
+    /// — the equal-height variant. Faster (gpui measures
+    /// only the first row and lays the rest in a line),
+    /// but has no `on_visible_range_change` support (the
+    /// underlying `gpui::uniform_list` lacks a scroll
+    /// handler). Otherwise identical to `<VirtualList>`,
+    /// including the auto-persisted controller.
+    UniformVirtualList,
     /// `<Case pattern={...}>…</Case>` — a single arm of
     /// a `<Match>`. `pattern` is the Rust pattern (e.g.
     /// `Status::Loading` or `_` for wildcard).
@@ -329,6 +351,7 @@ pub const fn builtin_tags() -> &'static [&'static str] {
         "Row",
         "Stack",
         "UniformVirtualList",
+        "VirtualList",
     ]
 }
 
@@ -404,6 +427,16 @@ pub static BUILTINS: &[ComponentDef] = &[
         tag: "State",
         kind: ComponentKind::ControlFlow(ControlFlowDef::State),
         doc: "Declare a local `Entity<T>` — `<State name=\"count\" default=\"0\">…</State>`.",
+    },
+    ComponentDef {
+        tag: "VirtualList",
+        kind: ComponentKind::ControlFlow(ControlFlowDef::VirtualList),
+        doc: "Virtual list with an auto-persisted controller — `<VirtualList id=\"…\" item_count={n} let:index={i}>…</VirtualList>`.",
+    },
+    ComponentDef {
+        tag: "UniformVirtualList",
+        kind: ComponentKind::ControlFlow(ControlFlowDef::UniformVirtualList),
+        doc: "Equal-height virtual list with an auto-persisted controller — `<UniformVirtualList id=\"…\" item_count={n} let:index={i}>…</UniformVirtualList>`.",
     },
     ComponentDef {
         tag: "Column",
@@ -533,43 +566,11 @@ pub static BUILTINS: &[ComponentDef] = &[
         }),
         doc: "Plain `div()` — use `.relative()` / `.absolute()` for stacking.",
     },
-    ComponentDef {
-        tag: "UniformVirtualList",
-        kind: ComponentKind::Leaf(LeafDef {
-            factory: "::yororen_ui::headless::virtual_list::uniform_virtual_list",
-            extra_args: &[
-                ExtraArg {
-                    kind: ExtraArgKind::UInt,
-                    attr: "item_count",
-                },
-                ExtraArg {
-                    kind: ExtraArgKind::Custom,
-                    attr: "controller",
-                },
-            ],
-            render: RenderMode::Default,
-            needs_app: true,
-            needs_window: false,
-            props: &[
-                PropDef {
-                    name: "sizing",
-                    setter: "sizing",
-                    value: PropValue::Unknown,
-                },
-                PropDef {
-                    name: "row",
-                    setter: "row",
-                    value: PropValue::Unknown,
-                },
-            ],
-            events: &[],
-            supports_text_child: false,
-            children_before_render: false,
-            unwrap_children: false,
-            slots: &[],
-        }),
-        doc: "Headless uniform virtual list — see `yororen_ui_core::headless::virtual_list::uniform_virtual_list`.",
-    },
+    // NOTE: `UniformVirtualList` and `VirtualList` are ControlFlow
+    // tags (see `ControlFlowDef`), not Leaves — they have a row-
+    // template body and an auto-persisted controller. The codegen
+    // arms live in `codegen_virtual_list` /
+    // `codegen_uniform_virtual_list`.
 ];
 
 /// Reserved XML attribute names consumed by the macro itself

@@ -115,6 +115,22 @@ pub fn codegen(
     source_file: Option<&str>,
     user_schema: &[ComponentDef],
 ) -> Result<TokenStream, XmlError> {
+    codegen_with_includes(xml_text, outer_span, cx_expr, source_file, user_schema)
+        .map(|(ts, _)| ts)
+}
+
+/// Same as [`codegen`] but also returns every XML file that was
+/// read (the top-level text plus anything pulled in via
+/// `<Include src="…">`). The proc-macro uses this to emit
+/// `include_str!` directives so Cargo tracks these files as
+/// compilation dependencies.
+pub fn codegen_with_includes(
+    xml_text: &str,
+    outer_span: Span,
+    cx_expr: Option<TokenStream>,
+    source_file: Option<&str>,
+    user_schema: &[ComponentDef],
+) -> Result<(TokenStream, Vec<std::path::PathBuf>), XmlError> {
     USER_SCHEMA.with(|s| *s.borrow_mut() = user_schema.to_vec());
     let line_starts = crate::parser::line_starts(xml_text);
     let location = crate::parser::LocationTracker {
@@ -127,9 +143,10 @@ pub fn codegen(
     // so that shared templates and other compile-time definitions
     // can live in included XML files. Errors inside an included
     // file are rendered with that file's own line/col location.
+    let mut included_paths = Vec::new();
     {
         let mut visited = std::collections::HashSet::new();
-        expand_includes(&mut element, source_file, &mut visited)?;
+        expand_includes(&mut element, source_file, &mut visited, &mut included_paths)?;
     }
     // Template pre-pass: collect every `<Template name="…">`
     // in the root's children, then walk the rest of the tree
@@ -150,7 +167,7 @@ pub fn codegen(
     // caller does not need to import any gpui traits. The
     // result is a plain block expression returning the root
     // element.
-    Ok(quote! { { #body } })
+    Ok((quote! { { #body } }, included_paths))
 }
 
 /// Walk the AST and lift every `<Template name="…">`
@@ -1396,6 +1413,12 @@ fn codegen_control_flow(
         )
         .at(element.byte_offset)),
         ControlFlowDef::State => codegen_state(element, cx, location, source_file),
+        ControlFlowDef::VirtualList => {
+            codegen_virtual_list(element, cx, location, source_file)
+        }
+        ControlFlowDef::UniformVirtualList => {
+            codegen_uniform_virtual_list(element, cx, location, source_file)
+        }
         ControlFlowDef::Include => Err(XmlError::new(
             XmlErrorKind::Unsupported,
             element.span,
@@ -1776,10 +1799,23 @@ fn parse_include(
 /// Recursively expand every `<Include src="…">` in the AST so
 /// templates and other compile-time constructs can be shared
 /// across XML files. Detects include cycles.
+///
+/// By default the included file's root element is preserved as a
+/// child of the `<Include>`'s parent — this lets a section file
+/// declare its own container (e.g. `<Column gap="4">`). If the
+/// included root is a `<Fragment>`, its children are spliced in
+/// place so shared layout files and template libraries stay
+/// transparent.
+///
+/// Every resolved include path is pushed to `included_paths` so
+/// the proc-macro can register the file with Cargo via
+/// `include_str!`; otherwise Cargo has no way to know that
+/// editing an included XML file should recompile the crate.
 fn expand_includes(
     element: &mut AstElement,
     source_file: Option<&str>,
     visited: &mut std::collections::HashSet<std::path::PathBuf>,
+    included_paths: &mut Vec<std::path::PathBuf>,
 ) -> Result<(), XmlError> {
     let mut i = 0;
     while i < element.children.len() {
@@ -1805,17 +1841,31 @@ fn expand_includes(
                     ),
                 ));
             }
-            let path_str = path.to_str();
-            expand_includes(&mut included_root, path_str, visited)?;
+            included_paths.push(path.clone());
+            // Recurse with the *original* `source_file` (the
+            // macro call site), NOT the included file's path.
+            // This keeps `<Include src>` resolution anchored to
+            // the same base directory at every nesting level —
+            // matching the `xml_file!` convention where paths
+            // like `ui/shared/x.xml` resolve the same way no
+            // matter how deeply the file is nested via Include.
+            // (Cycle detection still uses each file's absolute
+            // `path` via `visited`, so re-parenting the source
+            // base does not weaken the cycle guard.)
+            expand_includes(&mut included_root, source_file, visited, included_paths)?;
             visited.remove(&path);
-            let nodes = included_root.children;
+            let nodes = if included_root.tag == "Fragment" {
+                included_root.children
+            } else {
+                vec![AstNode::Element(included_root)]
+            };
             element.children.splice(i..i + 1, nodes);
             // Re-process the newly spliced children from this index.
             continue;
         }
 
         if let AstNode::Element(child) = &mut element.children[i] {
-            expand_includes(child, source_file, visited)?;
+            expand_includes(child, source_file, visited, included_paths)?;
         }
         i += 1;
     }
@@ -1937,6 +1987,423 @@ fn codegen_match(
         .at(element.byte_offset));
     }
     Ok(quote! { match (#on_parsed) { #arms } })
+}
+
+/// Resolve the `let:item` / `let:index={name}` bindings on an
+/// element, mirroring `<For>`'s convention. The parser turns
+/// `let:item` into a value-less `let_item` attribute and
+/// `let:index={i}` into a `let_index` attribute whose `raw`
+/// value is the requested identifier (the normaliser may
+/// append `="true"`, so a `true`/empty value falls back to
+/// the default `i`).
+///
+/// Returns `(item_ident, index_ident)`. `item_ident` is `None`
+/// when no `let:item` is present (the virtual-list row body
+/// rarely needs it, since the visible index is what gpui
+/// hands us — but we support it for symmetry with `<For>`).
+fn parse_let_bindings(
+    element: &AstElement,
+) -> (Option<proc_macro2::Ident>, proc_macro2::Ident) {
+    // Resolve a `let:`-derived attribute's identifier. Brace
+    // expressions (`let:index={i}`) carry the name in `expr`
+    // (the de-braced body); value-less or string forms fall to
+    // `raw`, which the normaliser may have set to `"true"` /
+    // empty — those cases yield the default name.
+    fn resolve_name(
+        attr: Option<&AstAttribute>,
+        default: &str,
+    ) -> Option<String> {
+        let attr = attr?;
+        if let Some(expr) = &attr.expr {
+            let trimmed = expr.trim();
+            if trimmed.is_empty() {
+                Some(default.to_string())
+            } else {
+                Some(trimmed.to_string())
+            }
+        } else if attr.raw == "true" || attr.raw.is_empty() {
+            Some(default.to_string())
+        } else {
+            Some(attr.raw.clone())
+        }
+    }
+    let item_ident = resolve_name(
+        element.attributes.iter().find(|a| a.name == "let_item"),
+        "item",
+    )
+    .map(|s| format_ident!("{}", s));
+    let index_ident = resolve_name(
+        element.attributes.iter().find(|a| a.name == "let_index"),
+        "index",
+    )
+    .unwrap_or_else(|| "index".to_string());
+    let index_ident = format_ident!("{}", index_ident);
+    (item_ident, index_ident)
+}
+
+/// Extract a required attribute by name and parse its brace
+/// expression. Errors are reported against the missing-attr /
+/// non-brace cases so the user gets a clear message.
+fn require_attr_expr<'a>(
+    element: &'a AstElement,
+    name: &str,
+) -> Result<&'a AstAttribute, XmlError> {
+    element
+        .attributes
+        .iter()
+        .find(|a| a.name == name)
+        .ok_or_else(|| {
+            XmlError::new(
+                XmlErrorKind::UnknownAttribute,
+                element.span,
+                format!("<{}> requires a `{name}={{...}}` attribute", element.tag),
+            )
+            .at(element.byte_offset)
+        })
+}
+
+/// `<VirtualList id="…" item_count={n} let:index={i}>…children…</VirtualList>`
+/// — a heterogeneous-height gpui virtual list whose controller
+/// is auto-persisted via `window.use_keyed_state(id, …)`.
+///
+/// The children become the row-template body: gpui's `list()`
+/// re-invokes `FnMut(usize, &mut Window, &mut App) -> AnyElement`
+/// per visible index, so off-screen rows are never built. This
+/// is the difference from `<For>`, which eagerly builds every
+/// row up front.
+///
+/// Because the controller lives in element-state keyed by the
+/// element id, the host view never needs to carry a
+/// `VirtualListController` field — declaring the tag is enough.
+/// (Caveat: element state only persists while the element is
+/// rendered in consecutive frames; a list unmounted via `<If>`
+/// and remounted starts fresh.)
+///
+/// Emitted shape (conceptual):
+/// ```text
+/// {
+///     let __ix: usize;
+///     let __ctl = window.use_keyed_state(id, cx, |_, _|
+///         VirtualListController::new(item_count, align, overdraw));
+///     __ctl.update(cx, |c, _| { if c.state().item_count() != item_count { c.reset(item_count); } });
+///     let __snap = __ctl.read(cx).clone();
+///     virtual_list(id, &__snap, cx)
+///         .row(move |i, window, cx| { let index = i; <children> })
+///         .on_visible_range_change(...)  // if present
+///         .render(cx)
+///         .into_any_element()
+/// }
+/// ```
+fn codegen_virtual_list(
+    element: &AstElement,
+    cx: &TokenStream,
+    location: &crate::parser::LocationTracker<'_>,
+    source_file: Option<&str>,
+) -> Result<TokenStream, XmlError> {
+    codegen_virtual_list_kind(element, cx, location, source_file, VirtualListKind::Heterogeneous)
+}
+
+/// `<UniformVirtualList …>` — the equal-height variant. Same
+/// row-template mechanism, but the underlying `gpui::uniform_list`
+/// measures only the first row and lays the rest in a straight
+/// line. It has no `on_visible_range_change` (gpui's
+/// `UniformList` has no scroll handler). Otherwise identical
+/// to `<VirtualList>`, including the auto-persisted controller.
+fn codegen_uniform_virtual_list(
+    element: &AstElement,
+    cx: &TokenStream,
+    location: &crate::parser::LocationTracker<'_>,
+    source_file: Option<&str>,
+) -> Result<TokenStream, XmlError> {
+    codegen_virtual_list_kind(
+        element,
+        cx,
+        location,
+        source_file,
+        VirtualListKind::Uniform,
+    )
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum VirtualListKind {
+    Heterogeneous,
+    Uniform,
+}
+
+/// Shared body for `<VirtualList>` and `<UniformVirtualList>`.
+/// The `kind` selects the headless factory (`virtual_list` vs
+/// `uniform_virtual_list`), the controller type
+/// (`VirtualListController` vs `UniformVirtualListController`),
+/// and whether `on_visible_range_change` is accepted.
+///
+/// Two row modes are supported:
+/// - **Explicit** (`item_count={n} let:index={i}`): the children
+///   are a row *template*, re-invoked per visible index. The
+///   row body references the bound `index` / `item` idents.
+/// - **Children-as-rows** (no `item_count`): each direct child
+///   *is* a row, and `item_count` is the number of children.
+///   The codegen emits a `match ix { 0 => {child0}, … }` so
+///   off-screen rows are never built. This is the mode that
+///   composes with `<Include>` — e.g. a list of section files
+///   becomes a virtualized section scroller with no Rust glue.
+fn codegen_virtual_list_kind(
+    element: &AstElement,
+    cx: &TokenStream,
+    location: &crate::parser::LocationTracker<'_>,
+    source_file: Option<&str>,
+    kind: VirtualListKind,
+) -> Result<TokenStream, XmlError> {
+    // Attributes that belong to the virtual-list itself; every
+    // other attribute is treated as a style pass-through applied
+    // to the rendered element (e.g. `size_full`, `w`, `h`).
+    const VL_ATTRS: &[&str] = &[
+        "id",
+        "item_count",
+        "overdraw",
+        "alignment",
+        "on_visible_range_change",
+        "let_item",
+        "let_index",
+    ];
+
+    // --- required attributes ---------------------------------------
+    let id_attr = require_attr_expr(element, "id")?;
+    // `id` may be a literal (`id="foo"`) or a brace expr. We
+    // support both: a literal becomes `("foo").to_string()` so
+    // it coerces to `Into<ElementId>`; a brace expr passes
+    // through verbatim.
+    let id_expr = match &id_attr.expr {
+        Some(e) => parse_ts(e, id_attr.span, id_attr.byte_offset, "<VirtualList> id")?,
+        None => {
+            let raw = &id_attr.raw;
+            quote! { (#raw).to_string() }
+        }
+    };
+
+    // --- detect row mode -------------------------------------------
+    let count_attr = element.attributes.iter().find(|a| a.name == "item_count");
+    let (count_expr, child_body, item_bind, index_ident) = match count_attr {
+        Some(count_attr) => {
+            // Explicit mode: row template re-invoked per index.
+            let count_expr = attr_expr_only(count_attr)?;
+            if element.children.is_empty() {
+                return Err(XmlError::new(
+                    XmlErrorKind::Unsupported,
+                    element.span,
+                    format!(
+                        "<{}> with `item_count` must contain at least one child (the row template)",
+                        element.tag
+                    ),
+                )
+                .at(element.byte_offset));
+            }
+            let (item_ident, index_ident) = parse_let_bindings(element);
+            let child_body =
+                codegen_children_as_element(&element.children, cx, location, source_file)?;
+            // Bind `let item = index;` when `let:item` is requested —
+            // gpui hands the row closure a `usize`, so for parity with
+            // `<For>` we make the item binding an alias of the index.
+            let item_bind = item_ident
+                .map(|it| quote! { let #it: usize = #index_ident; })
+                .unwrap_or_default();
+            (count_expr, child_body, item_bind, index_ident)
+        }
+        None => {
+            // Children-as-rows mode: each direct child is one row.
+            if element.children.is_empty() {
+                return Err(XmlError::new(
+                    XmlErrorKind::Unsupported,
+                    element.span,
+                    format!(
+                        "<{}> requires either an `item_count={{...}}` attribute or at least one child row",
+                        element.tag
+                    ),
+                )
+                .at(element.byte_offset));
+            }
+            // One row per child. The index ident is internal to
+            // the generated match; the user's children don't see it.
+            let arms: Vec<TokenStream> = element
+                .children
+                .iter()
+                .enumerate()
+                .map(|(i, child)| {
+                    let body =
+                        codegen_child(child, cx, location, source_file)?;
+                    let lit = i;
+                    Ok::<_, XmlError>(quote! { #lit => { #body } })
+                })
+                .collect::<Result<Vec<_>, _>>()?;
+            let n = element.children.len();
+            let count_expr = quote! { #n };
+            let index_ident = format_ident!("__ix");
+            let child_body = quote! {
+                match #index_ident {
+                    #(#arms)*
+                    _ => ::gpui::div(),
+                }
+            };
+            (count_expr, child_body, quote! {}, index_ident)
+        }
+    };
+
+    // --- optional attributes ---------------------------------------
+    let overdraw_expr = match element.attributes.iter().find(|a| a.name == "overdraw") {
+        Some(a) => attr_expr_only(a)?,
+        None => quote! { ::gpui::px(16.) },
+    };
+    // `alignment="top" | "bottom"` (heterogeneous only);
+    // uniform lists have no alignment prop on the headless
+    // factory, so we ignore it for that kind.
+    let alignment_tokens = if kind == VirtualListKind::Heterogeneous {
+        match element.attributes.iter().find(|a| a.name == "alignment") {
+            Some(a) => {
+                let raw = a.raw.as_str();
+                let variant = match raw {
+                    "bottom" => quote! { ::gpui::ListAlignment::Bottom },
+                    "top" | "" => quote! { ::gpui::ListAlignment::Top },
+                    _ => {
+                        return Err(XmlError::new(
+                            XmlErrorKind::Unsupported,
+                            a.span,
+                            format!(
+                                "<{}> alignment must be \"top\" or \"bottom\", got `{raw}`",
+                                element.tag
+                            ),
+                        )
+                        .at(a.byte_offset));
+                    }
+                };
+                Some(variant)
+            }
+            None => Some(quote! { ::gpui::ListAlignment::Top }),
+        }
+    } else {
+        None
+    };
+
+    let on_range_tokens = if kind == VirtualListKind::Heterogeneous {
+        match element
+            .attributes
+            .iter()
+            .find(|a| a.name == "on_visible_range_change")
+        {
+            Some(a) => Some(attr_expr_only(a)?),
+            None => None,
+        }
+    } else {
+        None
+    };
+
+    // --- style pass-through ----------------------------------------
+    // Any attribute that isn't a virtual-list attribute is
+    // applied to the rendered element (e.g. `size_full`, `h`,
+    // `w`, `flex_grow`). This is the same vocabulary the
+    // container codegen accepts, so we reuse its dispatcher.
+    let style_container_def = crate::schema::ContainerDef {
+        fixed_methods: &[],
+        style_hint: "the gpui Styled trait (`.size_full()`, `.h(...)`, …)",
+    };
+    let mut style_stmts: Vec<TokenStream> = Vec::new();
+    for attr in &element.attributes {
+        if VL_ATTRS.contains(&attr.name.as_str()) {
+            continue;
+        }
+        apply_container_attr(&mut style_stmts, attr, style_container_def, element)?;
+    }
+
+    // --- factory / controller paths --------------------------------
+    let (factory, controller_ty, entity_state_init) = match kind {
+        VirtualListKind::Heterogeneous => {
+            let init = quote! {
+                ::yororen_ui::headless::virtual_list::VirtualListController::new(
+                    #count_expr as usize,
+                    #alignment_tokens,
+                    #overdraw_expr,
+                )
+            };
+            (
+                quote! { ::yororen_ui::headless::virtual_list::virtual_list },
+                quote! { ::yororen_ui::headless::virtual_list::VirtualListController },
+                init,
+            )
+        }
+        VirtualListKind::Uniform => {
+            // The uniform factory takes item_count positionally
+            // each frame (it is not stored on the controller),
+            // so we pass `count_expr` at the call site below
+            // rather than in the init.
+            let init = quote! {
+                ::yororen_ui::headless::virtual_list::UniformVirtualListController::new()
+            };
+            (
+                quote! { ::yororen_ui::headless::virtual_list::uniform_virtual_list },
+                quote! { ::yororen_ui::headless::virtual_list::UniformVirtualListController },
+                init,
+            )
+        }
+    };
+
+    // --- emit ------------------------------------------------------
+    // Heterogeneous: the factory signature is
+    //   virtual_list(id, &controller, cx) -> VirtualListProps,
+    // and we sync item_count via controller.reset every frame.
+    // Uniform: the factory signature is
+    //   uniform_virtual_list(id, item_count, &controller, cx)
+    //   -> UniformVirtualListProps,
+    // so count goes in at the call site and no reset is needed.
+    let (factory_call, count_sync) = match kind {
+        VirtualListKind::Heterogeneous => (
+            quote! { #factory(#id_expr, &__snap, #cx) },
+            quote! {
+                __entity.update(#cx, |__c: &mut #controller_ty, _| {
+                    if __c.state().item_count() != (#count_expr as usize) {
+                        __c.reset(#count_expr as usize);
+                    }
+                });
+            },
+        ),
+        VirtualListKind::Uniform => (
+            quote! { #factory(#id_expr, #count_expr as usize, &__snap, #cx) },
+            quote! {},
+        ),
+    };
+
+    let row_closure = quote! {
+        move |#index_ident: usize, window: &mut ::gpui::Window, cx: &mut ::gpui::App| -> ::gpui::AnyElement {
+            #item_bind
+            ::gpui::IntoElement::into_any_element(#child_body)
+        }
+    };
+
+    let on_range_chain = match on_range_tokens {
+        Some(t) => quote! { .on_visible_range_change(#t) },
+        None => quote! {},
+    };
+
+    // `use_keyed_state` is an inherent method on `gpui::Window`.
+    // It persists the controller as an `Entity<T>` keyed by the
+    // element id across consecutive frames and auto-observes
+    // mutations (so a `.reset()` / `.scroll_to_*` triggers a
+    // re-render of the owning view). We clone the controller
+    // out of the entity for the per-frame factory call.
+    Ok(quote! {
+        {
+            let __entity = window.use_keyed_state(
+                #id_expr,
+                #cx,
+                |_window, _cx| #entity_state_init,
+            );
+            #count_sync
+            let __snap = __entity.read(#cx).clone();
+            let mut __props = #factory_call;
+            __props = __props.row(#row_closure);
+            __props = __props #on_range_chain;
+            let mut __el = __props.render(#cx);
+            #(#style_stmts)*
+            ::gpui::IntoElement::into_any_element(__el)
+        }
+    })
 }
 
 /// `<State name="x" default="0" />` declares a local
@@ -4609,5 +5076,231 @@ mod tests {
             "error should suggest Button for Buton; got {}",
             err.message
         );
+    }
+
+    // ===================== VirtualList =====================
+
+    #[test]
+    fn virtual_list_requires_id() {
+        let err = codegen(
+            r#"<VirtualList item_count={9}><Label id="x" text="hi" /></VirtualList>"#,
+            Span::call_site(),
+            None,
+            None,
+            &[],
+        )
+        .unwrap_err();
+        assert!(err.message.contains("`id"), "{err}");
+    }
+
+    #[test]
+    fn virtual_list_requires_item_count_or_children() {
+        // No item_count AND no children → error.
+        let err = codegen(
+            r#"<VirtualList id="x" />"#,
+            Span::call_site(),
+            None,
+            None,
+            &[],
+        )
+        .unwrap_err();
+        assert!(err.message.contains("item_count"), "{err}");
+        assert!(err.message.contains("child row"), "{err}");
+    }
+
+    #[test]
+    fn virtual_list_requires_children() {
+        let err = codegen(
+            r#"<VirtualList id="x" item_count={9} />"#,
+            Span::call_site(),
+            None,
+            None,
+            &[],
+        )
+        .unwrap_err();
+        assert!(err.message.contains("at least one child"), "{err}");
+    }
+
+    #[test]
+    fn virtual_list_emits_keyed_state_and_row_closure() {
+        let s = render(
+            r#"<VirtualList id="gallery-sections" item_count={9} let:index={i}>
+    <Label id="x" text="hi" />
+</VirtualList>"#,
+        );
+        // Auto-persisted controller via use_keyed_state.
+        assert!(s.contains("use_keyed_state"), "{s}");
+        // The heterogeneous factory.
+        assert!(
+            s.contains("headless :: virtual_list :: virtual_list"),
+            "{s}"
+        );
+        // Default overdraw.
+        assert!(s.contains("px (16.)"), "{s}");
+        // Per-frame count sync via controller.reset.
+        assert!(s.contains(". reset"), "{s}");
+        // Row closure bound to the user's index name `i`.
+        assert!(s.contains("move | i : usize"), "{s}");
+        // Rendered into an AnyElement.
+        assert!(s.contains("into_any_element"), "{s}");
+    }
+
+    #[test]
+    fn virtual_list_let_item_binds_alias() {
+        // `let:item` introduces a `let item: usize = index;`
+        // alias inside the row body (parity with `<For>`).
+        let s = render(
+            r#"<VirtualList id="vl" item_count={3} let:item let:index={i}>
+    <Label id="x" text={item} />
+</VirtualList>"#,
+        );
+        assert!(s.contains("let item : usize = i"), "{s}");
+    }
+
+    #[test]
+    fn virtual_list_default_index_binding() {
+        // Without `let:index`, the row index binds to `index`.
+        let s = render(
+            r#"<VirtualList id="vl" item_count={3}>
+    <Label id="x" text="hi" />
+</VirtualList>"#,
+        );
+        assert!(s.contains("move | index : usize"), "{s}");
+    }
+
+    #[test]
+    fn virtual_list_custom_overdraw_and_alignment() {
+        let s = render(
+            r#"<VirtualList id="vl" item_count={3} overdraw={px(40.)} alignment="bottom">
+    <Label id="x" text="hi" />
+</VirtualList>"#,
+        );
+        assert!(s.contains("px (40.)"), "{s}");
+        assert!(s.contains("ListAlignment :: Bottom"), "{s}");
+        // Custom overdraw must NOT also emit the default.
+        assert!(!s.contains("px (16.)"), "{s}");
+    }
+
+    #[test]
+    fn virtual_list_rejects_bad_alignment() {
+        let err = codegen(
+            r#"<VirtualList id="vl" item_count={3} alignment="sideways">
+    <Label id="x" text="hi" />
+</VirtualList>"#,
+            Span::call_site(),
+            None,
+            None,
+            &[],
+        )
+        .unwrap_err();
+        assert!(err.message.contains("\"top\" or \"bottom\""), "{err}");
+    }
+
+    #[test]
+    fn virtual_list_forwards_on_visible_range_change() {
+        let s = render(
+            r#"<VirtualList id="vl" item_count={3} on_visible_range_change={controller.on_range}>
+    <Label id="x" text="hi" />
+</VirtualList>"#,
+        );
+        assert!(s.contains("on_visible_range_change"), "{s}");
+        assert!(s.contains("controller . on_range"), "{s}");
+    }
+
+    // ===================== UniformVirtualList =====================
+
+    #[test]
+    fn uniform_virtual_list_emits_uniform_factory() {
+        let s = render(
+            r#"<UniformVirtualList id="uvl" item_count={1000} let:index={i}>
+    <Label id="y" text="u" />
+</UniformVirtualList>"#,
+        );
+        // Uniform factory + controller.
+        assert!(
+            s.contains("headless :: virtual_list :: uniform_virtual_list"),
+            "{s}"
+        );
+        assert!(s.contains("UniformVirtualListController :: new"), "{s}");
+        // No reset (uniform lists take count at the call site).
+        assert!(!s.contains(". reset"), "{s}");
+        // No on_visible_range_change support on uniform lists.
+        assert!(!s.contains("on_visible_range_change"), "{s}");
+        // Item count passed positionally at the call site.
+        assert!(s.contains("1000 as usize"), "{s}");
+    }
+
+    #[test]
+    fn uniform_virtual_list_requires_item_count_or_children() {
+        // Neither item_count nor children → error.
+        let err = codegen(
+            r#"<UniformVirtualList id="uvl" />"#,
+            Span::call_site(),
+            None,
+            None,
+            &[],
+        )
+        .unwrap_err();
+        assert!(err.message.contains("item_count"), "{err}");
+        assert!(err.message.contains("child row"), "{err}");
+    }
+
+    // ============= children-as-rows mode =============
+
+    #[test]
+    fn virtual_list_children_as_rows_counts_children() {
+        // No `item_count`: each direct child is a row. The
+        // emitted count literal equals the number of children.
+        let s = render(
+            r#"<VirtualList id="vl">
+    <Label id="a" text="1" />
+    <Label id="b" text="2" />
+    <Label id="c" text="3" />
+</VirtualList>"#,
+        );
+        // item_count = 3 children.
+        assert!(s.contains("3usize"), "{s}");
+        // Row closure dispatches by index via a match.
+        assert!(s.contains("match"), "{s}");
+        assert!(s.contains("0usize =>"), "{s}");
+        assert!(s.contains("2usize =>"), "{s}");
+        // Wildcard arm returns an empty div.
+        assert!(s.contains("_ =>"), "{s}");
+    }
+
+    #[test]
+    fn virtual_list_children_as_rows_supports_single_child() {
+        let s = render(
+            r#"<VirtualList id="vl">
+    <Label id="a" text="1" />
+</VirtualList>"#,
+        );
+        assert!(s.contains("1usize"), "{s}");
+        assert!(s.contains("0usize =>"), "{s}");
+    }
+
+    #[test]
+    fn virtual_list_style_passthrough_applies_to_rendered_element() {
+        // `size_full` and `h` are not VL attrs → they become
+        // style calls on the rendered element.
+        let s = render(
+            r#"<VirtualList id="vl" item_count={3} size_full h={px(200.)}>
+    <Label id="a" text="1" />
+</VirtualList>"#,
+        );
+        assert!(s.contains("Styled :: size_full"), "{s}");
+        assert!(s.contains("Styled :: h"), "{s}");
+        assert!(s.contains("px (200.)"), "{s}");
+    }
+
+    #[test]
+    fn virtual_list_children_as_rows_style_passthrough() {
+        // Style passthrough works in children-as-rows mode too.
+        let s = render(
+            r#"<VirtualList id="vl" size_full>
+    <Label id="a" text="1" />
+</VirtualList>"#,
+        );
+        assert!(s.contains("Styled :: size_full"), "{s}");
     }
 }

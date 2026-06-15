@@ -54,13 +54,6 @@ impl Controller {
         self.state.read(cx).modal_state.clone()
     }
 
-    pub fn section_list_controller(
-        &self,
-        cx: &App,
-    ) -> yororen_ui::headless::virtual_list::VirtualListController {
-        self.state.read(cx).section_list_controller.clone()
-    }
-
     // -------- Read-only helpers used directly by XML --------
 
     pub fn toast_count(&self, cx: &App) -> usize {

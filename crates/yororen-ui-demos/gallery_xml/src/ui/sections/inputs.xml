@@ -1,7 +1,5 @@
 <!-- Section 4 — Inputs. -->
 <Column flex col gap="4">
-    <Include src="ui/shared/input_cell.xml" />
-
     <Heading id="inputs-title" level="H2" text={controller.t("demo.section_inputs", cx)} />
 
     <InputCell>

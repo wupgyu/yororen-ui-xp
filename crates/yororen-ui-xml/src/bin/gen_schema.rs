@@ -369,8 +369,24 @@ fn load_overrides(path: &Path) -> Vec<OverrideEntry> {
 }
 
 fn apply_overrides(entries: Vec<Extracted>, overrides: &[OverrideEntry]) -> Vec<Extracted> {
-    let by_tag: BTreeMap<String, Extracted> =
-        entries.into_iter().map(|e| (e.tag.clone(), e)).collect();
+    // A `kind = "ControlFlow"` override replaces the
+    // auto-generated Leaf entirely — the tag has no headless
+    // equivalent and is dispatched by the codegen's
+    // control-flow arm. Drop those entries here so the later
+    // "append overrides not already present" pass re-adds them
+    // via `override_to_extracted`. This is how `VirtualList` /
+    // `UniformVirtualList` escape the auto-generated Leaf shape
+    // (they own a row-template body + auto-persisted controller).
+    let replaced_tags: std::collections::HashSet<&str> = overrides
+        .iter()
+        .filter(|o| o.kind == "ControlFlow")
+        .map(|o| o.tag.as_str())
+        .collect();
+    let by_tag: BTreeMap<String, Extracted> = entries
+        .into_iter()
+        .filter(|e| !replaced_tags.contains(e.tag.as_str()))
+        .map(|e| (e.tag.clone(), e))
+        .collect();
     let mut out: Vec<Extracted> = by_tag
         .into_iter()
         .map(|(tag, mut e)| {
@@ -1000,6 +1016,8 @@ fn render_override(o: &OverrideEntry) -> Option<String> {
                 "Match" => "ControlFlowDef::Match",
                 "Case" => "ControlFlowDef::Case",
                 "State" => "ControlFlowDef::State",
+                "VirtualList" => "ControlFlowDef::VirtualList",
+                "UniformVirtualList" => "ControlFlowDef::UniformVirtualList",
                 other => {
                     eprintln!("warning: unknown control flow variant `{other}`");
                     return None;

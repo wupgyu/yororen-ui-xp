@@ -1,0 +1,31 @@
+<!-- Top-level section virtual list. Each direct child is one
+     row, and `item_count` is derived from the number of
+     children — no Rust glue, no `controller.section_element`.
+     Off-screen rows are never built (gpui's `list()` only
+     invokes the per-visible-index closure). The
+     VirtualListController is auto-persisted by the engine via
+     `window.use_keyed_state(id, …)`, so the host view carries
+     no controller field.
+
+     Each row is a `<Div p="4">` wrapper + an `<Include>` of the
+     matching section file. `p="4"` gives a modest 16-px inset
+     without the previous 24-px "huge margin" look. The toolbar
+     row (row 0) groups the included toolbar with the shared cell
+     templates and the divider below it. -->
+<VirtualList id="gallery-sections" size_full
+             border_color={cx.theme().get_color("surface.base").unwrap_or_default()}
+             rounded={gpui::px(0.)}>
+    <Div flex flex_col p="4">
+        <Include src="ui/shared/cell.xml" />
+        <Include src="ui/sections/toolbar.xml" />
+        <Divider id="toolbar-divider" />
+    </Div>
+    <Div p="4"><Include src="ui/sections/actions.xml" /></Div>
+    <Div p="4"><Include src="ui/sections/display.xml" /></Div>
+    <Div p="4"><Include src="ui/sections/surfaces.xml" /></Div>
+    <Div p="4"><Include src="ui/sections/inputs.xml" /></Div>
+    <Div p="4"><Include src="ui/sections/controls.xml" /></Div>
+    <Div p="4"><Include src="ui/sections/overlays.xml" /></Div>
+    <Div p="4"><Include src="ui/sections/lists.xml" /></Div>
+    <Div p="4"><Include src="ui/sections/footer.xml" /></Div>
+</VirtualList>

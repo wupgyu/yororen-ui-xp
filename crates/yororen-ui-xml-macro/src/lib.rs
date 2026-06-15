@@ -9,9 +9,27 @@
 #![forbid(unsafe_code)]
 
 use proc_macro::TokenStream;
-use proc_macro2::Span;
+use proc_macro2::{Literal, Span, TokenStream as TokenStream2};
+use std::path::PathBuf;
 use syn::parse::{Parse, ParseStream, Parser, Result as SynResult};
 use yororen_ui_xml::schema::ComponentDef;
+
+/// Make a path absolute using the current working directory.
+///
+/// `proc_macro::Span::file()` often returns a relative path, and
+/// `include_str!` resolves relative paths against the source file
+/// that contains the macro call. That would double-apply the
+/// source-file directory. Converting to an absolute path before
+/// emitting `include_str!` avoids the duplication.
+fn absolutize(path: PathBuf) -> PathBuf {
+    if path.is_absolute() {
+        path
+    } else {
+        std::env::current_dir()
+            .map(|cwd| cwd.join(&path))
+            .unwrap_or(path)
+    }
+}
 
 /// Load the optional `yororen-ui-xml-components.toml` file
 /// next to the source file that invoked the macro. The file
@@ -102,14 +120,19 @@ pub fn xml(input: TokenStream) -> TokenStream {
         Ok(s) => s,
         Err(e) => return e.to_compile_error().into(),
     };
-    match yororen_ui_xml::codegen::codegen(
+    match yororen_ui_xml::codegen::codegen_with_includes(
         &args.xml,
         outer_span,
         cx_expr,
         Some(&source_file),
         &user_schema,
     ) {
-        Ok(ts) => ts.into(),
+        Ok((ts, included_paths)) => {
+            let paths: Vec<PathBuf> = included_paths.into_iter().map(absolutize).collect();
+            let deps = include_dependencies(&paths);
+            let ts: TokenStream2 = ts.into();
+            quote::quote! { { #deps #ts } }.into()
+        }
         Err(e) => syn::Error::new(outer_span, e.render_with(Some(&location)))
             .to_compile_error()
             .into(),
@@ -193,6 +216,7 @@ pub fn xml_file(input: TokenStream) -> TokenStream {
         let dir = source.parent().unwrap_or_else(|| std::path::Path::new("."));
         dir.join(&args.path)
     };
+    let resolved_path = absolutize(resolved_path);
 
     let contents = match std::fs::read_to_string(&resolved_path) {
         Ok(c) => c,
@@ -226,18 +250,26 @@ pub fn xml_file(input: TokenStream) -> TokenStream {
         Ok(s) => s,
         Err(e) => return e.to_compile_error().into(),
     };
-    match yororen_ui_xml::codegen::codegen(
+    match yororen_ui_xml::codegen::codegen_with_includes(
         &contents,
         outer_span,
         cx_expr,
         Some(&args.source_file),
         &user_schema,
     ) {
-        Ok(ts) => {
-            let ts: TokenStream = ts.into();
+        Ok((ts, included_paths)) => {
+            // Register the top-level XML file itself plus every
+            // file pulled in via `<Include src="…">` as a Cargo
+            // dependency so edits trigger recompilation.
+            let mut paths: Vec<PathBuf> =
+                included_paths.into_iter().map(absolutize).collect();
+            paths.push(resolved_path);
+            let deps = include_dependencies(&paths);
+            let ts: TokenStream2 = ts.into();
+            let ts = quote::quote! { { #deps #ts } };
             match window_expr {
-                Some(w_expr) => splice_window_let(ts, w_expr.into()),
-                None => ts,
+                Some(w_expr) => splice_window_let(ts.into(), w_expr.into()),
+                None => ts.into(),
             }
         }
         Err(e) => syn::Error::new(outer_span, e.render_with(Some(&location)))
@@ -265,6 +297,21 @@ fn splice_window_let(ts: TokenStream, w_expr: TokenStream) -> TokenStream {
         }
     };
     block.into()
+}
+
+/// Emit `include_str!("<abs-path>")` statements for every XML
+/// file the macro read. Cargo treats `include_str!` arguments as
+/// compilation dependencies, so editing an XML file (or any file
+/// it includes via `<Include src="…">`) automatically triggers a
+/// recompile. The statements bind to `_` so they have no runtime
+/// effect.
+fn include_dependencies(paths: &[std::path::PathBuf]) -> TokenStream2 {
+    let mut stmts = TokenStream2::new();
+    for path in paths {
+        let lit = Literal::string(&path.to_string_lossy());
+        stmts.extend(quote::quote! { let _ = include_str!(#lit); });
+    }
+    stmts
 }
 
 struct XmlFileArgs {
