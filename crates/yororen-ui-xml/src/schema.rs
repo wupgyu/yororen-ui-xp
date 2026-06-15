@@ -355,26 +355,16 @@ impl ComponentDef {
     }
 }
 
-// Helper for tests / callers that need a static list of
-// string tags. Implemented as a function instead of a
-// `[&'static str]` to dodge the const-context limitations
-// of the `BUILTINS` table.
-pub const fn builtin_tags() -> &'static [&'static str] {
-    &[
-        "Button",
-        "Column",
-        "Div",
-        "Else",
-        "ElseIf",
-        "For",
-        "Fragment",
-        "If",
-        "Label",
-        "Row",
-        "Stack",
-        "UniformVirtualList",
-        "VirtualList",
-    ]
+// Helper for diagnostics (did-you-mean) that returns every
+// built-in tag, including generated leaves and overrides.
+pub fn builtin_tags() -> Vec<&'static str> {
+    use crate::schema_generated::{BUILTINS_GENERATED, BUILTINS_OVERRIDES};
+    let mut tags: Vec<&'static str> = BUILTINS.iter().map(|c| c.tag).collect();
+    tags.extend(BUILTINS_OVERRIDES.iter().map(|c| c.tag));
+    tags.extend(BUILTINS_GENERATED.iter().map(|c| c.tag));
+    tags.sort_unstable();
+    tags.dedup();
+    tags
 }
 
 /// All built-in tags. Keep this list sorted alphabetically for
@@ -382,54 +372,6 @@ pub const fn builtin_tags() -> &'static [&'static str] {
 /// MVP that's fine. (Phase 3 can switch to a `phf` map if
 /// the table grows past ~100 entries.)
 pub static BUILTINS: &[ComponentDef] = &[
-    ComponentDef {
-        tag: "Button",
-        kind: ComponentKind::Leaf(LeafDef {
-            factory: "::yororen_ui::headless::button::button",
-            extra_args: &[],
-            render: RenderMode::Default,
-            needs_app: true,
-            needs_window: false,
-            props: &[
-                PropDef {
-                    name: "caption",
-                    setter: "caption",
-                    value: PropValue::String,
-                },
-                PropDef {
-                    name: "variant",
-                    setter: "variant",
-                    value: PropValue::Variant,
-                },
-                PropDef {
-                    name: "disabled",
-                    setter: "disabled",
-                    value: PropValue::Bool,
-                },
-                PropDef {
-                    name: "clickable",
-                    setter: "clickable",
-                    value: PropValue::Bool,
-                },
-                PropDef {
-                    name: "icon",
-                    setter: "icon",
-                    value: PropValue::IconSource,
-                },
-                PropDef {
-                    name: "icon_size",
-                    setter: "icon_size",
-                    value: PropValue::Float32,
-                },
-            ],
-            events: &[("on_click", "on_click")],
-            supports_text_child: true,
-            children_before_render: false,
-            unwrap_children: false,
-            slots: &[],
-        }),
-        doc: "Headless `Button` — see `yororen_ui_core::headless::button`.",
-    },
     ComponentDef {
         tag: "Case",
         kind: ComponentKind::ControlFlow(ControlFlowDef::Case),
@@ -510,62 +452,6 @@ pub static BUILTINS: &[ComponentDef] = &[
         tag: "If",
         kind: ComponentKind::ControlFlow(ControlFlowDef::If),
         doc: "Conditional rendering: `<If condition={cond}>…</If>`.",
-    },
-    ComponentDef {
-        tag: "Label",
-        kind: ComponentKind::Leaf(LeafDef {
-            factory: "::yororen_ui::headless::label::label",
-            extra_args: &[ExtraArg {
-                kind: ExtraArgKind::Text,
-                attr: "text",
-            }],
-            render: RenderMode::Default,
-            needs_app: true,
-            needs_window: false,
-            props: &[
-                PropDef {
-                    name: "strong",
-                    setter: "strong",
-                    value: PropValue::Bool,
-                },
-                PropDef {
-                    name: "muted",
-                    setter: "muted",
-                    value: PropValue::Bool,
-                },
-                PropDef {
-                    name: "mono",
-                    setter: "mono",
-                    value: PropValue::Bool,
-                },
-                PropDef {
-                    name: "inherit_color",
-                    setter: "inherit_color",
-                    value: PropValue::Bool,
-                },
-                PropDef {
-                    name: "ellipsis",
-                    setter: "ellipsis",
-                    value: PropValue::Bool,
-                },
-                PropDef {
-                    name: "wrap",
-                    setter: "wrap",
-                    value: PropValue::Flag,
-                },
-                PropDef {
-                    name: "max_lines",
-                    setter: "max_lines",
-                    value: PropValue::UInt,
-                },
-            ],
-            events: &[],
-            supports_text_child: false,
-            children_before_render: false,
-            unwrap_children: false,
-            slots: &[],
-        }),
-        doc: "Headless `Label` — see `yororen_ui_core::headless::label`.",
     },
     ComponentDef {
         tag: "Row",

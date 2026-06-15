@@ -486,7 +486,7 @@ fn codegen_runtime_leaf(element: &AstElement, cx: &TokenStream) -> Result<TokenS
         .find(|a| a.name == "id")
         .ok_or_else(|| {
             let builtins = crate::schema::builtin_tags();
-            let suggestion = did_you_mean(&tag, builtins);
+            let suggestion = did_you_mean(&tag, &builtins);
             let hint = suggestion.map_or_else(
                 String::new,
                 |s| format!(" — did you mean `<{s}>`?"),
@@ -5060,96 +5060,6 @@ mod tests {
         )
         .unwrap_err();
         assert!(err.message.contains("@bind"), "{err}");
-    }
-
-    /// Cross-check: the hand-written BUILTINS for `Button`
-    /// and `Label` should agree with the auto-generated
-    /// entries on the field names and prop types. This
-    /// catches the case where someone changes a setter on
-    /// `ButtonProps` but forgets to update the schema.
-    #[test]
-    fn hand_written_button_matches_generated() {
-        let hand = crate::schema::BUILTINS
-            .iter()
-            .find(|c| c.tag == "Button")
-            .expect("Button is in hand-written BUILTINS");
-        let gen_entry = BUILTINS_GENERATED
-            .iter()
-            .find(|c| c.tag == "Button")
-            .expect("Button is in BUILTINS_GENERATED");
-        let hand_props: std::collections::BTreeMap<_, _> = match hand.kind {
-            crate::schema::ComponentKind::Leaf(ref l) => {
-                l.props.iter().map(|p| (p.name, p.value)).collect()
-            }
-            _ => panic!("Button is not a leaf"),
-        };
-        let gen_props: std::collections::BTreeMap<_, _> = match gen_entry.kind {
-            crate::schema::ComponentKind::Leaf(ref l) => {
-                l.props.iter().map(|p| (p.name, p.value)).collect()
-            }
-            _ => panic!("generated Button is not a leaf"),
-        };
-        let hand_events: std::collections::BTreeSet<_> = match hand.kind {
-            crate::schema::ComponentKind::Leaf(ref l) => {
-                l.events.iter().map(|(n, _)| n).cloned().collect()
-            }
-            _ => panic!("Button is not a leaf"),
-        };
-        let gen_events: std::collections::BTreeSet<_> = match gen_entry.kind {
-            crate::schema::ComponentKind::Leaf(ref l) => {
-                l.events.iter().map(|(n, _)| n).cloned().collect()
-            }
-            _ => panic!("generated Button is not a leaf"),
-        };
-        assert_eq!(
-            hand_props, gen_props,
-            "hand-written Button props diverge from generated"
-        );
-        assert_eq!(
-            hand_events, gen_events,
-            "hand-written Button events diverge from generated"
-        );
-    }
-
-    #[test]
-    fn hand_written_label_matches_generated() {
-        let hand = crate::schema::BUILTINS
-            .iter()
-            .find(|c| c.tag == "Label")
-            .expect("Label is in hand-written BUILTINS");
-        let gen_entry = BUILTINS_GENERATED
-            .iter()
-            .find(|c| c.tag == "Label")
-            .expect("Label is in BUILTINS_GENERATED");
-        let hand_props: std::collections::BTreeMap<_, _> = match hand.kind {
-            crate::schema::ComponentKind::Leaf(ref l) => {
-                l.props.iter().map(|p| (p.name, p.value)).collect()
-            }
-            _ => panic!("Label is not a leaf"),
-        };
-        let gen_props: std::collections::BTreeMap<_, _> = match gen_entry.kind {
-            crate::schema::ComponentKind::Leaf(ref l) => {
-                l.props.iter().map(|p| (p.name, p.value)).collect()
-            }
-            _ => panic!("generated Label is not a leaf"),
-        };
-        // Compare the FIRST extra arg (Label only has one).
-        let hand_extra_first = match hand.kind {
-            crate::schema::ComponentKind::Leaf(ref l) => l.extra_args.first().copied(),
-            _ => panic!("Label is not a leaf"),
-        };
-        let gen_extra_first = match gen_entry.kind {
-            crate::schema::ComponentKind::Leaf(ref l) => l.extra_args.first().copied(),
-            _ => panic!("generated Label is not a leaf"),
-        };
-        assert_eq!(
-            hand_extra_first, gen_extra_first,
-            "Label extra_args[0] diverges"
-        );
-        assert_eq!(
-            hand_props, gen_props,
-            "hand-written Label props diverge from generated"
-        );
     }
 
     /// Run `gen-schema --check` and panic if the
