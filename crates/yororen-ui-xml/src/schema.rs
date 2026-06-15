@@ -317,8 +317,18 @@ impl ComponentDef {
 // of the `BUILTINS` table.
 pub const fn builtin_tags() -> &'static [&'static str] {
     &[
-        "Button", "Column", "Div", "Else", "ElseIf", "For", "Fragment", "If", "Label", "Row",
-        "Stack", "UniformVirtualList",
+        "Button",
+        "Column",
+        "Div",
+        "Else",
+        "ElseIf",
+        "For",
+        "Fragment",
+        "If",
+        "Label",
+        "Row",
+        "Stack",
+        "UniformVirtualList",
     ]
 }
 
@@ -731,4 +741,223 @@ pub fn is_spacing_prefix(name: &str) -> bool {
 #[allow(dead_code)]
 pub(crate) fn span_call(_span: Span) -> Span {
     Span::call_site()
+}
+
+/// Look up a tag across all built-in schema tables.
+///
+/// Search order:
+/// 1. Hand-written [`BUILTINS`] in this file.
+/// 2. Generated overrides (`BUILTINS_OVERRIDES`).
+/// 3. Auto-generated leaves (`BUILTINS_GENERATED`).
+/// 4. User-supplied schema from `yororen-ui-xml-components.toml`.
+pub fn lookup_component<'a>(
+    tag: &str,
+    user_schema: &'a [ComponentDef],
+) -> Option<&'a ComponentDef> {
+    use crate::schema_generated::{BUILTINS_GENERATED, BUILTINS_OVERRIDES};
+    if let Some(c) = BUILTINS.iter().find(|c| c.tag == tag) {
+        return Some(c);
+    }
+    if let Some(c) = BUILTINS_OVERRIDES.iter().find(|c| c.tag == tag) {
+        return Some(c);
+    }
+    if let Some(c) = BUILTINS_GENERATED.iter().find(|c| c.tag == tag) {
+        return Some(c);
+    }
+    user_schema.iter().find(|c| c.tag == tag)
+}
+
+/// Like [`lookup_component`] but returns an owned clone.
+/// Useful when the caller needs to keep the result without
+/// tying it to the schema slice's lifetime.
+pub fn lookup_component_owned(tag: &str, user_schema: &[ComponentDef]) -> Option<ComponentDef> {
+    lookup_component(tag, user_schema).cloned()
+}
+
+// ----- user-defined schema from `yororen-ui-xml-components.toml` -----
+
+/// Parse a TOML description of user-defined XML components.
+///
+/// Example `yororen-ui-xml-components.toml`:
+///
+/// ```toml
+/// [[component]]
+/// tag = "Chart"
+/// factory = "my_crate::chart::chart"
+///
+/// [[component.props]]
+/// name = "data"
+/// setter = "data"
+/// value = "String"
+///
+/// [[component.events]]
+/// name = "on_click"
+/// setter = "on_click"
+/// ```
+///
+/// `value` must be one of: `String`, `Bool`, `UInt`, `Float32`,
+/// `Float64`, `Variant`, `BadgeVariant`, `HeadingLevel`,
+/// `IconSource`, `ImageSource`, `KeybindingInputMode`, `Color`,
+/// `Flag`, `Unknown`.
+#[derive(Debug, serde::Deserialize)]
+struct UserFile {
+    #[serde(default)]
+    component: Vec<UserComponent>,
+}
+
+#[derive(Debug, serde::Deserialize)]
+struct UserComponent {
+    tag: String,
+    factory: String,
+    #[serde(default = "default_render")]
+    render: String,
+    #[serde(default)]
+    props: Vec<UserProp>,
+    #[serde(default)]
+    events: Vec<UserEvent>,
+}
+
+fn default_render() -> String {
+    "Default".to_string()
+}
+
+#[derive(Debug, serde::Deserialize)]
+struct UserProp {
+    name: String,
+    setter: String,
+    value: String,
+}
+
+#[derive(Debug, serde::Deserialize)]
+struct UserEvent {
+    name: String,
+    setter: String,
+}
+
+pub fn parse_user_schema(toml_str: &str) -> Result<Vec<ComponentDef>, String> {
+    let file: UserFile = toml::from_str(toml_str)
+        .map_err(|e| format!("invalid yororen-ui-xml-components.toml: {e}"))?;
+
+    file.component
+        .into_iter()
+        .map(build_user_component)
+        .collect()
+}
+
+fn build_user_component(def: UserComponent) -> Result<ComponentDef, String> {
+    let mut props: Vec<PropDef> = Vec::with_capacity(def.props.len());
+    for p in def.props {
+        props.push(PropDef {
+            name: leak_str(p.name),
+            setter: leak_str(p.setter),
+            value: parse_prop_value(&p.value)?,
+        });
+    }
+
+    let events: Vec<(&'static str, &'static str)> = def
+        .events
+        .into_iter()
+        .map(|e| (leak_str(e.name), leak_str(e.setter)))
+        .collect();
+
+    let render = match def.render.as_str() {
+        "Default" => RenderMode::Default,
+        "Apply" => RenderMode::Apply,
+        other => return Err(format!("unknown render mode `{other}`")),
+    };
+
+    let leaf = LeafDef {
+        factory: leak_str(def.factory),
+        extra_args: &[],
+        render,
+        needs_app: true,
+        needs_window: false,
+        props: leak_slice(props),
+        events: leak_slice(events),
+        supports_text_child: false,
+        children_before_render: false,
+        unwrap_children: false,
+        slots: &[],
+    };
+
+    Ok(ComponentDef {
+        tag: leak_str(def.tag),
+        kind: ComponentKind::Leaf(leaf),
+        doc: "user-defined from yororen-ui-xml-components.toml",
+    })
+}
+
+fn leak_str(s: String) -> &'static str {
+    Box::leak(s.into_boxed_str())
+}
+
+fn leak_slice<T>(v: Vec<T>) -> &'static [T] {
+    Box::leak(v.into_boxed_slice())
+}
+
+fn parse_prop_value(raw: &str) -> Result<PropValue, String> {
+    match raw {
+        "String" => Ok(PropValue::String),
+        "Bool" => Ok(PropValue::Bool),
+        "UInt" => Ok(PropValue::UInt),
+        "Float32" => Ok(PropValue::Float32),
+        "Float64" => Ok(PropValue::Float64),
+        "Variant" => Ok(PropValue::Variant),
+        "BadgeVariant" => Ok(PropValue::BadgeVariant),
+        "HeadingLevel" => Ok(PropValue::HeadingLevel),
+        "IconSource" => Ok(PropValue::IconSource),
+        "ImageSource" => Ok(PropValue::ImageSource),
+        "KeybindingInputMode" => Ok(PropValue::KeybindingInputMode),
+        "Color" => Ok(PropValue::Color),
+        "Flag" => Ok(PropValue::Flag),
+        "Unknown" => Ok(PropValue::Unknown),
+        other => Err(format!("unknown PropValue `{other}`")),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn parse_user_schema_roundtrip() {
+        let toml = r#"
+[[component]]
+tag = "Chart"
+factory = "my_crate::chart::chart"
+
+[[component.props]]
+name = "data"
+setter = "data"
+value = "String"
+
+[[component.events]]
+name = "on_click"
+setter = "on_click"
+"#;
+        let schema = parse_user_schema(toml).expect("parse succeeds");
+        assert_eq!(schema.len(), 1);
+        assert_eq!(schema[0].tag, "Chart");
+        let ComponentKind::Leaf(leaf) = schema[0].kind else {
+            panic!("expected Leaf");
+        };
+        assert_eq!(leaf.factory, "my_crate::chart::chart");
+        assert_eq!(leaf.props.len(), 1);
+        assert_eq!(leaf.props[0].name, "data");
+        assert_eq!(leaf.props[0].value, PropValue::String);
+        assert_eq!(leaf.events.len(), 1);
+        assert_eq!(leaf.events[0].0, "on_click");
+    }
+
+    #[test]
+    fn lookup_falls_back_to_user_schema() {
+        let toml = r#"
+[[component]]
+tag = "CustomWidget"
+factory = "my_crate::widget"
+"#;
+        let user = parse_user_schema(toml).expect("parse succeeds");
+        assert!(lookup_component("CustomWidget", &user).is_some());
+        assert!(lookup_component("DefinitelyNotARealTag", &user).is_none());
+    }
 }

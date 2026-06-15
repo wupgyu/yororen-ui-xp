@@ -3,7 +3,10 @@
 //! scroll-root, the top-level section virtual list, the
 //! modal overlay, and the notification host.
 
-use gpui::{AnyElement, Context, InteractiveElement, IntoElement, ParentElement, Render, Styled, Window, div, hsla, px};
+use gpui::{
+    AnyElement, Context, InteractiveElement, IntoElement, ParentElement, Render, Styled, Window,
+    div, hsla, px,
+};
 use yororen_ui::theme::ActiveTheme;
 
 use yororen_ui::headless::divider::divider;

@@ -11,6 +11,32 @@
 use proc_macro::TokenStream;
 use proc_macro2::Span;
 use syn::parse::{Parse, ParseStream, Parser, Result as SynResult};
+use yororen_ui_xml::schema::ComponentDef;
+
+/// Load the optional `yororen-ui-xml-components.toml` file
+/// next to the source file that invoked the macro. The file
+/// lets users register custom XML tags with compile-time
+/// prop/event validation without modifying the xml crate.
+fn load_user_schema(source_file: &str) -> Result<Vec<ComponentDef>, syn::Error> {
+    let path = std::path::Path::new(source_file);
+    let dir = path.parent().unwrap_or_else(|| std::path::Path::new("."));
+    let toml_path = dir.join("yororen-ui-xml-components.toml");
+    if !toml_path.exists() {
+        return Ok(Vec::new());
+    }
+    let content = std::fs::read_to_string(&toml_path).map_err(|e| {
+        syn::Error::new(
+            Span::call_site(),
+            format!("could not read {}: {e}", toml_path.display()),
+        )
+    })?;
+    yororen_ui_xml::schema::parse_user_schema(&content).map_err(|e| {
+        syn::Error::new(
+            Span::call_site(),
+            format!("could not parse {}: {e}", toml_path.display()),
+        )
+    })
+}
 
 /// Parsed form of `xml! { cx = expr, <Column>...</Column> }`.
 ///
@@ -72,7 +98,17 @@ pub fn xml(input: TokenStream) -> TokenStream {
     // does (so XML-include and XML-file point to the
     // same file from the same source file).
     let source_file = proc_macro::Span::call_site().file();
-    match yororen_ui_xml::codegen::codegen(&args.xml, outer_span, cx_expr, Some(&source_file)) {
+    let user_schema = match load_user_schema(&source_file) {
+        Ok(s) => s,
+        Err(e) => return e.to_compile_error().into(),
+    };
+    match yororen_ui_xml::codegen::codegen(
+        &args.xml,
+        outer_span,
+        cx_expr,
+        Some(&source_file),
+        &user_schema,
+    ) {
         Ok(ts) => ts.into(),
         Err(e) => syn::Error::new(outer_span, e.render_with(Some(&location)))
             .to_compile_error()
@@ -174,7 +210,7 @@ pub fn xml_file(input: TokenStream) -> TokenStream {
         }
     };
     let cx_expr = args.cx.map(|e| quote::quote! { #e });
-    let _window_expr = args.window.map(|e| quote::quote! { #e });
+    let window_expr = args.window.map(|e| quote::quote! { #e });
     // Build the location tracker from the *file's* content
     // so error messages point to the right file. (Even
     // though the proc-macro's outer span points at the
@@ -186,39 +222,44 @@ pub fn xml_file(input: TokenStream) -> TokenStream {
         xml: &contents,
         outer_span,
     };
+    let user_schema = match load_user_schema(&args.source_file) {
+        Ok(s) => s,
+        Err(e) => return e.to_compile_error().into(),
+    };
     match yororen_ui_xml::codegen::codegen(
         &contents,
         outer_span,
         cx_expr,
         Some(&args.source_file),
+        &user_schema,
     ) {
-        Ok(ts) => ts.into(),
+        Ok(ts) => {
+            let ts: TokenStream = ts.into();
+            match window_expr {
+                Some(w_expr) => splice_window_let(ts, w_expr.into()),
+                None => ts,
+            }
+        }
         Err(e) => syn::Error::new(outer_span, e.render_with(Some(&location)))
             .to_compile_error()
             .into(),
     }
 }
 
-/// Insert `let window = <expr>;` as the first statement
-/// inside the codegen's leading `{ use …; … }` block.
+/// Wrap the codegen output with `let window = <expr>;` so
+/// the generated code can reference `window` for components
+/// whose render method takes it (e.g. `TextInput`).
 ///
-/// `ts` is expected to be `{ #[allow(unused_imports)] use
-/// …; <body> }`. We rebuild it as `{ use …; let window =
-/// <expr>; <body> }` so the generated code can reference
-/// `window` for components whose render method takes it.
-///
-/// Implementation note: we DON'T add another `{ … }` wrap
-/// around `ts` — that would create a doubly-nested block
-/// and confuse some rustc diagnostics into reading the
-/// outer block as a closure.
-#[allow(dead_code)]
+/// `ts` is expected to be a block expression `{ use …; <body> }`.
+/// We prepend the `let window = …;` binding in a fresh outer
+/// block; the extra nesting does not change semantics and keeps
+/// the implementation robust against future changes to the
+/// codegen prelude.
 fn splice_window_let(ts: TokenStream, w_expr: TokenStream) -> TokenStream {
     let ts2: proc_macro2::TokenStream = ts.into();
     let w_expr2: proc_macro2::TokenStream = w_expr.into();
     let block: proc_macro2::TokenStream = quote::quote! {
         {
-            #[allow(unused_imports)]
-            use ::gpui::{IntoElement, ParentElement, StatefulInteractiveElement, InteractiveElement, Styled};
             let window = #w_expr2;
             #ts2
         }

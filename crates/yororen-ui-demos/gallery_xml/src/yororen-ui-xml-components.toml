@@ -1,0 +1,8 @@
+# Compile-time schema extension for the gallery_xml demo.
+# This lets the `xml!` macro validate `<CounterWidget>`
+# attributes even though it is not a built-in tag.
+
+[[component]]
+tag = "CounterWidget"
+factory = "crate::render_counter_widget"
+render = "Apply"

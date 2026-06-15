@@ -1,13 +1,55 @@
 <!-- Section 7 — Lists, Tables, Trees, Forms. -->
 <Column flex col gap="4">
+    <Template name="Cell">
+        <Div flex flex_col items_start gap="1" p="2" rounded_md border_1
+             border_color={gpui::hsla(0.0, 0.0, 0.5, 0.15)}>
+            <Slot name="label" />
+            <Slot />
+        </Div>
+    </Template>
+
     <Heading id="lists-title" level="H2" text={controller.t("demo.section_lists", cx)} />
-    {controller.list_item_rows(cx, window)}
-    {controller.listbox_element(cx)}
+
+    <Cell>
+        <Slot name="label"><Label id="lbl-list-items" text={controller.t("demo.lists.cell_list", cx)} muted /></Slot>
+        <Column flex col gap="2" w={gpui::px(220.)}>
+            <For each={vec![
+                controller.t("demo.lists.first_item", cx),
+                controller.t("demo.lists.second_item", cx),
+                controller.t("demo.lists.third_item", cx),
+            ]} let:item let:index={i} key={i}>
+                <ListItem id={format!("li-{}", i + 1)} title={item.clone()}
+                          selected={controller.selected_list_item(cx) == Some(i)}
+                          on_click={controller.select_list_item_handler(i)} />
+            </For>
+        </Column>
+    </Cell>
+
+    <Cell>
+        <Slot name="label"><Label id="lbl-listbox" text={controller.t("demo.lists.cell_listbox", cx)} muted /></Slot>
+        <Column flex col gap="3" w={gpui::px(240.)}>
+            <Listbox id="lists-listbox" state={controller.listbox_state(cx)} />
+            <Label id="lists-listbox-status" text={controller.listbox_status_text(cx)} muted />
+        </Column>
+    </Cell>
+
     {controller.form_element(cx, window)}
-    {controller.table_element(cx)}
+    <Cell>
+        <Slot name="label"><Label id="lbl-table" text={controller.t("demo.lists.cell_table", cx)} muted /></Slot>
+        <Table id="lists-table" columns={controller.table_columns(cx)} rows={controller.table_rows(cx)}
+               selected={controller.selected_table_row(cx).unwrap_or(0)}
+               on_select={controller.table_row_handler()} />
+    </Cell>
+
     {controller.tree_element(cx, window)}
     {controller.virtual_list_element(cx, window)}
     {controller.uniform_list_element(cx, window)}
     {controller.spacer_element(cx)}
-    {controller.radio_group_empty_element(cx)}
+
+    <Cell>
+        <Slot name="label"><Label id="lbl-rg-empty" text={controller.t("demo.controls.cell_radio_group_empty", cx)} muted /></Slot>
+        <RadioGroup id="lists-rg" name="rg-2">
+            <Label id="rg-2-info" text={controller.t("demo.controls.radio_group_empty_label", cx)} muted />
+        </RadioGroup>
+    </Cell>
 </Column>

@@ -11,7 +11,10 @@
 use std::collections::{BTreeSet, HashMap};
 use std::ops::Range;
 
-use gpui::{AnyElement, App, ClickEvent, ElementId, Entity, IntoElement, ParentElement, SharedString, Styled, Window, div, hsla, px};
+use gpui::{
+    AnyElement, App, ClickEvent, ElementId, Entity, IntoElement, ParentElement, SharedString,
+    Styled, Window, div, hsla, px,
+};
 
 use yororen_ui::headless::dropdown_menu::{DropdownItem, DropdownMenuItem};
 use yororen_ui::headless::table::TableColumn;
@@ -210,7 +213,10 @@ impl Controller {
         self.state.read(cx).keybinding_value.clone()
     }
 
-    pub fn keybinding_mode(&self, cx: &App) -> yororen_ui::headless::keybinding_input::KeybindingInputMode {
+    pub fn keybinding_mode(
+        &self,
+        cx: &App,
+    ) -> yororen_ui::headless::keybinding_input::KeybindingInputMode {
         self.state.read(cx).keybinding_mode
     }
 
@@ -313,7 +319,10 @@ impl Controller {
         self.state.read(cx).tooltip_state.clone()
     }
 
-    pub fn list_controller(&self, cx: &App) -> yororen_ui::headless::virtual_list::VirtualListController {
+    pub fn list_controller(
+        &self,
+        cx: &App,
+    ) -> yororen_ui::headless::virtual_list::VirtualListController {
         self.state.read(cx).list_controller.clone()
     }
 
@@ -374,7 +383,10 @@ impl Controller {
 
     pub fn split_button_items(&self, _cx: &App) -> Vec<DropdownItem> {
         vec![
-            DropdownItem::Item(DropdownMenuItem::new("save", self.t("demo.actions.save", _cx))),
+            DropdownItem::Item(DropdownMenuItem::new(
+                "save",
+                self.t("demo.actions.save", _cx),
+            )),
             DropdownItem::Item(DropdownMenuItem::new(
                 "save_as",
                 self.t("demo.actions.save_as", _cx),
@@ -455,13 +467,7 @@ impl Controller {
         entity.update(cx, |s, _cx| *s = value);
     }
 
-    pub fn set_switch(
-        &self,
-        value: bool,
-        _ev: Option<&ClickEvent>,
-        _w: &mut Window,
-        cx: &mut App,
-    ) {
+    pub fn set_switch(&self, value: bool, _ev: Option<&ClickEvent>, _w: &mut Window, cx: &mut App) {
         let entity = self.state.read(cx).switch_value.clone();
         entity.update(cx, |s, _cx| *s = value);
     }
@@ -521,7 +527,8 @@ impl Controller {
 
     pub fn start_keybinding_capture(&self, _w: &mut Window, cx: &mut App) {
         self.state.update(cx, |s, _cx| {
-            s.keybinding_mode = yororen_ui::headless::keybinding_input::KeybindingInputMode::Capturing;
+            s.keybinding_mode =
+                yororen_ui::headless::keybinding_input::KeybindingInputMode::Capturing;
         });
     }
 
@@ -584,12 +591,7 @@ impl Controller {
 
     // -------- Lists section --------
 
-    pub fn submit_form(
-        &self,
-        vals: HashMap<SharedString, String>,
-        _w: &mut Window,
-        cx: &mut App,
-    ) {
+    pub fn submit_form(&self, vals: HashMap<SharedString, String>, _w: &mut Window, cx: &mut App) {
         let must_contain = self.t("demo.form.must_contain_at", cx);
         self.state.update(cx, |s, _cx| {
             s.form_submit_count += 1;
@@ -609,7 +611,24 @@ impl Controller {
         });
     }
 
-    pub fn toggle_tree_node(&self, id: TreeNodeId, _ev: &ClickEvent, _w: &mut Window, cx: &mut App) {
+    pub fn table_row_handler(
+        &self,
+    ) -> impl Fn(usize, &mut gpui::Window, &mut gpui::App) + Clone + 'static {
+        let state = self.state.clone();
+        move |value, _w, cx| {
+            state.update(cx, |s, _cx| {
+                s.selected_table_row = Some(value);
+            });
+        }
+    }
+
+    pub fn toggle_tree_node(
+        &self,
+        id: TreeNodeId,
+        _ev: &ClickEvent,
+        _w: &mut Window,
+        cx: &mut App,
+    ) {
         self.state.update(cx, |s, _cx| {
             if !s.tree_expanded.remove(&id) {
                 s.tree_expanded.insert(id);
@@ -617,38 +636,54 @@ impl Controller {
         });
     }
 
-    pub fn select_tree_node(&self, id: TreeNodeId, _ev: &ClickEvent, _w: &mut Window, cx: &mut App) {
-        self.state.update(cx, |s, _cx| {
-            s.tree_selected = Some(id);
-        });
-    }
-
-    pub fn select_list_item(
+    pub fn select_tree_node(
         &self,
-        value: usize,
+        id: TreeNodeId,
         _ev: &ClickEvent,
         _w: &mut Window,
         cx: &mut App,
     ) {
         self.state.update(cx, |s, _cx| {
+            s.tree_selected = Some(id);
+        });
+    }
+
+    pub fn select_list_item(&self, value: usize, _ev: &ClickEvent, _w: &mut Window, cx: &mut App) {
+        self.state.update(cx, |s, _cx| {
             s.selected_list_item = Some(value);
         });
     }
 
+    pub fn select_list_item_handler(
+        &self,
+        index: usize,
+    ) -> impl Fn(&gpui::ClickEvent, &mut gpui::Window, &mut gpui::App) + Clone + 'static {
+        let state = self.state.clone();
+        move |_ev, _w, cx| {
+            state.update(cx, |s, _cx| {
+                s.selected_list_item = Some(index);
+            });
+        }
+    }
+
     pub fn virtual_list_scroll_top(&self, _ev: &ClickEvent, _w: &mut Window, cx: &mut App) {
-        self.state.update(cx, |s, _| s.list_controller.scroll_to_top());
+        self.state
+            .update(cx, |s, _| s.list_controller.scroll_to_top());
     }
 
     pub fn virtual_list_scroll_bottom(&self, _ev: &ClickEvent, _w: &mut Window, cx: &mut App) {
-        self.state.update(cx, |s, _| s.list_controller.scroll_to_bottom());
+        self.state
+            .update(cx, |s, _| s.list_controller.scroll_to_bottom());
     }
 
     pub fn uniform_list_scroll_top(&self, _ev: &ClickEvent, _w: &mut Window, cx: &mut App) {
-        self.state.update(cx, |s, _| s.uniform_list_controller.scroll_to_top());
+        self.state
+            .update(cx, |s, _| s.uniform_list_controller.scroll_to_top());
     }
 
     pub fn uniform_list_scroll_bottom(&self, _ev: &ClickEvent, _w: &mut Window, cx: &mut App) {
-        self.state.update(cx, |s, _| s.uniform_list_controller.scroll_to_bottom());
+        self.state
+            .update(cx, |s, _| s.uniform_list_controller.scroll_to_bottom());
     }
 
     pub fn on_visible_range_change(
@@ -667,47 +702,29 @@ impl Controller {
         });
     }
 
-    pub fn virtual_list_row(
-        &self,
-        ix: usize,
-        _w: &mut Window,
-        cx: &mut App,
-    ) -> gpui::AnyElement {
+    pub fn virtual_list_row(&self, ix: usize, _w: &mut Window, cx: &mut App) -> gpui::AnyElement {
         let selected = self.state.read(cx).selected_list_item == Some(ix);
         let label = format!("Item {}", ix);
-        yororen_ui::headless::list_item::list_item(
-            format!("vl-row-{ix}"),
-            label,
-            cx,
-        )
-        .selected(selected)
-        .on_click({
-            let state = self.state.clone();
-            let ix = ix;
-            move |_ev, _w, cx| {
-                state.update(cx, |s, _cx| {
-                    s.selected_list_item = Some(ix);
-                });
-            }
-        })
-        .render(cx)
-        .into_any_element()
+        yororen_ui::headless::list_item::list_item(format!("vl-row-{ix}"), label, cx)
+            .selected(selected)
+            .on_click({
+                let state = self.state.clone();
+                let ix = ix;
+                move |_ev, _w, cx| {
+                    state.update(cx, |s, _cx| {
+                        s.selected_list_item = Some(ix);
+                    });
+                }
+            })
+            .render(cx)
+            .into_any_element()
     }
 
-    pub fn uniform_list_row(
-        &self,
-        ix: usize,
-        _w: &mut Window,
-        cx: &mut App,
-    ) -> gpui::AnyElement {
+    pub fn uniform_list_row(&self, ix: usize, _w: &mut Window, cx: &mut App) -> gpui::AnyElement {
         let label = format!("Uniform {}", ix);
-        yororen_ui::headless::list_item::list_item(
-            format!("uvl-row-{ix}"),
-            label,
-            cx,
-        )
-        .render(cx)
-        .into_any_element()
+        yororen_ui::headless::list_item::list_item(format!("uvl-row-{ix}"), label, cx)
+            .render(cx)
+            .into_any_element()
     }
 
     // -------- Complex layout helpers (used by lists.xml) --------
@@ -723,74 +740,15 @@ impl Controller {
         });
     }
 
-    pub fn list_item_rows(&self, cx: &mut App, _window: &mut Window) -> AnyElement {
-        let state = self.state.clone();
-        let titles = [
-            self.t("demo.lists.first_item", cx),
-            self.t("demo.lists.second_item", cx),
-            self.t("demo.lists.third_item", cx),
-        ];
-        let mut col = div().flex().flex_col().gap(px(4.)).w(px(220.));
-        for (i, title) in titles.iter().enumerate() {
-            let selected = state.read(cx).selected_list_item == Some(i);
-            let row = yororen_ui::headless::list_item::list_item(
-                format!("li-{}", i + 1),
-                title.clone(),
-                cx,
-            )
-            .selected(selected)
-            .on_click({
-                let state = state.clone();
-                move |_ev, _w, cx| {
-                    state.update(cx, |s, _cx| {
-                        s.selected_list_item = Some(i);
-                    });
-                }
-            })
-            .render(cx)
-            .into_any_element();
-            col = col.child(row);
-        }
-        self.cell(
-            self.t("demo.lists.cell_list", cx),
-            col.into_any_element(),
-            cx,
-        )
-    }
-
-    pub fn listbox_element(&self, cx: &mut App) -> AnyElement {
-        let value = self.state.read(cx).listbox_demo_value.clone();
-        let lb = yororen_ui::headless::listbox::listbox(
-            "lists-listbox",
-            self.listbox_state(cx),
-        )
-        .render(cx);
+    pub fn listbox_status_text(&self, cx: &App) -> String {
+        let value = self.listbox_demo_value(cx);
         let status = if value.is_empty() {
             "—".to_string()
         } else {
             value
         };
-        let el = div()
-            .flex()
-            .flex_col()
-            .gap(px(6.))
-            .w(px(240.))
-            .child(lb)
-            .child(
-                yororen_ui::headless::label::label(
-                    "lists-listbox-status",
-                    self.t("demo.lists.listbox_selected", cx).replacen("{}", &status, 1),
-                    cx,
-                )
-                .muted(true)
-                .render(cx),
-            )
-            .into_any_element();
-        self.cell(
-            self.t("demo.lists.cell_listbox", cx),
-            el,
-            cx,
-        )
+        self.t("demo.lists.listbox_selected", cx)
+            .replacen("{}", &status, 1)
     }
 
     pub fn email_input_element(&self, cx: &mut App, window: &mut Window) -> AnyElement {
@@ -808,14 +766,18 @@ impl Controller {
 
     pub fn form_element(&self, cx: &mut App, window: &mut Window) -> AnyElement {
         let email_input = self.email_input_element(cx, window);
-        let form_field = yororen_ui::headless::form_field::form_field("lists-ff-email", "email", cx)
-            .label(self.t("demo.form.email_label", cx))
-            .required(true)
-            .input(email_input)
-            .render(cx);
+        let form_field =
+            yororen_ui::headless::form_field::form_field("lists-ff-email", "email", cx)
+                .label(self.t("demo.form.email_label", cx))
+                .required(true)
+                .input(email_input)
+                .render(cx);
 
         let form_props = yororen_ui::headless::form::form("lists-form", cx)
-            .value("email", self.state.read(cx).form_email_value.read(cx).clone())
+            .value(
+                "email",
+                self.state.read(cx).form_email_value.read(cx).clone(),
+            )
             .on_submit({
                 let controller = self.clone();
                 move |vals, _w, cx| controller.submit_form(vals, _w, cx)
@@ -847,32 +809,7 @@ impl Controller {
                 .render(cx),
             )
             .into_any_element();
-        self.cell(
-            self.t("demo.form.cell", cx),
-            el,
-            cx,
-        )
-    }
-
-    pub fn table_element(&self, cx: &mut App) -> AnyElement {
-        let state = self.state.clone();
-        let el = yororen_ui::headless::table::table("lists-table", cx)
-            .columns(self.table_columns(cx))
-            .rows(self.table_rows(cx))
-            .selected(self.state.read(cx).selected_table_row.unwrap_or(0))
-            .on_select(move |i, _w, cx| {
-                state.update(cx, |s, _cx| {
-                    s.selected_table_row = Some(i);
-                });
-            })
-            .render(cx)
-            .w(px(320.))
-            .into_any_element();
-        self.cell(
-            self.t("demo.lists.cell_table", cx),
-            el,
-            cx,
-        )
+        self.cell(self.t("demo.form.cell", cx), el, cx)
     }
 
     pub fn tree_element(&self, cx: &mut App, window: &mut Window) -> AnyElement {
@@ -996,7 +933,12 @@ impl Controller {
             })
             .render(cx)
             .child(self.t("demo.common.bottom", cx));
-        let controls = div().flex().flex_row().gap(px(6.)).child(top_btn).child(bottom_btn);
+        let controls = div()
+            .flex()
+            .flex_row()
+            .gap(px(6.))
+            .child(top_btn)
+            .child(bottom_btn);
 
         let visible = format!("{:?}", self.state.read(cx).vl_visible_range);
         let item_count = self.state.read(cx).vl_item_count;
@@ -1018,11 +960,7 @@ impl Controller {
             .child(controls)
             .child(status_label)
             .into_any_element();
-        self.cell(
-            self.t("demo.lists.cell_vl", cx),
-            el,
-            cx,
-        )
+        self.cell(self.t("demo.lists.cell_vl", cx), el, cx)
     }
 
     pub fn uniform_list_element(&self, cx: &mut App, _window: &mut Window) -> AnyElement {
@@ -1059,7 +997,12 @@ impl Controller {
             })
             .render(cx)
             .child(self.t("demo.common.bottom", cx));
-        let controls = div().flex().flex_row().gap(px(6.)).child(top_btn).child(bottom_btn);
+        let controls = div()
+            .flex()
+            .flex_row()
+            .gap(px(6.))
+            .child(top_btn)
+            .child(bottom_btn);
 
         let el = div()
             .flex()
@@ -1068,11 +1011,7 @@ impl Controller {
             .child(uvl)
             .child(controls)
             .into_any_element();
-        self.cell(
-            self.t("demo.lists.cell_uvl", cx),
-            el,
-            cx,
-        )
+        self.cell(self.t("demo.lists.cell_uvl", cx), el, cx)
     }
 
     pub fn spacer_element(&self, cx: &mut App) -> AnyElement {
@@ -1081,32 +1020,7 @@ impl Controller {
             .h(px(16.))
             .w_full()
             .into_any_element();
-        self.cell(
-            self.t("demo.lists.cell_spacer", cx),
-            el,
-            cx,
-        )
-    }
-
-    pub fn radio_group_empty_element(&self, cx: &mut App) -> AnyElement {
-        let el = yororen_ui::headless::radio_group::radio_group("lists-rg", cx)
-            .name("rg-2")
-            .render(cx)
-            .child(
-                yororen_ui::headless::label::label(
-                    "rg-2-info",
-                    self.t("demo.controls.radio_group_empty_label", cx),
-                    cx,
-                )
-                .muted(true)
-                .render(cx),
-            )
-            .into_any_element();
-        self.cell(
-            self.t("demo.controls.cell_radio_group_empty", cx),
-            el,
-            cx,
-        )
+        self.cell(self.t("demo.lists.cell_spacer", cx), el, cx)
     }
 
     // -------- Data helpers used by XML --------
@@ -1155,10 +1069,26 @@ impl Controller {
         let leaf1 = yororen_ui::headless::tree::node_id("leaf1");
         let leaf2 = yororen_ui::headless::tree::node_id("leaf2");
         data.add(None, root.clone(), self.t("demo.lists.tree_root", cx));
-        data.add(Some(root.clone()), child1.clone(), self.t("demo.lists.tree_child1", cx));
-        data.add(Some(root.clone()), child2.clone(), self.t("demo.lists.tree_child2", cx));
-        data.add(Some(child1.clone()), leaf1.clone(), self.t("demo.lists.tree_leaf1", cx));
-        data.add(Some(child1.clone()), leaf2.clone(), self.t("demo.lists.tree_leaf2", cx));
+        data.add(
+            Some(root.clone()),
+            child1.clone(),
+            self.t("demo.lists.tree_child1", cx),
+        );
+        data.add(
+            Some(root.clone()),
+            child2.clone(),
+            self.t("demo.lists.tree_child2", cx),
+        );
+        data.add(
+            Some(child1.clone()),
+            leaf1.clone(),
+            self.t("demo.lists.tree_leaf1", cx),
+        );
+        data.add(
+            Some(child1.clone()),
+            leaf2.clone(),
+            self.t("demo.lists.tree_leaf2", cx),
+        );
         data
     }
 

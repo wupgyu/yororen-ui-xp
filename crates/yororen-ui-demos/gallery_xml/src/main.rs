@@ -10,7 +10,10 @@ mod state;
 mod theme_switcher;
 mod view;
 
-use gpui::{App, AppContext, Application, InteractiveElement, IntoElement, WindowBounds, WindowOptions, div, px, size};
+use gpui::{
+    App, AppContext, Application, InteractiveElement, IntoElement, WindowBounds, WindowOptions,
+    div, px, size,
+};
 
 use yororen_ui::assets::UiAsset;
 use yororen_ui::notification::center::NotificationCenter;

@@ -7,6 +7,7 @@
 //! ## Usage
 //!
 //! ```text
+//! # From the workspace root:
 //! cargo run -p yororen_ui_xml --bin gen-schema                 # write the file
 //! cargo run -p yororen_ui_xml --bin gen-schema -- --check       # fail if drift
 //! cargo run -p yororen_ui_xml --bin gen-schema -- --headless /path/to/headless --out /path/to/output.rs
@@ -228,9 +229,26 @@ fn main() {
             }
         }
     }
+    // Resolve default paths relative to the workspace root so the
+    // binary works no matter what the current working directory is.
+    // The manifest dir of this binary is `crates/yororen-ui-xml`,
+    // so the workspace root is two levels up.
+    let workspace_root = std::env::var("CARGO_MANIFEST_DIR")
+        .map(|m| {
+            PathBuf::from(m)
+                .parent()
+                .expect("crate manifest has parent")
+                .parent()
+                .expect("crate manifest parent has parent (workspace root)")
+                .to_path_buf()
+        })
+        .unwrap_or_else(|_| {
+            std::env::current_dir().expect("could not determine current directory")
+        });
     let headless_dir =
-        headless_dir.unwrap_or_else(|| PathBuf::from("../yororen-ui-core/src/headless"));
-    let out_path = out_path.unwrap_or_else(|| PathBuf::from("src/schema_generated.rs"));
+        headless_dir.unwrap_or_else(|| workspace_root.join("crates/yororen-ui-core/src/headless"));
+    let out_path = out_path
+        .unwrap_or_else(|| workspace_root.join("crates/yororen-ui-xml/src/schema_generated.rs"));
 
     let mut entries: Vec<Extracted> = Vec::new();
     let mut skipped: Vec<(String, String)> = Vec::new();

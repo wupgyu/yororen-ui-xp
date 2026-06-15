@@ -1,0 +1,21 @@
+name: XML Schema Check
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  schema:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Check generated schema is up to date
+        run: cargo run -p yororen_ui_xml --bin gen-schema -- --check
+      - name: cargo check workspace
+        run: cargo check --workspace
+      - name: cargo test yororen_ui_xml
+        run: cargo test -p yororen_ui_xml

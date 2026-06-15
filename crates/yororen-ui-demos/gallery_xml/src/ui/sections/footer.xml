@@ -19,4 +19,5 @@
                          controller.t("demo.footer.toast_count", cx), controller.toast_count(cx),
                          controller.t("demo.footer.locale", cx), controller.current_locale(cx).tag())}
            muted />
+    <CounterWidget id={"footer-counter"} />
 </Column>

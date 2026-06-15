@@ -129,7 +129,6 @@ pub struct GalleryState {
     pub vl_load_count: usize,
     pub uniform_list_controller: UniformVirtualListController,
     pub section_list_controller: VirtualListController,
-
 }
 
 impl GalleryState {

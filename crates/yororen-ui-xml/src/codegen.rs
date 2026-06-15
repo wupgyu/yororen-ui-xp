@@ -55,24 +55,22 @@ use crate::schema::{
     ComponentDef, ComponentKind, ContainerDef, ControlFlowDef, ExtraArgKind, LeafDef, PropValue,
     RenderMode, is_known_shorthand_method, is_spacing_prefix, is_spacing_shorthand,
 };
-use crate::schema_generated::{BUILTINS_GENERATED, BUILTINS_OVERRIDES};
 
-/// Find a [`ComponentDef`] by tag. Lookup order:
-/// 1. Hand-written `BUILTINS` in `schema.rs` (Phase 1
-///    leaves with manual overrides — kept small).
-/// 2. `BUILTINS_OVERRIDES` in the generated file
-///    (containers + control flow from `overrides.toml`).
-/// 3. `BUILTINS_GENERATED` in the generated file
-///    (auto-extracted leaves).
-fn lookup_component<'a>(tag: &str) -> Option<&'a crate::schema::ComponentDef> {
-    use crate::schema::BUILTINS;
-    if let Some(c) = BUILTINS.iter().find(|c| c.tag == tag) {
-        return Some(c);
-    }
-    if let Some(c) = BUILTINS_OVERRIDES.iter().find(|c| c.tag == tag) {
-        return Some(c);
-    }
-    BUILTINS_GENERATED.iter().find(|c| c.tag == tag)
+std::thread_local! {
+    /// User-supplied component schema injected by the
+    /// proc-macro entry point. The macro reads
+    /// `yororen-ui-xml-components.toml` at the call site
+    /// and stashes the definitions here for the duration
+    /// of the codegen pass.
+    static USER_SCHEMA: std::cell::RefCell<Vec<ComponentDef>> = const { std::cell::RefCell::new(Vec::new()) };
+}
+
+/// Look up a tag using the currently active user schema.
+fn lookup_with_user_schema(tag: &str) -> Option<ComponentDef> {
+    USER_SCHEMA.with(|s| {
+        let borrowed = s.borrow();
+        crate::schema::lookup_component_owned(tag, &*borrowed)
+    })
 }
 
 /// Parse a string of Rust tokens into a `TokenStream`. Any
@@ -106,12 +104,18 @@ fn parse_ts(
 /// invoked the macro (used to resolve relative `<Include
 /// src="…">` paths); pass `None` to fall back to the
 /// current working directory (the runtime / test path).
+/// `user_schema` is an optional slice of user-supplied
+/// component definitions (e.g. from
+/// `yororen-ui-xml-components.toml`) that augment the
+/// built-in schema without modifying the xml crate.
 pub fn codegen(
     xml_text: &str,
     outer_span: Span,
     cx_expr: Option<TokenStream>,
     source_file: Option<&str>,
+    user_schema: &[ComponentDef],
 ) -> Result<TokenStream, XmlError> {
+    USER_SCHEMA.with(|s| *s.borrow_mut() = user_schema.to_vec());
     let line_starts = crate::parser::line_starts(xml_text);
     let location = crate::parser::LocationTracker {
         line_starts: &line_starts,
@@ -424,7 +428,7 @@ fn codegen_element(
     // render via inventory lookup — at the cost of
     // losing compile-time attribute / event validation
     // for that tag.
-    let def = lookup_component(&element.tag).unwrap_or(&RUNTIME_LEAF_FALLBACK);
+    let def = lookup_with_user_schema(&element.tag).unwrap_or(RUNTIME_LEAF_FALLBACK.clone());
 
     match def.kind {
         ComponentKind::Container(c) => codegen_container(element, c, cx, location, source_file),
@@ -875,7 +879,12 @@ fn codegen_leaf(
             }
             (ExtraArgKind::HeadingLevel, Some(a)) => {
                 if let Some(expr) = &a.expr {
-                    parse_ts(expr, a.span, a.byte_offset, &format!("attribute `{}`", a.name))?
+                    parse_ts(
+                        expr,
+                        a.span,
+                        a.byte_offset,
+                        &format!("attribute `{}`", a.name),
+                    )?
                 } else {
                     let raw = a.raw.as_str();
                     let variant = match raw {
@@ -889,10 +898,7 @@ fn codegen_leaf(
                             return Err(XmlError::new(
                                 XmlErrorKind::InvalidExpression,
                                 a.span,
-                                format!(
-                                    "attribute `{}` expects H1..H6, got `{other}`",
-                                    a.name
-                                ),
+                                format!("attribute `{}` expects H1..H6, got `{other}`", a.name),
                             )
                             .at(a.byte_offset));
                         }
@@ -911,7 +917,12 @@ fn codegen_leaf(
             }
             (ExtraArgKind::IconSource, Some(a)) => {
                 if let Some(expr) = &a.expr {
-                    parse_ts(expr, a.span, a.byte_offset, &format!("attribute `{}`", a.name))?
+                    parse_ts(
+                        expr,
+                        a.span,
+                        a.byte_offset,
+                        &format!("attribute `{}`", a.name),
+                    )?
                 } else {
                     let raw = a.raw.as_str();
                     quote! {
@@ -929,7 +940,12 @@ fn codegen_leaf(
             }
             (ExtraArgKind::ImageSource, Some(a)) => {
                 if let Some(expr) = &a.expr {
-                    parse_ts(expr, a.span, a.byte_offset, &format!("attribute `{}`", a.name))?
+                    parse_ts(
+                        expr,
+                        a.span,
+                        a.byte_offset,
+                        &format!("attribute `{}`", a.name),
+                    )?
                 } else {
                     let raw = a.raw.as_str();
                     quote! {
@@ -947,7 +963,12 @@ fn codegen_leaf(
             }
             (ExtraArgKind::KeybindingInputMode, Some(a)) => {
                 if let Some(expr) = &a.expr {
-                    parse_ts(expr, a.span, a.byte_offset, &format!("attribute `{}`", a.name))?
+                    parse_ts(
+                        expr,
+                        a.span,
+                        a.byte_offset,
+                        &format!("attribute `{}`", a.name),
+                    )?
                 } else {
                     let raw = a.raw.as_str();
                     let variant = match raw {
@@ -979,7 +1000,12 @@ fn codegen_leaf(
             }
             (ExtraArgKind::Color, Some(a)) => {
                 if let Some(expr) = &a.expr {
-                    parse_ts(expr, a.span, a.byte_offset, &format!("attribute `{}`", a.name))?
+                    parse_ts(
+                        expr,
+                        a.span,
+                        a.byte_offset,
+                        &format!("attribute `{}`", a.name),
+                    )?
                 } else {
                     parse_hex_color(a.raw.as_str(), a)?
                 }
@@ -1277,7 +1303,10 @@ fn codegen_leaf(
     // Text children are only allowed for components that explicitly
     // opt in (e.g. `<Button>Click me</Button>`); other text inside a
     // leaf is an error.
-    if def.render == RenderMode::Default && !def.children_before_render && !remaining_children.is_empty() {
+    if def.render == RenderMode::Default
+        && !def.children_before_render
+        && !remaining_children.is_empty()
+    {
         let text_opt = extract_text_content(&remaining_children);
         let mut text_added = false;
         let mut child_stmts: Vec<TokenStream> = Vec::new();
@@ -2022,9 +2051,11 @@ fn codegen_child(
 ) -> Result<TokenStream, XmlError> {
     match node {
         AstNode::Element(e) => codegen_element(e, cx, location, source_file),
-        AstNode::Expr { expr, span, byte_offset } => {
-            parse_ts(expr, *span, *byte_offset, "child expression")
-        }
+        AstNode::Expr {
+            expr,
+            span,
+            byte_offset,
+        } => parse_ts(expr, *span, *byte_offset, "child expression"),
         AstNode::Text { text, .. } => {
             // Text content inside a container is uncommon — only
             // meaningful for `<Button>Click me</Button>` (handled
@@ -2085,15 +2116,17 @@ fn codegen_child_unwrapped(
 ) -> Result<TokenStream, XmlError> {
     match node {
         AstNode::Element(e) => {
-            let def = lookup_component(&e.tag).unwrap_or(&RUNTIME_LEAF_FALLBACK);
+            let def = lookup_with_user_schema(&e.tag).unwrap_or(RUNTIME_LEAF_FALLBACK.clone());
             match def.kind {
                 ComponentKind::Leaf(l) => codegen_leaf(e, l, cx, location, source_file, false),
                 _ => codegen_element(e, cx, location, source_file),
             }
         }
-        AstNode::Expr { expr, span, byte_offset } => {
-            parse_ts(expr, *span, *byte_offset, "child expression")
-        }
+        AstNode::Expr {
+            expr,
+            span,
+            byte_offset,
+        } => parse_ts(expr, *span, *byte_offset, "child expression"),
         AstNode::Text { text, .. } => Ok(quote! { #text }),
     }
 }
@@ -2263,7 +2296,10 @@ fn prop_value_tokens(attr: &AstAttribute, kind: PropValue) -> Result<TokenStream
                 XmlError::new(
                     XmlErrorKind::InvalidExpression,
                     attr.span,
-                    format!("attribute `{}` expects an f64 literal, got `{raw}`", attr.name),
+                    format!(
+                        "attribute `{}` expects an f64 literal, got `{raw}`",
+                        attr.name
+                    ),
                 )
                 .at(attr.byte_offset)
             })?;
@@ -2275,7 +2311,10 @@ fn prop_value_tokens(attr: &AstAttribute, kind: PropValue) -> Result<TokenStream
                 XmlError::new(
                     XmlErrorKind::InvalidExpression,
                     attr.span,
-                    format!("attribute `{}` expects an f32 literal, got `{raw}`", attr.name),
+                    format!(
+                        "attribute `{}` expects an f32 literal, got `{raw}`",
+                        attr.name
+                    ),
                 )
                 .at(attr.byte_offset)
             })?;
@@ -2287,7 +2326,10 @@ fn prop_value_tokens(attr: &AstAttribute, kind: PropValue) -> Result<TokenStream
                 XmlError::new(
                     XmlErrorKind::InvalidExpression,
                     attr.span,
-                    format!("attribute `{}` expects a usize literal, got `{raw}`", attr.name),
+                    format!(
+                        "attribute `{}` expects a usize literal, got `{raw}`",
+                        attr.name
+                    ),
                 )
                 .at(attr.byte_offset)
             })?;
@@ -2362,18 +2404,9 @@ fn emit_bind(entity: &TokenStream, def: LeafDef, cx: &TokenStream) -> Vec<TokenS
         // (Float → f64, anything else → String) to pick
         // the right `XmlBinding<T>` instantiation.
         let event_name = *event_attr;
-        let value_is_f32 = matches!(
-            value_prop.map(|p| p.value),
-            Some(PropValue::Float32)
-        );
-        let value_is_f64 = matches!(
-            value_prop.map(|p| p.value),
-            Some(PropValue::Float64)
-        );
-        let value_is_usize = matches!(
-            value_prop.map(|p| p.value),
-            Some(PropValue::UInt)
-        );
+        let value_is_f32 = matches!(value_prop.map(|p| p.value), Some(PropValue::Float32));
+        let value_is_f64 = matches!(value_prop.map(|p| p.value), Some(PropValue::Float64));
+        let value_is_usize = matches!(value_prop.map(|p| p.value), Some(PropValue::UInt));
         let writeback = if event_name == "on_toggle" {
             quote! {
                 __el = __el.#m({
@@ -2581,8 +2614,7 @@ fn auto_wrap_event_expr(
             match &*func {
                 syn::Expr::Field(field) => {
                     let receiver = &field.base;
-                    let clone_ident =
-                        format_ident!("__auto_clone", span = Span::mixed_site());
+                    let clone_ident = format_ident!("__auto_clone", span = Span::mixed_site());
                     let member = &field.member;
                     let args = call.args.iter();
                     quote! {
@@ -2637,7 +2669,10 @@ fn auto_wrap_event_expr(
 /// 2. A call expression that invokes the user's handler
 ///    inside the closure body with the standard event args
 ///    (`__ev, __window, cx`).
-fn auto_wrap_event_call(attr: &AstAttribute, expr: TokenStream) -> (Option<TokenStream>, TokenStream) {
+fn auto_wrap_event_call(
+    attr: &AstAttribute,
+    expr: TokenStream,
+) -> (Option<TokenStream>, TokenStream) {
     let Some(raw) = &attr.expr else {
         return (None, quote! { #expr(__ev, __window, cx) });
     };
@@ -3036,14 +3071,8 @@ fn edit_distance(a: &str, b: &str) -> usize {
         curr[0] = i;
         for j in 1..=m {
             let cost = if a[i - 1] == b[j - 1] { 0 } else { 1 };
-            curr[j] = (prev[j] + 1)
-                .min(curr[j - 1] + 1)
-                .min(prev[j - 1] + cost);
-            if i > 1
-                && j > 1
-                && a[i - 1] == b[j - 2]
-                && a[i - 2] == b[j - 1]
-            {
+            curr[j] = (prev[j] + 1).min(curr[j - 1] + 1).min(prev[j - 1] + cost);
+            if i > 1 && j > 1 && a[i - 1] == b[j - 2] && a[i - 2] == b[j - 1] {
                 curr[j] = curr[j].min(prev[j - 2] + cost);
             }
         }
@@ -3114,10 +3143,11 @@ mod tests {
     //! that), but we make sure the tokens are well-formed
     //! and contain the expected fragments.
     use super::*;
+    use crate::schema_generated::{BUILTINS_GENERATED, BUILTINS_OVERRIDES};
     use proc_macro2::Span;
 
     fn render(xml: &str) -> String {
-        let ts = codegen(xml, Span::call_site(), None, None).expect("codegen succeeds");
+        let ts = codegen(xml, Span::call_site(), None, None, &[]).expect("codegen succeeds");
         ts.to_string()
     }
 
@@ -3299,6 +3329,7 @@ mod tests {
             Span::call_site(),
             None,
             None,
+            &[],
         )
         .unwrap_err();
         assert!(err.message.contains("key"), "{}", err.message);
@@ -3312,7 +3343,8 @@ mod tests {
         // `runtime::render_or_empty`. The codegen must
         // emit a call into the runtime module rather
         // than erroring.
-        let ts = codegen(r#"<MyWidget id="x" />"#, Span::call_site(), None, None).expect("codegen ok");
+        let ts = codegen(r#"<MyWidget id="x" />"#, Span::call_site(), None, None, &[])
+            .expect("codegen ok");
         let s = ts.to_string();
         assert!(s.contains("render_or_empty"), "{s}");
         assert!(s.contains("\"MyWidget\""), "{s}");
@@ -3323,7 +3355,7 @@ mod tests {
         // The runtime registry needs an `id` to call
         // the factory — the codegen still validates
         // this even on the runtime path.
-        let err = codegen("<MyWidget />", Span::call_site(), None, None).unwrap_err();
+        let err = codegen("<MyWidget />", Span::call_site(), None, None, &[]).unwrap_err();
         assert!(
             matches!(err.kind, crate::error::XmlErrorKind::UnknownAttribute),
             "{err:?}"
@@ -3338,6 +3370,7 @@ mod tests {
             Span::call_site(),
             None,
             None,
+            &[],
         )
         .unwrap_err();
         assert!(
@@ -3348,7 +3381,14 @@ mod tests {
 
     #[test]
     fn unknown_attribute_on_container_is_an_error() {
-        let err = codegen(r#"<Column flex hover="red" />"#, Span::call_site(), None, None).unwrap_err();
+        let err = codegen(
+            r#"<Column flex hover="red" />"#,
+            Span::call_site(),
+            None,
+            None,
+            &[],
+        )
+        .unwrap_err();
         assert!(
             matches!(err.kind, crate::error::XmlErrorKind::UnknownAttribute),
             "{err:?}"
@@ -3357,7 +3397,8 @@ mod tests {
 
     #[test]
     fn missing_id_on_leaf_is_an_error() {
-        let err = codegen(r#"<Label text="hi" />"#, Span::call_site(), None, None).unwrap_err();
+        let err =
+            codegen(r#"<Label text="hi" />"#, Span::call_site(), None, None, &[]).unwrap_err();
         assert!(
             matches!(err.kind, crate::error::XmlErrorKind::UnknownAttribute),
             "{err:?}"
@@ -3367,7 +3408,14 @@ mod tests {
 
     #[test]
     fn missing_id_is_a_helpful_message() {
-        let err = codegen(r#"<Button caption="Save" />"#, Span::call_site(), None, None).unwrap_err();
+        let err = codegen(
+            r#"<Button caption="Save" />"#,
+            Span::call_site(),
+            None,
+            None,
+            &[],
+        )
+        .unwrap_err();
         assert!(err.message.contains("Button"), "{err}");
     }
 
@@ -3378,6 +3426,7 @@ mod tests {
             Span::call_site(),
             None,
             None,
+            &[],
         )
         .unwrap_err();
         assert!(
@@ -3393,6 +3442,7 @@ mod tests {
             Span::call_site(),
             None,
             None,
+            &[],
         )
         .unwrap_err();
         assert!(
@@ -3405,7 +3455,7 @@ mod tests {
 
     #[test]
     fn xml_parse_error_propagates() {
-        let err = codegen("<Column>", Span::call_site(), None, None).unwrap_err();
+        let err = codegen("<Column>", Span::call_site(), None, None, &[]).unwrap_err();
         assert!(
             matches!(err.kind, crate::error::XmlErrorKind::ParseError),
             "{err:?}"
@@ -3422,7 +3472,7 @@ mod tests {
         // that produces an `InvalidExpression` error
         // pointing at the offending attribute.
         let xml = "<Column>\n  <Label id=\"a\" text=\"hi\" />\n  <Button id=\"x\" variant=\"catastrophic\" />\n</Column>";
-        let err = codegen(xml, Span::call_site(), None, None).unwrap_err();
+        let err = codegen(xml, Span::call_site(), None, None, &[]).unwrap_err();
         assert!(
             matches!(err.kind, crate::error::XmlErrorKind::InvalidExpression),
             "{err:?}"
@@ -3452,6 +3502,7 @@ mod tests {
             Span::call_site(),
             None,
             None,
+            &[],
         )
         .unwrap_err();
         let rendered = err.render_with(None);
@@ -3467,6 +3518,7 @@ mod tests {
             Span::call_site(),
             None,
             None,
+            &[],
         )
         .unwrap_err();
         assert!(err.offset.is_some(), "bad-bool error should carry offset");
@@ -3525,8 +3577,9 @@ mod tests {
         // accessors.
         let inner_call: TokenStream =
             syn::parse_str("__inner(__ev, __window, cx)").expect("parse inner call");
-        let body = wrap_event_body_with_modifiers(&["ctrl", "enter"], inner_call, Span::call_site())
-            .expect("wrap with .ctrl.enter");
+        let body =
+            wrap_event_body_with_modifiers(&["ctrl", "enter"], inner_call, Span::call_site())
+                .expect("wrap with .ctrl.enter");
         let s = body.to_string();
         // The outer modifier check is `modifiers().control`.
         assert!(s.contains("modifiers"), "{s}");
@@ -3544,8 +3597,8 @@ mod tests {
         // API call.
         let inner_call: TokenStream =
             syn::parse_str("__inner(__ev, __window, cx)").expect("parse inner call");
-        let body =
-            wrap_event_body_with_modifiers(&["stop"], inner_call, Span::call_site()).expect("wrap .stop");
+        let body = wrap_event_body_with_modifiers(&["stop"], inner_call, Span::call_site())
+            .expect("wrap .stop");
         let s = body.to_string();
         assert!(s.contains("stop_propagation"), "{s}");
     }
@@ -3596,8 +3649,9 @@ mod tests {
         let inner_call: TokenStream =
             syn::parse_str("__inner(__ev, __window, cx)").expect("parse inner call");
         for mod_name in ["alt", "meta", "platform", "cmd"] {
-            let body = wrap_event_body_with_modifiers(&[mod_name], inner_call.clone(), Span::call_site())
-                .unwrap_or_else(|e| panic!("wrap .{mod_name}: {e}"));
+            let body =
+                wrap_event_body_with_modifiers(&[mod_name], inner_call.clone(), Span::call_site())
+                    .unwrap_or_else(|e| panic!("wrap .{mod_name}: {e}"));
             let s = body.to_string();
             assert!(
                 s.contains("modifiers"),
@@ -3610,7 +3664,9 @@ mod tests {
     fn event_modifier_known_keys_list_includes_arrows_and_fkeys() {
         // Spot-check the well-known key set: arrow keys,
         // F-keys, and navigation keys.
-        for k in ["enter", "escape", "tab", "up", "down", "f12", "home", "end", "pageup"] {
+        for k in [
+            "enter", "escape", "tab", "up", "down", "f12", "home", "end", "pageup",
+        ] {
             assert!(is_known_key_filter(k), "{k} should be a known key");
         }
         // Garbage keys are rejected.
@@ -3638,7 +3694,7 @@ mod tests {
         // so the modifier dispatch falls through to the
         // unknown-attribute error.
         let xml = r#"<TextInput id="x" on_key_down.enter={move |_, _, _| {}} />"#;
-        let err = codegen(xml, Span::call_site(), None, None).unwrap_err();
+        let err = codegen(xml, Span::call_site(), None, None, &[]).unwrap_err();
         assert!(matches!(
             err.kind,
             crate::error::XmlErrorKind::UnknownAttribute
@@ -3653,7 +3709,7 @@ mod tests {
         // it into a closure that adapts the standard
         // 3-arg event signature to the user's method.
         let xml = r#"<Button id="x" caption="+" on_click={controller.increment} />"#;
-        let ts = codegen(xml, Span::call_site(), None, None).expect("codegen ok");
+        let ts = codegen(xml, Span::call_site(), None, None, &[]).expect("codegen ok");
         let s = ts.to_string();
         // The pre-cloned receiver is captured by the
         // closure; the method call uses it (not the
@@ -3674,7 +3730,7 @@ mod tests {
         // its own clone and the original `controller`
         // can be used by the next handler.
         let xml = r#"<Button id="x" caption="x" on_click={controller.handle} />"#;
-        let ts = codegen(xml, Span::call_site(), None, None).expect("codegen ok");
+        let ts = codegen(xml, Span::call_site(), None, None, &[]).expect("codegen ok");
         let s = ts.to_string();
         assert!(s.contains("(controller) . clone"), "{s}");
         // Two separate clone idents would mean two
@@ -3695,7 +3751,7 @@ mod tests {
                 <Button id="b" caption="b" on_click={controller.handle_b} />
             </Column>
         "#;
-        let ts = codegen(xml, Span::call_site(), None, None).expect("codegen ok");
+        let ts = codegen(xml, Span::call_site(), None, None, &[]).expect("codegen ok");
         let s = ts.to_string();
         // Two distinct `__auto_clone` bindings (proc-macro
         // hygiene via Span::mixed_site).
@@ -3710,7 +3766,7 @@ mod tests {
         // must NOT auto-wrap (otherwise the args would
         // be doubled).
         let xml = r#"<Button id="x" caption="x" on_click={move |ev, w, cx| controller.handle(ev, w, cx)} />"#;
-        let ts = codegen(xml, Span::call_site(), None, None).expect("codegen ok");
+        let ts = codegen(xml, Span::call_site(), None, None, &[]).expect("codegen ok");
         let s = ts.to_string();
         // The user's `__arg0` / `__w` / `__cx` placeholder
         // names must NOT appear (they're only used by the
@@ -3728,7 +3784,7 @@ mod tests {
         // expression (parens present) — it must pass
         // through verbatim, NOT be wrapped.
         let xml = r#"<Button id="x" caption="x" on_click={build_handler()} />"#;
-        let ts = codegen(xml, Span::call_site(), None, None).expect("codegen ok");
+        let ts = codegen(xml, Span::call_site(), None, None, &[]).expect("codegen ok");
         let s = ts.to_string();
         assert!(!s.contains("__arg0"), "{s}");
         assert!(s.contains("build_handler ()"), "{s}");
@@ -3748,7 +3804,7 @@ mod tests {
                 </Case>
             </Match>
         "#;
-        let ts = codegen(xml, Span::call_site(), None, None).expect("codegen ok");
+        let ts = codegen(xml, Span::call_site(), None, None, &[]).expect("codegen ok");
         let s = ts.to_string();
         assert!(s.contains("match"), "{s}");
         assert!(s.contains("Status :: Loading"), "{s}");
@@ -3772,7 +3828,7 @@ mod tests {
                 </Case>
             </Match>
         "#;
-        let ts = codegen(xml, Span::call_site(), None, None).expect("codegen ok");
+        let ts = codegen(xml, Span::call_site(), None, None, &[]).expect("codegen ok");
         let s = ts.to_string();
         assert!(s.contains("0 =>"), "{s}");
         assert!(s.contains("_ =>"), "{s}");
@@ -3781,7 +3837,7 @@ mod tests {
     #[test]
     fn match_without_cases_is_an_error() {
         let xml = r#"<Match on={x} />"#;
-        let err = codegen(xml, Span::call_site(), None, None).unwrap_err();
+        let err = codegen(xml, Span::call_site(), None, None, &[]).unwrap_err();
         assert!(
             matches!(err.kind, crate::error::XmlErrorKind::Unsupported),
             "{err:?}"
@@ -3792,7 +3848,7 @@ mod tests {
     #[test]
     fn case_outside_match_is_an_error() {
         let xml = r#"<Column><Case pattern={A}><Label id="x" text="hi" /></Case></Column>"#;
-        let err = codegen(xml, Span::call_site(), None, None).unwrap_err();
+        let err = codegen(xml, Span::call_site(), None, None, &[]).unwrap_err();
         assert!(
             matches!(err.kind, crate::error::XmlErrorKind::Unsupported),
             "{err:?}"
@@ -3808,7 +3864,7 @@ mod tests {
                 <Label id="l" text={count.read(cx).to_string()} />
             </State>
         "#;
-        let ts = codegen(xml, Span::call_site(), None, None).expect("codegen ok");
+        let ts = codegen(xml, Span::call_site(), None, None, &[]).expect("codegen ok");
         let s = ts.to_string();
         assert!(s.contains("let count"), "{s}");
         assert!(s.contains(". new"), "{s}");
@@ -3819,12 +3875,12 @@ mod tests {
     fn state_default_handles_bool_and_string() {
         // Bool literal.
         let xml = r#"<State name="on" default="true"><Label id="l" text="x" /></State>"#;
-        let ts = codegen(xml, Span::call_site(), None, None).expect("codegen ok");
+        let ts = codegen(xml, Span::call_site(), None, None, &[]).expect("codegen ok");
         let s = ts.to_string();
         assert!(s.contains("true"), "{s}");
         // String literal.
         let xml = r#"<State name="name" default="anonymous"><Label id="l" text="x" /></State>"#;
-        let ts = codegen(xml, Span::call_site(), None, None).expect("codegen ok");
+        let ts = codegen(xml, Span::call_site(), None, None, &[]).expect("codegen ok");
         let s = ts.to_string();
         assert!(s.contains("String :: from"), "{s}");
         assert!(s.contains("anonymous"), "{s}");
@@ -3833,7 +3889,7 @@ mod tests {
     #[test]
     fn state_without_default_is_an_error() {
         let xml = r#"<State name="x"><Label id="l" text="hi" /></State>"#;
-        let err = codegen(xml, Span::call_site(), None, None).unwrap_err();
+        let err = codegen(xml, Span::call_site(), None, None, &[]).unwrap_err();
         assert!(
             matches!(err.kind, crate::error::XmlErrorKind::UnknownAttribute),
             "{err:?}"
@@ -4037,6 +4093,7 @@ mod tests {
             Span::call_site(),
             None,
             None,
+            &[],
         )
         .unwrap_err();
         assert!(err.message.contains("name"), "{}", err.message);
@@ -4131,6 +4188,7 @@ mod tests {
             Span::call_site(),
             None,
             None,
+            &[],
         )
         .unwrap_err();
         assert!(err.message.contains("duplicate"), "{}", err.message);
@@ -4148,7 +4206,14 @@ mod tests {
 
     #[test]
     fn include_requires_src() {
-        let err = codegen(r#"<Column><Include /></Column>"#, Span::call_site(), None, None).unwrap_err();
+        let err = codegen(
+            r#"<Column><Include /></Column>"#,
+            Span::call_site(),
+            None,
+            None,
+            &[],
+        )
+        .unwrap_err();
         assert!(err.message.contains("src"), "{err}");
     }
 
@@ -4158,11 +4223,8 @@ mod tests {
         // src="…">` against the source file's parent
         // directory, not the current working directory.
         use std::path::PathBuf;
-        let resolved = resolve_include_path(
-            "ui/header.xml",
-            Some("/home/dev/proj/src/view.rs"),
-        )
-        .expect("resolve");
+        let resolved = resolve_include_path("ui/header.xml", Some("/home/dev/proj/src/view.rs"))
+            .expect("resolve");
         assert_eq!(resolved, PathBuf::from("/home/dev/proj/src/ui/header.xml"));
     }
 
@@ -4171,11 +4233,8 @@ mod tests {
         // Absolute `src` paths skip the join and are
         // used verbatim.
         use std::path::PathBuf;
-        let resolved = resolve_include_path(
-            "/etc/foo.xml",
-            Some("/home/dev/proj/src/view.rs"),
-        )
-        .expect("resolve");
+        let resolved = resolve_include_path("/etc/foo.xml", Some("/home/dev/proj/src/view.rs"))
+            .expect("resolve");
         assert_eq!(resolved, PathBuf::from("/etc/foo.xml"));
     }
 
@@ -4186,8 +4245,7 @@ mod tests {
         // falls back to the current working directory —
         // matching the behaviour tests rely on.
         use std::path::PathBuf;
-        let resolved =
-            resolve_include_path("ui/header.xml", None).expect("resolve");
+        let resolved = resolve_include_path("ui/header.xml", None).expect("resolve");
         assert_eq!(resolved, PathBuf::from("./ui/header.xml"));
     }
 
@@ -4229,13 +4287,8 @@ mod tests {
 
         let source = dir.join("view.rs");
         let contents = fs::read_to_string(&main).expect("read main.xml");
-        let ts = codegen(
-            &contents,
-            Span::call_site(),
-            None,
-            source.to_str(),
-        )
-        .expect("codegen should succeed");
+        let ts = codegen(&contents, Span::call_site(), None, source.to_str(), &[])
+            .expect("codegen should succeed");
         let s = ts.to_string();
         let compact: String = s.chars().filter(|c| !c.is_whitespace()).collect();
         assert!(compact.contains("Title"), "{s}");
@@ -4249,6 +4302,7 @@ mod tests {
             Span::call_site(),
             None,
             None,
+            &[],
         )
         .unwrap_err();
         assert!(err.message.contains("@bind"), "{err}");
@@ -4391,7 +4445,10 @@ mod tests {
         let normalised: String = s.chars().filter(|c| !c.is_whitespace()).collect();
         // The branch body should be wrapped in a div that has
         // both labels as children.
-        assert!(normalised.contains("ifshow"), "condition must be emitted; got {normalised}");
+        assert!(
+            normalised.contains("ifshow"),
+            "condition must be emitted; got {normalised}"
+        );
         assert!(
             normalised.matches("child").count() >= 2,
             "multiple children should be wired; got {normalised}"
@@ -4453,7 +4510,10 @@ mod tests {
 </Column>"#,
         );
         let normalised: String = s.chars().filter(|c| !c.is_whitespace()).collect();
-        assert!(normalised.contains("match"), "match must be emitted; got {normalised}");
+        assert!(
+            normalised.contains("match"),
+            "match must be emitted; got {normalised}"
+        );
         assert!(
             normalised.matches("child").count() >= 2,
             "multiple case children should be wired; got {normalised}"
@@ -4494,9 +4554,14 @@ mod tests {
             Span::call_site(),
             None,
             None,
+            &[],
         )
         .unwrap_err();
-        assert!(err.message.contains("unknown attribute `href`"), "{}", err.message);
+        assert!(
+            err.message.contains("unknown attribute `href`"),
+            "{}",
+            err.message
+        );
         assert!(
             err.message.contains("accepted:"),
             "error should list accepted attrs; got {}",
@@ -4516,6 +4581,7 @@ mod tests {
             Span::call_site(),
             None,
             None,
+            &[],
         )
         .unwrap_err();
         assert!(
@@ -4527,13 +4593,7 @@ mod tests {
 
     #[test]
     fn unknown_container_attribute_suggests_did_you_mean() {
-        let err = codegen(
-            r#"<Column flx col />"#,
-            Span::call_site(),
-            None,
-            None,
-        )
-        .unwrap_err();
+        let err = codegen(r#"<Column flx col />"#, Span::call_site(), None, None, &[]).unwrap_err();
         assert!(
             err.message.contains("did you mean `flex`"),
             "error should suggest flex for flx; got {}",
@@ -4543,7 +4603,7 @@ mod tests {
 
     #[test]
     fn unknown_tag_without_id_suggests_did_you_mean() {
-        let err = codegen(r#"<Buton />"#, Span::call_site(), None, None).unwrap_err();
+        let err = codegen(r#"<Buton />"#, Span::call_site(), None, None, &[]).unwrap_err();
         assert!(
             err.message.contains("did you mean `<Button>`"),
             "error should suggest Button for Buton; got {}",
