@@ -4,7 +4,7 @@ use quote::quote;
 use crate::ast::{AstAttribute, AstNode};
 use crate::error::XmlError;
 
-use crate::codegen::parse_ts;
+use crate::codegen::{errors::invalid_attr, parse_ts};
 
 /// Build the value for a "text-like" attribute. Supports
 /// brace interpolation: `text="Count: {count}"` becomes
@@ -26,7 +26,7 @@ pub(crate) fn text_attr_value(attr: &AstAttribute) -> Result<TokenStream, XmlErr
     }
     // String literal: detect `{...}` interpolation.
     if let Some(parts) = parse_string_interpolation(&attr.raw) {
-        return Ok(render_string_interpolation(&parts, attr));
+        return render_string_interpolation(&parts, attr);
     }
     let raw = attr.raw.as_str();
     Ok(quote! { (#raw).to_string() })
@@ -100,7 +100,7 @@ pub(crate) fn parse_string_interpolation(text: &str) -> Option<Vec<InterpPart>> 
 pub(crate) fn render_string_interpolation(
     parts: &[InterpPart],
     attr: &AstAttribute,
-) -> TokenStream {
+) -> Result<TokenStream, XmlError> {
     // Build `format!("lit1 {expr1} lit2 {expr2} …", expr1, expr2, …)`.
     let mut format_str = String::new();
     let mut args = Vec::new();
@@ -113,16 +113,15 @@ pub(crate) fn render_string_interpolation(
             }
             InterpPart::Expr(s) => {
                 format_str.push_str("{}");
-                let parsed =
-                    match parse_ts(s, attr.span, attr.byte_offset, "interpolation expression") {
-                        Ok(ts) => ts,
-                        Err(_) => continue,
-                    };
+                let parsed = parse_ts(s, attr.span, attr.byte_offset, "interpolation expression")
+                    .map_err(|e| {
+                    invalid_attr(attr, format!("interpolation expression `{s}`: {e}"))
+                })?;
                 args.push(parsed);
             }
         }
     }
-    quote! { format!(#format_str, #(#args),*).to_string() }
+    Ok(quote! { format!(#format_str, #(#args),*).to_string() })
 }
 pub(crate) fn extract_text_content(children: &[AstNode]) -> Option<String> {
     let mut text = String::new();

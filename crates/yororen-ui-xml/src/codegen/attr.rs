@@ -5,7 +5,11 @@ use crate::ast::{AstAttribute, AstElement};
 use crate::error::{XmlError, XmlErrorKind};
 use crate::schema::PropValue;
 
-use crate::codegen::{color::parse_hex_color, parse_ts};
+use crate::codegen::{
+    color::parse_hex_color,
+    errors::{invalid_attr, invalid_attr_expr, parse_attr, parse_enum_variant},
+    parse_ts,
+};
 
 pub(crate) fn parse_let_bindings(
     element: &AstElement,
@@ -65,6 +69,42 @@ pub(crate) fn require_attr_expr<'a>(
 
 // --- helpers ----------------------------------------------------------------
 
+pub(crate) const ACTION_VARIANTS: &[(&str, &str)] = &[
+    ("neutral", "Neutral"),
+    ("primary", "Primary"),
+    ("danger", "Danger"),
+];
+
+pub(crate) const BADGE_VARIANTS: &[(&str, &str)] = &[
+    ("neutral", "Neutral"),
+    ("success", "Success"),
+    ("warning", "Warning"),
+    ("danger", "Danger"),
+    ("info", "Info"),
+];
+
+pub(crate) const HEADING_LEVEL_VARIANTS: &[(&str, &str)] = &[
+    ("H1", "H1"),
+    ("h1", "H1"),
+    ("H2", "H2"),
+    ("h2", "H2"),
+    ("H3", "H3"),
+    ("h3", "H3"),
+    ("H4", "H4"),
+    ("h4", "H4"),
+    ("H5", "H5"),
+    ("h5", "H5"),
+    ("H6", "H6"),
+    ("h6", "H6"),
+];
+
+pub(crate) const KEYBINDING_INPUT_MODE_VARIANTS: &[(&str, &str)] = &[
+    ("Idle", "Idle"),
+    ("idle", "Idle"),
+    ("Capturing", "Capturing"),
+    ("capturing", "Capturing"),
+];
+
 pub(crate) fn attr_value_tokens(attr: &AstAttribute) -> Result<TokenStream, XmlError> {
     if let Some(expr) = &attr.expr {
         let parsed = parse_ts(
@@ -122,15 +162,7 @@ pub(crate) fn prop_value_tokens(
         PropValue::Bool => match raw {
             "true" => Ok(quote! { true }),
             "false" => Ok(quote! { false }),
-            other => Err(XmlError::new(
-                XmlErrorKind::InvalidExpression,
-                attr.span,
-                format!(
-                    "attribute `{}` expects `true` or `false`, got `{other}`",
-                    attr.name
-                ),
-            )
-            .at(attr.byte_offset)),
+            _ => Err(invalid_attr_expr(attr, "`true` or `false`", raw)),
         },
         PropValue::Flag => {
             // Handled by the codegen's main loop — the
@@ -139,57 +171,28 @@ pub(crate) fn prop_value_tokens(
             // exists for match exhaustiveness.
             Ok(quote! { /* unreachable */ })
         }
-        PropValue::Variant => Ok(match raw {
-            "neutral" => quote! { ::yororen_ui::ActionVariantKind::Neutral },
-            "primary" => quote! { ::yororen_ui::ActionVariantKind::Primary },
-            "danger" => quote! { ::yororen_ui::ActionVariantKind::Danger },
-            other => {
-                return Err(XmlError::new(
-                    XmlErrorKind::InvalidExpression,
-                    attr.span,
-                    format!(
-                        "attribute `{}` expects one of `neutral`, `primary`, `danger`, got `{other}`",
-                        attr.name
-                    ),
-                )
-                .at(attr.byte_offset));
-            }
-        }),
-        PropValue::BadgeVariant => Ok(match raw {
-            "neutral" => quote! { ::yororen_ui::headless::badge::BadgeVariant::Neutral },
-            "success" => quote! { ::yororen_ui::headless::badge::BadgeVariant::Success },
-            "warning" => quote! { ::yororen_ui::headless::badge::BadgeVariant::Warning },
-            "danger" => quote! { ::yororen_ui::headless::badge::BadgeVariant::Danger },
-            "info" => quote! { ::yororen_ui::headless::badge::BadgeVariant::Info },
-            other => {
-                return Err(XmlError::new(
-                    XmlErrorKind::InvalidExpression,
-                    attr.span,
-                    format!(
-                        "attribute `{}` expects one of `neutral`, `success`, `warning`, `danger`, `info`, got `{other}`",
-                        attr.name
-                    ),
-                )
-                .at(attr.byte_offset));
-            }
-        }),
+        PropValue::Variant => {
+            let variant = parse_enum_variant(
+                attr,
+                raw,
+                ACTION_VARIANTS,
+                "one of `neutral`, `primary`, `danger`",
+            )?;
+            let variant = format_ident!("{variant}");
+            Ok(quote! { ::yororen_ui::ActionVariantKind::#variant })
+        }
+        PropValue::BadgeVariant => {
+            let variant = parse_enum_variant(
+                attr,
+                raw,
+                BADGE_VARIANTS,
+                "one of `neutral`, `success`, `warning`, `danger`, `info`",
+            )?;
+            let variant = format_ident!("{variant}");
+            Ok(quote! { ::yororen_ui::headless::badge::BadgeVariant::#variant })
+        }
         PropValue::HeadingLevel => {
-            let variant = match raw {
-                "H1" | "h1" => "H1",
-                "H2" | "h2" => "H2",
-                "H3" | "h3" => "H3",
-                "H4" | "h4" => "H4",
-                "H5" | "h5" => "H5",
-                "H6" | "h6" => "H6",
-                other => {
-                    return Err(XmlError::new(
-                        XmlErrorKind::InvalidExpression,
-                        attr.span,
-                        format!("attribute `{}` expects H1..H6, got `{other}`", attr.name),
-                    )
-                    .at(attr.byte_offset));
-                }
-            };
+            let variant = parse_enum_variant(attr, raw, HEADING_LEVEL_VARIANTS, "H1..H6")?;
             let variant = format_ident!("{variant}");
             Ok(quote! { ::yororen_ui::headless::heading::HeadingLevel::#variant })
         }
@@ -200,21 +203,12 @@ pub(crate) fn prop_value_tokens(
             ::yororen_ui::headless::image::ImageSource::Resource((#raw).into())
         }),
         PropValue::KeybindingInputMode => {
-            let variant = match raw {
-                "Idle" | "idle" => "Idle",
-                "Capturing" | "capturing" => "Capturing",
-                other => {
-                    return Err(XmlError::new(
-                        XmlErrorKind::InvalidExpression,
-                        attr.span,
-                        format!(
-                            "attribute `{}` expects Idle or Capturing, got `{other}`",
-                            attr.name
-                        ),
-                    )
-                    .at(attr.byte_offset));
-                }
-            };
+            let variant = parse_enum_variant(
+                attr,
+                raw,
+                KEYBINDING_INPUT_MODE_VARIANTS,
+                "`Idle` or `Capturing`",
+            )?;
             let variant = format_ident!("{variant}");
             Ok(quote! { ::yororen_ui::headless::keybinding_input::KeybindingInputMode::#variant })
         }
@@ -225,72 +219,38 @@ pub(crate) fn prop_value_tokens(
             // else is rejected with a helpful note.
             parse_hex_color(raw, attr)
         }
-        PropValue::Unknown => Err(XmlError::new(
-            XmlErrorKind::InvalidExpression,
-            attr.span,
+        PropValue::Unknown => Err(invalid_attr(
+            attr,
             format!(
                 "attribute `{}` requires a brace expression because its type is not string-coercible",
                 attr.name
             ),
-        )
-        .at(attr.byte_offset)),
+        )),
         PropValue::Custom => {
             if attr.expr.is_some() {
                 unreachable!("brace expressions are handled at the top of prop_value_tokens")
             } else {
-                Err(XmlError::new(
-                    XmlErrorKind::InvalidExpression,
-                    attr.span,
+                Err(invalid_attr(
+                    attr,
                     format!(
                         "attribute `{}` requires a brace expression because it is a custom type",
                         attr.name
                     ),
-                )
-                .at(attr.byte_offset))
+                ))
             }
         }
         PropValue::Float64 => {
-            let value = raw.parse::<f64>().map_err(|_| {
-                XmlError::new(
-                    XmlErrorKind::InvalidExpression,
-                    attr.span,
-                    format!(
-                        "attribute `{}` expects an f64 literal, got `{raw}`",
-                        attr.name
-                    ),
-                )
-                .at(attr.byte_offset)
-            })?;
+            let value = parse_attr::<f64>(attr, "an f64 literal")?;
             let lit = proc_macro2::Literal::f64_suffixed(value);
             Ok(quote! { #lit })
         }
         PropValue::Float32 => {
-            let value = raw.parse::<f32>().map_err(|_| {
-                XmlError::new(
-                    XmlErrorKind::InvalidExpression,
-                    attr.span,
-                    format!(
-                        "attribute `{}` expects an f32 literal, got `{raw}`",
-                        attr.name
-                    ),
-                )
-                .at(attr.byte_offset)
-            })?;
+            let value = parse_attr::<f32>(attr, "an f32 literal")?;
             let lit = proc_macro2::Literal::f32_suffixed(value);
             Ok(quote! { #lit })
         }
         PropValue::UInt => {
-            let value = raw.parse::<usize>().map_err(|_| {
-                XmlError::new(
-                    XmlErrorKind::InvalidExpression,
-                    attr.span,
-                    format!(
-                        "attribute `{}` expects a usize literal, got `{raw}`",
-                        attr.name
-                    ),
-                )
-                .at(attr.byte_offset)
-            })?;
+            let value = parse_attr::<usize>(attr, "a usize literal")?;
             let lit = proc_macro2::Literal::usize_unsuffixed(value);
             Ok(quote! { #lit })
         }
@@ -322,9 +282,8 @@ pub(crate) fn attr_expr_only(attr: &AstAttribute) -> Result<TokenStream, XmlErro
         )?;
         Ok(parsed)
     } else {
-        Err(XmlError::new(
-            XmlErrorKind::InvalidExpression,
-            attr.span,
+        Err(invalid_attr(
+            attr,
             format!(
                 "attribute `{}` requires a brace expression, e.g. `{}={{...}}`",
                 attr.name, attr.name

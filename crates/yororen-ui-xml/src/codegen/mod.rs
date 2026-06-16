@@ -59,6 +59,7 @@ pub(crate) mod color;
 pub(crate) mod container;
 pub(crate) mod control_flow;
 pub(crate) mod diagnostics;
+pub(crate) mod errors;
 pub(crate) mod events;
 pub(crate) mod includes;
 pub(crate) mod leaf;

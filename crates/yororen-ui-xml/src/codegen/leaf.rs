@@ -9,12 +9,16 @@ use crate::schema::{
 };
 
 use crate::codegen::{
-    attr::{attr_expr_only, attr_value_tokens, prop_value_tokens},
+    attr::{
+        HEADING_LEVEL_VARIANTS, KEYBINDING_INPUT_MODE_VARIANTS, attr_expr_only, attr_value_tokens,
+        prop_value_tokens,
+    },
     codegen_child, codegen_child_unwrapped,
     color::parse_hex_color,
     container::apply_container_attr,
     control_flow::codegen_if_chain,
     diagnostics::did_you_mean,
+    errors::{parse_attr, parse_enum_variant},
     events::{
         auto_wrap_callback_expr, auto_wrap_event_call, auto_wrap_event_expr, split_event_modifiers,
         wrap_event_body_with_modifiers,
@@ -147,18 +151,7 @@ pub(crate) fn codegen_leaf(
                         &format!("attribute `{}`", a.name),
                     )?
                 } else {
-                    let raw = a.raw.as_str();
-                    let value = raw.parse::<usize>().map_err(|_| {
-                        XmlError::new(
-                            XmlErrorKind::InvalidExpression,
-                            a.span,
-                            format!(
-                                "attribute `{}` expects a usize literal, got `{raw}`",
-                                a.name
-                            ),
-                        )
-                        .at(a.byte_offset)
-                    })?;
+                    let value = parse_attr::<usize>(a, "a usize literal")?;
                     let lit = proc_macro2::Literal::usize_unsuffixed(value);
                     quote! { #lit }
                 }
@@ -181,22 +174,7 @@ pub(crate) fn codegen_leaf(
                     )?
                 } else {
                     let raw = a.raw.as_str();
-                    let variant = match raw {
-                        "H1" | "h1" => "H1",
-                        "H2" | "h2" => "H2",
-                        "H3" | "h3" => "H3",
-                        "H4" | "h4" => "H4",
-                        "H5" | "h5" => "H5",
-                        "H6" | "h6" => "H6",
-                        other => {
-                            return Err(XmlError::new(
-                                XmlErrorKind::InvalidExpression,
-                                a.span,
-                                format!("attribute `{}` expects H1..H6, got `{other}`", a.name),
-                            )
-                            .at(a.byte_offset));
-                        }
-                    };
+                    let variant = parse_enum_variant(a, raw, HEADING_LEVEL_VARIANTS, "H1..H6")?;
                     let variant = format_ident!("{variant}");
                     quote! { ::yororen_ui::headless::heading::HeadingLevel::#variant }
                 }
@@ -265,21 +243,12 @@ pub(crate) fn codegen_leaf(
                     )?
                 } else {
                     let raw = a.raw.as_str();
-                    let variant = match raw {
-                        "Idle" | "idle" => "Idle",
-                        "Capturing" | "capturing" => "Capturing",
-                        other => {
-                            return Err(XmlError::new(
-                                XmlErrorKind::InvalidExpression,
-                                a.span,
-                                format!(
-                                    "attribute `{}` expects Idle or Capturing, got `{other}`",
-                                    a.name
-                                ),
-                            )
-                            .at(a.byte_offset));
-                        }
-                    };
+                    let variant = parse_enum_variant(
+                        a,
+                        raw,
+                        KEYBINDING_INPUT_MODE_VARIANTS,
+                        "`Idle` or `Capturing`",
+                    )?;
                     let variant = format_ident!("{variant}");
                     quote! { ::yororen_ui::headless::keybinding_input::KeybindingInputMode::#variant }
                 }
