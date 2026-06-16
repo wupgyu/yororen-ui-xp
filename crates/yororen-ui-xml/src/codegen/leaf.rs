@@ -31,13 +31,10 @@ pub(crate) fn codegen_leaf(
     element: &AstElement,
     def: LeafDef,
     cx: &TokenStream,
-    location: &crate::parser::LocationTracker<'_>,
     source_file: Option<&str>,
     wrap_to_any: bool,
     user_schema: &[ComponentDef],
 ) -> Result<TokenStream, XmlError> {
-    let _ = location; // Currently unused — byte_offset lives on AST nodes.
-
     let factory_args = resolve_factory_args(element, def, cx)?;
     let factory: TokenStream = parse_ts(
         def.factory,
@@ -60,7 +57,6 @@ pub(crate) fn codegen_leaf(
         element,
         def,
         cx,
-        location,
         source_file,
         user_schema,
     )?;
@@ -70,7 +66,6 @@ pub(crate) fn codegen_leaf(
         element,
         def,
         cx,
-        location,
         source_file,
         user_schema,
         &remaining_children,
@@ -88,7 +83,6 @@ pub(crate) fn codegen_leaf(
         element,
         def,
         cx,
-        location,
         source_file,
         user_schema,
         &remaining_children,
@@ -670,7 +664,6 @@ fn apply_slots(
     element: &AstElement,
     def: LeafDef,
     cx: &TokenStream,
-    location: &crate::parser::LocationTracker<'_>,
     source_file: Option<&str>,
     user_schema: &[ComponentDef],
 ) -> Result<Vec<AstNode>, XmlError> {
@@ -695,7 +688,6 @@ fn apply_slots(
         let child_expr = codegen_child(
             &AstNode::Element(child_el.clone()),
             cx,
-            location,
             source_file,
             user_schema,
         )?;
@@ -709,7 +701,6 @@ fn apply_children_before_render(
     element: &AstElement,
     def: LeafDef,
     cx: &TokenStream,
-    location: &crate::parser::LocationTracker<'_>,
     source_file: Option<&str>,
     user_schema: &[ComponentDef],
     remaining_children: &[AstNode],
@@ -733,9 +724,9 @@ fn apply_children_before_render(
             }
             AstNode::Expr { .. } | AstNode::Element(_) => {
                 let child_expr = if def.unwrap_children {
-                    codegen_child_unwrapped(child, cx, location, source_file, user_schema)?
+                    codegen_child_unwrapped(child, cx, source_file, user_schema)?
                 } else {
-                    codegen_child(child, cx, location, source_file, user_schema)?
+                    codegen_child(child, cx, source_file, user_schema)?
                 };
                 stmts.push(quote! {
                     __el = __el.child(#child_expr);
@@ -809,7 +800,6 @@ fn apply_post_render_children(
     element: &AstElement,
     def: LeafDef,
     cx: &TokenStream,
-    location: &crate::parser::LocationTracker<'_>,
     source_file: Option<&str>,
     user_schema: &[ComponentDef],
     remaining_children: &[AstNode],
@@ -848,7 +838,6 @@ fn apply_post_render_children(
             let chain_expr = codegen_if_chain(
                 &remaining_children[i..j],
                 cx,
-                location,
                 source_file,
                 user_schema,
             )?;
@@ -882,7 +871,7 @@ fn apply_post_render_children(
                     }
                 }
                 AstNode::Expr { .. } | AstNode::Element(_) => {
-                    let child_expr = codegen_child(child, cx, location, source_file, user_schema)?;
+                    let child_expr = codegen_child(child, cx, source_file, user_schema)?;
                     child_stmts.push(quote! {
                         let __el = ::gpui::ParentElement::child(__el, #child_expr);
                     });

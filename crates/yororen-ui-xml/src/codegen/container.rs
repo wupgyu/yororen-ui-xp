@@ -17,7 +17,6 @@ pub(crate) fn codegen_container(
     element: &AstElement,
     def: ContainerDef,
     cx: &TokenStream,
-    location: &crate::parser::LocationTracker<'_>,
     source_file: Option<&str>,
     user_schema: &[ComponentDef],
 ) -> Result<TokenStream, XmlError> {
@@ -61,14 +60,13 @@ pub(crate) fn codegen_container(
             let chain_expr = codegen_if_chain(
                 &element.children[i..j],
                 cx,
-                location,
                 source_file,
                 user_schema,
             )?;
             stmts.push(quote! { let __el = ::gpui::ParentElement::child(__el, #chain_expr); });
             i = j;
         } else {
-            let child_expr = codegen_child(child, cx, location, source_file, user_schema)?;
+            let child_expr = codegen_child(child, cx, source_file, user_schema)?;
             stmts.push(quote! { let __el = ::gpui::ParentElement::child(__el, #child_expr); });
             i += 1;
         }

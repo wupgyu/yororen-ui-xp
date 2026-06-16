@@ -16,14 +16,12 @@ use crate::codegen::{
 pub(crate) fn codegen_virtual_list(
     element: &AstElement,
     cx: &TokenStream,
-    location: &crate::parser::LocationTracker<'_>,
     source_file: Option<&str>,
     user_schema: &[ComponentDef],
 ) -> Result<TokenStream, XmlError> {
     codegen_virtual_list_kind(
         element,
         cx,
-        location,
         source_file,
         VirtualListKind::Heterogeneous,
         user_schema,
@@ -32,14 +30,12 @@ pub(crate) fn codegen_virtual_list(
 pub(crate) fn codegen_uniform_virtual_list(
     element: &AstElement,
     cx: &TokenStream,
-    location: &crate::parser::LocationTracker<'_>,
     source_file: Option<&str>,
     user_schema: &[ComponentDef],
 ) -> Result<TokenStream, XmlError> {
     codegen_virtual_list_kind(
         element,
         cx,
-        location,
         source_file,
         VirtualListKind::Uniform,
         user_schema,
@@ -70,7 +66,6 @@ pub(crate) enum VirtualListKind {
 pub(crate) fn codegen_virtual_list_kind(
     element: &AstElement,
     cx: &TokenStream,
-    location: &crate::parser::LocationTracker<'_>,
     source_file: Option<&str>,
     kind: VirtualListKind,
     user_schema: &[ComponentDef],
@@ -156,7 +151,6 @@ pub(crate) fn codegen_virtual_list_kind(
             let child_body = codegen_children_as_element(
                 &element.children,
                 cx,
-                location,
                 source_file,
                 user_schema,
             )?;
@@ -194,7 +188,7 @@ pub(crate) fn codegen_virtual_list_kind(
                 .iter()
                 .enumerate()
                 .map(|(i, child)| {
-                    let body = codegen_child(child, cx, location, source_file, user_schema)?;
+                    let body = codegen_child(child, cx, source_file, user_schema)?;
                     let lit = i;
                     Ok::<_, XmlError>(quote! { #lit => { #body } })
                 })

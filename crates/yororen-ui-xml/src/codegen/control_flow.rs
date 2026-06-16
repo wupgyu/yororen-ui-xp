@@ -23,7 +23,6 @@ use crate::codegen::{
 pub(crate) fn codegen_if_chain(
     branches: &[AstNode],
     cx: &TokenStream,
-    location: &crate::parser::LocationTracker<'_>,
     source_file: Option<&str>,
     user_schema: &[ComponentDef],
 ) -> Result<TokenStream, XmlError> {
@@ -37,7 +36,7 @@ pub(crate) fn codegen_if_chain(
             _ => {
                 return Err(XmlError::new(
                     XmlErrorKind::Unsupported,
-                    location.span_outer(),
+                    Span::call_site(),
                     "<If>/<ElseIf>/<Else> chain cannot contain non-element nodes",
                 ));
             }
@@ -46,7 +45,6 @@ pub(crate) fn codegen_if_chain(
             element,
             element_tag_to_branch_kind(&element.tag)?,
             cx,
-            location,
             source_file,
             user_schema,
         )?;
@@ -96,35 +94,32 @@ pub(crate) fn codegen_control_flow(
     element: &AstElement,
     def: ControlFlowDef,
     cx: &TokenStream,
-    location: &crate::parser::LocationTracker<'_>,
     source_file: Option<&str>,
     user_schema: &[ComponentDef],
 ) -> Result<TokenStream, XmlError> {
     match def {
         ControlFlowDef::If | ControlFlowDef::ElseIf | ControlFlowDef::Else => {
-            codegen_if_branch(element, def, cx, location, source_file, user_schema)
+            codegen_if_branch(element, def, cx, source_file, user_schema)
         }
-        ControlFlowDef::For => codegen_for(element, cx, location, source_file, user_schema),
-        ControlFlowDef::Fragment => {
-            codegen_fragment(element, cx, location, source_file, user_schema)
-        }
+        ControlFlowDef::For => codegen_for(element, cx, source_file, user_schema),
+        ControlFlowDef::Fragment => codegen_fragment(element, cx, source_file, user_schema),
         ControlFlowDef::Template => {
-            codegen_template(element, cx, location, source_file, user_schema)
+            codegen_template(element, cx, source_file, user_schema)
         }
         ControlFlowDef::Slot => codegen_slot(element, cx),
-        ControlFlowDef::Match => codegen_match(element, cx, location, source_file, user_schema),
+        ControlFlowDef::Match => codegen_match(element, cx, source_file, user_schema),
         ControlFlowDef::Case => Err(XmlError::new(
             XmlErrorKind::Unsupported,
             element.span,
             "<Case> must appear directly inside a <Match>",
         )
         .at(element.byte_offset)),
-        ControlFlowDef::State => codegen_state(element, cx, location, source_file, user_schema),
+        ControlFlowDef::State => codegen_state(element, cx, source_file, user_schema),
         ControlFlowDef::VirtualList => {
-            codegen_virtual_list(element, cx, location, source_file, user_schema)
+            codegen_virtual_list(element, cx, source_file, user_schema)
         }
         ControlFlowDef::UniformVirtualList => {
-            codegen_uniform_virtual_list(element, cx, location, source_file, user_schema)
+            codegen_uniform_virtual_list(element, cx, source_file, user_schema)
         }
         ControlFlowDef::Include => Err(XmlError::new(
             XmlErrorKind::Unsupported,
@@ -138,7 +133,6 @@ pub(crate) fn codegen_if_branch(
     element: &AstElement,
     kind: ControlFlowDef,
     cx: &TokenStream,
-    location: &crate::parser::LocationTracker<'_>,
     source_file: Option<&str>,
     user_schema: &[ComponentDef],
 ) -> Result<TokenStream, XmlError> {
@@ -173,7 +167,7 @@ pub(crate) fn codegen_if_branch(
         .at(element.byte_offset));
     }
     let child_expr =
-        codegen_children_as_element(&element.children, cx, location, source_file, user_schema)?;
+        codegen_children_as_element(&element.children, cx, source_file, user_schema)?;
 
     // Wrap the branch body so every arm has the same concrete
     // element type (`AnyElement`). This keeps if/else chains
@@ -191,7 +185,6 @@ pub(crate) fn codegen_if_branch(
 pub(crate) fn codegen_for(
     element: &AstElement,
     cx: &TokenStream,
-    location: &crate::parser::LocationTracker<'_>,
     source_file: Option<&str>,
     user_schema: &[ComponentDef],
 ) -> Result<TokenStream, XmlError> {
@@ -260,7 +253,7 @@ pub(crate) fn codegen_for(
         .at(element.byte_offset));
     }
     let child_expr =
-        codegen_children_as_element(&element.children, cx, location, source_file, user_schema)?;
+        codegen_children_as_element(&element.children, cx, source_file, user_schema)?;
 
     // The `<For>` body becomes a Rust `for` loop that appends
     // each row as a `.child(...)`. When a `key` is present the
@@ -375,7 +368,6 @@ pub(crate) fn emit_for_loop(
 pub(crate) fn codegen_fragment(
     element: &AstElement,
     cx: &TokenStream,
-    location: &crate::parser::LocationTracker<'_>,
     source_file: Option<&str>,
     user_schema: &[ComponentDef],
 ) -> Result<TokenStream, XmlError> {
@@ -383,13 +375,12 @@ pub(crate) fn codegen_fragment(
     // When it has multiple children we wrap them in a plain
     // `gpui::div()` so the result is always a single
     // `impl IntoElement`.
-    codegen_children_as_element(&element.children, cx, location, source_file, user_schema)
+    codegen_children_as_element(&element.children, cx, source_file, user_schema)
 }
 
 fn codegen_match(
     element: &AstElement,
     cx: &TokenStream,
-    location: &crate::parser::LocationTracker<'_>,
     source_file: Option<&str>,
     user_schema: &[ComponentDef],
 ) -> Result<TokenStream, XmlError> {
@@ -423,7 +414,7 @@ fn codegen_match(
             AstNode::Text { .. } | AstNode::Expr { .. } => {
                 return Err(XmlError::new(
                     XmlErrorKind::Unsupported,
-                    location.span_outer(),
+                    Span::call_site(),
                     "<Match> arms must be <Case> elements",
                 ));
             }
@@ -464,7 +455,7 @@ fn codegen_match(
             .at(arm.byte_offset));
         }
         let body =
-            codegen_children_as_element(&arm.children, cx, location, source_file, user_schema)?;
+            codegen_children_as_element(&arm.children, cx, source_file, user_schema)?;
         arms.append_all(quote! { #pattern_parsed => { #body }, });
         arm_count += 1;
     }
@@ -482,7 +473,6 @@ fn codegen_match(
 fn codegen_state(
     element: &AstElement,
     cx: &TokenStream,
-    location: &crate::parser::LocationTracker<'_>,
     source_file: Option<&str>,
     user_schema: &[ComponentDef],
 ) -> Result<TokenStream, XmlError> {
@@ -556,7 +546,7 @@ fn codegen_state(
     };
 
     let body =
-        codegen_children_as_element(&element.children, cx, location, source_file, user_schema)?;
+        codegen_children_as_element(&element.children, cx, source_file, user_schema)?;
 
     Ok(quote! {
         {

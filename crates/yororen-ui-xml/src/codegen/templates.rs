@@ -259,11 +259,10 @@ pub(crate) fn substitute_slots(
 pub(crate) fn codegen_template(
     element: &AstElement,
     cx: &TokenStream,
-    location: &crate::parser::LocationTracker<'_>,
     source_file: Option<&str>,
     user_schema: &[ComponentDef],
 ) -> Result<TokenStream, XmlError> {
-    codegen_fragment(element, cx, location, source_file, user_schema)
+    codegen_fragment(element, cx, source_file, user_schema)
 }
 
 /// `<Slot/>` is a no-op for the MVP. Future revisions
