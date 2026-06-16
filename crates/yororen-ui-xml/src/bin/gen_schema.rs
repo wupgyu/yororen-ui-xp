@@ -338,6 +338,24 @@ fn main() {
     entries.sort_by(|a, b| a.tag.cmp(&b.tag));
     let generated = render_module(&entries, &skipped, &overrides);
 
+    let review_needed: Vec<(String, String)> = entries
+        .iter()
+        .flat_map(|e| {
+            e.notes.iter().filter_map(|note| {
+                note.starts_with("review needed:")
+                    .then_some((e.tag.clone(), note.clone()))
+            })
+        })
+        .collect();
+    if !review_needed.is_empty() {
+        eprintln!("Unclassified props must be resolved before the schema can be checked in.");
+        for (tag, note) in &review_needed {
+            eprintln!("  {tag}: {note}");
+        }
+        eprintln!("Add an override in overrides.toml (props / slots / children_before_render).");
+        std::process::exit(1);
+    }
+
     if check_only {
         let existing = fs::read_to_string(&out_path).unwrap_or_default();
         if existing.trim() != generated.trim() {
@@ -435,20 +453,24 @@ fn apply_overrides(entries: Vec<Extracted>, overrides: &[OverrideEntry]) -> Vec<
                         .collect();
                 }
                 if let Some(props) = &o.props {
-                    e.props = props
-                        .iter()
-                        .filter_map(|p| {
-                            if p.len() != 3 {
-                                return None;
+                    // Merge with the auto-detected props: override the
+                    // value/setter for known names, append new ones.
+                    for p in props.iter().filter(|p| p.len() == 3) {
+                        if let Some(value) = parse_prop_value(&p[2]) {
+                            if let Some(existing) =
+                                e.props.iter_mut().find(|x| x.name == p[0])
+                            {
+                                existing.setter = p[1].clone();
+                                existing.value = value;
+                            } else {
+                                e.props.push(PropInfo {
+                                    name: p[0].clone(),
+                                    setter: p[1].clone(),
+                                    value,
+                                });
                             }
-                            let value = parse_prop_value(&p[2])?;
-                            Some(PropInfo {
-                                name: p[0].clone(),
-                                setter: p[1].clone(),
-                                value,
-                            })
-                        })
-                        .collect();
+                        }
+                    }
                 }
                 if let Some(events) = &o.events {
                     e.events = events
@@ -457,6 +479,43 @@ fn apply_overrides(entries: Vec<Extracted>, overrides: &[OverrideEntry]) -> Vec<
                         .map(|e| (e[0].clone(), e[1].clone()))
                         .collect();
                 }
+
+                // Props that are handled by structural overrides
+                // (children-before-render or named slots) should not
+                // also appear as flat prop setters.
+                let mut removed_props: std::collections::HashSet<String> =
+                    std::collections::HashSet::new();
+                if o.children_before_render == Some(true) {
+                    removed_props.insert("child".to_string());
+                    removed_props.insert("children".to_string());
+                }
+                if let Some(slots) = &o.slots {
+                    removed_props.extend(slots.iter().map(|s| s[0].clone()));
+                }
+                if !removed_props.is_empty() {
+                    e.props.retain(|p| !removed_props.contains(&p.name));
+                }
+
+                // Prop names that are now explicitly handled by an
+                // override no longer need a "review needed" note.
+                let mut cleared: std::collections::HashSet<String> =
+                    std::collections::HashSet::new();
+                if let Some(props) = &o.props {
+                    cleared.extend(props.iter().filter_map(|p| p.first().cloned()));
+                }
+                if let Some(slots) = &o.slots {
+                    cleared.extend(slots.iter().map(|s| s[0].clone()));
+                }
+                if o.children_before_render == Some(true) {
+                    cleared.insert("child".to_string());
+                    cleared.insert("children".to_string());
+                }
+                e.notes.retain(|note| {
+                    note.strip_prefix("review needed: prop `")
+                        .and_then(|rest| rest.split('`').next())
+                        .map(|name| !cleared.contains(name))
+                        .unwrap_or(true)
+                });
             }
             e
         })
@@ -568,14 +627,22 @@ fn extract(ast: &syn::File, module_name: &str) -> Result<Option<Extracted>, Stri
                 //   * `pub fn X(mut self, x: T) -> Self` — single-arg
                 //     prop setter; `T` is classified into
                 //     `String` / `Bool` / `Variant` / `Unknown`.
+                //
+                // We require `mut self` by value so that getters
+                // (`&self`) and imperative mutators (`&mut self`)
+                // are not mistaken for setters.
                 let inputs = &method.sig.inputs;
                 let (is_self_only, arg) = match inputs.len() {
                     1 => match &inputs[0] {
-                        FnArg::Receiver(_) => (true, None),
+                        FnArg::Receiver(r) if is_mutable_self_by_value(r) => (true, None),
                         _ => continue,
                     },
                     2 => match (&inputs[0], &inputs[1]) {
-                        (FnArg::Receiver(_), FnArg::Typed(pt)) => (false, Some(&*pt.ty)),
+                        (FnArg::Receiver(r), FnArg::Typed(pt))
+                            if is_mutable_self_by_value(r) =>
+                        {
+                            (false, Some(&*pt.ty))
+                        }
                         _ => continue,
                     },
                     _ => continue,
@@ -734,6 +801,13 @@ fn find_impl<'a>(ast: &'a syn::File, struct_name: &str) -> Option<&'a ItemImpl> 
 
 fn is_public(vis: &Visibility) -> bool {
     matches!(vis, Visibility::Public(_))
+}
+
+/// True for `mut self` by value (not `&self` or `&mut self`).
+/// Setters take ownership and mutate; getters and imperative
+/// mutators borrow and must not be treated as schema props.
+fn is_mutable_self_by_value(r: &syn::Receiver) -> bool {
+    r.reference.is_none() && r.mutability.is_some()
 }
 
 #[allow(dead_code)]

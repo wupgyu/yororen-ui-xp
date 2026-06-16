@@ -27,8 +27,6 @@
 //!   default styling) or stays as a pure `Props` value the
 //!   caller composes via `.apply(div())`.
 
-use proc_macro2::Span;
-
 /// A schema entry for a single XML tag.
 #[derive(Debug, Clone)]
 pub struct ComponentDef {
@@ -631,11 +629,6 @@ pub fn is_spacing_prefix(name: &str) -> bool {
             | "max_h"
             | "inset"
     )
-}
-
-#[allow(dead_code)]
-pub(crate) fn span_call(_span: Span) -> Span {
-    Span::call_site()
 }
 
 /// Look up a tag across all built-in schema tables.

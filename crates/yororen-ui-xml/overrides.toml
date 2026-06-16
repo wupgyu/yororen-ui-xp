@@ -133,6 +133,7 @@ needs_window = true
 tag = "PasswordInput"
 kind = "Leaf"
 needs_window = true
+props = [["mask_char", "mask_char", "Custom"]]
 
 [[override_]]
 tag = "SearchInput"
@@ -196,4 +197,21 @@ tag = "FormField"
 kind = "Leaf"
 slots = [["input", "input"]]
 
+# `SplitButton` needs the dropdown menu state entity passed through
+# the XML macro (e.g. `state={self.dropdown_state}`).
+[[override_]]
+tag = "SplitButton"
+kind = "Leaf"
+props = [["state", "state", "Custom"]]
+
+# `Table` columns/rows are built via brace expressions in XML.
+[[override_]]
+tag = "Table"
+kind = "Leaf"
+props = [
+    ["column", "column", "Custom"],
+    ["columns", "columns", "Custom"],
+    ["row", "row", "Custom"],
+    ["rows", "rows", "Custom"],
+]
 

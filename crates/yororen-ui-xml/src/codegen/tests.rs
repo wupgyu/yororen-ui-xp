@@ -1296,29 +1296,85 @@ fn bind_attribute_without_braces_errors() {
     assert!(err.message.contains("@bind"), "{err}");
 }
 
-/// Run `gen-schema --check` and panic if the
-/// generated file is out of date. This test is the
-/// "is the schema fresh?" CI gate — any drift
-/// between the headless source and the committed
-/// `schema_generated.rs` fails the build.
+/// CI gate for the generator output. Replaces the old
+/// `hand_written_button_matches_generated` test: now that
+/// `Button` lives in the generated schema, we verify the
+/// invariants the generator must maintain instead of comparing
+/// against a hand-written copy.
 #[test]
-fn schema_drift_check() {
-    // We can't easily spawn the `gen-schema` binary
-    // from here (it lives in `src/bin/`). Instead,
-    // we verify the key invariants the generator
-    // maintains: that the `BUILTINS_GENERATED` static
-    // contains every known built-in tag, and that
-    // every component has either a valid
-    // `Container`, `Leaf`, `ControlFlow`, or `RuntimeLeaf` kind.
+fn generated_schema_invariants() {
+    use crate::schema::{ComponentKind, PropValue};
+
     let generated = crate::schema_generated::BUILTINS_GENERATED;
+
+    // Every entry must have a recognised kind.
     for def in generated {
         match def.kind {
-            crate::schema::ComponentKind::Container(_)
-            | crate::schema::ComponentKind::Leaf(_)
-            | crate::schema::ComponentKind::ControlFlow(_)
-            | crate::schema::ComponentKind::RuntimeLeaf => {}
+            ComponentKind::Container(_)
+            | ComponentKind::Leaf(_)
+            | ComponentKind::ControlFlow(_)
+            | ComponentKind::RuntimeLeaf => {}
         }
     }
+
+    // No unclassified props: every prop must have a concrete
+    // PropValue so the codegen knows how to turn XML literals
+    // into Rust expressions.
+    for def in generated {
+        let ComponentKind::Leaf(leaf) = def.kind else {
+            continue;
+        };
+        for prop in leaf.props {
+            assert!(
+                !matches!(prop.value, PropValue::Unknown),
+                "generated schema contains PropValue::Unknown for `{}::{}`; \
+                 add an override or extend the classifier",
+                def.tag,
+                prop.name
+            );
+        }
+    }
+
+    // A representative set of leaf components must be present.
+    for tag in [
+        "Button",
+        "Checkbox",
+        "Switch",
+        "TextInput",
+        "Avatar",
+        "Badge",
+        "Card",
+        "Icon",
+        "Label",
+        "Tag",
+        "Progress",
+        "Slider",
+        "Radio",
+        "ToggleButton",
+    ] {
+        assert!(
+            generated.iter().any(|c| c.tag == tag),
+            "tag {tag:?} should be present in BUILTINS_GENERATED"
+        );
+    }
+}
+
+/// The generated file must not contain any "review needed"
+/// comments. Those comments indicate props the generator
+/// couldn't classify; the --check mode of gen-schema now
+/// rejects them, and this test makes sure none slipped into
+/// the committed file.
+#[test]
+fn generated_schema_has_no_review_needed_comments() {
+    let generated = include_str!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/src/schema_generated.rs"
+    ));
+    assert!(
+        !generated.contains("review needed"),
+        "schema_generated.rs contains 'review needed' comments; \
+         run `cargo run -p yororen_ui_xml --bin gen-schema` and resolve them"
+    );
 }
 
 #[test]

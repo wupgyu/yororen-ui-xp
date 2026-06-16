@@ -289,10 +289,10 @@ pub fn xml_file(input: TokenStream) -> TokenStream {
 /// codegen prelude.
 ///
 /// If the supplied expression is already the bare identifier
-/// `window`, the binding would be `let window = window;`, which
-/// triggers `clippy::redundant_locals` / `clippy::self_assignment`.
-/// We keep the binding so the outer `window` value is still
-/// considered used, but annotate it with `#[allow(...)]`.
+/// `window`, skip the binding (`let window = window;` would be a
+/// redundant self-assignment). We still emit `let _ = window;`
+/// so the outer `window` parameter is considered used even when
+/// the generated body happens not to reference it.
 fn splice_window_let(ts: TokenStream, w_expr: TokenStream) -> TokenStream {
     let ts2: proc_macro2::TokenStream = ts.into();
     let w_expr2: proc_macro2::TokenStream = w_expr.into();
@@ -315,8 +315,7 @@ fn splice_window_let(ts: TokenStream, w_expr: TokenStream) -> TokenStream {
     let block: proc_macro2::TokenStream = if is_bare_window {
         quote::quote! {
             {
-                #[allow(clippy::redundant_locals, clippy::self_assignment)]
-                let window = #w_expr2;
+                let _ = window;
                 #ts2
             }
         }

@@ -3,7 +3,7 @@
 //!
 //! Source of truth: `yororen-ui-core/src/headless/*.rs`
 //! plus `yororen-ui-xml/overrides.toml`.
-//! Last regenerated with: 61 entries (28 from overrides), 4 skipped.
+//! Last regenerated with: 61 entries (30 from overrides), 4 skipped.
 //!
 //! Skipped files (need manual schema entry or a schema
 //! extension — see `gen_schema.rs` notes):
@@ -100,7 +100,6 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             needs_window: false,
             props: &[PropDef { name: "vertical", setter: "vertical", value: PropValue::Flag },
             PropDef { name: "attached", setter: "attached", value: PropValue::Bool },
-            PropDef { name: "child", setter: "child", value: PropValue::Unknown },
             ],
             events: &[],
             supports_text_child: false,
@@ -110,7 +109,6 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
         }),
         doc: "auto-generated from `headless::button_group`",
     },
-    // NOTE: review needed: prop `child` has unclassified type `Stateful < Div >`
     ComponentDef {
         tag: "Card",
         kind: ComponentKind::Leaf(LeafDef {
@@ -215,9 +213,7 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             render: RenderMode::Default,
             needs_app: false,
             needs_window: false,
-            props: &[PropDef { name: "trigger", setter: "trigger", value: PropValue::Unknown },
-            PropDef { name: "content", setter: "content", value: PropValue::Unknown },
-            ],
+            props: &[],
             events: &[],
             supports_text_child: false,
             children_before_render: false,
@@ -226,8 +222,6 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
         }),
         doc: "auto-generated from `headless::dropdown_menu`",
     },
-    // NOTE: review needed: prop `trigger` has unclassified type `AnyElement`
-    // NOTE: review needed: prop `content` has unclassified type `AnyElement`
     // NOTE: extra_args = 1 entries
     ComponentDef {
         tag: "EmptyState",
@@ -304,7 +298,6 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             needs_app: true,
             needs_window: false,
             props: &[PropDef { name: "submit", setter: "submit", value: PropValue::String },
-            PropDef { name: "submit_button", setter: "submit_button", value: PropValue::Unknown },
             ],
             events: &[("on_submit", "on_submit"), ],
             supports_text_child: false,
@@ -314,7 +307,6 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
         }),
         doc: "auto-generated from `headless::form`",
     },
-    // NOTE: review needed: prop `submit_button` has unclassified type `& mut App`
     ComponentDef {
         tag: "FormField",
         kind: ComponentKind::Leaf(LeafDef {
@@ -327,7 +319,6 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             PropDef { name: "required", setter: "required", value: PropValue::Bool },
             PropDef { name: "error", setter: "error", value: PropValue::String },
             PropDef { name: "help", setter: "help", value: PropValue::String },
-            PropDef { name: "input", setter: "input", value: PropValue::String },
             ],
             events: &[],
             supports_text_child: false,
@@ -553,9 +544,7 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             render: RenderMode::Default,
             needs_app: false,
             needs_window: false,
-            props: &[PropDef { name: "child", setter: "child", value: PropValue::String },
-            PropDef { name: "children", setter: "children", value: PropValue::Unknown },
-            ],
+            props: &[],
             events: &[],
             supports_text_child: false,
             children_before_render: true,
@@ -564,7 +553,6 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
         }),
         doc: "auto-generated from `headless::modal`",
     },
-    // NOTE: review needed: prop `children` has unclassified type `impl IntoIterator < Item = impl IntoElement >`
     // NOTE: extra_args = 1 entries
     ComponentDef {
         tag: "NumberInput",
@@ -649,7 +637,7 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             props: &[PropDef { name: "placeholder", setter: "placeholder", value: PropValue::String },
             PropDef { name: "disabled", setter: "disabled", value: PropValue::Bool },
             PropDef { name: "max_length", setter: "max_length", value: PropValue::UInt },
-            PropDef { name: "mask_char", setter: "mask_char", value: PropValue::Unknown },
+            PropDef { name: "mask_char", setter: "mask_char", value: PropValue::Custom },
             PropDef { name: "has_custom_bg", setter: "has_custom_bg", value: PropValue::Bool },
             PropDef { name: "has_custom_border", setter: "has_custom_border", value: PropValue::Bool },
             PropDef { name: "has_custom_focus_border", setter: "has_custom_focus_border", value: PropValue::Bool },
@@ -666,7 +654,6 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
         }),
         doc: "auto-generated from `headless::password_input`",
     },
-    // NOTE: review needed: prop `mask_char` has unclassified type `char`
     ComponentDef {
         tag: "Popover",
         kind: ComponentKind::Leaf(LeafDef {
@@ -675,9 +662,7 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             render: RenderMode::Default,
             needs_app: false,
             needs_window: false,
-            props: &[PropDef { name: "trigger", setter: "trigger", value: PropValue::Unknown },
-            PropDef { name: "content", setter: "content", value: PropValue::Unknown },
-            ],
+            props: &[],
             events: &[],
             supports_text_child: false,
             children_before_render: false,
@@ -686,8 +671,6 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
         }),
         doc: "auto-generated from `headless::popover`",
     },
-    // NOTE: review needed: prop `trigger` has unclassified type `AnyElement`
-    // NOTE: review needed: prop `content` has unclassified type `AnyElement`
     // NOTE: extra_args = 1 entries
     ComponentDef {
         tag: "Progress",
@@ -885,7 +868,7 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             props: &[PropDef { name: "disabled", setter: "disabled", value: PropValue::Bool },
             PropDef { name: "caption", setter: "caption", value: PropValue::String },
             PropDef { name: "items", setter: "items", value: PropValue::Custom },
-            PropDef { name: "state", setter: "state", value: PropValue::Unknown },
+            PropDef { name: "state", setter: "state", value: PropValue::Custom },
             ],
             events: &[("on_select", "on_select"), ],
             supports_text_child: true,
@@ -895,7 +878,6 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
         }),
         doc: "auto-generated from `headless::split_button`",
     },
-    // NOTE: review needed: prop `state` has unclassified type `Entity < DropdownMenuState >`
     // NOTE: extra_args = 1 entries
     ComponentDef {
         tag: "Switch",
@@ -926,10 +908,10 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             render: RenderMode::Default,
             needs_app: true,
             needs_window: false,
-            props: &[PropDef { name: "column", setter: "column", value: PropValue::Unknown },
-            PropDef { name: "columns", setter: "columns", value: PropValue::Unknown },
-            PropDef { name: "row", setter: "row", value: PropValue::Unknown },
-            PropDef { name: "rows", setter: "rows", value: PropValue::Unknown },
+            props: &[PropDef { name: "column", setter: "column", value: PropValue::Custom },
+            PropDef { name: "columns", setter: "columns", value: PropValue::Custom },
+            PropDef { name: "row", setter: "row", value: PropValue::Custom },
+            PropDef { name: "rows", setter: "rows", value: PropValue::Custom },
             PropDef { name: "selected", setter: "selected", value: PropValue::UInt },
             ],
             events: &[("on_select", "on_select"), ],
@@ -940,10 +922,6 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
         }),
         doc: "auto-generated from `headless::table`",
     },
-    // NOTE: review needed: prop `column` has unclassified type `TableColumn`
-    // NOTE: review needed: prop `columns` has unclassified type `impl IntoIterator < Item = TableColumn >`
-    // NOTE: review needed: prop `row` has unclassified type `TableRow`
-    // NOTE: review needed: prop `rows` has unclassified type `impl IntoIterator < Item = TableRow >`
     ComponentDef {
         tag: "Tag",
         kind: ComponentKind::Leaf(LeafDef {
@@ -1072,7 +1050,6 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             needs_window: false,
             props: &[PropDef { name: "has_custom_bg", setter: "has_custom_bg", value: PropValue::Bool },
             PropDef { name: "has_custom_fg", setter: "has_custom_fg", value: PropValue::Bool },
-            PropDef { name: "trigger", setter: "trigger", value: PropValue::Unknown },
             ],
             events: &[],
             supports_text_child: false,
@@ -1082,7 +1059,6 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
         }),
         doc: "auto-generated from `headless::tooltip`",
     },
-    // NOTE: review needed: prop `trigger` has unclassified type `AnyElement`
     // NOTE: extra_args = 2 entries
     ComponentDef {
         tag: "Tree",
