@@ -18,8 +18,13 @@ toml = "0.8"
 serde = { version = "1", features = ["derive"] }
 inventory = "0.3"
 
+[features]
+default = []
+fuzzing = []
+
 [dev-dependencies]
 criterion = { version = "0.5", features = ["html_reports"] }
+proptest = "1"
 
 [[bin]]
 name = "gen-schema"

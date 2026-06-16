@@ -7,6 +7,18 @@ Cargo.lock
 demo/**/target
 crates/yororen-ui-demos/*/target
 
+# cargo-fuzz build outputs
+crates/*/fuzz/target/
+
+# cargo-fuzz generated corpus / crash artifacts
+crates/*/fuzz/corpus/
+crates/*/fuzz/artifacts/
+
+# Local cargo-fuzz installation (cargo install --root .cargo)
+.cargo/bin/
+.cargo/registry/
+.cargo/git/
+
 yororen-ui.wiki
 
 /tmp

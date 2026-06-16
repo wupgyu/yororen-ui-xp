@@ -1,0 +1,24 @@
+[package]
+name = "yororen-ui-xml-fuzz"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[package.metadata]
+cargo-fuzz = true
+
+[workspace]
+
+[dependencies]
+libfuzzer-sys = "0.4"
+yororen-ui-xml = { package = "yororen_ui_xml", path = "..", features = ["fuzzing"] }
+
+[[bin]]
+name = "normalise_bool_attrs"
+path = "fuzz_targets/normalise_bool_attrs.rs"
+
+[profile.release]
+# gpui-ce/gpui_macros gates `derive_inspector_reflection` behind
+# `cfg(any(feature = "inspector", debug_assertions))`. cargo-fuzz builds in
+# release by default, so enable debug-assertions to keep that macro available.
+debug-assertions = true

@@ -470,6 +470,19 @@ pub(crate) fn normalise_bool_attrs(input: &str) -> String {
     String::from_utf8(out).expect("normalise_bool_attrs: output is valid UTF-8")
 }
 
+/// Re-export of [`normalise_bool_attrs`] for fuzzing targets.
+///
+/// This module is only compiled when the `fuzzing` feature is enabled so the
+/// function can be driven by `cargo-fuzz` without expanding the crate's public
+/// API in normal builds.
+#[cfg(feature = "fuzzing")]
+pub mod fuzzing {
+    /// See [`super::normalise_bool_attrs`].
+    pub fn normalise_bool_attrs(input: &str) -> String {
+        super::normalise_bool_attrs(input)
+    }
+}
+
 fn is_tag_name_end(b: u8) -> bool {
     b.is_ascii_whitespace() || b == b'>' || b == b'/'
 }
@@ -664,6 +677,7 @@ fn strip_brace_expression(s: &str) -> (Option<String>, String) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use proptest::prelude::*;
 
     #[test]
     fn normalise_bare_attrs() {
@@ -777,6 +791,56 @@ mod tests {
         // The snippet includes the offending line and a caret.
         assert!(snippet.contains("<BadTag"), "{snippet}");
         assert!(snippet.contains('^'), "{snippet}");
+    }
+
+    // ------------------------------------------------------------------
+    // Property-based tests for the byte-level preprocessor.
+    // ------------------------------------------------------------------
+
+    // Any UTF-8 string must be accepted without panicking.
+    proptest! {
+        #[test]
+        fn normalise_does_not_panic(s in "\\PC*") {
+            let _ = normalise_bool_attrs(&s);
+        }
+    }
+
+    // Output length is linearly bounded: every input byte can expand to at
+    // most an XML entity (`&quot;` is 6 bytes) plus the two wrapping quotes
+    // around a brace expression.
+    proptest! {
+        #[test]
+        fn normalise_output_length_bounded(s in "\\PC*") {
+            let out = normalise_bool_attrs(&s);
+            prop_assert!(
+                out.len() <= s.len().saturating_mul(6).saturating_add(2),
+                "output length {} exceeded bound for input length {}",
+                out.len(),
+                s.len()
+            );
+        }
+    }
+
+    // Malformed edge cases must not panic or OOM.
+    #[test]
+    fn normalise_handles_malformed_edge_cases() {
+        let cases = [
+            r#"<tag attr="unterminated"#,
+            r#"<tag attr={unclosed"#,
+            r#"<![CDATA[ contains > char ]]>"#,
+            r#"<?xml nested < value ?>"#,
+            r#"<tag a={}} />"#,
+            r#"<tag a={{}} />"#,
+            "\u{0}\u{1}\u{2}",
+            "",
+            "<",
+            "<>",
+            "</>",
+            "<!DOCTYPE html [ <!ENTITY x \">\"> ]>",
+        ];
+        for input in cases {
+            let _ = normalise_bool_attrs(input);
+        }
     }
 }
 
