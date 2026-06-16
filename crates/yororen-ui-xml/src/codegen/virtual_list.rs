@@ -245,15 +245,16 @@ pub(crate) fn codegen_virtual_list_kind(
         match element.attributes.iter().find(|a| a.name == "alignment") {
             Some(a) => {
                 let raw = a.raw.as_str();
-                let variant = match raw {
-                    "bottom" => quote! { ::gpui::ListAlignment::Bottom },
-                    "top" | "" => quote! { ::gpui::ListAlignment::Top },
-                    _ => {
+                let variant = match (a.expr.is_some(), raw) {
+                    (true, _) => attr_expr_only(a)?,
+                    (false, "bottom") => quote! { ::gpui::ListAlignment::Bottom },
+                    (false, "top" | "") => quote! { ::gpui::ListAlignment::Top },
+                    (false, other) => {
                         return Err(XmlError::new(
                             XmlErrorKind::Unsupported,
                             a.span,
                             format!(
-                                "<{}> alignment must be \"top\" or \"bottom\", got `{raw}`",
+                                "<{}> alignment must be \"top\" or \"bottom\", got `{other}`",
                                 element.tag
                             ),
                         )
