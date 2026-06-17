@@ -298,14 +298,7 @@ fn container_spacing_with_bad_suffix_carries_offset() {
     // diagnostic with `at line N, column M:` rather than
     // the single-line fallback. (`Column` is now a Leaf
     // and accepts any numeric `gap` as `Spacing::Px`.)
-    let err = codegen(
-        r#"<Div gap="999" />"#,
-        Span::call_site(),
-        None,
-        None,
-        &[],
-    )
-    .unwrap_err();
+    let err = codegen(r#"<Div gap="999" />"#, Span::call_site(), None, None, &[]).unwrap_err();
     assert!(
         err.message.contains("invalid spacing suffix"),
         "{}",
@@ -1653,18 +1646,14 @@ fn overrides_provide_containers_and_control_flow() {
     // `Column` / `Row` / `Stack` / `Center` / `Expanded` /
     // `Wrap` are now auto-generated as Leaf entries from
     // `headless/layout/*.rs` (see `BUILTINS_GENERATED`).
-    for tag in [
-        "Div", "If", "ElseIf", "Else", "For", "Fragment",
-    ] {
+    for tag in ["Div", "If", "ElseIf", "Else", "For", "Fragment"] {
         assert!(
             BUILTINS_OVERRIDES.iter().any(|c| c.tag == tag),
             "tag {tag:?} should be in BUILTINS_OVERRIDES"
         );
     }
     // Layout components should be auto-generated as Leaves.
-    for tag in [
-        "Column", "Row", "Stack", "Center", "Expanded", "Wrap",
-    ] {
+    for tag in ["Column", "Row", "Stack", "Center", "Expanded", "Wrap"] {
         assert!(
             crate::schema_generated::BUILTINS_GENERATED
                 .iter()

@@ -161,7 +161,8 @@ pub fn bind(input: TokenStream) -> TokenStream {
 pub fn xml(input: TokenStream) -> TokenStream {
     let parser = |stream: ParseStream| XmlArgs::parse(stream);
     let args = match parser.parse2(input.into()) {
-        Ok(a) => a,        Err(e) => return e.to_compile_error().into(),
+        Ok(a) => a,
+        Err(e) => return e.to_compile_error().into(),
     };
     let outer_span = Span::call_site();
     let cx_expr = args.cx.map(|e| quote::quote! { #e });
@@ -418,4 +419,3 @@ struct XmlFileArgs {
     path_span: Span,
     source_file: String,
 }
-

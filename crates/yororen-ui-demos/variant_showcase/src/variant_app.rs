@@ -21,6 +21,7 @@ use yororen_ui::ActiveTheme;
 use yororen_ui::Theme;
 use yororen_ui::headless::button::button;
 use yororen_ui::headless::label::label;
+use yororen_ui::headless::layout::{Inset, Spacing, column, row};
 use yororen_ui::renderer::ButtonRenderState;
 
 /// Inherent helper renderer for the variant_showcase demo.
@@ -138,12 +139,11 @@ impl Render for VariantApp {
             .hover(|s| s.bg(primary_hover_bg))
             .active(|s| s.bg(primary_active_bg));
 
-        div()
-            .size_full()
-            .p(px(24.))
-            .flex()
-            .flex_col()
-            .gap_3()
+        column("variant-root", cx)
+            .w_full()
+            .h_full()
+            .p(Inset::Lg)
+            .gap(Spacing::Md)
             .child(label("title", "Variant showcase", cx).render(cx))
             .child(
                 label(
@@ -154,30 +154,29 @@ impl Render for VariantApp {
                 .render(cx),
             )
             .child(
-                div()
-                    .flex()
-                    .gap_2()
+                row("neutral-row", cx)
+                    .gap(Spacing::Sm)
                     .child(label("n", "Neutral (default_render):", cx).render(cx))
-                    .child(neutral),
+                    .child(neutral)
+                    .render(cx),
             )
             .child(
-                div()
-                    .flex()
-                    .gap_2()
+                row("primary-row", cx)
+                    .gap(Spacing::Sm)
                     .child(label("p", "Primary (default_render):", cx).render(cx))
-                    .child(primary),
+                    .child(primary)
+                    .render(cx),
             )
             .child(
-                div()
-                    .flex()
-                    .gap_2()
+                row("danger-row", cx)
+                    .gap(Spacing::Sm)
                     .child(label("d", "Danger (default_render):", cx).render(cx))
-                    .child(danger),
+                    .child(danger)
+                    .render(cx),
             )
             .child(
-                div()
-                    .flex()
-                    .gap_2()
+                row("override-row", cx)
+                    .gap(Spacing::Sm)
                     .child(
                         label(
                             "o",
@@ -186,7 +185,9 @@ impl Render for VariantApp {
                         )
                         .render(cx),
                     )
-                    .child(pill),
+                    .child(pill)
+                    .render(cx),
             )
+            .render(cx)
     }
 }

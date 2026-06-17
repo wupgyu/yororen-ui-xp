@@ -11,10 +11,11 @@ mod surfaces;
 
 pub use inputs::input_cell;
 
-use gpui::{Context, Div, IntoElement, ParentElement, Styled, Window, div, px};
+use gpui::{Context, Div, IntoElement, Stateful, Styled, Window, div, px};
 
 use yororen_ui::headless::heading::HeadingLevel;
 use yororen_ui::headless::heading::heading;
+use yororen_ui::headless::layout::{Inset, Spacing, column};
 use yororen_ui::i18n::Translate;
 
 use crate::state::GalleryApp;
@@ -30,17 +31,14 @@ use crate::state::GalleryApp;
 /// static literal (`"..."`) or the result of `cx.t("demo.foo")`
 /// (which is `SharedString` and converts via the `From<SharedString>
 /// for String` impl).
-pub fn cell(name: impl Into<String>, el: impl IntoElement, cx: &mut Context<GalleryApp>) -> Div {
-    div()
-        .relative()
-        .flex()
-        .flex_col()
-        .items_start()
-        .gap(px(2.))
-        .p(px(8.))
-        .rounded(px(6.))
-        .border_1()
-        .border_color(gpui::hsla(0.0, 0.0, 0.5, 0.15))
+pub fn cell(
+    name: impl Into<String>,
+    el: impl IntoElement,
+    cx: &mut Context<GalleryApp>,
+) -> Stateful<Div> {
+    column("cell", cx)
+        .gap(Spacing::Xs)
+        .p(Inset::Sm)
         .child(
             yororen_ui::headless::label::label("cmp-name", name, cx)
                 .muted(true)
@@ -48,6 +46,10 @@ pub fn cell(name: impl Into<String>, el: impl IntoElement, cx: &mut Context<Gall
                 .text_size(px(11.)),
         )
         .child(el)
+        .render(cx)
+        .rounded(px(6.))
+        .border_1()
+        .border_color(gpui::hsla(0.0, 0.0, 0.5, 0.15))
 }
 
 fn section_title(
@@ -65,16 +67,15 @@ pub fn actions(
     _window: &mut Window,
     cx: &mut Context<GalleryApp>,
 ) -> impl IntoElement {
-    div()
-        .flex()
-        .flex_col()
-        .gap(px(12.))
+    column("actions-section", cx)
+        .gap(Spacing::Md)
         .child(section_title(
             "actions-title",
             cx.t("demo.section_actions"),
             cx,
         ))
         .child(actions::render(app, cx))
+        .render(cx)
 }
 
 pub fn display(
@@ -82,16 +83,15 @@ pub fn display(
     _window: &mut Window,
     cx: &mut Context<GalleryApp>,
 ) -> impl IntoElement {
-    div()
-        .flex()
-        .flex_col()
-        .gap(px(12.))
+    column("display-section", cx)
+        .gap(Spacing::Md)
         .child(section_title(
             "display-title",
             cx.t("demo.section_display"),
             cx,
         ))
         .child(display::render(app, cx))
+        .render(cx)
 }
 
 pub fn surfaces(
@@ -99,16 +99,15 @@ pub fn surfaces(
     _window: &mut Window,
     cx: &mut Context<GalleryApp>,
 ) -> impl IntoElement {
-    div()
-        .flex()
-        .flex_col()
-        .gap(px(12.))
+    column("surfaces-section", cx)
+        .gap(Spacing::Md)
         .child(section_title(
             "surfaces-title",
             cx.t("demo.section_surfaces"),
             cx,
         ))
         .child(surfaces::render(app, cx))
+        .render(cx)
 }
 
 pub fn inputs(
@@ -116,16 +115,15 @@ pub fn inputs(
     window: &mut Window,
     cx: &mut Context<GalleryApp>,
 ) -> impl IntoElement {
-    div()
-        .flex()
-        .flex_col()
-        .gap(px(12.))
+    column("inputs-section", cx)
+        .gap(Spacing::Md)
         .child(section_title(
             "inputs-title",
             cx.t("demo.section_inputs"),
             cx,
         ))
         .child(inputs::render(app, window, cx))
+        .render(cx)
 }
 
 pub fn controls(
@@ -133,16 +131,15 @@ pub fn controls(
     _window: &mut Window,
     cx: &mut Context<GalleryApp>,
 ) -> impl IntoElement {
-    div()
-        .flex()
-        .flex_col()
-        .gap(px(12.))
+    column("controls-section", cx)
+        .gap(Spacing::Md)
         .child(section_title(
             "controls-title",
             cx.t("demo.section_controls"),
             cx,
         ))
         .child(controls::render(app, cx))
+        .render(cx)
 }
 
 pub fn overlays(
@@ -150,16 +147,15 @@ pub fn overlays(
     _window: &mut Window,
     cx: &mut Context<GalleryApp>,
 ) -> impl IntoElement {
-    div()
-        .flex()
-        .flex_col()
-        .gap(px(12.))
+    column("overlays-section", cx)
+        .gap(Spacing::Md)
         .child(section_title(
             "overlays-title",
             cx.t("demo.section_overlays"),
             cx,
         ))
         .child(overlays::render(app, cx))
+        .render(cx)
 }
 
 pub fn lists(
@@ -167,10 +163,9 @@ pub fn lists(
     window: &mut Window,
     cx: &mut Context<GalleryApp>,
 ) -> impl IntoElement {
-    div()
-        .flex()
-        .flex_col()
-        .gap(px(12.))
+    column("lists-section", cx)
+        .gap(Spacing::Md)
         .child(section_title("lists-title", cx.t("demo.section_lists"), cx))
         .child(lists::render(app, window, cx))
+        .render(cx)
 }

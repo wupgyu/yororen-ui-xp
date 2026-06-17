@@ -1,12 +1,12 @@
 //! `InputsApp` — the demo's root view.
 
 use gpui::{
-    Context, Div, InteractiveElement, IntoElement, ParentElement, Render, Stateful,
-    StatefulInteractiveElement, Styled, Window, div, hsla, px,
+    Context, Div, IntoElement, ParentElement, Render, Stateful, Styled, Window, div, hsla, px,
 };
 use yororen_ui::headless::file_path_input::file_path_input;
 use yororen_ui::headless::keybinding_input::{KeybindingInputMode, keybinding_input};
 use yororen_ui::headless::label::label;
+use yororen_ui::headless::layout::{Inset, Spacing, column};
 use yororen_ui::headless::number_input::number_input;
 use yororen_ui::headless::password_input::password_input;
 use yororen_ui::headless::search_input::search_input;
@@ -47,22 +47,15 @@ impl InputsApp {
 
 impl Render for InputsApp {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        // Use the scrollable root. `overflow_y_scroll` is on
-        // `StatefulInteractiveElement`, so we call `.id()` first
-        // (which converts `Div` to `Stateful<Div>`) and then
-        // `.overflow_y_scroll()`. The result is `Stateful<Div>`
-        // which still implements `ParentElement::child`.
-        let scroll_root: Stateful<Div> = div()
-            .size_full()
-            .bg(hsla(0.0, 0.0, 0.97, 1.0))
-            .flex()
-            .flex_col()
-            .gap(px(24.))
-            .p(px(24.))
-            .id("inputs-scroll")
-            .overflow_y_scroll();
-
-        scroll_root
+        // Use the scrollable root via the layout primitive.
+        // `scrollable()` maps to `.overflow_scroll()` and the
+        // visual background is applied after `.render(cx)`.
+        column("inputs-scroll", cx)
+            .w_full()
+            .h_full()
+            .gap(Spacing::Xl)
+            .p(Inset::Xl)
+            .scrollable()
             // Panel 1: text_input.
             .child(panel_with_label(
                 "1. text_input",
@@ -237,6 +230,8 @@ impl Render for InputsApp {
                 "text_area value: {:?}",
                 self.text_area_value
             )))
+            .render(cx)
+            .bg(hsla(0.0, 0.0, 0.97, 1.0))
     }
 }
 
@@ -248,15 +243,11 @@ fn panel_with_label(
     blurb: &str,
     body: impl IntoElement,
     cx: &mut Context<InputsApp>,
-) -> Div {
-    div()
+) -> Stateful<Div> {
+    column("input-panel", cx)
         .w_full()
-        .bg(hsla(0.0, 0.0, 1.0, 1.0))
-        .rounded(px(8.))
-        .p(px(16.))
-        .flex()
-        .flex_col()
-        .gap_2()
+        .p(Inset::Lg)
+        .gap(Spacing::Sm)
         .child(label("title", title, cx).strong(true).render(cx))
         .child(
             label("blurb", blurb, cx)
@@ -265,6 +256,9 @@ fn panel_with_label(
                 .text_size(px(13.)),
         )
         .child(body)
+        .render(cx)
+        .bg(hsla(0.0, 0.0, 1.0, 1.0))
+        .rounded(px(8.))
 }
 
 /// One-line status caption.

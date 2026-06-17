@@ -1,7 +1,7 @@
 //! Section 2 — Display. Each component is wrapped in a `cell`
 //! that labels the component above it.
 
-use gpui::{Context, Div, ParentElement, Styled, div, px};
+use gpui::{Context, IntoElement, Styled, px};
 use yororen_ui::i18n::Translate;
 use yororen_ui::theme::ActiveTheme;
 
@@ -11,6 +11,7 @@ use yororen_ui::headless::heading::HeadingLevel;
 use yororen_ui::headless::heading::heading;
 use yororen_ui::headless::icon::icon;
 use yororen_ui::headless::label::label;
+use yororen_ui::headless::layout::{AlignItems, Spacing, column, row, wrap};
 use yororen_ui::headless::progress::progress;
 use yororen_ui::headless::skeleton::skeleton;
 use yororen_ui::headless::tag::tag;
@@ -19,14 +20,11 @@ use yororen_ui::headless::text::text;
 use crate::sections::cell;
 use crate::state::GalleryApp;
 
-pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
+pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> impl IntoElement {
     // --- 4 label styles ---
-    let labels = div()
-        .flex()
-        .flex_row()
-        .flex_wrap()
-        .items_center()
-        .gap(px(12.))
+    let labels = wrap("display-row-labels", cx)
+        .items(AlignItems::Center)
+        .gap(Spacing::Md)
         .child(cell(
             cx.t("demo.display.cell_label_default"),
             label("lbl-default", cx.t("demo.display.label_default"), cx).render(cx),
@@ -55,10 +53,8 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
         ));
 
     // --- 4 heading levels ---
-    let headings = div()
-        .flex()
-        .flex_col()
-        .gap(px(4.))
+    let headings = column("display-col-headings", cx)
+        .gap(Spacing::Xs)
         .child(cell(
             cx.t("demo.display.cell_heading_h1"),
             heading(
@@ -105,10 +101,8 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
         ));
 
     // --- 2 dividers ---
-    let dividers = div()
-        .flex()
-        .flex_col()
-        .gap(px(8.))
+    let dividers = column("display-col-dividers", cx)
+        .gap(Spacing::Sm)
         .child(
             label("dvr-h-info", cx.t("demo.display.divider_h"), cx)
                 .muted(true)
@@ -123,12 +117,9 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
         .child(divider("dvr-v1", cx).vertical().render(cx).h(px(24.)));
 
     // --- 5 badge variants ---
-    let badges = div()
-        .flex()
-        .flex_row()
-        .flex_wrap()
-        .items_center()
-        .gap(px(8.))
+    let badges = wrap("display-row-badges", cx)
+        .items(AlignItems::Center)
+        .gap(Spacing::Sm)
         .child(cell(
             cx.t("button.neutral"),
             badge("bdg-n", cx.t("demo.display.badge_neutral"), cx)
@@ -170,12 +161,9 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
     let entity_for_tag_close = cx.entity().clone();
     let tag_closable_count = app.tag_closable_count;
     let tag_close_events_template = cx.t("demo.display.tag_close_events");
-    let tag_row = div()
-        .flex()
-        .flex_row()
-        .flex_wrap()
-        .items_center()
-        .gap(px(8.))
+    let tag_row = wrap("display-row-tags", cx)
+        .items(AlignItems::Center)
+        .gap(Spacing::Sm)
         .child(cell(
             cx.t("demo.display.cell_tag_selected"),
             tag("tag-1", cx.t("demo.display.tag_toggle"), cx)
@@ -211,10 +199,8 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
         );
 
     // --- skeleton: line + block ---
-    let skeletons = div()
-        .flex()
-        .flex_col()
-        .gap(px(8.))
+    let skeletons = column("display-col-skeletons", cx)
+        .gap(Spacing::Sm)
         .child(cell(
             cx.t("demo.display.cell_skeleton_line"),
             skeleton("skl-line", cx).w(px(180.)).h(px(12.)).render(cx),
@@ -242,10 +228,8 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
 
     // --- progress ---
     let progress_label = cx.t("demo.display.loading").to_string();
-    let progress_row = div()
-        .flex()
-        .flex_col()
-        .gap(px(8.))
+    let progress_row = column("display-col-progress", cx)
+        .gap(Spacing::Sm)
         .child(cell(
             cx.t("demo.display.cell_progress_determinate"),
             progress("prg-1", cx)
@@ -263,11 +247,9 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
 
     // --- text + icon ---
     let icon_color = cx.theme().get_color("content.primary").unwrap_or_default();
-    let text_row = div()
-        .flex()
-        .flex_row()
+    let text_row = row("display-row-text", cx)
         .items_center()
-        .gap(px(12.))
+        .gap(Spacing::Md)
         .child(cell(
             cx.t("demo.display.cell_text"),
             text("txt-1", cx.t("demo.display.plain_text"), cx)
@@ -300,16 +282,15 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
             cx,
         ));
 
-    div()
-        .flex()
-        .flex_col()
-        .gap(px(12.))
-        .child(labels)
-        .child(headings)
-        .child(dividers)
-        .child(badges)
-        .child(tag_row)
-        .child(skeletons)
-        .child(progress_row)
-        .child(text_row)
+    column("display-root", cx)
+        .gap(Spacing::Md)
+        .child(labels.render(cx))
+        .child(headings.render(cx))
+        .child(dividers.render(cx))
+        .child(badges.render(cx))
+        .child(tag_row.render(cx))
+        .child(skeletons.render(cx))
+        .child(progress_row.render(cx))
+        .child(text_row.render(cx))
+        .render(cx)
 }

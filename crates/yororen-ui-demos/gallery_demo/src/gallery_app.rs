@@ -38,8 +38,8 @@
 //!    renders each item as a floating card in the top-right corner.
 
 use gpui::{
-    AnyElement, Context, Div, InteractiveElement, IntoElement, ParentElement, Render, Styled,
-    Window, div, hsla, px,
+    AnyElement, Context, Div, InteractiveElement, IntoElement, ParentElement, Render, Stateful,
+    Styled, Window, div, hsla, px,
 };
 
 use yororen_ui::ActionVariantKind;
@@ -48,6 +48,7 @@ use yororen_ui::headless::divider::divider;
 use yororen_ui::headless::heading::HeadingLevel;
 use yororen_ui::headless::heading::heading;
 use yororen_ui::headless::label::label;
+use yororen_ui::headless::layout::{AlignItems, Inset, Spacing, center, column, wrap};
 use yororen_ui::headless::modal::modal;
 use yororen_ui::headless::toggle_button::toggle_button;
 use yororen_ui::headless::virtual_list::virtual_list;
@@ -169,12 +170,11 @@ fn section_row(
                 // divider doesn't pick up the 24-px row gap on
                 // both sides.
                 let tb = build_toolbar(app, ctx);
-                let div_pair = div()
-                    .flex()
-                    .flex_col()
+                let col = column("toolbar-col", ctx)
                     .child(tb)
-                    .child(divider("toolbar-divider", ctx).apply(div()).my(px(8.)));
-                div_pair.into_any_element()
+                    .child(divider("toolbar-divider", ctx).apply(div()).my(px(8.)))
+                    .render(ctx);
+                col.into_any_element()
             }
             1 => sections::actions(app, window, ctx).into_any_element(),
             2 => sections::display(app, window, ctx).into_any_element(),
@@ -226,14 +226,12 @@ fn build_modal_overlay(app: &GalleryApp, cx: &mut Context<GalleryApp>) -> gpui::
         .w(px(360.));
 
     gpui::deferred(
-        div()
+        center("modal-scrim", cx)
+            .child(modal_panel)
+            .render(cx)
             .absolute()
             .inset_0()
-            .flex()
-            .items_center()
-            .justify_center()
-            .bg(hsla(0.0, 0.0, 0.0, 0.55))
-            .child(modal_panel),
+            .bg(hsla(0.0, 0.0, 0.0, 0.55)),
     )
     .with_priority(2)
 }
@@ -244,14 +242,11 @@ fn build_modal_overlay(app: &GalleryApp, cx: &mut Context<GalleryApp>) -> gpui::
 /// ```
 /// [title] | [Default | Brutalism]  [Light | Dark]  [EN | 中文 | العربية]  [Show toast]
 /// ```
-fn build_toolbar(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
+fn build_toolbar(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Stateful<Div> {
     let entity = cx.entity().clone();
-    let mut row = div()
-        .flex()
-        .flex_row()
-        .flex_wrap()
-        .items_center()
-        .gap(px(12.))
+    let mut toolbar = wrap("toolbar", cx)
+        .items(AlignItems::Center)
+        .gap(Spacing::Md)
         .child(
             heading("title", HeadingLevel::H1, cx.t("demo.title"), cx)
                 .apply(div())
@@ -261,7 +256,7 @@ fn build_toolbar(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
     // RendererKind toggle: 2 toggle_buttons, mutually exclusive via
     // state.current_renderer.
     let entity_for_renderer = entity.clone();
-    row = row.child(
+    toolbar = toolbar.child(
         toggle_button("renderer-default", cx)
             .selected(app.current_renderer == RendererKind::Default)
             .variant(ActionVariantKind::Primary)
@@ -274,7 +269,7 @@ fn build_toolbar(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
             .child(cx.t("demo.renderer_default")),
     );
     let entity_for_renderer = entity.clone();
-    row = row.child(
+    toolbar = toolbar.child(
         toggle_button("renderer-brutalism", cx)
             .selected(app.current_renderer == RendererKind::Brutalism)
             .variant(ActionVariantKind::Primary)
@@ -289,7 +284,7 @@ fn build_toolbar(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
 
     // Dark mode toggle (2 toggle_buttons).
     let entity_for_dark = entity.clone();
-    row = row.child(
+    toolbar = toolbar.child(
         toggle_button("dark-light", cx)
             .selected(app.dark_mode == DarkMode::Light)
             .on_toggle(move |_selected, _ev, _window, cx| {
@@ -301,7 +296,7 @@ fn build_toolbar(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
             .child(cx.t("demo.theme_light")),
     );
     let entity_for_dark = entity.clone();
-    row = row.child(
+    toolbar = toolbar.child(
         toggle_button("dark-dark", cx)
             .selected(app.dark_mode == DarkMode::Dark)
             .on_toggle(move |_selected, _ev, _window, cx| {
@@ -340,13 +335,13 @@ fn build_toolbar(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
             })
             .render(cx)
             .child(label);
-        row = row.child(tb);
+        toolbar = toolbar.child(tb);
     }
 
     // Show toast button.
     let entity_for_toast = entity.clone();
     let toast_title = cx.t("demo.toast_title").to_string();
-    row = row.child(
+    toolbar = toolbar.child(
         button("show-toast", cx)
             .variant(ActionVariantKind::Danger)
             .on_click(move |_, _, cx| {
@@ -374,7 +369,7 @@ fn build_toolbar(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
     // Show notification (sticky) button.
     let entity_for_notify = entity.clone();
     let notification_title = cx.t("demo.notification_title").to_string();
-    row = row.child(
+    toolbar = toolbar.child(
         button("show-notification", cx)
             .on_click(move |_, _, cx| {
                 let id = entity_for_notify.update(cx, |s, _cx| s.toast_count + 1);
@@ -393,12 +388,12 @@ fn build_toolbar(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
             .child(cx.t("demo.show_notification")),
     );
 
-    row
+    toolbar.render(cx)
 }
 
 /// Footer at the bottom: shows live counters so the user can
 /// verify state changes are wired correctly.
-fn footer_section(app: &GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
+fn footer_section(app: &GalleryApp, cx: &mut Context<GalleryApp>) -> Stateful<Div> {
     let form_submit_label = cx.t("demo.footer.form_submit_count").to_string();
     let email_label = cx.t("demo.footer.email").to_string();
     let error_label = cx.t("demo.footer.error").to_string();
@@ -409,15 +404,9 @@ fn footer_section(app: &GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
     let toast_label = cx.t("demo.footer.toast_count").to_string();
     let locale_label = cx.t("demo.footer.locale").to_string();
 
-    div()
-        .flex()
-        .flex_col()
-        .gap(px(4.))
-        .mt(px(16.))
-        .p(px(12.))
-        .rounded(px(6.))
-        .border_1()
-        .border_color(hsla(0.0, 0.0, 0.5, 0.3))
+    column("footer", cx)
+        .gap(Spacing::Xs)
+        .p(Inset::Md)
         .child(
             label(
                 "footer-title",
@@ -455,4 +444,9 @@ fn footer_section(app: &GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
             cx,
         )
         .render(cx))
+        .render(cx)
+        .mt(px(16.))
+        .rounded(px(6.))
+        .border_1()
+        .border_color(hsla(0.0, 0.0, 0.5, 0.3))
 }

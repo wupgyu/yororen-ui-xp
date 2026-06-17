@@ -17,13 +17,11 @@
 //!    background (the circle "dissolves" into the button over
 //!    450ms). Driven by `window.request_animation_frame`.
 
-use gpui::{
-    Context, InteractiveElement, IntoElement, ParentElement, Render, StatefulInteractiveElement,
-    Styled, Window, div, px,
-};
+use gpui::{Context, IntoElement, ParentElement, Render, Styled, Window, div, px};
 use yororen_ui::ActionVariantKind;
 use yororen_ui::headless::button::button;
 use yororen_ui::headless::label::label;
+use yororen_ui::headless::layout::{Inset, Spacing, column};
 
 use crate::material_button::material_button;
 
@@ -37,7 +35,7 @@ impl LayersApp {
 
 impl Render for LayersApp {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        // Column 1: pure headless — caller writes every pixel.
+        // Layer 1: pure headless — caller writes every pixel.
         // `apply` is purely a11y: focus + click. There is no
         // built-in hover / active feedback. The only
         // interactive signal is the cursor (we set it to
@@ -54,7 +52,7 @@ impl Render for LayersApp {
                 .child("click me"),
         );
 
-        // Column 2: headless + default-renderer sugar. Uses
+        // Layer 2: headless + default-renderer sugar. Uses
         // the demo theme's `Neutral` action palette — pure
         // black `#0A0A0A`, hover `#2A2A2A`, active `#1A1A1A`
         // (modern monochrome, ~8% lightness delta on
@@ -64,7 +62,7 @@ impl Render for LayersApp {
             .render(cx)
             .child("Click me");
 
-        // Column 3: headless + caller fully custom. The caller
+        // Layer 3: headless + caller fully custom. The caller
         // paints its own Material-Design-style background, radius,
         // typography, and the click ripple animation. The
         // ripple is a custom `gpui::Element` that uses
@@ -81,46 +79,40 @@ impl Render for LayersApp {
         // layer (focus + click) is still provided by `apply`.
         let custom_btn = material_button("material-custom", "Click me".into(), cx, window);
 
-        div()
-            .id("layers-scroll")
-            .size_full()
-            .bg(gpui::hsla(0.0, 0.0, 0.97, 1.0))
-            .flex()
-            .flex_col()
-            .gap(px(24.))
-            .p(px(24.))
-            .overflow_y_scroll()
+        column("layers-scroll", cx)
+            .w_full()
+            .h_full()
+            .gap(Spacing::Xl)
+            .p(Inset::Xl)
+            .scrollable()
             .child(panel_body(
                 "1. Headless only (no built-in feedback)",
                 "`headless::button` only wires a11y: focus + click. The button does **not** visually respond to hover or press — try hovering, nothing changes (only the cursor becomes a pointer). Visual feedback is the caller's responsibility; see panel 3 for the caller-painted version.",
-                div()
-                    .flex()
-                    .flex_col()
-                    .gap_2()
+                column("panel-1-body", cx)
+                    .gap(Spacing::Sm)
                     .child(headless_btn)
-                    .child(label("caption", "headless caption", cx).render(cx)),
+                    .child(label("caption", "headless caption", cx).render(cx))
+                    .render(cx),
                 cx,
             ))
             .child(panel_body(
                 "2. + Default renderer",
                 "headless::button + .render(cx) uses the installed TokenButtonRenderer. Padding, radius, bg all come from the JSON theme.",
-                div()
-                    .flex()
-                    .flex_col()
-                    .gap_2()
+                column("panel-2-body", cx)
+                    .gap(Spacing::Sm)
                     .child(default_btn)
-                    .child(label("caption", "default caption", cx).render(cx)),
+                    .child(label("caption", "default caption", cx).render(cx))
+                    .render(cx),
                 cx,
             ))
             .child(panel_body(
                 "3. + Caller custom (Material Design + ripple)",
                 "Same headless factory as panel 1, but the caller paints the entire look: M2 raised-button teal background, 4px radius, 14px medium-weight label, hover lightens the fill. On click, a 20%-alpha white circle expands from the click point over 450ms (ease-out cubic) and fades to 0 alpha — the classic Material ripple. The ripple is a custom `gpui::Element` (built with `PathBuilder` so the painted shape is a true circle, not a square) and the animation is driven by `window.request_animation_frame`; try clicking different parts of the button to see each ripple emanate from that point.",
-                div()
-                    .flex()
-                    .flex_col()
-                    .gap_2()
+                column("panel-3-body", cx)
+                    .gap(Spacing::Sm)
                     .child(custom_btn)
-                    .child(label("caption", "material caption", cx).render(cx)),
+                    .child(label("caption", "material caption", cx).render(cx))
+                    .render(cx),
                 cx,
             ))
             .child({
@@ -136,16 +128,22 @@ impl Render for LayersApp {
                     cx,
                 )
             })
+            .render(cx)
+            .bg(gpui::hsla(0.0, 0.0, 0.97, 1.0))
     }
 }
 
 fn text_input_strip(window: &mut Window, cx: &mut Context<LayersApp>) -> impl IntoElement + use<> {
     use yororen_ui::headless::text_input::text_input;
-    div().flex().flex_col().gap_2().w_full().child(
-        text_input("demo-text-input")
-            .placeholder("Type here…")
-            .render(cx, window),
-    )
+    column("text-input-strip", cx)
+        .gap(Spacing::Sm)
+        .w_full()
+        .child(
+            text_input("demo-text-input")
+                .placeholder("Type here…")
+                .render(cx, window),
+        )
+        .render(cx)
 }
 
 fn panel_body(
@@ -154,14 +152,10 @@ fn panel_body(
     body: impl IntoElement,
     cx: &mut Context<LayersApp>,
 ) -> impl IntoElement {
-    div()
+    column("panel-body", cx)
         .w_full()
-        .bg(gpui::hsla(0.0, 0.0, 1.0, 1.0))
-        .rounded(px(8.))
-        .p(px(16.))
-        .flex()
-        .flex_col()
-        .gap_2()
+        .p(Inset::Lg)
+        .gap(Spacing::Sm)
         .child(label("title", title, cx).strong(true).render(cx))
         .child(
             label("blurb", blurb, cx)
@@ -171,4 +165,7 @@ fn panel_body(
                 .w_full(),
         )
         .child(body)
+        .render(cx)
+        .bg(gpui::hsla(0.0, 0.0, 1.0, 1.0))
+        .rounded(px(8.))
 }

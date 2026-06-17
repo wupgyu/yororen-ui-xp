@@ -139,11 +139,8 @@ pub(crate) const JUSTIFY_CONTENT_VARIANTS: &[(&str, &str)] = &[
     ("evenly", "Evenly"),
 ];
 
-pub(crate) const LENGTH_VARIANTS: &[(&str, &str)] = &[
-    ("full", "Full"),
-    ("fit", "Fit"),
-    ("auto", "Auto"),
-];
+pub(crate) const LENGTH_VARIANTS: &[(&str, &str)] =
+    &[("full", "Full"), ("fit", "Fit"), ("auto", "Auto")];
 
 pub(crate) fn attr_value_tokens(attr: &AstAttribute) -> Result<TokenStream, XmlError> {
     if let Some(expr) = &attr.expr {

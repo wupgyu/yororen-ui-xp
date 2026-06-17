@@ -4,16 +4,16 @@
 
 use std::collections::BTreeSet;
 
-use gpui::{Context, Div, ElementId, IntoElement, ParentElement, Styled, Window, div, px};
+use gpui::{Context, ElementId, IntoElement, ParentElement, Styled, Window, px};
 
 use yororen_ui::headless::button::button;
 use yororen_ui::headless::form::form;
 use yororen_ui::headless::form_field::form_field;
 use yororen_ui::headless::label::label;
+use yororen_ui::headless::layout::{Spacing, column, row, spacer};
 use yororen_ui::headless::list_item::list_item;
 use yororen_ui::headless::listbox::listbox;
 use yororen_ui::headless::radio_group::radio_group;
-use yororen_ui::headless::spacer::spacer;
 use yororen_ui::headless::table::TableColumn;
 use yororen_ui::headless::table::table;
 use yororen_ui::headless::text_input::text_input;
@@ -27,7 +27,11 @@ use yororen_ui::i18n::Translate;
 use crate::sections::cell;
 use crate::state::GalleryApp;
 
-pub fn render(app: &mut GalleryApp, window: &mut Window, cx: &mut Context<GalleryApp>) -> Div {
+pub fn render(
+    app: &mut GalleryApp,
+    window: &mut Window,
+    cx: &mut Context<GalleryApp>,
+) -> impl IntoElement {
     // Sync the virtual_list controller's item_count to the demo's
     // tracked `vl_item_count`. The `on_visible_range_change`
     // callback below only bumps `vl_item_count` (a plain field
@@ -64,7 +68,7 @@ pub fn render(app: &mut GalleryApp, window: &mut Window, cx: &mut Context<Galler
         ("li-2", second_label),
         ("li-3", third_label),
     ];
-    let mut list_col = div().flex().flex_col().gap(px(4.)).w(px(220.));
+    let mut list_col = column("lists-list-col", cx).gap(Spacing::Xs).w(px(220.));
     for (i, (id, title)) in list_items.iter().enumerate() {
         list_col = list_col.child(
             list_item(*id, title.clone(), cx)
@@ -72,7 +76,7 @@ pub fn render(app: &mut GalleryApp, window: &mut Window, cx: &mut Context<Galler
                 .render(cx),
         );
     }
-    let list_wrapped = cell(cx.t("demo.lists.cell_list"), list_col, cx);
+    let list_wrapped = cell(cx.t("demo.lists.cell_list"), list_col.render(cx), cx);
 
     // --- listbox: scrollable single-select with keyboard nav ---
     // The listbox owns its own `Entity<ListboxState>`; the
@@ -105,10 +109,8 @@ pub fn render(app: &mut GalleryApp, window: &mut Window, cx: &mut Context<Galler
         1,
     );
     let lb_el = listbox("lists-listbox", app.listbox_state.clone()).render(cx);
-    let lb_col = div()
-        .flex()
-        .flex_col()
-        .gap(px(6.))
+    let lb_col = column("lists-listbox-col", cx)
+        .gap(Spacing::Sm)
         .w(px(240.))
         .child(lb_el)
         .child(
@@ -116,7 +118,7 @@ pub fn render(app: &mut GalleryApp, window: &mut Window, cx: &mut Context<Galler
                 .muted(true)
                 .render(cx),
         );
-    let listbox_wrapped = cell(cx.t("demo.lists.cell_listbox"), lb_col, cx);
+    let listbox_wrapped = cell(cx.t("demo.lists.cell_listbox"), lb_col.render(cx), cx);
 
     // --- form + form_field (with a real text_input + submit button) ---
     let entity_form = cx.entity().clone();
@@ -389,12 +391,11 @@ pub fn render(app: &mut GalleryApp, window: &mut Window, cx: &mut Context<Galler
         })
         .render(cx)
         .child(cx.t("demo.common.bottom"));
-    let controls_row = div()
-        .flex()
-        .flex_row()
-        .gap(px(6.))
+    let controls_row = row("lists-vl-controls", cx)
+        .gap(Spacing::Sm)
         .child(top_btn)
-        .child(bottom_btn);
+        .child(bottom_btn)
+        .render(cx);
     let vl_status_template = cx.t("demo.lists.vl_status").to_string();
     let visible_str = format!("{:?}", app.vl_visible_range);
     let vl_status_text = vl_status_template
@@ -404,13 +405,12 @@ pub fn render(app: &mut GalleryApp, window: &mut Window, cx: &mut Context<Galler
     let status_label = label("vl-status", vl_status_text, cx)
         .muted(true)
         .render(cx);
-    let vl_col = div()
-        .flex()
-        .flex_col()
-        .gap(px(6.))
+    let vl_col = column("lists-vl-col", cx)
+        .gap(Spacing::Sm)
         .child(vl)
         .child(controls_row)
-        .child(status_label);
+        .child(status_label)
+        .render(cx);
     let vl_wrapped = cell(cx.t("demo.lists.cell_vl"), vl_col, cx);
 
     // --- uniform_virtual_list ---
@@ -446,18 +446,16 @@ pub fn render(app: &mut GalleryApp, window: &mut Window, cx: &mut Context<Galler
         })
         .render(cx)
         .child(cx.t("demo.common.bottom"));
-    let uvl_controls = div()
-        .flex()
-        .flex_row()
-        .gap(px(6.))
+    let uvl_controls = row("lists-uvl-controls", cx)
+        .gap(Spacing::Sm)
         .child(uvl_top_btn)
-        .child(uvl_bottom_btn);
-    let uvl_col = div()
-        .flex()
-        .flex_col()
-        .gap(px(6.))
+        .child(uvl_bottom_btn)
+        .render(cx);
+    let uvl_col = column("lists-uvl-col", cx)
+        .gap(Spacing::Sm)
         .child(uvl)
-        .child(uvl_controls);
+        .child(uvl_controls)
+        .render(cx);
     let uvl_wrapped = cell(cx.t("demo.lists.cell_uvl"), uvl_col, cx);
 
     // --- spacer ---
@@ -476,10 +474,8 @@ pub fn render(app: &mut GalleryApp, window: &mut Window, cx: &mut Context<Galler
     );
     let rg_wrapped = cell(cx.t("demo.controls.cell_radio_group_empty"), rg_demo, cx);
 
-    div()
-        .flex()
-        .flex_col()
-        .gap(px(12.))
+    column("lists-root", cx)
+        .gap(Spacing::Md)
         .child(list_wrapped)
         .child(listbox_wrapped)
         .child(form_wrapped)
@@ -489,4 +485,5 @@ pub fn render(app: &mut GalleryApp, window: &mut Window, cx: &mut Context<Galler
         .child(uvl_wrapped)
         .child(sp_wrapped)
         .child(rg_wrapped)
+        .render(cx)
 }

@@ -611,7 +611,11 @@ fn override_to_extracted(o: &OverrideEntry) -> Option<Extracted> {
 
 // -- extraction ----------------------------------------------------------------
 
-fn extract(ast: &syn::File, module_name: &str, module_path: &str) -> Result<Option<Extracted>, String> {
+fn extract(
+    ast: &syn::File,
+    module_name: &str,
+    module_path: &str,
+) -> Result<Option<Extracted>, String> {
     // 1. Find the factory function.
     let factory = find_factory(ast, module_name);
     let factory = match factory {

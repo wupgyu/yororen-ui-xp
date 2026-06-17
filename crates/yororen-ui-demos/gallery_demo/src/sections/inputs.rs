@@ -1,13 +1,14 @@
 //! Section 4 — Inputs. Each component instance is wrapped in a
 //! labelled `cell` so the user can identify every input.
 
-use gpui::{Context, Div, IntoElement, ParentElement, Styled, Window, div, px};
+use gpui::{Context, IntoElement, Styled, Window, px};
 
 use yororen_ui::headless::combo_box::combo_box;
 use yororen_ui::headless::file_path_input::file_path_input;
 use yororen_ui::headless::keybinding_input::KeybindingInputMode;
 use yororen_ui::headless::keybinding_input::keybinding_input;
 use yororen_ui::headless::label::label;
+use yororen_ui::headless::layout::{Inset, Spacing, column};
 use yororen_ui::headless::number_input::number_input;
 use yororen_ui::headless::password_input::password_input;
 use yororen_ui::headless::search_input::search_input;
@@ -18,7 +19,11 @@ use yororen_ui::i18n::Translate;
 
 use crate::state::GalleryApp;
 
-pub fn render(app: &mut GalleryApp, window: &mut Window, cx: &mut Context<GalleryApp>) -> Div {
+pub fn render(
+    app: &mut GalleryApp,
+    window: &mut Window,
+    cx: &mut Context<GalleryApp>,
+) -> impl IntoElement {
     let entity = cx.entity().clone();
     let value_prefix = cx.t("demo.input.value").to_string();
     let mode_prefix = cx.t("demo.input.mode").to_string();
@@ -147,10 +152,8 @@ pub fn render(app: &mut GalleryApp, window: &mut Window, cx: &mut Context<Galler
 
     // assemble — each input goes in its own labelled cell,
     // followed by a status line that shows the live value.
-    div()
-        .flex()
-        .flex_col()
-        .gap(px(16.))
+    column("inputs-root", cx)
+        .gap(Spacing::Md)
         .child(input_cell(
             cx.t("input.text"),
             text_input_el,
@@ -205,6 +208,7 @@ pub fn render(app: &mut GalleryApp, window: &mut Window, cx: &mut Context<Galler
             &format!("{value_prefix} {}", app.combo_demo_value),
             cx,
         ))
+        .render(cx)
 }
 
 /// Render a labelled input cell with a status line below it
@@ -217,15 +221,10 @@ pub fn input_cell(
     el: impl IntoElement,
     status: &str,
     cx: &mut Context<GalleryApp>,
-) -> Div {
-    div()
-        .flex()
-        .flex_col()
-        .gap(px(2.))
-        .p(px(8.))
-        .rounded(px(6.))
-        .border_1()
-        .border_color(gpui::hsla(0.0, 0.0, 0.5, 0.15))
+) -> impl IntoElement {
+    column("input-cell", cx)
+        .gap(Spacing::Xs)
+        .p(Inset::Sm)
         .child(
             label("input-name", name, cx)
                 .muted(true)
@@ -239,4 +238,8 @@ pub fn input_cell(
                 .render(cx)
                 .text_size(px(11.)),
         )
+        .render(cx)
+        .rounded(px(6.))
+        .border_1()
+        .border_color(gpui::hsla(0.0, 0.0, 0.5, 0.15))
 }

@@ -82,10 +82,6 @@ impl Render for CounterApp {
             )
             .render(cx);
 
-        center("root", cx)
-            .w_full()
-            .h_full()
-            .child(card)
-            .render(cx)
+        center("root", cx).w_full().h_full().child(card).render(cx)
     }
 }

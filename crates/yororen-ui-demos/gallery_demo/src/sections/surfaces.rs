@@ -1,7 +1,7 @@
 //! Section 3 — Surfaces. Each component is wrapped in a
 //! labelled `cell` so the user can identify every instance.
 
-use gpui::{Context, Div, ParentElement, Styled, div, hsla, px};
+use gpui::{Context, IntoElement, ParentElement, Styled, hsla, px};
 
 use yororen_ui::headless::avatar::avatar;
 use yororen_ui::headless::button::button;
@@ -13,6 +13,7 @@ use yororen_ui::headless::image::ImageSource;
 use yororen_ui::headless::image::image;
 use yororen_ui::headless::keybinding_display::keybinding_display;
 use yororen_ui::headless::label::label;
+use yororen_ui::headless::layout::{AlignItems, Spacing, column, row, wrap};
 use yororen_ui::headless::panel::panel;
 use yororen_ui::headless::shortcut_hint::shortcut_hint;
 use yororen_ui::i18n::Translate;
@@ -20,13 +21,11 @@ use yororen_ui::i18n::Translate;
 use crate::sections::cell;
 use crate::state::GalleryApp;
 
-pub fn render(_app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
+pub fn render(_app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> impl IntoElement {
     // --- avatars ---
-    let avatars = div()
-        .flex()
-        .flex_row()
+    let avatars = row("surfaces-row-avatars", cx)
         .items_center()
-        .gap(px(12.))
+        .gap(Spacing::Md)
         .child(cell(
             cx.t("demo.surfaces.cell_avatar_initials_status"),
             avatar("ava-1", cx)
@@ -144,37 +143,31 @@ pub fn render(_app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
     .render(cx);
     let sh_wrapped = cell(cx.t("demo.surfaces.cell_shortcut_hint"), sh, cx);
 
-    div()
-        .flex()
-        .flex_col()
-        .gap(px(12.))
-        .child(avatars)
+    column("surfaces-root", cx)
+        .gap(Spacing::Md)
+        .child(avatars.render(cx))
         .child(
-            div()
-                .flex()
-                .flex_row()
-                .flex_wrap()
-                .gap(px(12.))
+            wrap("surfaces-row-cards", cx)
+                .gap(Spacing::Md)
                 .child(card_wrapped)
                 .child(panel_wrapped)
-                .child(empty_wrapped),
+                .child(empty_wrapped)
+                .render(cx),
         )
         .child(
-            div()
-                .flex()
-                .flex_row()
-                .flex_wrap()
-                .gap(px(12.))
-                .items_center()
+            wrap("surfaces-row-ring-img", cx)
+                .items(AlignItems::Center)
+                .gap(Spacing::Md)
                 .child(ring_wrapped)
-                .child(img_wrapped),
+                .child(img_wrapped)
+                .render(cx),
         )
         .child(
-            div()
-                .flex()
-                .flex_col()
-                .gap(px(8.))
+            column("surfaces-col-kbd", cx)
+                .gap(Spacing::Sm)
                 .child(kbd_wrapped)
-                .child(sh_wrapped),
+                .child(sh_wrapped)
+                .render(cx),
         )
+        .render(cx)
 }

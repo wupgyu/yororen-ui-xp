@@ -9,10 +9,8 @@ use gpui::{
     StatefulInteractiveElement, Styled, div,
 };
 
+use super::types::{AlignItems, Inset, JustifyContent, Length, Spacing, apply_height, apply_width};
 use crate::theme::ActiveTheme;
-use super::types::{
-    AlignItems, Inset, JustifyContent, Length, Spacing, apply_height, apply_width,
-};
 
 pub struct RowProps {
     pub id: ElementId,

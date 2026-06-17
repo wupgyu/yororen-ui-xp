@@ -11,7 +11,7 @@
 //! Icon colour is derived from the renderer's `fg` token
 //! automatically — no need to pass a hardcoded colour.
 
-use gpui::{Context, Div, ParentElement, Styled, div, px};
+use gpui::{Context, IntoElement};
 
 use yororen_ui::ActionVariantKind;
 use yororen_ui::headless::button::button;
@@ -19,6 +19,7 @@ use yororen_ui::headless::button_group::button_group;
 use yororen_ui::headless::dropdown_menu::{DropdownItem, DropdownMenuItem};
 use yororen_ui::headless::icon::IconSource;
 use yororen_ui::headless::icon_button::icon_button;
+use yororen_ui::headless::layout::{AlignItems, Spacing, column, row, wrap};
 use yororen_ui::headless::split_button::split_button;
 use yororen_ui::headless::toggle_button::toggle_button;
 use yororen_ui::i18n::Translate;
@@ -26,16 +27,13 @@ use yororen_ui::i18n::Translate;
 use crate::sections::cell;
 use crate::state::GalleryApp;
 
-pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
+pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> impl IntoElement {
     let entity = cx.entity().clone();
 
     // --- 3 button variants + disabled ---
-    let row_buttons = div()
-        .flex()
-        .flex_row()
-        .flex_wrap()
-        .items_center()
-        .gap(px(12.))
+    let row_buttons = wrap("actions-row-buttons", cx)
+        .items(AlignItems::Center)
+        .gap(Spacing::Md)
         .child(cell(
             cx.t("demo.actions.cell_button_neutral"),
             button("btn-neutral", cx)
@@ -75,12 +73,9 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
 
     // --- icon_button: variant + icon only, colour is
     //     auto-derived from the renderer's `fg` token. ---
-    let row_icon_button = div()
-        .flex()
-        .flex_row()
-        .flex_wrap()
-        .items_center()
-        .gap(px(12.))
+    let row_icon_button = wrap("actions-row-icon", cx)
+        .items(AlignItems::Center)
+        .gap(Spacing::Md)
         .child(cell(
             cx.t("demo.actions.cell_icon_button"),
             icon_button("ibn-check", cx)
@@ -101,11 +96,9 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
 
     // --- toggle_button ---
     let entity_for_tb = entity.clone();
-    let row_toggle = div()
-        .flex()
-        .flex_row()
+    let row_toggle = row("actions-row-toggle", cx)
         .items_center()
-        .gap(px(12.))
+        .gap(Spacing::Md)
         .child(cell(
             cx.t("demo.actions.cell_toggle_button"),
             toggle_button("tgb-1", cx)
@@ -131,11 +124,9 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
     let split_caption = cx.t("demo.actions.save").to_string();
     let split_save_as = cx.t("demo.actions.save_as").to_string();
     let split_save_all = cx.t("demo.actions.save_all").to_string();
-    let row_split = div()
-        .flex()
-        .flex_row()
+    let row_split = row("actions-row-split", cx)
         .items_center()
-        .gap(px(12.))
+        .gap(Spacing::Md)
         .child(cell(
             cx.t("demo.actions.cell_split_button"),
             split_button(
@@ -168,11 +159,9 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
     let left_caption = cx.t("demo.actions.left").to_string();
     let mid_caption = cx.t("demo.actions.mid").to_string();
     let right_caption = cx.t("demo.actions.right").to_string();
-    let row_group = div()
-        .flex()
-        .flex_row()
+    let row_group = row("actions-row-group", cx)
         .items_center()
-        .gap(px(12.))
+        .gap(Spacing::Md)
         .child(cell(
             cx.t("demo.actions.cell_button_group"),
             button_group("btg-1", cx)
@@ -201,13 +190,12 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
             cx,
         ));
 
-    div()
-        .flex()
-        .flex_col()
-        .gap(px(12.))
-        .child(row_buttons)
-        .child(row_icon_button)
-        .child(row_toggle)
-        .child(row_split)
-        .child(row_group)
+    column("actions-root", cx)
+        .gap(Spacing::Md)
+        .child(row_buttons.render(cx))
+        .child(row_icon_button.render(cx))
+        .child(row_toggle.render(cx))
+        .child(row_split.render(cx))
+        .child(row_group.render(cx))
+        .render(cx)
 }

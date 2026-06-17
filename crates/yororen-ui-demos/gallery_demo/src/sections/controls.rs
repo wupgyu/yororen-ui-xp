@@ -1,10 +1,11 @@
 //! Section 5 — Controls. Each component is wrapped in a labelled
 //! `cell` so the user can identify every instance.
 
-use gpui::{Context, Div, ParentElement, Styled, div, px};
+use gpui::{Context, IntoElement, ParentElement, Styled, div, px};
 
 use yororen_ui::headless::checkbox::checkbox;
 use yororen_ui::headless::label::label;
+use yororen_ui::headless::layout::{AlignItems, Spacing, column, wrap};
 use yororen_ui::headless::radio::radio;
 use yororen_ui::headless::radio_group::radio_group;
 use yororen_ui::headless::slider::slider;
@@ -15,7 +16,7 @@ use crate::sections::cell;
 use crate::sections::input_cell;
 use crate::state::GalleryApp;
 
-pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
+pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> impl IntoElement {
     let entity = cx.entity().clone();
     let value_prefix = cx.t("demo.input.value").to_string();
 
@@ -77,17 +78,12 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
 
     let slider_status_template = cx.t("demo.controls.slider_value").to_string();
     let formatted_slider = format!("{:.1}", slider_value);
-    div()
-        .flex()
-        .flex_col()
-        .gap(px(12.))
+    column("controls-root", cx)
+        .gap(Spacing::Md)
         .child(
-            div()
-                .flex()
-                .flex_row()
-                .flex_wrap()
-                .gap(px(12.))
-                .items_center()
+            wrap("controls-row-cb-sw", cx)
+                .gap(Spacing::Md)
+                .items(AlignItems::Center)
                 .child(input_cell(
                     cx.t("demo.controls.cell_checkbox"),
                     cb,
@@ -99,7 +95,8 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
                     sw,
                     &format!("{value_prefix} {}", app.switch_value),
                     cx,
-                )),
+                ))
+                .render(cx),
         )
         .child(cell(
             cx.t("demo.controls.cell_radio_group"),
@@ -107,10 +104,8 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
             cx,
         ))
         .child(
-            div()
-                .flex()
-                .flex_col()
-                .gap(px(4.))
+            column("controls-slider-col", cx)
+                .gap(Spacing::Sm)
                 .child(cell(cx.t("demo.controls.cell_slider"), slider_track, cx))
                 .child(
                     label(
@@ -120,6 +115,8 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
                     )
                     .muted(true)
                     .render(cx),
-                ),
+                )
+                .render(cx),
         )
+        .render(cx)
 }

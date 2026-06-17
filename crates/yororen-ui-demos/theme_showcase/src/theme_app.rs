@@ -19,11 +19,12 @@
 //! pattern for production code — apps should install their theme
 //! once at boot and never touch it again.
 
-use gpui::{Context, IntoElement, ParentElement, Render, Styled, Window, div, px};
+use gpui::{Context, IntoElement, ParentElement, Render, Styled, Window};
 use yororen_ui::ActionVariantKind;
 use yororen_ui::Theme;
 use yororen_ui::headless::button::button;
 use yororen_ui::headless::label::label;
+use yororen_ui::headless::layout::{Inset, Spacing, column};
 use yororen_ui::theme as theme_mod;
 use yororen_ui::theme::ActiveTheme;
 
@@ -139,13 +140,11 @@ impl Render for ThemeApp {
             .render(cx)
             .child(format!("Next theme → ({}/{})", current + 1, total));
 
-        div()
-            .size_full()
-            .bg(surface)
-            .p(px(24.))
-            .flex()
-            .flex_col()
-            .gap_3()
+        column("theme-root", cx)
+            .w_full()
+            .h_full()
+            .p(Inset::Lg)
+            .gap(Spacing::Md)
             .child(
                 label(
                     "title",
@@ -156,5 +155,7 @@ impl Render for ThemeApp {
             )
             .child(label("blurb", format!("Currently: {} — {}", name, blurb), cx).render(cx))
             .child(next_btn)
+            .render(cx)
+            .bg(surface)
     }
 }

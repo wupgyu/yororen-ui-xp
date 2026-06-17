@@ -3,12 +3,13 @@
 
 use std::collections::HashMap;
 
-use gpui::{Context, Div, IntoElement, ParentElement, Styled, div, px};
+use gpui::{Context, IntoElement, ParentElement, Styled, div, px};
 
 use yororen_ui::headless::button::button;
 use yororen_ui::headless::disclosure::disclosure;
 use yororen_ui::headless::dropdown_menu::dropdown_menu;
 use yororen_ui::headless::label::label;
+use yororen_ui::headless::layout::{Spacing, column};
 use yororen_ui::headless::menu::menu;
 use yororen_ui::headless::overlay::overlay;
 use yororen_ui::headless::popover::popover;
@@ -18,7 +19,7 @@ use yororen_ui::i18n::Translate;
 use crate::sections::cell;
 use crate::state::GalleryApp;
 
-pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
+pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> impl IntoElement {
     // --- modal trigger only ---
     //
     // The modal scrim/panel itself is rendered by
@@ -36,7 +37,9 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
         .child(cx.t("demo.modal.open"));
     let modal_wrapped = cell(
         cx.t("demo.modal.cell"),
-        div().flex().flex_col().child(open_modal_btn),
+        column("ovl-modal-cell-col", cx)
+            .child(open_modal_btn)
+            .render(cx),
         cx,
     );
     let is_modal_open = app.modal_state.read(cx).open;
@@ -189,10 +192,8 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
     summary_args.insert("dropdown", app.dropdown_demo_value.clone());
     summary_args.insert("menu", app.menu_demo_value.clone());
     let summary_text = cx.t_with_named_args("demo.overlays.summary", &summary_args);
-    div()
-        .flex()
-        .flex_col()
-        .gap(px(12.))
+    column("overlays-root", cx)
+        .gap(Spacing::Md)
         .child(modal_wrapped)
         .child(popover_wrapped)
         .child(tooltip_wrapped)
@@ -204,4 +205,5 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> Div {
                 .muted(true)
                 .render(cx),
         )
+        .render(cx)
 }

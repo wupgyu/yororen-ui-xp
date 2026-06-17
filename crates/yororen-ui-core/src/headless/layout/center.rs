@@ -52,11 +52,7 @@ impl CenterProps {
     }
 
     pub fn render(self, _cx: &App) -> Stateful<Div> {
-        let mut el: Stateful<Div> = div()
-            .id(self.id)
-            .flex()
-            .items_center()
-            .justify_center();
+        let mut el: Stateful<Div> = div().id(self.id).flex().items_center().justify_center();
         if let Some(w) = self.width {
             el = apply_width(el, w);
         }
