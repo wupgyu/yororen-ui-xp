@@ -20,7 +20,6 @@
 #![forbid(unsafe_code)]
 
 pub mod ast;
-pub mod class;
 pub mod codegen;
 pub mod error;
 pub mod parser;
