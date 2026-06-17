@@ -508,6 +508,7 @@ pub fn is_known_shorthand_method(name: &str) -> bool {
         | "min_w_full" | "min_h_full" | "max_w_full" | "max_h_full"
         // overflow / display
         | "overflow_hidden" | "overflow_x_hidden" | "overflow_y_hidden"
+        | "overflow_scroll" | "overflow_x_scroll" | "overflow_y_scroll"
         | "visible" | "invisible" | "block" | "inline_block" | "inline_flex"
         | "hidden"
         // background
@@ -529,6 +530,16 @@ pub fn is_known_shorthand_method(name: &str) -> bool {
         // visibility
         | "opacity_0" | "opacity_25" | "opacity_50" | "opacity_75" | "opacity_100"
     ) || is_spacing_shorthand(name)
+}
+
+/// Methods that live on `gpui::StatefulInteractiveElement` rather
+/// than `gpui::Styled`. Containers must be promoted from a bare
+/// `Div` to `Stateful<Div>` before these can be called.
+pub fn is_stateful_interactive_method(name: &str) -> bool {
+    matches!(
+        name,
+        "overflow_scroll" | "overflow_x_scroll" | "overflow_y_scroll"
+    )
 }
 
 /// Numeric suffixes for `is_spacing_shorthand`. Mirrors the table

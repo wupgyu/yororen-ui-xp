@@ -7,9 +7,10 @@
   boilerplate and zero inline business logic.
 
   Features exercised (in order of appearance):
-    - Containers: <Column>, <Row>, <Div>, <Center>,
-      <Stack>, <Wrap> with shorthand style attrs
-      (`flex`, `flex_1`, `col`, `gap`, `items`, etc.)
+    - Containers: <Column>, <Row>, <Wrap>, <Div>,
+      <Center>, <Stack> with shorthand style attrs
+      (`flex`, `flex_1`, `gap`, `items`, `justify`,
+      `w_full`, `rounded_md`, `border_1`, etc.)
     - Leaves: <Label>, <Button> (with `variant`),
       <Switch>, <Checkbox>, <TextInput>, <Spacer>
     - String interpolation: `text="Count: {counter}"`
@@ -33,147 +34,179 @@
   All identifiers referenced here are bound in the
   surrounding Rust scope - see `src/view.rs`.
 -->
-<Column flex col p="4" gap="4">
+<Div overflow_y_scroll size_full flex_col p_4 gap_4>
 
-    <!-- SECTION: Heading -->
-    <Label id="title"    text="yororen-ui XML Showcase" strong />
-    <Label id="subtitle" text="Logic in Rust, layout in XML — pure declarative" muted />
-
-    <!-- SECTION: Counter -->
-    <Row flex gap="2" items_center>
-        <Label id="count" text="Count: {counter}" strong />
-        <Button id="dec"   caption="-"     on_click={controller.decrement} />
-        <Button id="reset" caption="Reset" on_click={controller.reset_counter} />
-        <Button id="inc"   caption="+"     variant="primary"
-                on_click={controller.increment} />
-    </Row>
-
-    <!-- SECTION: Two-way bindings (each toggle independent) -->
-    <Column flex col gap="2">
-        <Label id="bindings_label" text="Two-way bindings (@bind) — independent" strong />
-        <Row flex gap="2" items_center>
-            <Switch   id="notifications" @bind={notifications_entity} />
-            <Label    id="notifications_label" text="Notifications" />
-        </Row>
-        <Row flex gap="2" items_center>
-            <Checkbox id="agree"         @bind={agree_entity} />
-            <Label    id="agree_label"   text={if agree { "Agreed ✓" } else { "Not agreed" }} />
-        </Row>
-        <If condition={notifications}>
-            <Label id="on" text="Notifications ON" strong />
-        </If>
-        <ElseIf condition={!notifications}>
-            <Label id="off" text="Notifications OFF" muted />
-        </ElseIf>
-        <Else>
-            <Label id="unknown" text="—" />
-        </Else>
+    <!-- Header -->
+    <Column flex col gap_1>
+        <Label id="title"    text="yororen-ui XML Showcase" strong />
+        <Label id="subtitle" text="Logic in Rust, layout in XML — pure declarative" muted />
     </Column>
 
-    <!-- SECTION: TextInput (dynamic id, flex_1 width) -->
-    <Column flex col gap="2">
-        <Label id="input_label" text="TextInput (with @bind + Clear)" strong />
-        <Row flex gap="2" items_center w_full>
-            <Label id="name_label" text="Name:" />
-            <!-- `Div flex_1` grows to fill remaining
-                 width so the TextInput isn't squashed.
-                 TextInput itself is a leaf and can't
-                 take container-only style attrs. -->
-            <Div flex_1>
-                <!-- The id is a brace expression
-                     evaluated every render. Bumping
-                     `name_input_key` in the controller
-                     mints a fresh TextInputState, so
-                     Clear truly empties the input. -->
-                <TextInput id={name_input_id} placeholder="Type here…"
-                           @bind={name_entity} />
-            </Div>
-            <Button    id="name_clear" caption="Clear"
-                       on_click={controller.clear_name} />
-        </Row>
-        <Label id="name_value" text="Typed: {name}" muted />
-    </Column>
+    <!-- Cards wrap around the remaining sections. -->
+    <Wrap gap_4 items="start">
 
-    <!-- SECTION: Match / Case over a Rust enum -->
-    <Column flex col gap="1">
-        <Label id="match_label" text="Match / Case (status enum)" strong />
-        <Match on={connection}>
-            <Case pattern={crate::state::ConnectionStatus::Disconnected}>
-                <Label id="conn_off" text="Status: disconnected" muted />
-            </Case>
-            <Case pattern={crate::state::ConnectionStatus::Connecting}>
-                <Label id="conn_link" text="Status: connecting…" strong />
-            </Case>
-            <Case pattern={crate::state::ConnectionStatus::Connected}>
-                <Label id="conn_ok" text="Status: connected" strong />
-            </Case>
-            <Case pattern={crate::state::ConnectionStatus::Failed}>
-                <Label id="conn_err" text="Status: failed" muted />
-            </Case>
-        </Match>
-        <Button id="conn_toggle" caption="Advance status"
-                on_click={controller.advance_connection} />
-    </Column>
+        <!-- SECTION: Counter -->
+        <Div w={gpui::px(360.)} rounded_md border_1 p_4>
+            <Column flex col gap_3>
+                <Label id="count_label" text="Counter" strong />
+                <Row flex gap_2 items_center>
+                    <Label id="count" text="Count: {counter}" />
+                    <Button id="dec"   caption="-"     on_click={controller.decrement} />
+                    <Button id="reset" caption="Reset" on_click={controller.reset_counter} />
+                    <Button id="inc"   caption="+"     variant="primary"
+                            on_click={controller.increment} />
+                </Row>
+            </Column>
+        </Div>
 
-    <!-- SECTION: For (per-row @bind, dynamic id) -->
-    <Column flex col gap="1">
-        <Label id="todos_label" text="For (per-row @bind, dynamic id)" strong />
-        <!-- `let:index={i}` exposes the row index so
-             the `id` is unique per row. Without this
-             every row's Checkbox would share the same
-             ElementId, and gpui's focus tracking
-             would let only the first row toggle. -->
-        <For each={todos} let:item let:index={i} key={i}>
-            <Row flex gap="2" items_center>
-                <Checkbox id={format!("todo_{}", i)} @bind={item.done} />
-                <Label    id={format!("todo_label_{}", i)}
-                         text={item.label} />
-            </Row>
-        </For>
-    </Column>
+        <!-- SECTION: Two-way bindings (each toggle independent) -->
+        <Div w={gpui::px(360.)} rounded_md border_1 p_4>
+            <Column flex col gap_3>
+                <Label id="bindings_label" text="Two-way bindings (@bind)" strong />
+                <Row flex gap_2 items_center>
+                    <Switch   id="notifications" @bind={notifications_entity} />
+                    <Label    id="notifications_label" text="Notifications" />
+                </Row>
+                <Row flex gap_2 items_center>
+                    <Checkbox id="agree"         @bind={agree_entity} />
+                    <Label    id="agree_label"   text={if agree { "Agreed ✓" } else { "Not agreed" }} />
+                </Row>
+                <If condition={notifications}>
+                    <Label id="on" text="Notifications ON" strong />
+                </If>
+                <ElseIf condition={!notifications}>
+                    <Label id="off" text="Notifications OFF" muted />
+                </ElseIf>
+                <Else>
+                    <Label id="unknown" text="—" />
+                </Else>
+            </Column>
+        </Div>
 
-    <!-- SECTION: State (local Entity, re-minted every render) -->
-    <Column flex col gap="1">
-        <Label id="state_label"
-               text="State (local Entity, default = outer × 7)" strong />
-        <!-- `default` is a brace expression evaluated
-             every render. The local `count` Entity is
-             minted fresh inside this closure on each
-             render, so its initial value reflects the
-             latest outer counter. The label inside
-             reads `count.read(cx)` - proves the local
-             entity is the source of truth for the
-             inner scope. -->
-        <State name="count" default={counter * 7}>
-            <Label id="state_value"
-                   text={format!("Local count = {}", count.read(cx))}
-                   strong />
-        </State>
-    </Column>
+        <!-- SECTION: TextInput (dynamic id, flex_1 width) -->
+        <Div w={gpui::px(360.)} rounded_md border_1 p_4>
+            <Column flex col gap_3>
+                <Label id="input_label" text="TextInput (@bind + Clear)" strong />
+                <Row flex gap_2 items_center w_full>
+                    <Label id="name_label" text="Name:" />
+                    <!-- `Div flex_1` grows to fill remaining
+                         width so the TextInput isn't squashed.
+                         TextInput itself is a leaf and can't
+                         take container-only style attrs. -->
+                    <Div flex_1>
+                        <!-- The id is a brace expression
+                             evaluated every render. Bumping
+                             `name_input_key` in the controller
+                             mints a fresh TextInputState, so
+                             Clear truly empties the input. -->
+                        <TextInput id={name_input_id} placeholder="Type here…"
+                                   @bind={name_entity} />
+                    </Div>
+                    <Button    id="name_clear" caption="Clear"
+                               on_click={controller.clear_name} />
+                </Row>
+                <Label id="name_value" text="Typed: {name}" muted />
+            </Column>
+        </Div>
 
-    <!-- SECTION: Custom runtime-registered tag -->
-    <Column flex col gap="1">
-        <Label id="custom_label" text="Custom (register_xml_component!)" strong />
-        <CustomWidget id="custom" />
-    </Column>
+        <!-- SECTION: Match / Case over a Rust enum -->
+        <Div w={gpui::px(360.)} rounded_md border_1 p_4>
+            <Column flex col gap_3>
+                <Label id="match_label" text="Match / Case (status enum)" strong />
+                <Match on={connection}>
+                    <Case pattern={crate::state::ConnectionStatus::Disconnected}>
+                        <Label id="conn_off" text="Status: disconnected" muted />
+                    </Case>
+                    <Case pattern={crate::state::ConnectionStatus::Connecting}>
+                        <Label id="conn_link" text="Status: connecting…" strong />
+                    </Case>
+                    <Case pattern={crate::state::ConnectionStatus::Connected}>
+                        <Label id="conn_ok" text="Status: connected" strong />
+                    </Case>
+                    <Case pattern={crate::state::ConnectionStatus::Failed}>
+                        <Label id="conn_err" text="Status: failed" muted />
+                    </Case>
+                </Match>
+                <Button id="conn_toggle" caption="Advance status"
+                        on_click={controller.advance_connection} />
+            </Column>
+        </Div>
 
-    <!-- SECTION: Layout primitives (Center, Stack, Wrap, Spacer) -->
-    <Column flex col gap="2">
-        <Label id="layout_label" text="Layout primitives (Center, Stack, Wrap, Spacer)" strong />
-        <Center w_full h_full>
-            <Label id="centered" text="Centered content" strong />
-        </Center>
-        <Stack w_full h_full>
-            <Label id="stack_back" text="Stack back layer" muted />
-            <Label id="stack_front" text="Stack front layer" strong />
-        </Stack>
-        <Wrap gap="2" items="center">
-            <Label id="wrap_1" text="Wrap 1" />
-            <Label id="wrap_2" text="Wrap 2" />
-            <Label id="wrap_3" text="Wrap 3" />
-            <Spacer id="wrap_spacer" />
-            <Label id="wrap_end" text="End" />
-        </Wrap>
-    </Column>
+        <!-- SECTION: For (per-row @bind, dynamic id) -->
+        <Div w={gpui::px(360.)} rounded_md border_1 p_4>
+            <Column flex col gap_3>
+                <Label id="todos_label" text="For (per-row @bind, dynamic id)" strong />
+                <!-- `let:index={i}` exposes the row index so
+                     the `id` is unique per row. Without this
+                     every row's Checkbox would share the same
+                     ElementId, and gpui's focus tracking
+                     would let only the first row toggle. -->
+                <For each={todos} let:item let:index={i} key={i}>
+                    <Row flex gap_2 items_center>
+                        <Checkbox id={format!("todo_{}", i)} @bind={item.done} />
+                        <Label    id={format!("todo_label_{}", i)}
+                                 text={item.label} />
+                    </Row>
+                </For>
+            </Column>
+        </Div>
 
-</Column>
+        <!-- SECTION: State (local Entity, re-minted every render) -->
+        <Div w={gpui::px(360.)} rounded_md border_1 p_4>
+            <Column flex col gap_3>
+                <Label id="state_label"
+                       text="State (local Entity, default = outer × 7)" strong />
+                <!-- `default` is a brace expression evaluated
+                     every render. The local `count` Entity is
+                     minted fresh inside this closure on each
+                     render, so its initial value reflects the
+                     latest outer counter. The label inside
+                     reads `count.read(cx)` - proves the local
+                     entity is the source of truth for the
+                     inner scope. -->
+                <State name="count" default={counter * 7}>
+                    <Label id="state_value"
+                           text={format!("Local count = {}", count.read(cx))}
+                           strong />
+                </State>
+            </Column>
+        </Div>
+
+        <!-- SECTION: Layout primitives (Center, Stack, Wrap, Spacer) -->
+        <Div w={gpui::px(360.)} rounded_md border_1 p_4>
+            <Column flex col gap_3>
+                <Label id="layout_label" text="Layout primitives" strong />
+                <Row flex gap_3 items_start>
+                    <Div w={gpui::px(96.)} h={gpui::px(64.)} rounded_md border_1 p_2 flex items_center justify_center>
+                        <Label id="centered" text="Center" strong />
+                    </Div>
+                    <Div w={gpui::px(96.)} h={gpui::px(64.)} rounded_md border_1 p_2 flex>
+                        <Stack w_full h_full>
+                            <Label id="stack_back" text="Back" muted />
+                            <Label id="stack_front" text="Front" strong />
+                        </Stack>
+                    </Div>
+                    <Div flex_1 h={gpui::px(64.)} rounded_md border_1 p_2 flex_col justify_center>
+                        <Wrap gap_2 items="center">
+                            <Label id="wrap_1" text="Wrap 1" />
+                            <Label id="wrap_2" text="Wrap 2" />
+                            <Label id="wrap_3" text="Wrap 3" />
+                            <Spacer id="wrap_spacer" />
+                            <Label id="wrap_end" text="End" />
+                        </Wrap>
+                    </Div>
+                </Row>
+            </Column>
+        </Div>
+
+        <!-- SECTION: Custom runtime-registered tag -->
+        <Div w={gpui::px(360.)} rounded_md border_1 p_4>
+            <Column flex col gap_3>
+                <Label id="custom_label" text="Custom (register_xml_component!)" strong />
+                <CustomWidget id="custom" />
+            </Column>
+        </Div>
+
+    </Wrap>
+
+</Div>

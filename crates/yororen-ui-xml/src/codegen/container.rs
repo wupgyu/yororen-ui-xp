@@ -5,6 +5,7 @@ use crate::ast::{AstAttribute, AstElement, AstNode};
 use crate::error::{XmlError, XmlErrorKind};
 use crate::schema::{
     ContainerDef, is_known_shorthand_method, is_spacing_prefix, is_spacing_shorthand,
+    is_stateful_interactive_method,
 };
 
 use crate::codegen::{
@@ -27,10 +28,11 @@ pub(crate) fn codegen_container(
     // where huge closure-bearing expressions can be mis-parsed
     // in `impl Trait` return positions).
     let mut stmts: Vec<TokenStream> = Vec::new();
+    let mut stateful = false;
     stmts.push(quote! { let __el = gpui::div(); });
 
     for attr in &element.attributes {
-        apply_container_attr(&mut stmts, attr, def, element)?;
+        apply_container_attr(&mut stmts, attr, def, element, &mut stateful)?;
     }
 
     // Walk children, merging consecutive If/ElseIf/Else
@@ -80,6 +82,7 @@ pub(crate) fn apply_container_attr(
     attr: &AstAttribute,
     def: ContainerDef,
     element: &AstElement,
+    stateful: &mut bool,
 ) -> Result<(), XmlError> {
     if attr.name == "id" {
         // `id="my-button"` becomes
@@ -88,6 +91,7 @@ pub(crate) fn apply_container_attr(
         stmts.push(quote! {
             let __el = ::gpui::InteractiveElement::id(__el, #value);
         });
+        *stateful = true;
         return Ok(());
     }
 
@@ -178,13 +182,22 @@ pub(crate) fn apply_container_attr(
     // a confusing "too many arguments" rustc error far from
     // the XML — so we reject it up front.
     if attr.expr.is_none()
-        && (is_known_shorthand_method(&attr.name) || is_spacing_shorthand(&attr.name))
+        && (is_known_shorthand_method(&attr.name)
+            || is_spacing_shorthand(&attr.name)
+            || is_stateful_interactive_method(&attr.name))
     {
         if attr.raw == "true" {
             let m = format_ident!("{}", attr.name);
-            stmts.push(quote! {
-                let __el = ::gpui::Styled::#m(__el);
-            });
+            if is_stateful_interactive_method(&attr.name) {
+                ensure_stateful(stmts, stateful);
+                stmts.push(quote! {
+                    let __el = ::gpui::StatefulInteractiveElement::#m(__el);
+                });
+            } else {
+                stmts.push(quote! {
+                    let __el = ::gpui::Styled::#m(__el);
+                });
+            }
             return Ok(());
         }
         let name = attr.name.clone();
@@ -221,6 +234,22 @@ pub(crate) fn apply_container_attr(
             attr.name, element.tag,
         ),
     ))
+}
+
+/// Promote a bare `gpui::Div` to `Stateful<gpui::Div>` so that
+/// `StatefulInteractiveElement` methods (e.g. `overflow_y_scroll`)
+/// can be called. Uses an internal id; a user-supplied `id="…"`
+/// attribute later in the same tag will simply override it.
+fn ensure_stateful(stmts: &mut Vec<TokenStream>, stateful: &mut bool) {
+    if !*stateful {
+        stmts.push(quote! {
+            let __el = ::gpui::InteractiveElement::id(
+                __el,
+                ::gpui::ElementId::from("__yororen_xml_container"),
+            );
+        });
+        *stateful = true;
+    }
 }
 
 /// Numeric suffixes accepted after spacing prefixes (`gap`, `p`,

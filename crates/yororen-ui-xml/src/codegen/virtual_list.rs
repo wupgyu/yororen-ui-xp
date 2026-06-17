@@ -296,11 +296,18 @@ pub(crate) fn codegen_virtual_list_kind(
         style_hint: "the gpui Styled trait (`.size_full()`, `.h(...)`, …)",
     };
     let mut style_stmts: Vec<TokenStream> = Vec::new();
+    let mut _stateful = false;
     for attr in &element.attributes {
         if VL_ATTRS.contains(&attr.name.as_str()) {
             continue;
         }
-        apply_container_attr(&mut style_stmts, attr, style_container_def, element)?;
+        apply_container_attr(
+            &mut style_stmts,
+            attr,
+            style_container_def,
+            element,
+            &mut _stateful,
+        )?;
     }
 
     // --- factory / controller paths --------------------------------

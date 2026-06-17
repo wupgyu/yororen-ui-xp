@@ -834,7 +834,14 @@ fn apply_style_passthrough(
         };
         let mut rewritten = attr.clone();
         rewritten.name = actual_attr;
-        apply_container_attr(stmts, &rewritten, style_container_def, element)?;
+        let mut _stateful = false;
+        apply_container_attr(
+            stmts,
+            &rewritten,
+            style_container_def,
+            element,
+            &mut _stateful,
+        )?;
     }
     Ok(())
 }
