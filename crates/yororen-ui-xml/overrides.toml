@@ -1,0 +1,215 @@
+# Schema overrides for the `xml!` macro.
+#
+# This file is read by `yororen-ui-xml/src/bin/gen_schema.rs`
+# and merged into the auto-generated `BUILTINS_GENERATED`
+# static. It exists for cases the generator can't infer
+# from the headless source alone:
+#
+#   * XML-specific tag aliases (e.g. the user writes `col`
+#     but the gpui method is `flex_col`).
+#   * Container definitions (`<Column>`, `<Row>`, `<Stack>`,
+#     `<Div>`) — gpui uses these for layout and they
+#     don't have a one-to-one headless equivalent.
+#   * Control-flow tags (`<If>`, `<ElseIf>`, `<Else>`,
+#     `<For>`, `<Fragment>`) — these are XML-only
+#     pseudo-tags, not headless components.
+#   * Convention flags like `supports_text_child`.
+#
+# Override entries win over the auto-generated ones.
+#
+# Note: `override` is a reserved word in TOML, so we use
+# `[[override_]]` and the deserialiser maps it to
+# `override_` in Rust.
+
+# ----- Containers (XML-only; not derived from headless) -----
+
+# `Column` / `Row` / `Stack` / `Center` / `Expanded` / `Wrap`
+# are auto-generated as `Leaf` entries from
+# `headless/layout/*.rs`. Only `Div` remains as a `Container`
+# (the plain `gpui::div()` escape hatch).
+
+[[override_]]
+tag = "Div"
+kind = "Container"
+container = { fixed_methods = [] }
+
+# ----- Control flow (XML-only pseudo-tags) -----
+
+[[override_]]
+tag = "If"
+kind = "ControlFlow"
+control_flow = "If"
+
+[[override_]]
+tag = "ElseIf"
+kind = "ControlFlow"
+control_flow = "ElseIf"
+
+[[override_]]
+tag = "Else"
+kind = "ControlFlow"
+control_flow = "Else"
+
+[[override_]]
+tag = "For"
+kind = "ControlFlow"
+control_flow = "For"
+
+[[override_]]
+tag = "Fragment"
+kind = "ControlFlow"
+control_flow = "Fragment"
+
+[[override_]]
+tag = "Include"
+kind = "ControlFlow"
+control_flow = "Include"
+
+[[override_]]
+tag = "Template"
+kind = "ControlFlow"
+control_flow = "Template"
+
+[[override_]]
+tag = "Slot"
+kind = "ControlFlow"
+control_flow = "Slot"
+
+# `VirtualList` / `UniformVirtualList` are control-flow tags: they
+# own a row-template body and an auto-persisted controller (see
+# `codegen_virtual_list` / `codegen_uniform_virtual_list`). They are
+# NOT headless Leaves — the row body is declared as XML children.
+[[override_]]
+tag = "VirtualList"
+kind = "ControlFlow"
+control_flow = "VirtualList"
+
+[[override_]]
+tag = "UniformVirtualList"
+kind = "ControlFlow"
+control_flow = "UniformVirtualList"
+
+# ----- Custom modifications -----
+
+# The legacy `headless::spacer` goes through a `SpacerRenderer`
+# trait; the new `headless::layout::spacer` is a zero-overhead
+# layout primitive. XML `<Spacer>` should use the latter.
+[[override_]]
+tag = "Spacer"
+kind = "Leaf"
+factory = "::yororen_ui::headless::layout::spacer::spacer"
+
+# `Button` has a `caption` setter that the generator uses
+# to infer `supports_text_child`. Keep this here as a
+# safety net: if the generator ever loses that heuristic,
+# this override restores it without needing a code change.
+[[override_]]
+tag = "Button"
+kind = "Leaf"
+supports_text_child = true
+
+# `NumberInput::render` takes `&mut Window`; the
+# generator's `render_takes_window` heuristic missed it
+# in this build (the test infra doesn't catch the helper
+# for every component — NumberInput's a known edge case).
+# Hardcoding it here keeps the codegen path straightforward
+# (just `.render(&mut *cx, &mut *window)`).
+[[override_]]
+tag = "NumberInput"
+kind = "Leaf"
+needs_window = true
+
+# `ComboBox::render` also needs `&mut Window`.
+[[override_]]
+tag = "ComboBox"
+kind = "Leaf"
+needs_window = true
+
+# Text-like inputs whose render signature was missed by the
+# generator's `render_takes_window` heuristic.
+[[override_]]
+tag = "PasswordInput"
+kind = "Leaf"
+needs_window = true
+props = [["mask_char", "mask_char", "Custom"]]
+
+[[override_]]
+tag = "SearchInput"
+kind = "Leaf"
+needs_window = true
+
+[[override_]]
+tag = "FilePathInput"
+kind = "Leaf"
+needs_window = true
+
+[[override_]]
+tag = "KeybindingInput"
+kind = "Leaf"
+needs_window = true
+
+[[override_]]
+tag = "TextArea"
+kind = "Leaf"
+needs_window = true
+
+# `ButtonGroup` consumes its children at compose time; each child
+# must be the `Stateful<Div>` returned by `button(...).render(cx)`.
+[[override_]]
+tag = "ButtonGroup"
+kind = "Leaf"
+children_before_render = true
+unwrap_children = true
+
+# `Modal` consumes its children at compose time.
+[[override_]]
+tag = "Modal"
+kind = "Leaf"
+children_before_render = true
+
+# `Popover` / `DropdownMenu` pass trigger/content to builder methods.
+# Note: `<Menu>` has no slots of its own; it is meant to be placed as a
+# `slot="content"` child of `<Popover>` or `<DropdownMenu>`. The slot
+# attribute is consumed by the parent component's slot dispatcher, not by
+# Menu itself.
+[[override_]]
+tag = "Popover"
+kind = "Leaf"
+slots = [["trigger", "trigger"], ["content", "content"]]
+
+[[override_]]
+tag = "DropdownMenu"
+kind = "Leaf"
+slots = [["trigger", "trigger"], ["content", "content"]]
+
+# `Tooltip` passes its trigger to a builder method.
+[[override_]]
+tag = "Tooltip"
+kind = "Leaf"
+slots = [["trigger", "trigger"]]
+
+# `FormField` stashes its input child via `.input(...)` before
+# rendering the label/error stack.
+[[override_]]
+tag = "FormField"
+kind = "Leaf"
+slots = [["input", "input"]]
+
+# `SplitButton` needs the dropdown menu state entity passed through
+# the XML macro (e.g. `state={self.dropdown_state}`).
+[[override_]]
+tag = "SplitButton"
+kind = "Leaf"
+props = [["state", "state", "Custom"]]
+
+# `Table` columns/rows are built via brace expressions in XML.
+[[override_]]
+tag = "Table"
+kind = "Leaf"
+props = [
+    ["column", "column", "Custom"],
+    ["columns", "columns", "Custom"],
+    ["row", "row", "Custom"],
+    ["rows", "rows", "Custom"],
+]
+

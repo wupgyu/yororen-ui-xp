@@ -1,0 +1,144 @@
+<!-- Section 2 — Display. -->
+<Column flex col gap="lg">
+    <Heading id="display-title" level="H2" text={t!(cx, "demo.section_display")} />
+
+    <Wrap items="center" gap="md">
+        <Cell>
+            <Slot name="label"><Label id="lbl-lbl-default" text={t!(cx, "demo.display.cell_label_default")} muted /></Slot>
+            <Label id="lbl-default" text={t!(cx, "demo.display.label_default")} />
+        </Cell>
+        <Cell>
+            <Slot name="label"><Label id="lbl-lbl-strong" text={t!(cx, "demo.display.cell_label_strong")} muted /></Slot>
+            <Label id="lbl-strong" text={t!(cx, "demo.display.label_strong")} strong />
+        </Cell>
+        <Cell>
+            <Slot name="label"><Label id="lbl-lbl-muted" text={t!(cx, "demo.display.cell_label_muted")} muted /></Slot>
+            <Label id="lbl-muted" text={t!(cx, "demo.display.label_muted")} muted />
+        </Cell>
+        <Cell>
+            <Slot name="label"><Label id="lbl-lbl-mono" text={t!(cx, "demo.display.cell_label_mono")} muted /></Slot>
+            <Label id="lbl-mono" text={t!(cx, "demo.display.label_mono")} mono />
+        </Cell>
+    </Wrap>
+
+    <Column flex col gap="sm">
+        <Cell>
+            <Slot name="label"><Label id="lbl-heading-h1" text={t!(cx, "demo.display.cell_heading_h1")} muted /></Slot>
+            <Heading id="hdg-1" level="H1" text={t!(cx, "demo.display.heading_h1")} />
+        </Cell>
+        <Cell>
+            <Slot name="label"><Label id="lbl-heading-h2" text={t!(cx, "demo.display.cell_heading_h2")} muted /></Slot>
+            <Heading id="hdg-2" level="H2" text={t!(cx, "demo.display.heading_h2")} />
+        </Cell>
+        <Cell>
+            <Slot name="label"><Label id="lbl-heading-h3" text={t!(cx, "demo.display.cell_heading_h3")} muted /></Slot>
+            <Heading id="hdg-3" level="H3" text={t!(cx, "demo.display.heading_h3")} />
+        </Cell>
+        <Cell>
+            <Slot name="label"><Label id="lbl-heading-h4" text={t!(cx, "demo.display.cell_heading_h4")} muted /></Slot>
+            <Heading id="hdg-4" level="H4" text={t!(cx, "demo.display.heading_h4")} />
+        </Cell>
+    </Column>
+
+    <Column flex col gap="sm">
+        <Cell>
+            <Slot name="label"><Label id="lbl-divider-h" text={t!(cx, "demo.display.divider_h")} muted /></Slot>
+            <Divider id="dvr-h1" />
+        </Cell>
+        <Cell>
+            <Slot name="label"><Label id="lbl-divider-v" text={t!(cx, "demo.display.divider_v")} muted /></Slot>
+            <Div h="24">
+                <Divider id="dvr-v1" vertical />
+            </Div>
+        </Cell>
+    </Column>
+
+    <Wrap items="center" gap="sm">
+        <Cell>
+            <Slot name="label"><Label id="lbl-badge-neutral" text={t!(cx, "demo.display.badge_neutral")} muted /></Slot>
+            <Badge id="bdg-n" text={t!(cx, "demo.display.badge_neutral")}
+                   variant="neutral" />
+        </Cell>
+        <Cell>
+            <Slot name="label"><Label id="lbl-badge-success" text={t!(cx, "demo.display.badge_success")} muted /></Slot>
+            <Badge id="bdg-s" text={t!(cx, "demo.display.badge_success")}
+                   variant="success" />
+        </Cell>
+        <Cell>
+            <Slot name="label"><Label id="lbl-badge-warning" text={t!(cx, "demo.display.badge_warning")} muted /></Slot>
+            <Badge id="bdg-w" text={t!(cx, "demo.display.badge_warning")}
+                   variant="warning" />
+        </Cell>
+        <Cell>
+            <Slot name="label"><Label id="lbl-badge-danger" text={t!(cx, "demo.display.badge_danger")} muted /></Slot>
+            <Badge id="bdg-d" text={t!(cx, "demo.display.badge_danger")}
+                   variant="danger" />
+        </Cell>
+        <Cell>
+            <Slot name="label"><Label id="lbl-badge-info" text={t!(cx, "demo.display.badge_info")} muted /></Slot>
+            <Badge id="bdg-i" text={t!(cx, "demo.display.badge_info")}
+                   variant="info" />
+        </Cell>
+    </Wrap>
+
+    <Wrap items="center" gap="md">
+        <Cell>
+            <Slot name="label"><Label id="lbl-tag-selected" text={t!(cx, "demo.display.cell_tag_selected")} muted /></Slot>
+            <Tag id="tag-1" label={t!(cx, "demo.display.tag_toggle")}
+                 selected={controller.tag_selected(cx)}
+                 on_click={controller.toggle_tag_selected} />
+        </Cell>
+        <Cell>
+            <Slot name="label"><Label id="lbl-tag-closable" text={t!(cx, "demo.display.cell_tag_closable")} muted /></Slot>
+            <Tag id="tag-2" label={t!(cx, "demo.display.tag_closable")}
+                 closable on_close={controller.close_tag} />
+            <Label id="tag-closable-count"
+                   text={t_named!(cx, "demo.display.tag_close_events", count => controller.tag_close_count(cx))}
+                   muted />
+        </Cell>
+    </Wrap>
+
+    <Wrap items="start" gap="md">
+        <Cell>
+            <Slot name="label"><Label id="lbl-sk-line" text={t!(cx, "demo.display.cell_skeleton_line")} muted /></Slot>
+            <Skeleton id="skl-line" w={gpui::px(180.0)} h={gpui::px(12.0)} />
+        </Cell>
+        <Cell>
+            <Slot name="label"><Label id="lbl-sk-block" text={t!(cx, "demo.display.cell_skeleton_block")} muted /></Slot>
+            <Skeleton id="skl-block" block w={gpui::px(180.0)} h={gpui::px(60.0)} />
+        </Cell>
+        <Cell>
+            <Slot name="label"><Label id="lbl-sk-block-sharp" text={t!(cx, "demo.display.cell_skeleton_block_sharp")} muted /></Slot>
+            <Skeleton id="skl-block-sharp" block block_sharp w={gpui::px(180.0)} h={gpui::px(40.0)} />
+        </Cell>
+    </Wrap>
+
+    <Column flex col gap="sm">
+        <Cell>
+            <Slot name="label"><Label id="lbl-progress-det" text={t!(cx, "demo.display.cell_progress_determinate")} muted /></Slot>
+            <Progress id="prg-1" value={controller.progress_value(cx)} max={1.0}
+                      label={t!(cx, "demo.display.loading")} />
+        </Cell>
+        <Cell>
+            <Slot name="label"><Label id="lbl-progress-indet" text={t!(cx, "demo.display.cell_progress_indeterminate")} muted /></Slot>
+            <Progress id="prg-indet" indeterminate />
+        </Cell>
+    </Column>
+
+    <Wrap items="center" gap="md">
+        <Cell>
+            <Slot name="label"><Label id="lbl-text" text={t!(cx, "demo.display.cell_text")} muted /></Slot>
+            <Text id="txt-1" text={t!(cx, "demo.display.plain_text")} size={14.0} />
+        </Cell>
+        <Cell>
+            <Slot name="label"><Label id="lbl-icon-check" text={t!(cx, "demo.display.cell_icon_check")} muted /></Slot>
+            <Icon id="ico-1" source="check" size={18.0}
+                  color={cx.theme().get_color("content.primary").unwrap_or(gpui::hsla(0.0, 0.0, 0.2, 1.0))} />
+        </Cell>
+        <Cell>
+            <Slot name="label"><Label id="lbl-icon-search" text={t!(cx, "demo.display.cell_icon_search")} muted /></Slot>
+            <Icon id="ico-2" source="search" size={18.0}
+                  color={cx.theme().get_color("content.primary").unwrap_or(gpui::hsla(0.0, 0.0, 0.2, 1.0))} />
+        </Cell>
+    </Wrap>
+</Column>

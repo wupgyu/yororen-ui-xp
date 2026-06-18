@@ -1,0 +1,8 @@
+<!-- Shared section wrapper: adds a 16-px inset and 16-px gap. -->
+<Fragment>
+    <Template name="Section">
+        <Div flex_col gap="16" p="16" w_full>
+            <Slot />
+        </Div>
+    </Template>
+</Fragment>

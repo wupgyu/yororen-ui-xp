@@ -1,0 +1,31 @@
+[package]
+name = "yororen_ui"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Reusable UI components and widgets built on top of gpui. Meta-crate that re-exports core + system theme + 13 universal icons."
+readme = "../../README.md"
+repository.workspace = true
+
+[dependencies]
+yororen-ui-core = { package = "yororen_ui_core", path = "../yororen-ui-core", version = "0.3" }
+yororen-ui-default-renderer = { package = "yororen_ui_default_renderer", path = "../yororen-ui-default-renderer", version = "0.3" }
+yororen-ui-brutalism-renderer = { package = "yororen_ui_brutalism_renderer", path = "../yororen-ui-brutalism-renderer", version = "0.3", optional = true }
+yororen-ui-locale-en = { package = "yororen_ui_locale_en", path = "../yororen-ui-locale-en", version = "0.3" }
+yororen-ui-locale-zh-cn = { package = "yororen_ui_locale_zh_cn", path = "../yororen-ui-locale-zh-CN", version = "0.3" }
+yororen-ui-locale-ar = { package = "yororen_ui_locale_ar", path = "../yororen-ui-locale-ar", version = "0.3" }
+yororen-ui-xml = { package = "yororen_ui_xml", path = "../yororen-ui-xml", version = "0.3", optional = true }
+yororen-ui-xml-macro = { package = "yororen_ui_xml_macro", path = "../yororen-ui-xml-macro", version = "0.3", optional = true }
+gpui = { package = "gpui-ce", version = "0.3" }
+serde_json = "1"
+
+[dev-dependencies]
+gpui = { package = "gpui-ce", version = "0.3", features = ["test-support"] }
+
+[features]
+default = ["xml"]
+brutalism = ["dep:yororen-ui-brutalism-renderer"]
+xml = ["dep:yororen-ui-xml", "dep:yororen-ui-xml-macro"]
+
+[lints]
+workspace = true

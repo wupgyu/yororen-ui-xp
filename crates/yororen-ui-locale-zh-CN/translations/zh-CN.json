@@ -1,0 +1,92 @@
+{
+  "select": {
+    "placeholder": "请选择…"
+  },
+  "combobox": {
+    "placeholder": "请选择…",
+    "search_placeholder": "搜索…"
+  },
+  "dropdown_menu": {
+    "label": "菜单"
+  },
+  "file_path_input": {
+    "placeholder": "请选择路径…",
+    "select": "选择…"
+  },
+  "keybinding_input": {
+    "press_keys": "请按下按键…",
+    "waiting": "等待输入…"
+  },
+  "number_input": {
+    "placeholder": "0"
+  },
+  "common": {
+    "ok": "确定",
+    "cancel": "取消",
+    "close": "关闭",
+    "save": "保存",
+    "delete": "删除",
+    "edit": "编辑",
+    "loading": "加载中…"
+  },
+  "button": {
+    "neutral": "中性",
+    "primary": "主要",
+    "danger": "危险",
+    "disabled": "已禁用"
+  },
+  "toggle": {
+    "press_me": "按我"
+  },
+  "input": {
+    "text": "文本输入",
+    "password": "密码输入",
+    "number": "数字输入",
+    "search": "搜索输入",
+    "file_path": "文件路径输入",
+    "keybinding": "按键绑定输入",
+    "text_area": "多行文本",
+    "select": "下拉选择",
+    "combo": "组合框"
+  },
+  "modal": {
+    "title": "模态对话框",
+    "body": "这是一个模态对话框，点击关闭按钮关闭。"
+  },
+  "tooltip": {
+    "text": "提示框 — 关于此元素的简短说明。"
+  },
+  "disclosure": {
+    "title": "显示详情",
+    "body": "展开的内容。点击标题可折叠。"
+  },
+  "notification": {
+    "click_buttons": "点击工具栏的 \"Show toast\" 或 \"Show notification\" 以在此处显示通知。",
+    "empty": "暂无通知。"
+  },
+  "form": {
+    "email": "邮箱",
+    "email_placeholder": "you@example.com",
+    "click_submit": "点击表单以提交(此处未连接真实按钮)。"
+  },
+  "gallery": {
+    "footer": {
+      "live_counters": "实时状态计数器"
+    }
+  },
+  "validation": {
+    "required": "此字段为必填项",
+    "invalid_email": "邮箱地址格式无效",
+    "min_length": "最少需要 {min} 个字符",
+    "max_length": "最多允许 {max} 个字符"
+  },
+  "items": {
+    "one": "{count} 个项目",
+    "other": "{count} 个项目"
+  },
+  "pagination": {
+    "previous": "上一页",
+    "next": "下一页",
+    "page": "第 {page} 页，共 {total} 页"
+  }
+}

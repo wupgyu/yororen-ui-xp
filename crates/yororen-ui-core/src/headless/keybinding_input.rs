@@ -1,0 +1,138 @@
+//! Headless `keybinding_input` — text input that captures
+//! keystrokes (instead of typing them) when in capture mode.
+
+use std::sync::Arc;
+
+use gpui::{App, Hsla};
+
+pub type KeybindingChangeCallback = Arc<dyn Fn(&str, &mut gpui::Window, &mut App) + Send + Sync>;
+pub type KeybindingCaptureCallback = Arc<dyn Fn(&mut gpui::Window, &mut App) + Send + Sync>;
+
+/// `KeybindingInput` is in one of two states: idle (user is
+/// typing) or capturing (next keystroke is recorded as a
+/// keybinding combo).
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum KeybindingInputMode {
+    #[default]
+    Idle,
+    Capturing,
+}
+
+#[derive(Clone)]
+pub struct KeybindingInputProps {
+    pub id: gpui::ElementId,
+    pub mode: KeybindingInputMode,
+    pub disabled: bool,
+    pub placeholder: String,
+    pub on_change: Option<KeybindingChangeCallback>,
+    pub on_start_capture: Option<KeybindingCaptureCallback>,
+    pub on_cancel_capture: Option<KeybindingCaptureCallback>,
+    pub has_custom_bg: bool,
+    pub has_custom_border: bool,
+    pub has_custom_focus_border: bool,
+    pub custom_bg: Option<Hsla>,
+    pub custom_border: Option<Hsla>,
+    pub custom_focus_border: Option<Hsla>,
+    pub custom_text_color: Option<Hsla>,
+}
+
+pub fn keybinding_input(id: impl Into<gpui::ElementId>) -> KeybindingInputProps {
+    KeybindingInputProps {
+        id: id.into(),
+        mode: KeybindingInputMode::Idle,
+        disabled: false,
+        placeholder: "Press a key combo…".to_string(),
+        on_change: None,
+        on_start_capture: None,
+        on_cancel_capture: None,
+        has_custom_bg: false,
+        has_custom_border: false,
+        has_custom_focus_border: false,
+        custom_bg: None,
+        custom_border: None,
+        custom_focus_border: None,
+        custom_text_color: None,
+    }
+}
+
+impl KeybindingInputProps {
+    pub fn mode(mut self, m: KeybindingInputMode) -> Self {
+        self.mode = m;
+        self
+    }
+    pub fn placeholder(mut self, v: impl Into<String>) -> Self {
+        self.placeholder = v.into();
+        self
+    }
+    pub fn disabled(mut self, v: bool) -> Self {
+        self.disabled = v;
+        self
+    }
+    pub fn on_change<F>(mut self, f: F) -> Self
+    where
+        F: 'static + Send + Sync + Fn(&str, &mut gpui::Window, &mut App),
+    {
+        self.on_change = Some(Arc::new(f));
+        self
+    }
+    pub fn on_start_capture<F>(mut self, f: F) -> Self
+    where
+        F: 'static + Send + Sync + Fn(&mut gpui::Window, &mut App),
+    {
+        self.on_start_capture = Some(Arc::new(f));
+        self
+    }
+    pub fn on_cancel_capture<F>(mut self, f: F) -> Self
+    where
+        F: 'static + Send + Sync + Fn(&mut gpui::Window, &mut App),
+    {
+        self.on_cancel_capture = Some(Arc::new(f));
+        self
+    }
+    pub fn has_custom_bg(mut self, v: bool) -> Self {
+        self.has_custom_bg = v;
+        self
+    }
+    pub fn has_custom_border(mut self, v: bool) -> Self {
+        self.has_custom_border = v;
+        self
+    }
+    pub fn has_custom_focus_border(mut self, v: bool) -> Self {
+        self.has_custom_focus_border = v;
+        self
+    }
+    pub fn custom_bg(mut self, c: Hsla) -> Self {
+        self.custom_bg = Some(c);
+        self.has_custom_bg = true;
+        self
+    }
+    pub fn custom_border(mut self, c: Hsla) -> Self {
+        self.custom_border = Some(c);
+        self.has_custom_border = true;
+        self
+    }
+    pub fn custom_focus_border(mut self, c: Hsla) -> Self {
+        self.custom_focus_border = Some(c);
+        self.has_custom_focus_border = true;
+        self
+    }
+    pub fn custom_text_color(mut self, c: Hsla) -> Self {
+        self.custom_text_color = Some(c);
+        self
+    }
+
+    /// Render the keybinding input using the registered `KeybindingInputRenderer`.
+    ///
+    /// One-way data flow: renderer's `compose` owns everything.
+    pub fn render(self, cx: &mut gpui::App, window: &mut gpui::Window) -> gpui::AnyElement {
+        use crate::renderer::RendererContext;
+        use crate::renderer::keybinding_input::KeybindingInputRenderer;
+        use crate::renderer::markers::KeybindingInput as KeybindingInputMarker;
+
+        let r: Arc<dyn KeybindingInputRenderer> = cx
+            .renderer_arc::<KeybindingInputMarker, dyn KeybindingInputRenderer>()
+            .expect("KeybindingInputRenderer registered")
+            .clone();
+        r.compose(&self, cx, window)
+    }
+}
