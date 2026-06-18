@@ -1,22 +1,27 @@
 # Yororen UI
 
 <p align="center">
-  <a href="README_zh_CN.md">中文版</a> | <strong>English</strong>
+  <a href="README_zh_CN.md">中文版</a> · <strong>English</strong>
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License">
   <img src="https://img.shields.io/badge/rust-edition%202024-yellow.svg" alt="Rust Edition">
   <img src="https://img.shields.io/badge/gpui-based-2a2a2a.svg" alt="Powered by gpui">
+  <img src="https://img.shields.io/badge/version-0.3.0-orange.svg" alt="Version">
 </p>
 
-<p align="center">
-  <strong>Yororen UI</strong> is a headless-first Rust UI library built on top of <a href="https://github.com/zed-industries/zed"><code>gpui</code></a> (Zed). It ships a three-layer architecture — headless primitives, theme JSON, and swappable visual renderers — so apps stay portable across designs.
-</p>
+**Yororen UI** is a headless-first Rust UI library built on top of [`gpui`](https://github.com/zed-industries/zed) (via [`gpui-ce`](https://crates.io/crates/gpui-ce)). A button is not a visual — it is a focusable, clickable thing with a label and an optional icon. The visual is a plug-in.
 
-<p align="center">
-  It is designed to be consumed by a <code>gpui</code> application crate, while keeping the UI layer self-contained (theme, components, widgets, and embedded icon assets).
-</p>
+```text
+theme JSON  ─▶  renderer (XxxRenderer)  ─▶  headless (XxxProps)  ─▶  gpui-ce
+```
+
+- **Headless** ([`yororen-ui-core`](https://crates.io/crates/yororen-ui-core)) — data, state, a11y, i18n, RTL, animation, assets. No visual decisions.
+- **Renderer** ([`yororen-ui-default-renderer`](https://crates.io/crates/yororen-ui-default-renderer) · [`yororen-ui-brutalism-renderer`](https://crates.io/crates/yororen-ui-brutalism-renderer)) — turns props into a styled div. 55 trait slots, filled with `Token*` or `Brutal*` impls. Swap the renderer, change the entire look.
+- **Theme** — a JSON file. The renderer reads paths like `action.primary.bg`; missing paths fall back to renderer defaults.
+
+The meta-crate [`yororen-ui`](https://crates.io/crates/yororen-ui) re-exports core + the default renderer + three bundled locales, so most apps need a single dependency. Add the `brutalism` or `xml` feature to opt into the alternative renderer or the XML DSL.
 
 ---
 
@@ -24,334 +29,343 @@
 
 <table>
   <tr>
-    <td><strong>54 Components</strong></td>
-    <td>Buttons, inputs, badges, tooltips, icons, headings, cards, modals, tree controls, virtualized lists, and more</td>
+    <th width="30%">Capability</th>
+    <th>What you get</th>
   </tr>
   <tr>
-    <td><strong>Three-Layer Architecture</strong></td>
+    <td><strong>55 components</strong></td>
+    <td>Buttons, inputs, badges, tooltips, modals, popovers, selects, lists, virtualised lists, trees, tables, and more</td>
+  </tr>
+  <tr>
+    <td><strong>Three-layer architecture</strong></td>
     <td>Headless primitives + JSON themes + swappable visual renderers (default + brutalism)</td>
   </tr>
   <tr>
-    <td><strong>Theme System</strong></td>
-    <td>Themes are pure JSON — swap palettes at runtime with one <code>install()</code> call</td>
+    <td><strong>JSON themes</strong></td>
+    <td>Swap palettes at runtime with one <code>install()</code> call</td>
   </tr>
   <tr>
-    <td><strong>Animation System</strong></td>
-    <td>Configurable animations with presets, easing functions, and orchestrator</td>
+    <td><strong>Animation system</strong></td>
+    <td><code>AnimatedVisibility</code> on every stateful composite, plus presets and easing functions</td>
   </tr>
   <tr>
     <td><strong>Internationalization</strong></td>
-    <td>Multi-language support (English, Chinese, Arabic), text direction support (LTR/RTL)</td>
+    <td><code>en</code>, <code>zh-CN</code>, <code>ar</code> bundled; <code>ar</code> flips layout to RTL via <code>cx.i18n().text_direction()</code></td>
   </tr>
   <tr>
     <td><strong>Accessibility</strong></td>
-    <td>ARIA support, focus management, keyboard navigation, focus trap</td>
+    <td>Focus management, keyboard navigation, click-outside guards, scroll-lock counter, focus trap</td>
   </tr>
   <tr>
-    <td><strong>Embedded Assets</strong></td>
-    <td>20+ SVG icons embedded via <code>rust-embed</code> (<code>assets/icons/**</code>)</td>
+    <td><strong>Embedded assets</strong></td>
+    <td>20+ SVG icons bundled via <code>rust-embed</code></td>
   </tr>
   <tr>
-    <td><strong>Notification System</strong></td>
-    <td>Toast notifications with various styles, queue management, and interactive actions</td>
+    <td><strong>Notification system</strong></td>
+    <td><code>NotificationCenter</code> global with auto-dismiss timers, sticky flag, and persistence</td>
+  </tr>
+  <tr>
+    <td><strong>Optional XML DSL</strong></td>
+    <td>Declarative screens via <code>xml!</code> / <code>xml_file!</code> macros</td>
   </tr>
 </table>
 
 ---
 
-## Quick Start
-
-### 1) Install the renderer
+## Quick start
 
 ```rust
-use gpui::App;
+use gpui::{App, Application, Bounds, WindowBounds, WindowOptions, px, size};
+use yororen_ui::assets::UiAsset;
+use yororen_ui::locale_en;
 use yororen_ui::renderer;
 
-fn init_ui(cx: &mut App) {
-    // Loads the bundled system theme (light/dark by OS appearance)
-    // and registers all 54 default TokenXxxRenderer impls.
-    renderer::install(cx, cx.window_appearance());
+fn main() {
+    let app = Application::new().with_assets(UiAsset);
+
+    app.run(|cx: &mut App| {
+        // 1) Renderer + theme — picks system-light or system-dark by OS appearance,
+        //    installs the global Theme, and registers 55 default XxxRenderer impls.
+        renderer::install(cx, cx.window_appearance());
+
+        // 2) Text-input keymap (idempotent).
+        yororen_ui::headless::text_input::init(cx);
+
+        // 3) Locale.
+        locale_en::install(cx);
+
+        // 4) Main window.
+        let options = WindowOptions {
+            window_bounds: Some(WindowBounds::Windowed(
+                Bounds::centered(None, size(px(800.), px(600.)), cx),
+            )),
+            ..Default::default()
+        };
+        cx.open_window(options, |_, cx| cx.new(|_| my_app::MyApp));
+    });
 }
 ```
 
-### 2) Use the headless components
+Inside your `Render::render`:
 
 ```rust
-use gpui::{App, AppContext, Entity, Global};
 use yororen_ui::headless::button::button;
 use yororen_ui::headless::label::label;
 
-#[derive(Default)]
-pub struct Counter { pub value: i32 }
-pub struct AppState { pub counter: Entity<Counter> }
+fn render(&mut self, _w: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+    div().size_full().flex().items_center().justify_center().gap_2()
+        .child(label("count", "0", cx).render(cx))
+        .child(button("inc", cx).caption("+").render(cx))
+}
+```
 
-impl AppState {
-    pub fn new(cx: &mut App) -> Self {
-        Self { counter: cx.new(|_| Counter::default()) }
+Every headless factory exposes both `.apply(div)` (a11y only) and `.render(cx)` (full visual via the registered renderer). For text inputs, `.render(cx, window)` is two-arg and registers an IME handler.
+
+<details>
+<summary><strong>Swap renderers or themes (optional)</strong></summary>
+
+### Brutalism renderer
+
+```rust
+use yororen_ui::brutalism_renderer;
+
+brutalism_renderer::install(cx);   // sharp corners, hard shadows, monospace
+```
+
+### Custom JSON theme
+
+```rust
+use yororen_ui_default_renderer::{Theme, install_with};
+
+const MY_THEME: &str = include_str!("../themes/my-brand.json");
+install_with(cx, Theme::from_json(MY_THEME).expect("valid JSON"));
+```
+
+### Live theme switching
+
+Call `yororen_ui::theme::install(cx, new_theme)` inside a `Render` impl — every frame, or when the user picks a new palette. Idempotent and cheap.
+
+```rust
+impl Render for MyApp {
+    fn render(&mut self, _w: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        yororen_ui::theme::install(cx, self.current_theme());
+        // … rest of render …
     }
 }
-impl Global for AppState {}
-
-fn render(cx: &mut gpui::Context<MyApp>) -> impl gpui::IntoElement {
-    let count = cx.global::<AppState>().counter.read(cx).value;
-    let inc = cx.global::<AppState>().counter.clone();
-
-    gpui::div().size_full().flex().items_center().justify_center().gap_2()
-        .child(label("count", count.to_string(), cx).render(cx))
-        .child(
-            button("inc", cx)
-                .on_click(move |_, _, cx| {
-                    inc.update(cx, |c, cx| { c.value += 1; cx.notify(); });
-                })
-                .render(cx)
-                .child("+"),
-        )
-}
 ```
 
-### 3) Install i18n (Locale + RTL)
-
-```rust
-use gpui::App;
-use yororen_ui::locale_en;
-
-fn init_i18n(cx: &mut App) {
-    locale_en::install(cx);
-}
-```
-
-### 4) Provide Assets (Icons)
-
-```rust
-use gpui::Application;
-use yororen_ui::assets::UiAsset;
-
-let app = Application::new().with_assets(UiAsset);
-```
-
-If your app has its own assets, compose them with `CompositeAssetSource` so Yororen UI's icons are a fallback layer.
+</details>
 
 ---
 
-## Demo Applications
+## Demos
 
-We provide five official demo applications under `crates/yororen-ui-demos/`:
-
-| Demo | What it shows | Run Command |
-|------|---------------|-------------|
-| [Counter](#counter) | Minimal bootstrap, single `Entity<T>` global, three buttons | `cargo run -p counter-demo` |
-| [Layers Demo](#layers-demo) | The three render pathways (headless / default-render / custom painter) side by side | `cargo run -p layers-demo` |
-| [Inputs Demo](#inputs-demo) | All seven text-input components wired with `cx.entity().clone()` `on_change` closures | `cargo run -p inputs-demo` |
-| [Gallery Demo](#gallery-demo) | The full 54-component showcase, theme switching, i18n, notifications, virtualized list | `cargo run -p gallery-demo` |
-| [Theme Showcase](#theme-showcase) | Per-render `theme::install` for live theme switching | `cargo run -p theme-showcase-demo` |
-
-### Counter
-
-<!-- Screenshot slot: replace screenshots/counter.png when refreshing -->
-<img src="screenshots/counter.png" alt="Counter Demo" width="600">
-
-A minimal counter application demonstrating the most fundamental Yororen UI concepts.
-
-**Key Features:**
-- Single `Entity<Counter>` global state
-- Button click event handling via `on_click`
-- Reactive UI updates via `cx.notify()`
-
-**Best For:** Developers new to Yororen UI as their first learning example.
-
-### Layers Demo
-
-<!-- Screenshot slot: replace screenshots/layers-demo.png when refreshing -->
-<img src="screenshots/layers-demo.png" alt="Layers Demo" width="600">
-
-A side-by-side comparison of the three render pathways: pure headless (caller paints), default-renderer (theme JSON), and a hand-rolled `MaterialButton` painter with a true ripple animation.
-
-**Key Features:**
-- Same headless `button` rendered three different ways
-- Bespoke `gpui::Element` painter (see `material_button.rs`)
-- A fourth panel showing a text input with `.render(cx, window)`
-
-**Best For:** Understanding what `.apply` does (a11y only) vs `.render(cx)` (full visual).
-
-### Inputs Demo
-
-<!-- Screenshot slot: replace screenshots/inputs-demo.png when refreshing -->
-<img src="screenshots/inputs-demo.png" alt="Inputs Demo" width="600">
-
-Seven panels, one per text input. Shows the canonical `cx.entity().clone()` pattern for wiring `on_change` closures.
-
-**Key Features:**
-- All seven text inputs: TextInput, PasswordInput, NumberInput, TextArea, SearchInput, FilePathInput, KeybindingInput
-- Stepper callbacks on `number_input`
-- `KeybindingInputMode` transitions (Idle / Capturing)
-
-**Best For:** Building forms, settings pages, anything input-heavy.
-
-### Gallery Demo
-
-<!-- Screenshot slot: replace screenshots/gallery-demo.png when refreshing -->
-<img src="screenshots/gallery-demo.png" alt="Gallery Demo" width="600">
-
-The kitchen-sink reference. Every component rendered in one window, with a working theme switcher (default vs brutalism, light vs dark) and locale toggle (en / zh-CN / ar).
-
-**Key Features:**
-- All 54 components in one window
-- `cell()` / `input_cell()` helpers that wrap each component in a labelled card with a status line
-- Live theme + locale switching via the toolbar
-- `NotificationCenter` host rendered with `gpui::deferred(...).with_priority(3)`
-
-**Best For:** Any non-trivial pattern — start here when building a real app.
-
-### Theme Showcase
-
-<!-- Screenshot slot: replace screenshots/theme-showcase.png when refreshing -->
-<img src="screenshots/theme-showcase.png" alt="Theme Showcase" width="600">
-
-A single window that demonstrates live theme switching: the same headless button and `TokenButtonRenderer` are reused while the JSON the renderer reads is swapped on every "Next" click.
-
-**Key Features:**
-- Bundled `system-light` / `system-dark` themes
-- Inline CATPPUCCIN and MATERIAL themes (user-defined JSON)
-- One-click theme rotation
-
-**Best For:** Building a "Next theme" toolbar, A/B theme testing.
-
----
-
-## Built with Yororen UI
-
-Projects and applications built using Yororen UI.
-
-### Yororen Accelerator
-
-<img src="screenshots/accelerator-1.png" alt="Yororen Accelerator" width="380">
-<img src="screenshots/accelerator-2.png" alt="Yororen Accelerator" width="380">
-
-<img src="screenshots/accelerator-3.png" alt="Yororen Accelerator" width="380">
-<img src="screenshots/accelerator-4.png" alt="Yororen Accelerator" width="380">
-
-A network acceleration tool with native-transparent TCP forwarding + relay passthrough, built with Yororen UI.
-
-**Key Highlights:**
-- Complex dashboard with real-time statistics
-- Custom window chrome with native-like experience
-- Rich data tables and virtualized lists
-- Server management and configuration UI
-
----
-
-## What's Inside
-
-### Crates
+<!-- ====================================================================== -->
+<!-- To regenerate a screenshot: run the demo and capture a PNG into          -->
+<!-- screenshots/<name>.png with the matching filename.                    -->
+<!-- See screenshots/README.md for the convention.                         -->
+<!-- ====================================================================== -->
 
 <table>
+  <tr>
+    <td width="50%" valign="top">
+
+**`counter`** — minimal bootstrap, single `Entity<T>` global, three buttons.
+
+<p><img src="screenshots/counter.png" width="480" alt="Counter demo"></p>
+
+```
+cargo run -p counter-demo
+```
+
+</td>
+    <td width="50%" valign="top">
+
+**`gallery_demo`** — kitchen-sink reference: every component, theme switching, i18n, notifications, virtualised list.
+
+<p><img src="screenshots/gallery-demo.png" width="480" alt="Gallery demo"></p>
+
+```
+cargo run -p gallery-demo
+```
+
+</td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+
+**`inputs_demo`** — all seven text inputs wired with `cx.entity().clone()`. Handles <kbd>Tab</kbd> / <kbd>Enter</kbd> / <kbd>Esc</kbd> / <kbd>⌘V</kbd>.
+
+<p><img src="screenshots/inputs-demo.png" width="480" alt="Inputs demo"></p>
+
+```
+cargo run -p inputs-demo
+```
+
+</td>
+    <td width="50%" valign="top">
+
+**`layers_demo`** — the three render pathways side by side + a hand-rolled Material ripple.
+
+<p><img src="screenshots/layers-demo.png" width="480" alt="Layers demo"></p>
+
+```
+cargo run -p layers-demo
+```
+
+</td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+
+**`theme_showcase`** — live theme switching via `theme::install` per render. Cycles four themes.
+
+<p><img src="screenshots/theme-showcase.png" width="480" alt="Theme showcase demo"></p>
+
+```
+cargo run -p theme-showcase-demo
+```
+
+</td>
+    <td width="50%" valign="top">
+
+**`variant_showcase`** — `ActionVariantKind` comparison (`Neutral` / `Primary` / `Danger`) with the same `headless::button` factory.
+
+<p><img src="screenshots/variant-showcase.png" width="480" alt="Variant showcase demo"></p>
+
+```
+cargo run -p variant-showcase-demo
+```
+
+</td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+
+**`gallery_xml`** — the gallery written with the XML DSL instead of the Rust builder API.
+
+<p><img src="screenshots/gallery-xml.png" width="480" alt="Gallery XML demo"></p>
+
+```
+cargo run -p gallery-xml-demo
+```
+
+</td>
+    <td width="50%" valign="top">
+
+**`showcase_xml`** — smaller XML-DSL smoke test.
+
+<p><img src="screenshots/showcase-xml.png" width="480" alt="Showcase XML demo"></p>
+
+```
+cargo run -p showcase-xml-demo
+```
+
+</td>
+  </tr>
+</table>
+
+---
+
+## What's inside
+
+<table>
+  <tr>
+    <th>Crate</th>
+    <th>Role</th>
+  </tr>
   <tr>
     <td><code>yororen-ui-core</code></td>
     <td>Headless primitives, theme JSON access, i18n, a11y, RTL, animation, assets, notification center</td>
   </tr>
   <tr>
     <td><code>yororen-ui-default-renderer</code></td>
-    <td>54 <code>TokenXxxRenderer</code> default impls + bundled <code>system-light.json</code> / <code>system-dark.json</code> themes + <code>renderer::install</code> bootstrap</td>
+    <td>55 <code>TokenXxxRenderer</code> impls + bundled <code>system-light.json</code> / <code>system-dark.json</code> themes + <code>renderer::install</code> bootstrap</td>
   </tr>
   <tr>
-    <td><code>yororen-ui-brutalism-renderer</code></td>
-    <td>Alternative renderer — sharp corners, thick black borders, hard offset shadows, monospace typography + bundled brutalism themes</td>
+    <td><code>yororen-ui-brutalism-renderer</code><br><sub><em>(optional, feature <code>brutalism</code>)</em></sub></td>
+    <td>Sharp corners, thick black borders, hard offset shadows, monospace typography</td>
   </tr>
   <tr>
-    <td><code>yororen-ui</code></td>
-    <td>Meta-crate that re-exports the three layers + locale catalogs (<code>en</code>, <code>zh-CN</code>, <code>ar</code>)</td>
+    <td><code>yororen-ui-xml</code> + <code>yororen-ui-xml-macro</code><br><sub><em>(optional, feature <code>xml</code>, default-on)</em></sub></td>
+    <td>XML DSL: <code>xml!</code>, <code>xml_file!</code>, <code>register_xml_component!</code>, <code>bind</code></td>
+  </tr>
+  <tr>
+    <td><code>yororen-ui-locale-{en, zh-CN, ar}</code></td>
+    <td>Bundled JSON translation catalogs</td>
+  </tr>
+  <tr>
+    <td><code>yororen-ui</code><br><sub><em>(meta-crate)</em></sub></td>
+    <td>Re-exports the above. Most apps need only this.</td>
   </tr>
 </table>
 
-### Three-Layer Architecture
+### Three-layer architecture
 
-```
-headless components  ──▶  theme (JSON)  ──▶  renderer (visual)
-       ▲                                          │
-       └──────── registers at install ────────────┘
+```text
+theme JSON  ─▶  renderer (XxxRenderer)  ─▶  headless (XxxProps)  ─▶  gpui-ce
 ```
 
-- **Headless**: data + control + a11y. No visual.
-- **Theme**: a single `serde_json::Value` you can swap at runtime.
-- **Renderer**: a per-component trait that reads the theme and produces visual divs.
+- **Headless** — data + control + a11y. No visual.
+- **Renderer** — a per-component trait that reads the theme and produces visual divs.
+- **Theme** — a single `serde_json::Value` you can swap at runtime.
 
-A custom renderer only needs to implement the 54 `XxxRenderer` traits — it doesn't touch the headless layer.
+The 55 component markers (<code>yororen-ui-core::renderer::markers</code>) are the keys into the global <code>RendererRegistry</code>. The default and brutalism renderers each implement all 55 trait slots.
 
-### Component Categories
-
-| Category | Components |
-|----------|------------|
-| **Foundation** | Button, IconButton, Icon, Label, Text, Heading, Spacer, Divider, Card, FocusRing |
-| **Inputs** | TextInput, PasswordInput, NumberInput, TextArea, SearchInput, FilePathInput, KeybindingInput |
-| **Selection** | Checkbox, Radio, RadioGroup, Switch, Slider, Select, ComboBox |
-| **Display** | Badge, Avatar, Image, ProgressBar, Skeleton, Tag, EmptyState |
-| **Overlays** | Tooltip, Popover, Modal, Toast, DropdownMenu, Menu, Disclosure, Overlay |
-| **Surfaces** | Panel, Card, Tooltip, Avatar, Image |
-| **Lists / Tables** | ListItem, TreeItem, Tree, Table, Form, FormField, VirtualList, UniformVirtualList |
-| **Interaction** | ToggleButton, SplitButton, ButtonGroup, ShortcutHint, KeybindingDisplay |
-
-### Icons
-
-```rust
-use yororen_ui::icon::IconName;
-// Use as the icon source for any component that takes an icon.
-```
-
-Icon paths map to embedded SVG assets under `assets/icons/`. For app-specific icons, drop the SVG into your own `AssetSource` and reference it via the icon API.
-
----
-
-## Requirements
-
-<ul>
-  <li><strong>Rust edition:</strong> 2024</li>
-  <li><code>gpui</code> is provided via <a href="https://crates.io/crates/gpui-ce"><code>gpui-ce</code></a> crate on crates.io</li>
-</ul>
+A custom renderer only needs to implement the 55 <code>XxxRenderer</code> traits &mdash; it doesn't touch the headless layer.
 
 ---
 
 ## Installation
 
-### From crates.io (recommended)
+<details>
+<summary><strong>From crates.io (recommended)</strong></summary>
 
 ```toml
 [dependencies]
 yororen_ui = "0.3"
 ```
 
-The `xml` feature is enabled by default so `xml!` / `xml_file!` work out of the box. To opt out:
+The <code>xml</code> feature is enabled by default so <code>xml!</code> / <code>xml_file!</code> work out of the box. To opt out:
 
 ```toml
 [dependencies]
 yororen_ui = { version = "0.3", default-features = false }
 ```
 
-If you disabled default features and still want XML support, enable it explicitly:
+To enable specific features:
 
 ```toml
 [dependencies]
-yororen_ui = { version = "0.3", default-features = false, features = ["xml"] }
+yororen_ui = { version = "0.3", default-features = false, features = ["xml", "brutalism"] }
 ```
 
-### From GitHub (latest development)
+</details>
+
+<details>
+<summary><strong>From GitHub (latest development build)</strong></summary>
 
 ```toml
 [dependencies]
 yororen_ui = { git = "https://github.com/MeowLynxSea/yororen-ui.git", tag = "v0.3.0" }
 ```
 
-### From a local path (development)
+</details>
+
+<details>
+<summary><strong>From a local path (development)</strong></summary>
 
 ```toml
 [dependencies]
 yororen_ui = { path = "../yororen-ui" }
 ```
 
----
+</details>
 
-## Dependencies
+<details>
+<summary><strong><code>gpui</code> dependency</strong></summary>
 
-<code>gpui-ce</code> is distributed via crates.io with semantic versioning. Make sure your application uses a compatible version:
+<code>gpui</code> is provided via the <a href="https://crates.io/crates/gpui-ce"><code>gpui-ce</code></a> crate on crates.io. Make sure your application uses a compatible version:
 
 ```toml
 [dependencies]
@@ -360,37 +374,48 @@ gpui = { package = "gpui-ce", version = "0.3" }
 
 In this repository, <code>gpui-ce</code> is specified in <code>Cargo.toml</code>.
 
+</details>
+
+---
+
+## Requirements
+
+- **Rust edition:** 2024
+- **Platforms:** macOS, Linux, Windows (whatever <code>gpui-ce</code> supports)
+
 ---
 
 ## License
 
-<ul>
-  <li>Yororen UI is licensed under the <strong>Apache License, Version 2.0</strong>. See <code>LICENSE</code>.</li>
-  <li>This project is built on top of <code>gpui</code> (Zed Industries), also Apache-2.0.</li>
-</ul>
-
-See <code>NOTICE</code> for attribution details.
+Licensed under the **Apache License, Version 2.0**. Built on top of <code>gpui</code> (Zed Industries), also Apache-2.0. See <code>LICENSE</code> and <code>NOTICE</code> for attribution.
 
 ---
 
 ## Contributing
 
-Issues and PRs are welcome.
+Issues and PRs are welcome. When changing visuals:
 
-When changing visuals:
-<ul>
-  <li>Include screenshots or a short recording</li>
-  <li>Keep changes <code>rustfmt</code> clean</li>
-</ul>
+- Include screenshots or a short recording
+- Keep changes <code>rustfmt</code>-clean
 
 ---
 
 ## Wiki
 
-See <a href="https://github.com/MeowLynxSea/yororen-ui/wiki" target="_blank">Yororen UI Wiki</a> for detailed documentation, guides, and component references.
+See the [Yororen UI Wiki](https://github.com/MeowLynxSea/yororen-ui/wiki) for guides, recipes, and per-component references.
 
 ---
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=MeowLynxSea/yororen-ui&type=date&legend=top-left)](https://www.star-history.com/#MeowLynxSea/yororen-ui&type=date&legend=top-left)
+<a href="https://www.star-history.com/#MeowLynxSea/yororen-ui&type=date&legend=top-left">
+  <img src="https://api.star-history.com/svg?repos=MeowLynxSea/yororen-ui&type=date&legend=top-left" alt="Star History Chart">
+</a>
+
+---
+
+## Maintained by
+
+<p align="center">
+  <img src="screenshots/yororen-brand.png" width="560" alt="Yororen — Maintained with care">
+</p>

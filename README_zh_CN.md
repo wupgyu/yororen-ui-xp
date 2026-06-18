@@ -1,22 +1,27 @@
 # Yororen UI
 
 <p align="center">
-  <strong>中文版</strong> | <a href="README.md">English</a>
+  <strong>中文版</strong> · <a href="README.md">English</a>
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="许可证">
   <img src="https://img.shields.io/badge/rust-edition%202024-yellow.svg" alt="Rust 版本">
   <img src="https://img.shields.io/badge/gpui-based-2a2a2a.svg" alt="基于 gpui">
+  <img src="https://img.shields.io/badge/version-0.3.0-orange.svg" alt="版本">
 </p>
 
-<p align="center">
-  <strong>Yororen UI</strong> 是一个 headless 优先的 Rust UI 库，基于 <a href="https://github.com/zed-industries/zed"><code>gpui</code></a>（Zed）构建。它采用三层架构 —— headless 原语、JSON 主题、可替换的可视化渲染器 —— 让应用在不同设计风格之间自由切换。
-</p>
+**Yororen UI** 是一个 headless 优先的 Rust UI 库，基于 [`gpui`](https://github.com/zed-industries/zed)（通过 [`gpui-ce`](https://crates.io/crates/gpui-ce)）构建。按钮不是某种视觉样式，而是一个可聚焦、可点击、可带文本标签和图标的组件；外观由渲染器决定。
 
-<p align="center">
-  它旨在被 <code>gpui</code> 应用程序 crate 使用，同时保持 UI 层的独立性（主题、组件、小部件和嵌入式图标资源）。
-</p>
+```text
+主题 JSON  ─▶  渲染器（XxxRenderer）──▶  headless（XxxProps）──▶  gpui-ce
+```
+
+- **Headless**（[`yororen-ui-core`](https://crates.io/crates/yororen-ui-core)）—— 数据、状态、a11y、i18n、RTL、动画、资源。不做任何视觉决策。
+- **渲染器**（[`yororen-ui-default-renderer`](https://crates.io/crates/yororen-ui-default-renderer) · [`yororen-ui-brutalism-renderer`](https://crates.io/crates/yororen-ui-brutalism-renderer)）—— 负责将 props 转换为样式化的 div。55 个 trait 槽位分别由 `Token*` 或 `Brutal*` 实现；更换渲染器，整套应用的视觉就会一并切换。
+- **主题** —— JSON 文件。渲染器按路径（如 `action.primary.bg`）读取；缺失的路径回退到渲染器的默认值。
+
+聚合 crate [`yororen-ui`](https://crates.io/crates/yororen-ui) 重新导出 core + 默认渲染器 + 三个内置 locale，大多数应用只需要这一个依赖。开启 `brutalism` 或 `xml` feature 即可启用备选渲染器或 XML DSL。
 
 ---
 
@@ -24,36 +29,44 @@
 
 <table>
   <tr>
-    <td><strong>54 个组件</strong></td>
-    <td>按钮、输入框、徽章、工具提示、图标、标题、卡片、模态框、树形控件、虚拟化列表等</td>
+    <th width="30%">能力</th>
+    <th>说明</th>
+  </tr>
+  <tr>
+    <td><strong>55 个组件</strong></td>
+    <td>按钮、输入框、徽章、工具提示、模态框、浮层、选择器、列表、虚拟化列表、树、表格等</td>
   </tr>
   <tr>
     <td><strong>三层架构</strong></td>
-    <td>Headless 原语 + JSON 主题 + 可替换的可视化渲染器（默认 + brutalism）</td>
+    <td>headless 原语 + JSON 主题 + 可替换的可视化渲染器（默认 + brutalism）</td>
   </tr>
   <tr>
-    <td><strong>主题系统</strong></td>
-    <td>主题就是纯 JSON —— 通过一次 <code>install()</code> 调用即可在运行时切换配色</td>
+    <td><strong>JSON 主题</strong></td>
+    <td>一次 <code>install()</code> 调用即可在运行时切换主题配色</td>
   </tr>
   <tr>
     <td><strong>动画系统</strong></td>
-    <td>可配置的动画，包含预设、缓动函数和编排器</td>
+    <td>每个带状态的复合组件都内置 <code>AnimatedVisibility</code>，并附带预设动画与缓动函数</td>
   </tr>
   <tr>
     <td><strong>国际化</strong></td>
-    <td>多语言支持（英文、中文、阿拉伯文），文本方向支持（LTR/RTL）</td>
+    <td>内置 <code>en</code>、<code>zh-CN</code>、<code>ar</code> 三种 locale；<code>ar</code> 会根据 <code>cx.i18n().text_direction()</code> 自动切换为 RTL 布局</td>
   </tr>
   <tr>
     <td><strong>无障碍</strong></td>
-    <td>ARIA 支持、焦点管理、键盘导航、焦点陷阱</td>
+    <td>焦点管理、键盘导航、点击外部关闭、滚动锁定计数、焦点陷阱</td>
   </tr>
   <tr>
     <td><strong>嵌入式资源</strong></td>
-    <td>20+ 个 SVG 图标，通过 <code>rust-embed</code> 嵌入（<code>assets/icons/**</code>）</td>
+    <td>通过 <code>rust-embed</code> 内置 20+ 个 SVG 图标</td>
   </tr>
   <tr>
     <td><strong>通知系统</strong></td>
-    <td>Toast 通知，包含多种样式、队列管理和交互操作</td>
+    <td><code>NotificationCenter</code> 全局对象，支持自动关闭计时、常驻标志与持久化</td>
+  </tr>
+  <tr>
+    <td><strong>可选的 XML DSL</strong></td>
+    <td>通过 <code>xml!</code> / <code>xml_file!</code> 宏声明式构建界面</td>
   </tr>
 </table>
 
@@ -61,283 +74,297 @@
 
 ## 快速开始
 
-### 1) 安装渲染器
-
 ```rust
-use gpui::App;
+use gpui::{App, Application, Bounds, WindowBounds, WindowOptions, px, size};
+use yororen_ui::assets::UiAsset;
+use yororen_ui::locale_en;
 use yororen_ui::renderer;
 
-fn init_ui(cx: &mut App) {
-    // 加载与系统外观匹配的默认主题（浅色/深色），
-    // 并注册全部 54 个默认 TokenXxxRenderer 实现。
-    renderer::install(cx, cx.window_appearance());
+fn main() {
+    let app = Application::new().with_assets(UiAsset);
+
+    app.run(|cx: &mut App| {
+        // 1) 渲染器 + 主题 —— 根据系统外观选择 system-light 或 system-dark，
+        //    安装全局 Theme，并注册 55 个默认渲染器实现。
+        renderer::install(cx, cx.window_appearance());
+
+        // 2) 初始化文本输入的键位映射（幂等）。
+        yororen_ui::headless::text_input::init(cx);
+
+        // 3) Locale。
+        locale_en::install(cx);
+
+        // 4) 主窗口。
+        let options = WindowOptions {
+            window_bounds: Some(WindowBounds::Windowed(
+                Bounds::centered(None, size(px(800.), px(600.)), cx),
+            )),
+            ..Default::default()
+        };
+        cx.open_window(options, |_, cx| cx.new(|_| my_app::MyApp));
+    });
 }
 ```
 
-### 2) 使用 headless 组件
+在 <code>Render::render</code> 中：
 
 ```rust
-use gpui::{App, AppContext, Entity, Global};
 use yororen_ui::headless::button::button;
 use yororen_ui::headless::label::label;
 
-#[derive(Default)]
-pub struct Counter { pub value: i32 }
-pub struct AppState { pub counter: Entity<Counter> }
+fn render(&mut self, _w: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+    div().size_full().flex().items_center().justify_center().gap_2()
+        .child(label("count", "0", cx).render(cx))
+        .child(button("inc", cx).caption("+").render(cx))
+}
+```
 
-impl AppState {
-    pub fn new(cx: &mut App) -> Self {
-        Self { counter: cx.new(|_| Counter::default()) }
+每个 headless 工厂都同时提供 <code>.apply(div)</code> 与 <code>.render(cx)</code> 两种调用方式：前者仅注入无障碍属性，后者则通过已注册的渲染器渲染完整视觉。文本输入的 <code>.render(cx, window)</code> 为双参数调用，并会在 <code>window</code> 上注册 IME 处理器。
+
+<details>
+<summary><strong>切换渲染器或主题（可选）</strong></summary>
+
+### Brutalism 渲染器
+
+```rust
+use yororen_ui::brutalism_renderer;
+
+brutalism_renderer::install(cx);   // 直角、硬阴影、等宽字体
+```
+
+### 自定义 JSON 主题
+
+```rust
+use yororen_ui_default_renderer::{Theme, install_with};
+
+const MY_THEME: &str = include_str!("../themes/my-brand.json");
+install_with(cx, Theme::from_json(MY_THEME).expect("valid JSON"));
+```
+
+### 运行时主题切换
+
+在 <code>Render</code> 实现中调用 <code>yororen_ui::theme::install(cx, new_theme)</code>——可在每帧渲染时调用，也可在用户切换主题时调用。调用是幂等且廉价的。
+
+```rust
+impl Render for MyApp {
+    fn render(&mut self, _w: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        yororen_ui::theme::install(cx, self.current_theme());
+        // … 渲染剩余部分 …
     }
 }
-impl Global for AppState {}
-
-fn render(cx: &mut gpui::Context<MyApp>) -> impl gpui::IntoElement {
-    let count = cx.global::<AppState>().counter.read(cx).value;
-    let inc = cx.global::<AppState>().counter.clone();
-
-    gpui::div().size_full().flex().items_center().justify_center().gap_2()
-        .child(label("count", count.to_string(), cx).render(cx))
-        .child(
-            button("inc", cx)
-                .on_click(move |_, _, cx| {
-                    inc.update(cx, |c, cx| { c.value += 1; cx.notify(); });
-                })
-                .render(cx)
-                .child("+"),
-        )
-}
 ```
 
-### 3) 安装 i18n（Locale + RTL）
-
-```rust
-use gpui::App;
-use yororen_ui::locale_en;
-
-fn init_i18n(cx: &mut App) {
-    locale_en::install(cx);
-}
-```
-
-### 4) 提供资源（图标）
-
-```rust
-use gpui::Application;
-use yororen_ui::assets::UiAsset;
-
-let app = Application::new().with_assets(UiAsset);
-```
-
-如果您的应用程序也有自己的资源，使用 <code>CompositeAssetSource</code> 将 Yororen UI 的图标作为后备层组合进来。
+</details>
 
 ---
 
-## 示例应用程序
+## 示例应用
 
-我们在 <code>crates/yororen-ui-demos/</code> 下提供五个官方示例应用：
+<!-- ====================================================================== -->
+<!-- 重新生成截图的方法：运行示例并截屏保存到 screenshots/<name>.png。   -->
+<!-- 文件名约定见 screenshots/README.md。                                  -->
+<!-- ====================================================================== -->
 
-| 示例 | 展示内容 | 运行命令 |
-|------|----------|----------|
-| <a href="#counter">Counter（计数器）</a> | 最小启动模板，单一 <code>Entity&lt;T&gt;</code> 全局，三个按钮 | <code>cargo run -p counter-demo</code> |
-| <a href="#layers-demo">Layers Demo（三层演示）</a> | 并排展示三种渲染路径：headless / 默认渲染 / 自定义绘制器 | <code>cargo run -p layers-demo</code> |
-| <a href="#inputs-demo">Inputs Demo（输入演示）</a> | 七个文本输入组件，使用 <code>cx.entity().clone()</code> 闭包模式 | <code>cargo run -p inputs-demo</code> |
-| <a href="#gallery-demo">Gallery Demo（画廊演示）</a> | 全套 54 组件展示、主题切换、国际化、通知、虚拟化列表 | <code>cargo run -p gallery-demo</code> |
-| <a href="#theme-showcase">Theme Showcase（主题演示）</a> | 通过 <code>theme::install</code> 实现运行时主题切换 | <code>cargo run -p theme-showcase-demo</code> |
+<table>
+  <tr>
+    <td width="50%" valign="top">
 
-### Counter（计数器）
+**`counter`** —— 最小启动模板：仅使用一个全局 <code>Entity&lt;T&gt;</code> 和三个按钮。
 
-<!-- Screenshot slot: replace screenshots/counter.png when refreshing -->
-<img src="screenshots/counter.png" alt="Counter Demo" width="600">
+<p><img src="screenshots/counter.png" width="480" alt="Counter 示例"></p>
 
-一个极简的计数器应用，演示 Yororen UI 最基础的核心概念。
+```
+cargo run -p counter-demo
+```
 
-**核心功能：**
-- 单一 <code>Entity&lt;Counter&gt;</code> 全局状态
-- 通过 <code>on_click</code> 处理按钮点击
-- 通过 <code>cx.notify()</code> 实现响应式 UI 更新
+</td>
+    <td width="50%" valign="top">
 
-**适用场景：** Yororen UI 初学者的第一个学习示例。
+**`gallery_demo`** —— 全面的组件参考示例：涵盖全部组件、主题切换、i18n、通知与虚拟化列表。
 
-### Layers Demo（三层演示）
+<p><img src="screenshots/gallery-demo.png" width="480" alt="Gallery 示例"></p>
 
-<!-- Screenshot slot: replace screenshots/layers-demo.png when refreshing -->
-<img src="screenshots/layers-demo.png" alt="Layers Demo" width="600">
+```
+cargo run -p gallery-demo
+```
 
-并排对比三种渲染路径：纯 headless（调用方自绘）、默认渲染器（主题 JSON）、手写的 <code>MaterialButton</code> 绘制器（带真正的涟漪动画）。
+</td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
 
-**核心功能：**
-- 同一个 headless <code>button</code> 用三种方式渲染
-- 自定义的 <code>gpui::Element</code> 绘制器（见 <code>material_button.rs</code>）
-- 第四个面板展示使用 <code>.render(cx, window)</code> 的文本输入
+**`inputs_demo`** —— 全套七个文本输入，采用 <code>cx.entity().clone()</code> 模式。处理 <kbd>Tab</kbd> / <kbd>Enter</kbd> / <kbd>Esc</kbd> / <kbd>⌘V</kbd>。
 
-**适用场景：** 理解 <code>.apply</code>（仅 a11y）和 <code>.render(cx)</code>（完整视觉）的区别。
+<p><img src="screenshots/inputs-demo.png" width="480" alt="Inputs 示例"></p>
 
-### Inputs Demo（输入演示）
+```
+cargo run -p inputs-demo
+```
 
-<!-- Screenshot slot: replace screenshots/inputs-demo.png when refreshing -->
-<img src="screenshots/inputs-demo.png" alt="Inputs Demo" width="600">
+</td>
+    <td width="50%" valign="top">
 
-七个面板，每个展示一个文本输入组件。展示规范的 <code>cx.entity().clone()</code> 模式来连接 <code>on_change</code> 闭包。
+**`layers_demo`** —— 三种渲染路径并排展示，外加手写的 Material 涟漪动画。
 
-**核心功能：**
-- 全套七个文本输入：TextInput, PasswordInput, NumberInput, TextArea, SearchInput, FilePathInput, KeybindingInput
-- <code>number_input</code> 的步进回调
-- <code>KeybindingInputMode</code> 状态切换（Idle / Capturing）
+<p><img src="screenshots/layers-demo.png" width="480" alt="Layers 示例"></p>
 
-**适用场景：** 构建表单、设置页等输入密集型界面。
+```
+cargo run -p layers-demo
+```
 
-### Gallery Demo（画廊演示）
+</td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
 
-<!-- Screenshot slot: replace screenshots/gallery-demo.png when refreshing -->
-<img src="screenshots/gallery-demo.png" alt="Gallery Demo" width="600">
+**`theme_showcase`** —— 通过 <code>theme::install</code> 在每帧渲染时切换主题，循环展示四种主题。
 
-厨房水槽式参考。一个窗口渲染所有组件，带有可用的主题切换器（默认 vs brutalism，浅色 vs 深色）和语言切换器（en / zh-CN / ar）。
+<p><img src="screenshots/theme-showcase.png" width="480" alt="Theme showcase 示例"></p>
 
-**核心功能：**
-- 一个窗口展示全部 54 个组件
-- <code>cell()</code> / <code>input_cell()</code> 辅助函数将每个组件包裹在带状态行的标签卡中
-- 通过工具栏实时切换主题和语言
-- 使用 <code>gpui::deferred(...).with_priority(3)</code> 渲染的 <code>NotificationCenter</code> 宿主
+```
+cargo run -p theme-showcase-demo
+```
 
-**适用场景：** 任何非平凡模式 —— 构建真实应用时从这里开始。
+</td>
+    <td width="50%" valign="top">
 
-### Theme Showcase（主题演示）
+**`variant_showcase`** —— <code>ActionVariantKind</code> 视觉对比（<code>Neutral</code> / <code>Primary</code> / <code>Danger</code>），使用同一个 <code>headless::button</code> 工厂。
 
-<!-- Screenshot slot: replace screenshots/theme-showcase.png when refreshing -->
-<img src="screenshots/theme-showcase.png" alt="Theme Showcase" width="600">
+<p><img src="screenshots/variant-showcase.png" width="480" alt="Variant showcase 示例"></p>
 
-单个窗口演示运行时主题切换：复用同一个 headless 按钮和 <code>TokenButtonRenderer</code>，每次点击 "Next" 时替换渲染器读取的 JSON。
+```
+cargo run -p variant-showcase-demo
+```
 
-**核心功能：**
-- 内置 <code>system-light</code> / <code>system-dark</code> 主题
-- 内联 CATPPUCCIN 和 MATERIAL 主题（用户自定义 JSON）
-- 一键轮换主题
+</td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
 
-**适用场景：** 构建 "Next theme" 工具栏，A/B 主题测试。
+**`gallery_xml`** —— 使用 XML DSL 重新实现的 gallery。
 
----
+<p><img src="screenshots/gallery-xml.png" width="480" alt="Gallery XML 示例"></p>
 
-## 基于 Yororen UI 构建
+```
+cargo run -p gallery-xml-demo
+```
 
-使用 Yororen UI 构建的项目和应用程序。
+</td>
+    <td width="50%" valign="top">
 
-### Yororen Accelerator
+**`showcase_xml`** —— 小规模的 XML DSL 基础测试。
 
-<img src="screenshots/accelerator-1.png" alt="Yororen Accelerator" width="380">
-<img src="screenshots/accelerator-2.png" alt="Yororen Accelerator" width="380">
+<p><img src="screenshots/showcase-xml.png" width="480" alt="Showcase XML 示例"></p>
 
-<img src="screenshots/accelerator-3.png" alt="Yororen Accelerator" width="380">
-<img src="screenshots/accelerator-4.png" alt="Yororen Accelerator" width="380">
+```
+cargo run -p showcase-xml-demo
+```
 
-一个网络加速工具，具备本机透明 TCP 导流 + relay 透传功能，使用 Yororen UI 构建。
-
-**核心亮点：**
-- 复杂的数据仪表板，实时统计显示
-- 自定义窗口边框，接近原生体验
-- 丰富的数据表格和虚拟化列表
-- 服务器管理和配置界面
+</td>
+  </tr>
+</table>
 
 ---
 
 ## 包含内容
 
-### Crate 列表
-
 <table>
+  <tr>
+    <th>Crate</th>
+    <th>角色</th>
+  </tr>
   <tr>
     <td><code>yororen-ui-core</code></td>
     <td>Headless 原语、主题 JSON 访问、i18n、a11y、RTL、动画、资源、通知中心</td>
   </tr>
   <tr>
     <td><code>yororen-ui-default-renderer</code></td>
-    <td>54 个 <code>TokenXxxRenderer</code> 默认实现 + 内置 <code>system-light.json</code> / <code>system-dark.json</code> 主题 + <code>renderer::install</code> 引导</td>
+    <td>55 个 <code>TokenXxxRenderer</code> 默认实现 + 内置 <code>system-light.json</code> / <code>system-dark.json</code> 主题 + <code>renderer::install</code> 引导函数</td>
   </tr>
   <tr>
-    <td><code>yororen-ui-brutalism-renderer</code></td>
-    <td>备选渲染器 —— 锐角、粗黑边框、硬偏移阴影、等宽字体 + 内置 brutalism 主题</td>
+    <td><code>yororen-ui-brutalism-renderer</code><br><sub><em>（可选，feature <code>brutalism</code>）</em></sub></td>
+    <td>直角、粗黑边框、硬偏移阴影、等宽字体</td>
   </tr>
   <tr>
-    <td><code>yororen-ui</code></td>
-    <td>聚合 crate，重新导出三个层 + 语言目录（<code>en</code>、<code>zh-CN</code>、<code>ar</code>）</td>
+    <td><code>yororen-ui-xml</code> + <code>yororen-ui-xml-macro</code><br><sub><em>（可选，feature <code>xml</code>，默认开启）</em></sub></td>
+    <td>XML DSL：<code>xml!</code>、<code>xml_file!</code>、<code>register_xml_component!</code>、<code>bind</code></td>
+  </tr>
+  <tr>
+    <td><code>yororen-ui-locale-{en, zh-CN, ar}</code></td>
+    <td>内置 JSON 翻译目录</td>
+  </tr>
+  <tr>
+    <td><code>yororen-ui</code><br><sub><em>（聚合 crate）</em></sub></td>
+    <td>重新导出上述所有内容，大多数应用只需要这一个</td>
   </tr>
 </table>
 
 ### 三层架构
 
-```
-headless 组件  ──▶  主题（JSON）  ──▶  渲染器（视觉）
-       ▲                                          │
-       └──────── 安装时注册 ─────────────────────┘
+```text
+主题 JSON  ─▶  渲染器（XxxRenderer）──▶  headless（XxxProps）──▶  gpui-ce
 ```
 
-- **Headless**：数据 + 控制 + a11y。无视觉。
-- **主题**：单个 <code>serde_json::Value</code>，可在运行时切换。
-- **渲染器**：每个组件一个 trait，读取主题并生成可视化 div。
+- **Headless** —— 数据 + 控制 + a11y。无视觉。
+- **渲染器** —— 每个组件一个 trait，读取主题并生成样式化 div。
+- **主题** —— 一个 <code>serde_json::Value</code>，可在运行时切换。
 
-自定义渲染器只需实现全部 54 个 <code>XxxRenderer</code> trait —— 完全不需要触碰 headless 层。
+55 个组件标记（<code>yororen-ui-core::renderer::markers</code>）是全局 <code>RendererRegistry</code> 的键。默认渲染器和 brutalism 渲染器各实现全部 55 个 trait 槽位。
 
-### 组件分类
-
-| 分类 | 组件 |
-|------|------|
-| **基础** | Button, IconButton, Icon, Label, Text, Heading, Spacer, Divider, Card, FocusRing |
-| **输入** | TextInput, PasswordInput, NumberInput, TextArea, SearchInput, FilePathInput, KeybindingInput |
-| **选择** | Checkbox, Radio, RadioGroup, Switch, Slider, Select, ComboBox |
-| **展示** | Badge, Avatar, Image, ProgressBar, Skeleton, Tag, EmptyState |
-| **浮层** | Tooltip, Popover, Modal, Toast, DropdownMenu, Menu, Disclosure, Overlay |
-| **表面** | Panel, Card, Tooltip, Avatar, Image |
-| **列表 / 表格** | ListItem, TreeItem, Tree, Table, Form, FormField, VirtualList, UniformVirtualList |
-| **交互** | ToggleButton, SplitButton, ButtonGroup, ShortcutHint, KeybindingDisplay |
-
-### 图标
-
-```rust
-use yororen_ui::icon::IconName;
-// 作为任何接受 icon 的组件的图标源。
-```
-
-图标路径映射到 <code>assets/icons/</code> 下嵌入的 SVG 资源。业务专属图标可以放入您自己的 <code>AssetSource</code>，通过 icon API 引用。
-
----
-
-## 环境要求
-
-<ul>
-  <li><strong>Rust edition：</strong> 2024</li>
-  <li><code>gpui</code> 通过 crates.io 上的 <a href="https://crates.io/crates/gpui-ce"><code>gpui-ce</code></a> crate 提供</li>
-</ul>
+自定义渲染器只需要实现 55 个 <code>XxxRenderer</code> trait——完全不需要触碰 headless 层。
 
 ---
 
 ## 安装
 
-### 从 crates.io 使用（推荐）
+<details>
+<summary><strong>从 crates.io 使用（推荐）</strong></summary>
 
 ```toml
 [dependencies]
 yororen_ui = "0.3"
 ```
 
-### 从 GitHub 使用（最新开发版）
+<code>xml</code> feature 默认开启，<code>xml!</code> / <code>xml_file!</code> 开箱即用。如需关闭：
+
+```toml
+[dependencies]
+yororen_ui = { version = "0.3", default-features = false }
+```
+
+按需启用 feature：
+
+```toml
+[dependencies]
+yororen_ui = { version = "0.3", default-features = false, features = ["xml", "brutalism"] }
+```
+
+</details>
+
+<details>
+<summary><strong>从 GitHub 使用（最新开发版）</strong></summary>
 
 ```toml
 [dependencies]
 yororen_ui = { git = "https://github.com/MeowLynxSea/yororen-ui.git", tag = "v0.3.0" }
 ```
 
-### 从本地路径使用（开发时）
+</details>
+
+<details>
+<summary><strong>从本地路径使用（开发时）</strong></summary>
 
 ```toml
 [dependencies]
 yororen_ui = { path = "../yororen-ui" }
 ```
 
----
+</details>
 
-## 依赖项
+<details>
+<summary><strong><code>gpui</code> 依赖</strong></summary>
 
-<code>gpui-ce</code> 通过 crates.io 进行分发，使用语义版本控制。请确保您的应用程序使用兼容的版本：
+<code>gpui</code> 通过 crates.io 上的 <a href="https://crates.io/crates/gpui-ce"><code>gpui-ce</code></a> crate 提供。请确保您的应用程序使用兼容的版本：
 
 ```toml
 [dependencies]
@@ -346,32 +373,48 @@ gpui = { package = "gpui-ce", version = "0.3" }
 
 在本仓库中，<code>gpui-ce</code> 已在 <code>Cargo.toml</code> 中指定。
 
+</details>
+
+---
+
+## 环境要求
+
+- **Rust edition：** 2024
+- **平台：** macOS、Linux、Windows（与 <code>gpui-ce</code> 支持的范围一致）
+
 ---
 
 ## 许可证
 
-<ul>
-  <li>Yororen UI 采用 <strong>Apache License, Version 2.0</strong> 授权。参见 <code>LICENSE</code>。</li>
-  <li>本项目基于 <code>gpui</code>（Zed Industries）构建，同样采用 Apache-2.0 许可证。</li>
-</ul>
-
-归属详情请参见 <code>NOTICE</code>。
+采用 **Apache License, Version 2.0** 授权。本项目基于 <code>gpui</code>（Zed Industries）构建，同样采用 Apache-2.0。归属详情请参见 <code>LICENSE</code> 和 <code>NOTICE</code>。
 
 ---
 
 ## 贡献
 
-欢迎提交 Issue 和 PR。
+欢迎提交 Issue 和 PR。修改视觉效果时：
 
-修改视觉效果时：
-
-<ul>
-  <li>请提供截图或简短录制</li>
-  <li>保持代码符合 <code>rustfmt</code> 规范</li>
-</ul>
+- 请附上截图或简短录屏
+- 代码请保持 <code>rustfmt</code> 格式
 
 ---
 
 ## Wiki
 
-参见 <a href="https://github.com/MeowLynxSea/yororen-ui/wiki" target="_blank">Yororen UI Wiki</a> 获取详细文档、指南和组件参考。
+参见 [Yororen UI Wiki](https://github.com/MeowLynxSea/yororen-ui/wiki) 获取详细指南、配方和组件参考。
+
+---
+
+## Star History
+
+<a href="https://www.star-history.com/#MeowLynxSea/yororen-ui&type=date&legend=top-left">
+  <img src="https://api.star-history.com/svg?repos=MeowLynxSea/yororen-ui&type=date&legend=top-left" alt="Star History Chart">
+</a>
+
+---
+
+## 由 Yororen 维护
+
+<p align="center">
+  <img src="screenshots/yororen-brand.png" width="560" alt="Yororen — Maintained with care">
+</p>
