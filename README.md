@@ -172,7 +172,7 @@ impl Render for MyApp {
 
 **`counter`** — minimal bootstrap, single `Entity<T>` global, three buttons.
 
-<p><img src="screenshots/counter.png" width="480" alt="Counter demo"></p>
+<p><img src="https://raw.githubusercontent.com/MeowLynxSea/yororen-ui/refs/heads/main/screenshots/counter.png" width="480" alt="Counter demo"></p>
 
 ```
 cargo run -p counter-demo
@@ -183,7 +183,7 @@ cargo run -p counter-demo
 
 **`gallery_demo`** — kitchen-sink reference: every component, theme switching, i18n, notifications, virtualised list.
 
-<p><img src="screenshots/gallery-demo.png" width="480" alt="Gallery demo"></p>
+<p><img src="https://raw.githubusercontent.com/MeowLynxSea/yororen-ui/refs/heads/main/screenshots/gallery-demo.png" width="480" alt="Gallery demo"></p>
 
 ```
 cargo run -p gallery-demo
@@ -196,7 +196,7 @@ cargo run -p gallery-demo
 
 **`inputs_demo`** — all seven text inputs wired with `cx.entity().clone()`. Handles <kbd>Tab</kbd> / <kbd>Enter</kbd> / <kbd>Esc</kbd> / <kbd>⌘V</kbd>.
 
-<p><img src="screenshots/inputs-demo.png" width="480" alt="Inputs demo"></p>
+<p><img src="https://raw.githubusercontent.com/MeowLynxSea/yororen-ui/refs/heads/main/screenshots/inputs-demo.png" width="480" alt="Inputs demo"></p>
 
 ```
 cargo run -p inputs-demo
@@ -207,7 +207,7 @@ cargo run -p inputs-demo
 
 **`layers_demo`** — the three render pathways side by side + a hand-rolled Material ripple.
 
-<p><img src="screenshots/layers-demo.png" width="480" alt="Layers demo"></p>
+<p><img src="https://raw.githubusercontent.com/MeowLynxSea/yororen-ui/refs/heads/main/screenshots/layers-demo.png" width="480" alt="Layers demo"></p>
 
 ```
 cargo run -p layers-demo
@@ -220,7 +220,7 @@ cargo run -p layers-demo
 
 **`theme_showcase`** — live theme switching via `theme::install` per render. Cycles four themes.
 
-<p><img src="screenshots/theme-showcase.png" width="480" alt="Theme showcase demo"></p>
+<p><img src="https://raw.githubusercontent.com/MeowLynxSea/yororen-ui/refs/heads/main/screenshots/theme-showcase.png" width="480" alt="Theme showcase demo"></p>
 
 ```
 cargo run -p theme-showcase-demo
@@ -231,7 +231,7 @@ cargo run -p theme-showcase-demo
 
 **`variant_showcase`** — `ActionVariantKind` comparison (`Neutral` / `Primary` / `Danger`) with the same `headless::button` factory.
 
-<p><img src="screenshots/variant-showcase.png" width="480" alt="Variant showcase demo"></p>
+<p><img src="https://raw.githubusercontent.com/MeowLynxSea/yororen-ui/refs/heads/main/screenshots/variant-showcase.png" width="480" alt="Variant showcase demo"></p>
 
 ```
 cargo run -p variant-showcase-demo
@@ -244,7 +244,7 @@ cargo run -p variant-showcase-demo
 
 **`gallery_xml`** — the gallery written with the XML DSL instead of the Rust builder API.
 
-<p><img src="screenshots/gallery-xml.png" width="480" alt="Gallery XML demo"></p>
+<p><img src="https://raw.githubusercontent.com/MeowLynxSea/yororen-ui/refs/heads/main/screenshots/gallery-xml.png" width="480" alt="Gallery XML demo"></p>
 
 ```
 cargo run -p gallery-xml-demo
@@ -255,7 +255,7 @@ cargo run -p gallery-xml-demo
 
 **`showcase_xml`** — smaller XML-DSL smoke test.
 
-<p><img src="screenshots/showcase-xml.png" width="480" alt="Showcase XML demo"></p>
+<p><img src="https://raw.githubusercontent.com/MeowLynxSea/yororen-ui/refs/heads/main/screenshots/showcase-xml.png" width="480" alt="Showcase XML demo"></p>
 
 ```
 cargo run -p showcase-xml-demo
@@ -417,5 +417,5 @@ See the [Yororen UI Wiki](https://github.com/MeowLynxSea/yororen-ui/wiki) for gu
 ## Maintained by [Yoro.ren](yoro.ren)
 
 <p align="center">
-  <img src="screenshots/yororen-brand.png" width="560" alt="Yororen — Maintained with care">
+  <img src="https://raw.githubusercontent.com/MeowLynxSea/yororen-ui/refs/heads/main/screenshots/yororen-brand.png" width="560" alt="Yororen — Maintained with care">
 </p>

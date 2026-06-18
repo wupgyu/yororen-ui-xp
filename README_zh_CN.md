@@ -171,7 +171,7 @@ impl Render for MyApp {
 
 **`counter`** —— 最小启动模板：仅使用一个全局 <code>Entity&lt;T&gt;</code> 和三个按钮。
 
-<p><img src="screenshots/counter.png" width="480" alt="Counter 示例"></p>
+<p><img src="https://raw.githubusercontent.com/MeowLynxSea/yororen-ui/refs/heads/main/screenshots/counter.png" width="480" alt="Counter 示例"></p>
 
 ```
 cargo run -p counter-demo
@@ -182,7 +182,7 @@ cargo run -p counter-demo
 
 **`gallery_demo`** —— 全面的组件参考示例：涵盖全部组件、主题切换、i18n、通知与虚拟化列表。
 
-<p><img src="screenshots/gallery-demo.png" width="480" alt="Gallery 示例"></p>
+<p><img src="https://raw.githubusercontent.com/MeowLynxSea/yororen-ui/refs/heads/main/screenshots/gallery-demo.png" width="480" alt="Gallery 示例"></p>
 
 ```
 cargo run -p gallery-demo
@@ -195,7 +195,7 @@ cargo run -p gallery-demo
 
 **`inputs_demo`** —— 全套七个文本输入，采用 <code>cx.entity().clone()</code> 模式。处理 <kbd>Tab</kbd> / <kbd>Enter</kbd> / <kbd>Esc</kbd> / <kbd>⌘V</kbd>。
 
-<p><img src="screenshots/inputs-demo.png" width="480" alt="Inputs 示例"></p>
+<p><img src="https://raw.githubusercontent.com/MeowLynxSea/yororen-ui/refs/heads/main/screenshots/inputs-demo.png" width="480" alt="Inputs 示例"></p>
 
 ```
 cargo run -p inputs-demo
@@ -206,7 +206,7 @@ cargo run -p inputs-demo
 
 **`layers_demo`** —— 三种渲染路径并排展示，外加手写的 Material 涟漪动画。
 
-<p><img src="screenshots/layers-demo.png" width="480" alt="Layers 示例"></p>
+<p><img src="https://raw.githubusercontent.com/MeowLynxSea/yororen-ui/refs/heads/main/screenshots/layers-demo.png" width="480" alt="Layers 示例"></p>
 
 ```
 cargo run -p layers-demo
@@ -219,7 +219,7 @@ cargo run -p layers-demo
 
 **`theme_showcase`** —— 通过 <code>theme::install</code> 在每帧渲染时切换主题，循环展示四种主题。
 
-<p><img src="screenshots/theme-showcase.png" width="480" alt="Theme showcase 示例"></p>
+<p><img src="https://raw.githubusercontent.com/MeowLynxSea/yororen-ui/refs/heads/main/screenshots/theme-showcase.png" width="480" alt="Theme showcase 示例"></p>
 
 ```
 cargo run -p theme-showcase-demo
@@ -230,7 +230,7 @@ cargo run -p theme-showcase-demo
 
 **`variant_showcase`** —— <code>ActionVariantKind</code> 视觉对比（<code>Neutral</code> / <code>Primary</code> / <code>Danger</code>），使用同一个 <code>headless::button</code> 工厂。
 
-<p><img src="screenshots/variant-showcase.png" width="480" alt="Variant showcase 示例"></p>
+<p><img src="https://raw.githubusercontent.com/MeowLynxSea/yororen-ui/refs/heads/main/screenshots/variant-showcase.png" width="480" alt="Variant showcase 示例"></p>
 
 ```
 cargo run -p variant-showcase-demo
@@ -243,7 +243,7 @@ cargo run -p variant-showcase-demo
 
 **`gallery_xml`** —— 使用 XML DSL 重新实现的 gallery。
 
-<p><img src="screenshots/gallery-xml.png" width="480" alt="Gallery XML 示例"></p>
+<p><img src="https://raw.githubusercontent.com/MeowLynxSea/yororen-ui/refs/heads/main/screenshots/gallery-xml.png" width="480" alt="Gallery XML 示例"></p>
 
 ```
 cargo run -p gallery-xml-demo
@@ -254,7 +254,7 @@ cargo run -p gallery-xml-demo
 
 **`showcase_xml`** —— 小规模的 XML DSL 基础测试。
 
-<p><img src="screenshots/showcase-xml.png" width="480" alt="Showcase XML 示例"></p>
+<p><img src="https://raw.githubusercontent.com/MeowLynxSea/yororen-ui/refs/heads/main/screenshots/showcase-xml.png" width="480" alt="Showcase XML 示例"></p>
 
 ```
 cargo run -p showcase-xml-demo
@@ -416,5 +416,5 @@ gpui = { package = "gpui-ce", version = "0.3" }
 ## 由 [Yoro.ren](yoro.ren) 维护
 
 <p align="center">
-  <img src="screenshots/yororen-brand.png" width="560" alt="Yororen — Maintained with care">
+  <img src="https://raw.githubusercontent.com/MeowLynxSea/yororen-ui/refs/heads/main/screenshots/yororen-brand.png" width="560" alt="Yororen — Maintained with care">
 </p>
