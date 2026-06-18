@@ -413,7 +413,7 @@ gpui = { package = "gpui-ce", version = "0.3" }
 
 ---
 
-## 由 Yororen 维护
+## 由 [Yoro.ren](yoro.ren) 维护
 
 <p align="center">
   <img src="screenshots/yororen-brand.png" width="560" alt="Yororen — Maintained with care">

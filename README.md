@@ -414,7 +414,7 @@ See the [Yororen UI Wiki](https://github.com/MeowLynxSea/yororen-ui/wiki) for gu
 
 ---
 
-## Maintained by
+## Maintained by [Yoro.ren](yoro.ren)
 
 <p align="center">
   <img src="screenshots/yororen-brand.png" width="560" alt="Yororen — Maintained with care">
