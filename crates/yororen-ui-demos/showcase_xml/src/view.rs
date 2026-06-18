@@ -7,6 +7,7 @@
 //! the XML references them by method name.
 
 use gpui::{AppContext, Context, IntoElement, Render, Window};
+use yororen_ui::theme::ActiveTheme;
 
 use crate::controller::Controller;
 use crate::state::StateRef;
@@ -56,6 +57,13 @@ impl Render for ShowcaseApp {
         let agree_entity = state.agree.clone();
         let name_entity = state.name.clone();
         let controller = self.controller.clone();
+
+        // Theme-aware border color so `border_1` in the XML
+        // actually draws a visible stroke.
+        let border_color = cx
+            .theme()
+            .get_color("border.default")
+            .unwrap_or_default();
 
         xml_file!(cx = &mut **cx, "ui/showcase.xml")
     }
