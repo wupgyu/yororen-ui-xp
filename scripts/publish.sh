@@ -2,18 +2,21 @@
 # Publish every yororen-ui crate to crates.io in dependency order.
 #
 # Usage:
-#   scripts/publish.sh                 # interactive: confirms before each upload
-#   scripts/publish.sh --no-confirm    # CI / trusted: skip confirmations
-#   scripts/publish.sh --dry-run       # package + verify, but never upload
-#   scripts/publish.sh --allow-dirty   # pass --allow-dirty to cargo publish
-#   scripts/publish.sh <crate-name>    # publish only one crate (used by retry)
+#   scripts/publish.sh                       # interactive: confirms before each upload
+#   scripts/publish.sh --no-confirm            # CI / trusted: skip confirmations
+#   scripts/publish.sh --dry-run               # package + verify, but never upload
+#   scripts/publish.sh --allow-dirty           # pass --allow-dirty to cargo publish
+#   scripts/publish.sh --wait 60               # sleep 60s between publishes (default 10)
+#   scripts/publish.sh <crate-name>            # publish only one crate (used by retry)
 #
 # Crate package names use the cargo `name` field (underscored), NOT the
 # directory name. For example `yororen_ui_core`, not `yororen-ui-core`.
 #
 # Why the sleep: crates.io indexes new versions asynchronously. The index
 # entry for `yororen_ui_core@0.3.0` may take 10–30 s to propagate before
-# downstream crates can resolve it. The 60 s sleep below is conservative.
+# downstream crates can resolve it. Set to 10 s by default; bump to 60
+# (or use `--wait N`) if you observe "no matching package" failures
+# between consecutive publishes.
 
 set -euo pipefail
 
@@ -38,11 +41,19 @@ CONFIRM=1
 DRY_RUN=0
 ALLOW_DIRTY=0
 SINGLE_CRATE=""
+WAIT_SECS=10
 for arg in "$@"; do
     case "$arg" in
         --no-confirm) CONFIRM=0 ;;
         --dry-run)    DRY_RUN=1 ;;
         --allow-dirty) ALLOW_DIRTY=1 ;;
+        --wait)
+            shift
+            WAIT_SECS="${1:-10}"
+            ;;
+        --wait=*)
+            WAIT_SECS="${arg#--wait=}"
+            ;;
         --help|-h)
             sed -n '2,18p' "$0"
             exit 0
@@ -151,8 +162,8 @@ for pkg in "${targets[@]}"; do
     publish_one "$pkg"
     # Wait for crates.io index to update before next upload.
     if [[ "$DRY_RUN" -eq 0 ]]; then
-        echo "[publish] sleeping 60 s for crates.io index propagation..."
-        sleep 60
+        echo "[publish] sleeping ${WAIT_SECS}s for crates.io index propagation..."
+        sleep "$WAIT_SECS"
     fi
 done
 
