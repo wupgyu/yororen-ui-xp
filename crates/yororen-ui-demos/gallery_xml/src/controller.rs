@@ -6,14 +6,11 @@
 //! `Controller` is `Clone` because the macro pre-clones the
 //! receiver into a hygienic local per event handler.
 
-#![allow(dead_code)]
-
 use std::collections::{BTreeSet, HashMap};
 use std::ops::Range;
 
 use gpui::{
-    AnyElement, App, ClickEvent, Entity, IntoElement, ParentElement, SharedString, Styled, Window,
-    div, hsla, px,
+    App, ClickEvent, Entity, IntoElement, SharedString, Window,
 };
 
 use yororen_ui::headless::dropdown_menu::{DropdownItem, DropdownMenuItem};
@@ -30,61 +27,6 @@ use yororen_ui::t_named;
 #[derive(Clone)]
 pub struct Controller {
     state: Entity<GalleryState>,
-}
-
-/// A single-read snapshot of all scalar demo fields.
-///
-/// Use `controller.snapshot(cx)` in XML brace expressions to
-/// read any plain value without paying for a separate
-/// `state.read(cx)` borrow guard per field. `Entity<T>` fields
-/// that participate in `@bind` are intentionally **not** here —
-/// they keep their own `*_entity(cx)` accessors.
-pub struct GallerySnapshot {
-    // Toolbar
-    pub current_renderer: RendererKind,
-    pub dark_mode: DarkMode,
-    pub current_locale: LocaleChoice,
-    pub toast_count: usize,
-
-    // Display
-    pub tag_selected: bool,
-    pub tag_close_count: usize,
-    pub progress_value: f32,
-    pub toggle_btn_selected: bool,
-
-    // Overlays
-    pub disclosure_open: bool,
-    pub popover_visible: bool,
-    pub dropdown_visible: bool,
-    pub is_modal_open: bool,
-    pub dropdown_demo_value: String,
-    pub menu_demo_value: String,
-
-    // Lists
-    pub selected_list_item: Option<usize>,
-    pub selected_table_row: Option<usize>,
-    pub form_submit_count: usize,
-    pub form_email_value: String,
-    pub form_email_error: Option<String>,
-
-    // Controls
-    pub checkbox_value: bool,
-    pub switch_value: bool,
-    pub radio_value: usize,
-    pub slider_value: f32,
-
-    // Inputs
-    pub text_value: String,
-    pub password_value: String,
-    pub number_value: f64,
-    pub search_value: String,
-    pub file_path_value: String,
-    pub keybinding_value: String,
-    pub keybinding_mode: KeybindingInputMode,
-    pub text_area_value: String,
-    pub select_demo_value: String,
-    pub combo_demo_value: String,
-    pub listbox_demo_value: String,
 }
 
 // Thin 4-arg event adapters for the toolbar toggle buttons so the
@@ -130,85 +72,151 @@ impl Controller {
         Self { state }
     }
 
-    pub fn state(&self) -> Entity<GalleryState> {
-        self.state.clone()
+    // -------- Field accessors (replaced the per-frame `snapshot()`) --------
+    //
+    // Each accessor does exactly one `state.read(cx)` and returns
+    // either a `Copy` value (no allocation) or a `SharedString`
+    // (single `Arc::clone`, no `String` clone). The XML layer
+    // consumes these directly — `controller.snapshot(cx).foo`
+    // is gone everywhere.
+
+    // ---- Toolbar (Copy) ----
+    pub fn current_renderer(&self, cx: &App) -> RendererKind {
+        self.state.read(cx).current_renderer
+    }
+    pub fn dark_mode(&self, cx: &App) -> DarkMode {
+        self.state.read(cx).dark_mode
+    }
+    pub fn current_locale(&self, cx: &App) -> LocaleChoice {
+        self.state.read(cx).current_locale
+    }
+    pub fn toast_count(&self, cx: &App) -> usize {
+        self.state.read(cx).toast_count.value
     }
 
-    /// Read all scalar fields once and return a snapshot.
-    /// XML brace expressions should use this instead of individual
-    /// getters to avoid repeated `state.read(cx)` borrow guards.
-    pub fn snapshot(&self, cx: &App) -> GallerySnapshot {
-        let s = self.state.read(cx);
-        GallerySnapshot {
-            current_renderer: s.current_renderer,
-            dark_mode: s.dark_mode,
-            current_locale: s.current_locale,
-            toast_count: s.toast_count.value,
-
-            tag_selected: s.tag_selected,
-            tag_close_count: s.tag_closable_count.value,
-            progress_value: s.progress_value,
-            toggle_btn_selected: s.toggle_btn_selected,
-
-            disclosure_open: s.disclosure_open,
-            popover_visible: s.popover_state.read(cx).is_visible(),
-            dropdown_visible: s.dropdown_state.read(cx).is_visible(),
-            is_modal_open: s.modal_state.read(cx).open,
-            dropdown_demo_value: s.dropdown_demo_value.clone(),
-            menu_demo_value: s.menu_demo_value.clone(),
-
-            selected_list_item: s.selected_list_item,
-            selected_table_row: s.selected_table_row,
-            form_submit_count: s.form_submit_count,
-            form_email_value: s.form_email_value.read(cx).clone(),
-            form_email_error: s.form_email_error.clone(),
-
-            checkbox_value: *s.checkbox_value.read(cx),
-            switch_value: *s.switch_value.read(cx),
-            radio_value: s.radio_value,
-            slider_value: *s.slider_value.read(cx),
-
-            text_value: s.text_value.read(cx).clone(),
-            password_value: s.password_value.read(cx).clone(),
-            number_value: *s.number_value.read(cx),
-            search_value: s.search_value.read(cx).clone(),
-            file_path_value: s.file_path_value.read(cx).clone(),
-            keybinding_value: s.keybinding_value.clone(),
-            keybinding_mode: s.keybinding_mode,
-            text_area_value: s.text_area_value.read(cx).clone(),
-            select_demo_value: s.select_demo_value.clone(),
-            combo_demo_value: s.combo_demo_value.clone(),
-            listbox_demo_value: s.listbox_demo_value.clone(),
-        }
+    // ---- Display (Copy + usize) ----
+    pub fn tag_selected(&self, cx: &App) -> bool {
+        self.state.read(cx).tag_selected
     }
+    pub fn tag_close_count(&self, cx: &App) -> usize {
+        self.state.read(cx).tag_closable_count.value
+    }
+    pub fn progress_value(&self, cx: &App) -> f32 {
+        self.state.read(cx).progress_value
+    }
+    pub fn toggle_btn_selected(&self, cx: &App) -> bool {
+        self.state.read(cx).toggle_btn_selected
+    }
+
+    // ---- Overlays (Copy + SharedString) ----
+    pub fn disclosure_open(&self, cx: &App) -> bool {
+        self.state.read(cx).disclosure_open
+    }
+    pub fn popover_visible(&self, cx: &App) -> bool {
+        self.state.read(cx).popover_state.read(cx).is_visible()
+    }
+    pub fn is_modal_open(&self, cx: &App) -> bool {
+        self.state.read(cx).modal_state.read(cx).open
+    }
+    pub fn dropdown_demo_value(&self, cx: &App) -> SharedString {
+        self.state.read(cx).dropdown_demo_value.clone().into()
+    }
+    pub fn menu_demo_value(&self, cx: &App) -> SharedString {
+        self.state.read(cx).menu_demo_value.clone().into()
+    }
+
+    // ---- Lists (Copy + SharedString) ----
+    pub fn selected_list_item(&self, cx: &App) -> Option<usize> {
+        self.state.read(cx).selected_list_item
+    }
+    pub fn selected_table_row(&self, cx: &App) -> Option<usize> {
+        self.state.read(cx).selected_table_row
+    }
+    pub fn form_submit_count(&self, cx: &App) -> usize {
+        self.state.read(cx).form_submit_count
+    }
+    pub fn form_email_value(&self, cx: &App) -> SharedString {
+        self.state.read(cx).form_email_value.read(cx).clone().into()
+    }
+    pub fn form_email_error(&self, cx: &App) -> Option<String> {
+        self.state.read(cx).form_email_error.clone()
+    }
+
+    // ---- Controls (Copy) ----
+    pub fn checkbox_value(&self, cx: &App) -> bool {
+        *self.state.read(cx).checkbox_value.read(cx)
+    }
+    pub fn switch_value(&self, cx: &App) -> bool {
+        *self.state.read(cx).switch_value.read(cx)
+    }
+    pub fn radio_value(&self, cx: &App) -> usize {
+        self.state.read(cx).radio_value
+    }
+    pub fn slider_value(&self, cx: &App) -> f32 {
+        *self.state.read(cx).slider_value.read(cx)
+    }
+
+    // ---- Inputs (SharedString / Copy) ----
+    pub fn text_value(&self, cx: &App) -> SharedString {
+        self.state.read(cx).text_value.read(cx).clone().into()
+    }
+    pub fn password_value(&self, cx: &App) -> SharedString {
+        self.state.read(cx).password_value.read(cx).clone().into()
+    }
+    pub fn number_value(&self, cx: &App) -> f64 {
+        *self.state.read(cx).number_value.read(cx)
+    }
+    pub fn search_value(&self, cx: &App) -> SharedString {
+        self.state.read(cx).search_value.read(cx).clone().into()
+    }
+    pub fn file_path_value(&self, cx: &App) -> SharedString {
+        self.state.read(cx).file_path_value.read(cx).clone().into()
+    }
+    pub fn keybinding_value(&self, cx: &App) -> SharedString {
+        self.state.read(cx).keybinding_value.clone().into()
+    }
+    pub fn keybinding_mode(&self, cx: &App) -> KeybindingInputMode {
+        self.state.read(cx).keybinding_mode
+    }
+    pub fn text_area_value(&self, cx: &App) -> SharedString {
+        self.state.read(cx).text_area_value.read(cx).clone().into()
+    }
+    pub fn select_demo_value(&self, cx: &App) -> SharedString {
+        self.state.read(cx).select_demo_value.clone().into()
+    }
+    pub fn combo_demo_value(&self, cx: &App) -> SharedString {
+        self.state.read(cx).combo_demo_value.clone().into()
+    }
+    pub fn listbox_demo_value(&self, cx: &App) -> SharedString {
+        self.state.read(cx).listbox_demo_value.clone().into()
+    }
+
+    // -------- Footer text helpers (used by `<Label text={controller.footer_X_text(cx)}>`) --------
 
     /// Build the footer form-summary text in a single state read.
     pub fn footer_form_text(&self, cx: &App) -> String {
-        let s = self.snapshot(cx);
         t_named!(cx, "demo.footer.form_summary",
-            count => s.form_submit_count,
-            email => s.form_email_value,
-            error => format!("{:?}", s.form_email_error))
+            count => self.form_submit_count(cx),
+            email => self.form_email_value(cx),
+            error => format!("{:?}", self.form_email_error(cx)))
         .to_string()
     }
 
     /// Build the footer controls-summary text in a single state read.
     pub fn footer_controls_text(&self, cx: &App) -> String {
-        let s = self.snapshot(cx);
         t_named!(cx, "demo.footer.controls_summary",
-            checkbox => s.checkbox_value,
-            switch => s.switch_value,
-            radio => s.radio_value,
-            slider => format!("{:.1}", s.slider_value))
+            checkbox => self.checkbox_value(cx),
+            switch => self.switch_value(cx),
+            radio => self.radio_value(cx),
+            slider => format!("{:.1}", self.slider_value(cx)))
         .to_string()
     }
 
     /// Build the footer toast-summary text in a single state read.
     pub fn footer_toast_text(&self, cx: &App) -> String {
-        let s = self.snapshot(cx);
         t_named!(cx, "demo.footer.toast_summary",
-            count => s.toast_count,
-            locale => s.current_locale.tag())
+            count => self.toast_count(cx),
+            locale => self.current_locale(cx).tag())
         .to_string()
     }
 
@@ -216,29 +224,6 @@ impl Controller {
 
     pub fn modal_state(&self, cx: &App) -> Entity<yororen_ui::headless::modal::ModalState> {
         self.state.read(cx).modal_state.clone()
-    }
-
-    /// Reusable demo "cell" wrapper: a small muted label above the
-    /// component inside a 1px-bordered rounded box. Mirrors
-    /// `gallery_demo::sections::cell`.
-    fn cell(&self, label: impl Into<String>, element: AnyElement, cx: &mut App) -> AnyElement {
-        let label_el = yororen_ui::headless::label::label("cmp-name", label, cx)
-            .muted(true)
-            .render(cx)
-            .text_size(px(11.));
-        div()
-            .relative()
-            .flex()
-            .flex_col()
-            .items_start()
-            .gap(px(2.))
-            .p(px(8.))
-            .rounded(px(6.))
-            .border_1()
-            .border_color(hsla(0.0, 0.0, 0.5, 0.15))
-            .child(label_el)
-            .child(element)
-            .into_any_element()
     }
 
     // -------- Composite state accessors --------
@@ -257,6 +242,18 @@ impl Controller {
 
     pub fn menu_state(&self, cx: &App) -> Entity<yororen_ui::headless::menu::MenuState> {
         self.state.read(cx).menu_state.clone()
+    }
+
+    /// Body state for the `<Menu slot="content">` inside the
+    /// dropdown demo. Items mirror `menu_state` but its
+    /// `on_select` writes `dropdown_demo_value` and closes the
+    /// dropdown, so the popover and dropdown summaries stay
+    /// independent.
+    pub fn dropdown_menu_state(
+        &self,
+        cx: &App,
+    ) -> Entity<yororen_ui::headless::menu::MenuState> {
+        self.state.read(cx).dropdown_menu_state.clone()
     }
 
     pub fn dropdown_state(
@@ -444,19 +441,7 @@ impl Controller {
         });
     }
 
-    pub fn press_toggle(&self, _ev: &ClickEvent, _w: &mut Window, cx: &mut App) {
-        self.state.update(cx, |s, _cx| {
-            s.toggle_btn_selected = !s.toggle_btn_selected;
-        });
-    }
-
     pub fn noop_click(&self, _ev: &ClickEvent, _w: &mut Window, _cx: &mut App) {}
-
-    pub fn press_toggle_from_bool(&self, value: bool, _cx: &mut App) {
-        self.state.update(_cx, |s, _cx2| {
-            s.toggle_btn_selected = value;
-        });
-    }
 
     /// Adapter for `<ToggleButton on_toggle={controller.press_toggle_from_event}>`.
     /// The XML macro auto-wraps this 4-arg event signature into the
@@ -468,18 +453,8 @@ impl Controller {
         _w: &mut Window,
         cx: &mut App,
     ) {
-        self.press_toggle_from_bool(selected, cx);
-    }
-
-    pub fn bump_progress(&self, _ev: &ClickEvent, _w: &mut Window, cx: &mut App) {
         self.state.update(cx, |s, _cx| {
-            s.progress_value = (s.progress_value + 0.1).min(1.0);
-        });
-    }
-
-    pub fn reset_progress(&self, _ev: &ClickEvent, _w: &mut Window, cx: &mut App) {
-        self.state.update(cx, |s, _cx| {
-            s.progress_value = 0.0;
+            s.toggle_btn_selected = selected;
         });
     }
 
@@ -496,6 +471,11 @@ impl Controller {
     }
 
     // -------- Controls section --------
+    //
+    // `checkbox_value` / `switch_value` / `slider_value` are
+    // bound through `@bind` in the XML — the renderer writes
+    // into the entity directly. No controller-side setter is
+    // needed for the demo.
 
     pub fn set_radio(&self, value: usize, _w: &mut Window, cx: &mut App) {
         self.state.update(cx, |s, _cx| {
@@ -509,43 +489,13 @@ impl Controller {
         select_radio_2 => 2,
     }
 
-    pub fn set_checkbox(
-        &self,
-        value: bool,
-        _ev: Option<&ClickEvent>,
-        _w: &mut Window,
-        cx: &mut App,
-    ) {
-        let entity = self.state.read(cx).checkbox_value.clone();
-        entity.update(cx, |s, _cx| *s = value);
-    }
-
-    pub fn set_switch(&self, value: bool, _ev: Option<&ClickEvent>, _w: &mut Window, cx: &mut App) {
-        let entity = self.state.read(cx).switch_value.clone();
-        entity.update(cx, |s, _cx| *s = value);
-    }
-
-    pub fn set_slider(&self, value: f32, _w: &mut Window, cx: &mut App) {
-        let entity = self.state.read(cx).slider_value.clone();
-        entity.update(cx, |s, _cx| *s = value);
-    }
-
     // -------- Inputs section --------
-
-    pub fn set_text_value(&self, value: &str, _w: &mut Window, cx: &mut App) {
-        let entity = self.state.read(cx).text_value.clone();
-        entity.update(cx, |s, _cx| *s = value.to_string());
-    }
-
-    pub fn set_password_value(&self, value: &str, _w: &mut Window, cx: &mut App) {
-        let entity = self.state.read(cx).password_value.clone();
-        entity.update(cx, |s, _cx| *s = value.to_string());
-    }
-
-    pub fn set_search_value(&self, value: &str, _w: &mut Window, cx: &mut App) {
-        let entity = self.state.read(cx).search_value.clone();
-        entity.update(cx, |s, _cx| *s = value.to_string());
-    }
+    //
+    // `text_value` / `password_value` / `search_value` /
+    // `file_path_value` / `text_area_value` are bound through
+    // `@bind` in the XML — the renderer writes into the entity
+    // directly and the `@bind` expression fires `on_change`
+    // for the demo. No controller-side setter is needed.
 
     pub fn clear_search(&self, _w: &mut Window, cx: &mut App) {
         let entity = self.state.read(cx).search_value.clone();
@@ -557,20 +507,10 @@ impl Controller {
         entity.update(cx, |s, _cx| *s = value);
     }
 
-    pub fn set_text_area_value(&self, value: &str, _w: &mut Window, cx: &mut App) {
-        let entity = self.state.read(cx).text_area_value.clone();
-        entity.update(cx, |s, _cx| *s = value.to_string());
-    }
-
     pub fn set_keybinding_value(&self, value: &str, _w: &mut Window, cx: &mut App) {
         self.state.update(cx, |s, _cx| {
             s.keybinding_value = value.to_string();
         });
-    }
-
-    pub fn set_file_path_value(&self, value: &str, _w: &mut Window, cx: &mut App) {
-        let entity = self.state.read(cx).file_path_value.clone();
-        entity.update(cx, |s, _cx| *s = value.to_string());
     }
 
     pub fn browse_file_path(&self, _value: &str, _w: &mut Window, _cx: &mut App) {
@@ -626,8 +566,16 @@ impl Controller {
 
     // -------- Lists section --------
 
-    pub fn submit_form(&self, _vals: HashMap<SharedString, String>, _w: &mut Window, cx: &mut App) {
-        let email = self.snapshot(cx).form_email_value;
+    pub fn submit_form(&self, vals: HashMap<SharedString, String>, _w: &mut Window, cx: &mut App) {
+        // Read the `email` value out of the form's submitted map
+        // (set by the `<FormField name="email">` child). Falls
+        // back to the currently bound string when the field is
+        // missing — keeps the validation error path identical
+        // to before without re-reading the entity.
+        let email = vals
+            .get(&SharedString::from("email"))
+            .cloned()
+            .unwrap_or_else(|| self.form_email_value(cx).to_string());
         let must_contain = cx.t("demo.form.must_contain_at");
         self.state.update(cx, |s, _cx| {
             s.form_submit_count += 1;
@@ -636,12 +584,6 @@ impl Controller {
             } else {
                 Some(must_contain.to_string())
             };
-        });
-    }
-
-    pub fn set_table_row(&self, value: usize, _w: &mut Window, cx: &mut App) {
-        self.state.update(cx, |s, _cx| {
-            s.selected_table_row = Some(value);
         });
     }
 
@@ -654,38 +596,6 @@ impl Controller {
                 s.selected_table_row = Some(value);
             });
         }
-    }
-
-    pub fn toggle_tree_node(
-        &self,
-        id: TreeNodeId,
-        _ev: &ClickEvent,
-        _w: &mut Window,
-        cx: &mut App,
-    ) {
-        self.state.update(cx, |s, _cx| {
-            if !s.tree_expanded.remove(&id) {
-                s.tree_expanded.insert(id);
-            }
-        });
-    }
-
-    pub fn select_tree_node(
-        &self,
-        id: TreeNodeId,
-        _ev: &ClickEvent,
-        _w: &mut Window,
-        cx: &mut App,
-    ) {
-        self.state.update(cx, |s, _cx| {
-            s.tree_selected = Some(id);
-        });
-    }
-
-    pub fn select_list_item(&self, value: usize, _ev: &ClickEvent, _w: &mut Window, cx: &mut App) {
-        self.state.update(cx, |s, _cx| {
-            s.selected_list_item = Some(value);
-        });
     }
 
     pub fn select_list_item_handler(
@@ -740,41 +650,28 @@ impl Controller {
 
     // -------- Complex layout helpers (used by lists.xml) --------
 
-    pub fn sync_virtual_list(&self, cx: &mut App) {
-        let target = self.state.read(cx).vl_item_count;
-        self.list_controller_entity(cx).update(cx, |c, _| {
-            let current = c.state().item_count();
-            if current < target {
-                c.append(target - current);
-            } else if current > target {
-                c.reset(target);
-            }
-        });
-    }
-
     pub fn listbox_status_text(&self, cx: &App) -> String {
-        let value = self.snapshot(cx).listbox_demo_value;
+        let value = self.listbox_demo_value(cx);
         let status = if value.is_empty() {
             "—".to_string()
         } else {
-            value
+            value.to_string()
         };
         cx.t("demo.lists.listbox_selected")
             .replacen("{}", &status, 1)
     }
 
     pub fn form_email_error_text(&self, cx: &App) -> String {
-        self.snapshot(cx).form_email_error.unwrap_or_default()
+        self.form_email_error(cx).unwrap_or_default()
     }
 
     pub fn form_status_text(&self, cx: &App) -> String {
-        let s = self.snapshot(cx);
         format!(
             "{} {} | {} {:?}",
             cx.t("demo.form.submitted"),
-            s.form_submit_count,
+            self.form_submit_count(cx),
             cx.t("demo.form.last_error"),
-            s.form_email_error
+            self.form_email_error(cx)
         )
     }
 
@@ -812,28 +709,6 @@ impl Controller {
                 s.tree_selected = Some(id.clone());
             });
         }
-    }
-
-    pub fn select_virtual_list_item(
-        &self,
-        index: usize,
-    ) -> impl Fn(&ClickEvent, &mut Window, &mut App) + Clone + 'static {
-        let state = self.state.clone();
-        move |_ev, _w, cx| {
-            state.update(cx, |s, _cx| {
-                s.selected_list_item = Some(index);
-            });
-        }
-    }
-
-    pub fn vl_row_label(&self, index: usize, cx: &App) -> String {
-        cx.t("demo.lists.vl_item")
-            .replacen("{}", &index.to_string(), 1)
-    }
-
-    pub fn uvl_row_label(&self, index: usize, cx: &App) -> String {
-        cx.t("demo.lists.uvl_item")
-            .replacen("{}", &index.to_string(), 1)
     }
 
     pub fn vl_status_text(&self, cx: &App) -> String {
@@ -883,14 +758,6 @@ impl Controller {
     }
 
     // -------- Data helpers used by XML --------
-
-    pub fn split_items(&self, _cx: &App) -> Vec<DropdownItem> {
-        vec![
-            DropdownItem::Item(DropdownMenuItem::new("save", "Save")),
-            DropdownItem::Item(DropdownMenuItem::new("save_as", "Save as…")),
-            DropdownItem::Item(DropdownMenuItem::new("save_all", "Save all")),
-        ]
-    }
 
     pub fn table_columns(&self, cx: &App) -> Vec<TableColumn> {
         vec![
@@ -956,16 +823,34 @@ impl Controller {
                 });
             });
 
+            // Popover menu: closes the popover and writes
+            // `menu_demo_value` only.
             let state_for_menu = state.clone();
             let popover_state = s.popover_state.clone();
             s.menu_state.update(cx, |st, _cx| {
                 st.set_on_select(move |id, _w, cx| {
                     let id_s = id.to_string();
                     state_for_menu.update(cx, |s, _cx| {
-                        s.menu_demo_value = id_s.clone();
-                        s.dropdown_demo_value = id_s;
+                        s.menu_demo_value = id_s;
                     });
                     popover_state.update(cx, |s, _cx| s.close());
+                });
+            });
+
+            // Dropdown body menu: closes the dropdown and
+            // writes `dropdown_demo_value` only. Kept
+            // independent of `menu_state` so a click in the
+            // dropdown's body does NOT also update the
+            // popover's menu value.
+            let state_for_dropdown_menu = state.clone();
+            let dropdown_state = s.dropdown_state.clone();
+            s.dropdown_menu_state.update(cx, |st, _cx| {
+                st.set_on_select(move |id, _w, cx| {
+                    let id_s = id.to_string();
+                    state_for_dropdown_menu.update(cx, |s, _cx| {
+                        s.dropdown_demo_value = id_s;
+                    });
+                    dropdown_state.update(cx, |s, _cx| s.close());
                 });
             });
         });

@@ -41,7 +41,7 @@ mod view;
 
 use gpui::{
     App, AppContext, Application, InteractiveElement, IntoElement, WindowBounds, WindowOptions,
-    div, px, size,
+    px, size,
 };
 
 use yororen_ui::assets::UiAsset;
@@ -52,11 +52,71 @@ use crate::controller::Controller;
 use crate::state::{ShowcaseState, StateRef};
 use crate::view::ShowcaseApp;
 
-/// A trivial custom widget used to exercise
+/// A custom widget registered through
 /// `register_xml_component!` — the user-facing extension
 /// point for adding new XML tags at runtime.
-fn render_custom_widget(id: String, _cx: &mut gpui::App) -> gpui::AnyElement {
-    div().id(id).into_any_element()
+///
+/// This widget reads the **currently installed theme** and
+/// paints a colour swatch + HSL label, so the rendered
+/// surface visibly tracks whichever palette the toolbar
+/// last picked. It is intentionally richer than
+/// `div().id(id)` so the demo shows the real shape of a
+/// custom component:
+///
+/// 1. read live state from `cx` (here, `cx.theme()`)
+/// 2. compose several `Div`s (swatch + label row)
+/// 3. honour the `id` attribute (so XML-driven state can
+///    target it for hit-testing / focus)
+/// 4. return a single `AnyElement` (the registry contract)
+fn render_custom_widget(id: String, cx: &mut gpui::App) -> gpui::AnyElement {
+    use gpui::{Hsla, ParentElement, Styled, div, hsla, px};
+    use yororen_ui::theme::ActiveTheme;
+
+    // The default `Hsla::default()` is fully transparent,
+    // so a missing key would render the swatch invisible.
+    // We fall back to a saturated magenta so the demo
+    // visibly fails (rather than silently disappearing)
+    // if a user wires up a theme JSON without
+    // `surface.base`.
+    let swatch: Hsla = cx
+        .theme()
+        .get_color("surface.base")
+        .unwrap_or_else(|| hsla(0.83, 0.7, 0.55, 1.0));
+
+    // `Hsla` is `(h, s, l, a)`; format with 2 decimals so
+    // the label reads as a real value, not a 16-digit
+    // float. We rely on the trait `Display` from gpui.
+    let label = format!(
+        "theme.surface.base = h {:.2}°  s {:.2}  l {:.2}  a {:.2}",
+        swatch.h, swatch.s, swatch.l, swatch.a
+    );
+
+    // 2-row composition: a 48×48 swatch on top, an
+    // HSL-readout underneath. Padding, radius and
+    // border are theme-agnostic (no `unwrap_or_default`
+    // needed for the `bg` / `border_color` here — they
+    // come from the host's own styled base).
+    div()
+        .id(id)
+        .flex()
+        .flex_col()
+        .gap(px(6.))
+        .child(
+            div()
+                .w(px(48.))
+                .h(px(48.))
+                .rounded(px(6.))
+                .border_1()
+                .border_color(hsla(0.0, 0.0, 0.0, 0.2))
+                .bg(swatch),
+        )
+        .child(
+            div()
+                .text_xs()
+                .text_color(hsla(0.0, 0.0, 0.25, 1.0))
+                .child(label),
+        )
+        .into_any_element()
 }
 
 yororen_ui::register_xml_component!(CustomWidget => render_custom_widget);

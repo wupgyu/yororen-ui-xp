@@ -168,44 +168,44 @@ pub(crate) fn apply_container_attr(
         }
 
         // Explicit unit suffixes.
-        if let Some(body) = value.strip_suffix("px") {
-            if let Ok(n) = body.parse::<f32>() {
-                stmts.push(quote! {
-                    let __el = ::gpui::Styled::#method(__el, ::gpui::px(#n));
-                });
-                return Ok(());
-            }
+        if let Some(body) = value.strip_suffix("px")
+            && let Ok(n) = body.parse::<f32>()
+        {
+            stmts.push(quote! {
+                let __el = ::gpui::Styled::#method(__el, ::gpui::px(#n));
+            });
+            return Ok(());
         }
-        if let Some(body) = value.strip_suffix("rem") {
-            if let Ok(n) = body.parse::<f32>() {
-                stmts.push(quote! {
-                    let __el = ::gpui::Styled::#method(__el, ::gpui::rems(#n));
-                });
-                return Ok(());
-            }
+        if let Some(body) = value.strip_suffix("rem")
+            && let Ok(n) = body.parse::<f32>()
+        {
+            stmts.push(quote! {
+                let __el = ::gpui::Styled::#method(__el, ::gpui::rems(#n));
+            });
+            return Ok(());
         }
-        if let Some(body) = value.strip_suffix('%') {
-            if let Ok(n) = body.parse::<f32>() {
-                if !matches!(
-                    attr.name.as_str(),
-                    "w" | "h" | "size" | "min_w" | "min_h" | "max_w" | "max_h"
-                ) {
-                    return Err(XmlError::new(
-                        XmlErrorKind::InvalidExpression,
-                        attr.span,
-                        format!(
-                            "percentage values are only allowed on width/height/size attributes, not `{}`",
-                            attr.name
-                        ),
-                    )
-                    .at(attr.byte_offset));
-                }
-                let ratio = n / 100.0f32;
-                stmts.push(quote! {
-                    let __el = ::gpui::Styled::#method(__el, ::gpui::relative(#ratio));
-                });
-                return Ok(());
+        if let Some(body) = value.strip_suffix('%')
+            && let Ok(n) = body.parse::<f32>()
+        {
+            if !matches!(
+                attr.name.as_str(),
+                "w" | "h" | "size" | "min_w" | "min_h" | "max_w" | "max_h"
+            ) {
+                return Err(XmlError::new(
+                    XmlErrorKind::InvalidExpression,
+                    attr.span,
+                    format!(
+                        "percentage values are only allowed on width/height/size attributes, not `{}`",
+                        attr.name
+                    ),
+                )
+                .at(attr.byte_offset));
             }
+            let ratio = n / 100.0f32;
+            stmts.push(quote! {
+                let __el = ::gpui::Styled::#method(__el, ::gpui::relative(#ratio));
+            });
+            return Ok(());
         }
 
         // Legacy tailwind-style suffixes (`0p5`, `1p5`, `full`, `1_2`, …).

@@ -33,3 +33,6 @@ path = "src/bin/gen_schema.rs"
 [[bench]]
 name = "codegen_bench"
 harness = false
+
+[lints]
+workspace = true

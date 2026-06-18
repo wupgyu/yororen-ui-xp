@@ -1,4 +1,4 @@
-# Demo screenshots
+# Screenshots
 
 These PNGs are referenced from the top-level `README.md` and `README_zh_CN.md`
 under each demo section and the "Built with Yororen UI" section.
@@ -14,3 +14,9 @@ Source apps live under `crates/yororen-ui-demos/`:
 
 To regenerate, run each demo and capture a screenshot into this folder with
 the matching filename.
+
+> Historical note: this directory was previously named `demo/screenshots/`.
+> The bare `demo/` directory contained only this `screenshots/` subdirectory
+> and was easy to confuse with `crates/yororen-ui-demos/` (where the actual
+> demo source lives). Flattening to `screenshots/` makes the intent — "this
+> is just docs/screenshots, not a demo workspace" — explicit.

@@ -109,29 +109,28 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> impl IntoEl
     let tooltip_wrapped = cell(cx.t("demo.tooltip.cell"), tooltip_el, cx);
 
     // --- dropdown_menu ---
-    // Body is a real menu that iterates `dropdown_state.items`
+    // Body is a real menu that iterates `dropdown_menu_state.items`
     // (Cut / Copy / Paste / separator / Select all). The
     // dropdown renderer wraps the menu in a floating panel
-    // when `dropdown_state.is_open()`. We reuse `menu_state`
-    // for the body's rendering — items are seeded on
-    // `dropdown_state`, but the menu's own on_select wiring
-    // is what fires per-click (which in turn calls the
-    // dropdown's on_select to update `dropdown_demo_value`).
+    // when `dropdown_state.is_open()`. We use a separate
+    // `dropdown_menu_state` (not `menu_state`) so the
+    // dropdown's `on_select` writes `dropdown_demo_value`
+    // and closes the dropdown, leaving the popover's
+    // `menu_demo_value` untouched.
     let entity_for_dropdown = cx.entity().clone();
     let dropdown_state = app.dropdown_state.clone();
     let entity_for_dropdown_for_menu = entity_for_dropdown.clone();
-    let menu_state_for_dropdown = app.menu_state.clone();
+    let menu_state_for_dropdown = app.dropdown_menu_state.clone();
     menu_state_for_dropdown.update(cx, |s, _cx| {
         s.set_on_select(move |id, _w, cx| {
             let id_s = id.to_string();
             entity_for_dropdown_for_menu.update(cx, |app, _cx| {
-                app.dropdown_demo_value = id_s.clone();
-                app.menu_demo_value = id_s;
+                app.dropdown_demo_value = id_s;
             });
+            dropdown_state.update(cx, |s, _cx| s.close());
         });
     });
     let _ = entity_for_dropdown; // silence unused
-    let _ = dropdown_state; // silence unused
     let dropdown_state_for_btn = app.dropdown_state.clone();
     let dropdown_trigger = button("ovl-dropdown-trigger", cx)
         .on_click(move |_, _, cx| {

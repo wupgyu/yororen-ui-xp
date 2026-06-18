@@ -7,3 +7,6 @@ edition.workspace = true
 gpui = { package = "gpui-ce", version = "0.3" }
 yororen-ui = { package = "yororen_ui", path = "../../yororen-ui" }
 yororen-ui-default-renderer = { package = "yororen_ui_default_renderer", path = "../../yororen-ui-default-renderer" }
+
+[lints]
+workspace = true

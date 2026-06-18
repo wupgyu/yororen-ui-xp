@@ -17,3 +17,6 @@ proc-macro2 = "1"
 quote = "1"
 syn = { version = "2", features = ["full", "extra-traits"] }
 toml = "0.8"
+
+[lints]
+workspace = true

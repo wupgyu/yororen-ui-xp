@@ -26,11 +26,17 @@ use yororen_ui::headless::button::button;
 use yororen_ui::headless::label::label;
 use yororen_ui::headless::layout::{Inset, Spacing, column};
 use yororen_ui::theme as theme_mod;
-use yororen_ui::theme::ActiveTheme;
 
 pub struct ThemeApp {
     themes: Vec<(&'static str, &'static str)>,
     current: usize,
+    // Cache the last `Theme` we installed, keyed by index.
+    // `Theme::from_json` parses + validates the full JSON on
+    // every call; doing that 60 times per second for a
+    // 4-theme cycle is wasteful. The cache lives on the
+    // entity so it survives across re-renders.
+    last_installed: Option<usize>,
+    last_theme: Option<Theme>,
 }
 
 impl ThemeApp {
@@ -45,6 +51,8 @@ impl ThemeApp {
                 ("material", "User-defined — material rose"),
             ],
             current: 0,
+            last_installed: None,
+            last_theme: None,
         }
     }
 
@@ -109,14 +117,32 @@ impl Render for ThemeApp {
         // of the demo: clicking "Next theme" both advances the
         // index and triggers a re-render, so the whole window
         // re-themes.
-        theme_mod::install(cx, self.current_theme());
+        //
+        // The full `Theme::from_json` is only called when
+        // `self.current` actually changes — subsequent
+        // re-renders reuse the cached `Theme` value.
+        if self.last_installed != Some(self.current) {
+            let theme = self.current_theme();
+            theme_mod::install(cx, theme.clone());
+            self.last_installed = Some(self.current);
+            self.last_theme = Some(theme);
+        }
+        let theme = self
+            .last_theme
+            .as_ref()
+            .expect("last_theme is set whenever last_installed is Some");
 
         // Read the theme's surface color so the root div paints
         // the intended background. Without this, the window
         // shows whatever the OS window manager decides to put
         // behind the div (usually the system window chrome
         // background), which often clashes with the theme.
-        let surface = cx.theme().get_color("surface.base").unwrap_or_default();
+        //
+        // `surface.base` is required by every bundled theme;
+        // the fallback is a near-white safety net.
+        let surface = theme
+            .get_color("surface.base")
+            .unwrap_or_else(|| gpui::hsla(0.0, 0.0, 0.98, 1.0));
 
         let (name, blurb) = self.themes[self.current];
         let current = self.current;

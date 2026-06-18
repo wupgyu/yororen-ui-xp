@@ -246,7 +246,13 @@ pub fn render(app: &mut GalleryApp, cx: &mut Context<GalleryApp>) -> impl IntoEl
         ));
 
     // --- text + icon ---
-    let icon_color = cx.theme().get_color("content.primary").unwrap_or_default();
+    // `content.primary` is required for the icon to read
+    // against the page background; the fallback is a near-black
+    // (matches the default light theme).
+    let icon_color = cx
+        .theme()
+        .get_color("content.primary")
+        .unwrap_or_else(|| gpui::hsla(0.0, 0.0, 0.1, 1.0));
     let text_row = row("display-row-text", cx)
         .items_center()
         .gap(Spacing::Md)

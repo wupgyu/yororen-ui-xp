@@ -82,10 +82,18 @@ impl Render for GalleryApp {
     // auto-deref but the conversion is intentional.
     #[allow(clippy::explicit_auto_deref)]
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        // 1. Per-render renderer + theme install. Cheap (39
-        //    HashMap.inserts + 1 set_global) and guarantees the
-        //    window always reflects the latest toolbar click.
-        install_renderer(&mut **cx, self.current_renderer, self.dark_mode);
+        // 1. Renderer + theme install. The first frame installs
+        //    the defaults; subsequent frames only reinstall
+        //    when the toolbar toggle actually changes.
+        let current_renderer = self.current_renderer;
+        let current_dark = self.dark_mode;
+        if self.install_cache.renderer != Some(current_renderer)
+            || self.install_cache.dark_mode != Some(current_dark)
+        {
+            install_renderer(&mut **cx, current_renderer, current_dark);
+            self.install_cache.renderer = Some(current_renderer);
+            self.install_cache.dark_mode = Some(current_dark);
+        }
 
         // 2. Register the host window with the notification
         //    center. `maybe_schedule_auto_dismiss` returns
@@ -97,8 +105,14 @@ impl Render for GalleryApp {
             center.register_host_window(window.window_handle());
         }
 
-        // 3. Surface color for the window background.
-        let surface = cx.theme().get_color("surface.base").unwrap_or_default();
+        // 3. Surface color for the window background. Falls
+        //    back to off-white when the active theme omits
+        //    `surface.base` (the fallback is only a safety net
+        //    for ad-hoc theme JSON).
+        let surface = cx
+            .theme()
+            .get_color("surface.base")
+            .unwrap_or_else(|| hsla(0.0, 0.0, 0.98, 1.0));
 
         // 4. Build the modal scrim/panel here (at the scroll-root
         //    level) so it always covers the whole window. If the

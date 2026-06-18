@@ -18,7 +18,7 @@
     <Include src="ui/shared/section.xml" />
 
     <VirtualList id="gallery-sections" size_full
-                 border_color={cx.theme().get_color("surface.base").unwrap_or_default()}
+                 border_color={cx.theme().get_color("surface.base").unwrap_or(gpui::hsla(0.0, 0.0, 0.95, 1.0))}
                  rounded={gpui::px(0.)}>
         <Section>
             <Include src="ui/sections/toolbar.xml" />

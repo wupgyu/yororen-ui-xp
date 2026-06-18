@@ -69,6 +69,12 @@ pub struct GalleryApp {
     pub dropdown_state: Entity<DropdownMenuState>,
     pub split_dropdown_state: Entity<DropdownMenuState>,
     pub menu_state: Entity<MenuState>,
+    // `dropdown_menu_state` is a separate `MenuState` used for
+    // the `<Menu slot="content">` inside the dropdown demo.
+    // Its `on_select` writes `dropdown_demo_value` and closes
+    // the dropdown, so a click in the dropdown's body does
+    // NOT also update the popover's `menu_demo_value`.
+    pub dropdown_menu_state: Entity<MenuState>,
     pub listbox_state: Entity<ListboxState>,
 
     // -------- Input values (mirrored via on_change) --------
@@ -146,6 +152,23 @@ pub struct GalleryApp {
     // controller's item_count is fixed (`SECTION_ROW_COUNT` in
     // `gallery_app.rs`), so no per-frame sync is needed.
     pub section_list_controller: VirtualListController,
+
+    // Caches the last (renderer, dark-mode) pair the toolbar
+    // installed so the render path can skip `install_renderer`
+    // on every frame. `None` means "first frame — install the
+    // defaults". Owned by the render path; not part of any
+    // public API.
+    pub install_cache: InstallCache,
+}
+
+/// Per-render cache: avoids reinstalling 39 renderers + the
+/// global theme on every paint. The cache lives on the
+/// `GalleryApp` entity so the borrow checker can read & write
+/// the cached choice inside the same `Render::render` call.
+#[derive(Default)]
+pub struct InstallCache {
+    pub renderer: Option<RendererKind>,
+    pub dark_mode: Option<DarkMode>,
 }
 
 impl GalleryApp {
@@ -166,6 +189,7 @@ impl GalleryApp {
         let dropdown_state = DropdownMenuState::new(&mut **cx);
         let split_dropdown_state = DropdownMenuState::new(&mut **cx);
         let menu_state = MenuState::new(&mut **cx);
+        let dropdown_menu_state = MenuState::new(&mut **cx);
         let listbox_state = ListboxState::new(&mut **cx);
 
         // Seed the select / combo / dropdown / menu options so
@@ -209,6 +233,21 @@ impl GalleryApp {
                 DropdownItem::Item(DropdownMenuItem::new("logout", "Log out")),
             ]);
         });
+        // Mirror the items into the dropdown's body state so
+        // both menus render the same rows without a second
+        // i18n pass. The overlays section rewires
+        // `on_select` to write `dropdown_demo_value` and
+        // close the dropdown — distinct from the popover's
+        // `on_select` which writes `menu_demo_value`.
+        dropdown_menu_state.update(cx, |s, _cx| {
+            use yororen_ui::headless::dropdown_menu::{DropdownItem, DropdownMenuItem};
+            s.set_items(vec![
+                DropdownItem::Item(DropdownMenuItem::new("profile", "Profile")),
+                DropdownItem::Item(DropdownMenuItem::new("settings", "Settings")),
+                DropdownItem::Separator,
+                DropdownItem::Item(DropdownMenuItem::new("logout", "Log out")),
+            ]);
+        });
         listbox_state.update(cx, |s, _cx| {
             // Seed the listbox with a fruit list mirroring the
             // select / combo_box demo so the three option-list
@@ -241,6 +280,7 @@ impl GalleryApp {
             dropdown_state,
             split_dropdown_state,
             menu_state,
+            dropdown_menu_state,
             listbox_state,
 
             // Inputs
@@ -313,6 +353,7 @@ impl GalleryApp {
                 gpui::ListAlignment::Top,
                 gpui::px(400.),
             ),
+            install_cache: InstallCache::default(),
         }
     }
 }

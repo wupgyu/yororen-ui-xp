@@ -147,8 +147,8 @@ We provide five official demo applications under `crates/yororen-ui-demos/`:
 
 ### Counter
 
-<!-- Screenshot slot: replace demo/screenshots/counter.png when refreshing -->
-<img src="demo/screenshots/counter.png" alt="Counter Demo" width="600">
+<!-- Screenshot slot: replace screenshots/counter.png when refreshing -->
+<img src="screenshots/counter.png" alt="Counter Demo" width="600">
 
 A minimal counter application demonstrating the most fundamental Yororen UI concepts.
 
@@ -161,8 +161,8 @@ A minimal counter application demonstrating the most fundamental Yororen UI conc
 
 ### Layers Demo
 
-<!-- Screenshot slot: replace demo/screenshots/layers-demo.png when refreshing -->
-<img src="demo/screenshots/layers-demo.png" alt="Layers Demo" width="600">
+<!-- Screenshot slot: replace screenshots/layers-demo.png when refreshing -->
+<img src="screenshots/layers-demo.png" alt="Layers Demo" width="600">
 
 A side-by-side comparison of the three render pathways: pure headless (caller paints), default-renderer (theme JSON), and a hand-rolled `MaterialButton` painter with a true ripple animation.
 
@@ -175,8 +175,8 @@ A side-by-side comparison of the three render pathways: pure headless (caller pa
 
 ### Inputs Demo
 
-<!-- Screenshot slot: replace demo/screenshots/inputs-demo.png when refreshing -->
-<img src="demo/screenshots/inputs-demo.png" alt="Inputs Demo" width="600">
+<!-- Screenshot slot: replace screenshots/inputs-demo.png when refreshing -->
+<img src="screenshots/inputs-demo.png" alt="Inputs Demo" width="600">
 
 Seven panels, one per text input. Shows the canonical `cx.entity().clone()` pattern for wiring `on_change` closures.
 
@@ -189,8 +189,8 @@ Seven panels, one per text input. Shows the canonical `cx.entity().clone()` patt
 
 ### Gallery Demo
 
-<!-- Screenshot slot: replace demo/screenshots/gallery-demo.png when refreshing -->
-<img src="demo/screenshots/gallery-demo.png" alt="Gallery Demo" width="600">
+<!-- Screenshot slot: replace screenshots/gallery-demo.png when refreshing -->
+<img src="screenshots/gallery-demo.png" alt="Gallery Demo" width="600">
 
 The kitchen-sink reference. Every component rendered in one window, with a working theme switcher (default vs brutalism, light vs dark) and locale toggle (en / zh-CN / ar).
 
@@ -204,8 +204,8 @@ The kitchen-sink reference. Every component rendered in one window, with a worki
 
 ### Theme Showcase
 
-<!-- Screenshot slot: replace demo/screenshots/theme-showcase.png when refreshing -->
-<img src="demo/screenshots/theme-showcase.png" alt="Theme Showcase" width="600">
+<!-- Screenshot slot: replace screenshots/theme-showcase.png when refreshing -->
+<img src="screenshots/theme-showcase.png" alt="Theme Showcase" width="600">
 
 A single window that demonstrates live theme switching: the same headless button and `TokenButtonRenderer` are reused while the JSON the renderer reads is swapped on every "Next" click.
 
@@ -224,11 +224,11 @@ Projects and applications built using Yororen UI.
 
 ### Yororen Accelerator
 
-<img src="demo/screenshots/accelerator-1.png" alt="Yororen Accelerator" width="380">
-<img src="demo/screenshots/accelerator-2.png" alt="Yororen Accelerator" width="380">
+<img src="screenshots/accelerator-1.png" alt="Yororen Accelerator" width="380">
+<img src="screenshots/accelerator-2.png" alt="Yororen Accelerator" width="380">
 
-<img src="demo/screenshots/accelerator-3.png" alt="Yororen Accelerator" width="380">
-<img src="demo/screenshots/accelerator-4.png" alt="Yororen Accelerator" width="380">
+<img src="screenshots/accelerator-3.png" alt="Yororen Accelerator" width="380">
+<img src="screenshots/accelerator-4.png" alt="Yororen Accelerator" width="380">
 
 A network acceleration tool with native-transparent TCP forwarding + relay passthrough, built with Yororen UI.
 

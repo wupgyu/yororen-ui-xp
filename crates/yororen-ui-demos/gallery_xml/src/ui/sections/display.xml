@@ -85,7 +85,7 @@
         <Cell>
             <Slot name="label"><Label id="lbl-tag-selected" text={t!(cx, "demo.display.cell_tag_selected")} muted /></Slot>
             <Tag id="tag-1" label={t!(cx, "demo.display.tag_toggle")}
-                 selected={controller.snapshot(cx).tag_selected}
+                 selected={controller.tag_selected(cx)}
                  on_click={controller.toggle_tag_selected} />
         </Cell>
         <Cell>
@@ -93,7 +93,7 @@
             <Tag id="tag-2" label={t!(cx, "demo.display.tag_closable")}
                  closable on_close={controller.close_tag} />
             <Label id="tag-closable-count"
-                   text={t_named!(cx, "demo.display.tag_close_events", count => controller.snapshot(cx).tag_close_count)}
+                   text={t_named!(cx, "demo.display.tag_close_events", count => controller.tag_close_count(cx))}
                    muted />
         </Cell>
     </Wrap>
@@ -116,7 +116,7 @@
     <Column flex col gap="sm">
         <Cell>
             <Slot name="label"><Label id="lbl-progress-det" text={t!(cx, "demo.display.cell_progress_determinate")} muted /></Slot>
-            <Progress id="prg-1" value={controller.snapshot(cx).progress_value} max={1.0}
+            <Progress id="prg-1" value={controller.progress_value(cx)} max={1.0}
                       label={t!(cx, "demo.display.loading")} />
         </Cell>
         <Cell>
@@ -133,12 +133,12 @@
         <Cell>
             <Slot name="label"><Label id="lbl-icon-check" text={t!(cx, "demo.display.cell_icon_check")} muted /></Slot>
             <Icon id="ico-1" source="check" size={18.0}
-                  color={cx.theme().get_color("content.primary").unwrap_or_default()} />
+                  color={cx.theme().get_color("content.primary").unwrap_or(gpui::hsla(0.0, 0.0, 0.2, 1.0))} />
         </Cell>
         <Cell>
             <Slot name="label"><Label id="lbl-icon-search" text={t!(cx, "demo.display.cell_icon_search")} muted /></Slot>
             <Icon id="ico-2" source="search" size={18.0}
-                  color={cx.theme().get_color("content.primary").unwrap_or_default()} />
+                  color={cx.theme().get_color("content.primary").unwrap_or(gpui::hsla(0.0, 0.0, 0.2, 1.0))} />
         </Cell>
     </Wrap>
 </Column>

@@ -147,8 +147,8 @@ let app = Application::new().with_assets(UiAsset);
 
 ### Counter（计数器）
 
-<!-- Screenshot slot: replace demo/screenshots/counter.png when refreshing -->
-<img src="demo/screenshots/counter.png" alt="Counter Demo" width="600">
+<!-- Screenshot slot: replace screenshots/counter.png when refreshing -->
+<img src="screenshots/counter.png" alt="Counter Demo" width="600">
 
 一个极简的计数器应用，演示 Yororen UI 最基础的核心概念。
 
@@ -161,8 +161,8 @@ let app = Application::new().with_assets(UiAsset);
 
 ### Layers Demo（三层演示）
 
-<!-- Screenshot slot: replace demo/screenshots/layers-demo.png when refreshing -->
-<img src="demo/screenshots/layers-demo.png" alt="Layers Demo" width="600">
+<!-- Screenshot slot: replace screenshots/layers-demo.png when refreshing -->
+<img src="screenshots/layers-demo.png" alt="Layers Demo" width="600">
 
 并排对比三种渲染路径：纯 headless（调用方自绘）、默认渲染器（主题 JSON）、手写的 <code>MaterialButton</code> 绘制器（带真正的涟漪动画）。
 
@@ -175,8 +175,8 @@ let app = Application::new().with_assets(UiAsset);
 
 ### Inputs Demo（输入演示）
 
-<!-- Screenshot slot: replace demo/screenshots/inputs-demo.png when refreshing -->
-<img src="demo/screenshots/inputs-demo.png" alt="Inputs Demo" width="600">
+<!-- Screenshot slot: replace screenshots/inputs-demo.png when refreshing -->
+<img src="screenshots/inputs-demo.png" alt="Inputs Demo" width="600">
 
 七个面板，每个展示一个文本输入组件。展示规范的 <code>cx.entity().clone()</code> 模式来连接 <code>on_change</code> 闭包。
 
@@ -189,8 +189,8 @@ let app = Application::new().with_assets(UiAsset);
 
 ### Gallery Demo（画廊演示）
 
-<!-- Screenshot slot: replace demo/screenshots/gallery-demo.png when refreshing -->
-<img src="demo/screenshots/gallery-demo.png" alt="Gallery Demo" width="600">
+<!-- Screenshot slot: replace screenshots/gallery-demo.png when refreshing -->
+<img src="screenshots/gallery-demo.png" alt="Gallery Demo" width="600">
 
 厨房水槽式参考。一个窗口渲染所有组件，带有可用的主题切换器（默认 vs brutalism，浅色 vs 深色）和语言切换器（en / zh-CN / ar）。
 
@@ -204,8 +204,8 @@ let app = Application::new().with_assets(UiAsset);
 
 ### Theme Showcase（主题演示）
 
-<!-- Screenshot slot: replace demo/screenshots/theme-showcase.png when refreshing -->
-<img src="demo/screenshots/theme-showcase.png" alt="Theme Showcase" width="600">
+<!-- Screenshot slot: replace screenshots/theme-showcase.png when refreshing -->
+<img src="screenshots/theme-showcase.png" alt="Theme Showcase" width="600">
 
 单个窗口演示运行时主题切换：复用同一个 headless 按钮和 <code>TokenButtonRenderer</code>，每次点击 "Next" 时替换渲染器读取的 JSON。
 
@@ -224,11 +224,11 @@ let app = Application::new().with_assets(UiAsset);
 
 ### Yororen Accelerator
 
-<img src="demo/screenshots/accelerator-1.png" alt="Yororen Accelerator" width="380">
-<img src="demo/screenshots/accelerator-2.png" alt="Yororen Accelerator" width="380">
+<img src="screenshots/accelerator-1.png" alt="Yororen Accelerator" width="380">
+<img src="screenshots/accelerator-2.png" alt="Yororen Accelerator" width="380">
 
-<img src="demo/screenshots/accelerator-3.png" alt="Yororen Accelerator" width="380">
-<img src="demo/screenshots/accelerator-4.png" alt="Yororen Accelerator" width="380">
+<img src="screenshots/accelerator-3.png" alt="Yororen Accelerator" width="380">
+<img src="screenshots/accelerator-4.png" alt="Yororen Accelerator" width="380">
 
 一个网络加速工具，具备本机透明 TCP 导流 + relay 透传功能，使用 Yororen UI 构建。
 

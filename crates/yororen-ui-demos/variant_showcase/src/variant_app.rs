@@ -14,7 +14,7 @@
 
 use gpui::{
     Context, Hsla, InteractiveElement, IntoElement, ParentElement, Render,
-    StatefulInteractiveElement, Styled, Window, div, px,
+    StatefulInteractiveElement, Styled, Window, div, hsla, px,
 };
 use yororen_ui::ActionVariantKind;
 use yororen_ui::ActiveTheme;
@@ -29,6 +29,10 @@ use yororen_ui::renderer::ButtonRenderState;
 /// tokens as the default renderer. Lives outside the trait so
 /// the demo can pull the colour palette without going through
 /// the trait's `compose` method.
+///
+/// The fallbacks are explicit visible colours: a fully
+/// transparent `Hsla::default()` would make the pill (built
+/// from these tokens) disappear, defeating the demo.
 struct DemoButtonRenderer;
 
 impl DemoButtonRenderer {
@@ -36,13 +40,13 @@ impl DemoButtonRenderer {
         let field = if state.disabled { "disabled_bg" } else { "bg" };
         theme
             .get_color(&format!("action.{}.{}", state.variant.as_str(), field))
-            .unwrap_or_default()
+            .unwrap_or_else(|| fallback_for(state.variant, field, state.disabled))
     }
     fn fg(&self, state: &ButtonRenderState, theme: &Theme) -> Hsla {
         let field = if state.disabled { "disabled_fg" } else { "fg" };
         theme
             .get_color(&format!("action.{}.{}", state.variant.as_str(), field))
-            .unwrap_or_default()
+            .unwrap_or_else(|| fallback_for(state.variant, field, state.disabled))
     }
     fn hover_bg(&self, state: &ButtonRenderState, theme: &Theme) -> Hsla {
         let field = if state.disabled {
@@ -52,7 +56,7 @@ impl DemoButtonRenderer {
         };
         theme
             .get_color(&format!("action.{}.{}", state.variant.as_str(), field))
-            .unwrap_or_default()
+            .unwrap_or_else(|| fallback_for(state.variant, field, state.disabled))
     }
     fn active_bg(&self, state: &ButtonRenderState, theme: &Theme) -> Hsla {
         let field = if state.disabled {
@@ -62,8 +66,90 @@ impl DemoButtonRenderer {
         };
         theme
             .get_color(&format!("action.{}.{}", state.variant.as_str(), field))
-            .unwrap_or_default()
+            .unwrap_or_else(|| fallback_for(state.variant, field, state.disabled))
     }
+}
+
+/// Per-variant fallback palette. Used when a theme JSON omits
+/// one of the `action.<variant>.{bg,fg,hover_bg,active_bg,
+/// disabled_bg,disabled_fg}` keys — the default renderer's
+/// `unwrap_or_default()` would produce a fully transparent
+/// `Hsla` and the button would visually disappear. These
+/// colours match the bundled `system-light` / `system-dark`
+/// palettes roughly so the demo remains legible.
+struct FallbackPalette {
+    bg: Hsla,
+    fg: Hsla,
+    hover_bg: Hsla,
+    active_bg: Hsla,
+    disabled_bg: Hsla,
+    disabled_fg: Hsla,
+}
+
+fn fallback_palette(variant: ActionVariantKind) -> FallbackPalette {
+    // A tiny constructor instead of a `static` because
+    // `hsla()` is not a `const fn` (yet). Cheap enough —
+    // a handful of float copies — and only called when a
+    // theme omits an action key, which is the demo's whole
+    // point.
+    match variant {
+        ActionVariantKind::Neutral => FallbackPalette {
+            bg: hsla(0.0, 0.0, 0.95, 1.0),
+            fg: hsla(0.0, 0.0, 0.1, 1.0),
+            hover_bg: hsla(0.0, 0.0, 0.9, 1.0),
+            active_bg: hsla(0.0, 0.0, 0.85, 1.0),
+            disabled_bg: hsla(0.0, 0.0, 0.92, 1.0),
+            disabled_fg: hsla(0.0, 0.0, 0.5, 1.0),
+        },
+        ActionVariantKind::Primary => FallbackPalette {
+            bg: hsla(0.58, 0.7, 0.55, 1.0),
+            fg: hsla(0.0, 0.0, 1.0, 1.0),
+            hover_bg: hsla(0.58, 0.75, 0.6, 1.0),
+            active_bg: hsla(0.58, 0.65, 0.5, 1.0),
+            disabled_bg: hsla(0.58, 0.3, 0.7, 1.0),
+            disabled_fg: hsla(0.0, 0.0, 0.9, 1.0),
+        },
+        ActionVariantKind::Danger => FallbackPalette {
+            bg: hsla(0.0, 0.7, 0.5, 1.0),
+            fg: hsla(0.0, 0.0, 1.0, 1.0),
+            hover_bg: hsla(0.0, 0.75, 0.55, 1.0),
+            active_bg: hsla(0.0, 0.65, 0.45, 1.0),
+            disabled_bg: hsla(0.0, 0.3, 0.7, 1.0),
+            disabled_fg: hsla(0.0, 0.0, 0.9, 1.0),
+        },
+    }
+}
+
+fn field_pick(palette: &FallbackPalette, disabled: bool, field: &'static str) -> Hsla {
+    if disabled {
+        match field {
+            "bg" | "hover_bg" | "active_bg" => palette.disabled_bg,
+            "fg" => palette.disabled_fg,
+            // `field` comes from a fixed set in
+            // `DemoButtonRenderer::{bg,fg,hover_bg,active_bg}`
+            // so this arm is unreachable. Keep it as a
+            // safety net for typos.
+            _ => palette.disabled_bg,
+        }
+    } else {
+        match field {
+            "bg" => palette.bg,
+            "fg" => palette.fg,
+            "hover_bg" => palette.hover_bg,
+            "active_bg" => palette.active_bg,
+            // `disabled_bg` / `disabled_fg` are only used
+            // when the button is disabled. The "not
+            // disabled" branch falls back to `bg` if a
+            // caller ever asks for them by mistake.
+            "disabled_bg" => palette.disabled_bg,
+            "disabled_fg" => palette.disabled_fg,
+            _ => palette.bg,
+        }
+    }
+}
+
+fn fallback_for(variant: ActionVariantKind, field: &'static str, disabled: bool) -> Hsla {
+    field_pick(&fallback_palette(variant), disabled, field)
 }
 
 pub struct VariantApp;

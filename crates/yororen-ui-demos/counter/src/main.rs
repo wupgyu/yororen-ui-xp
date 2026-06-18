@@ -7,7 +7,7 @@
 //!
 //! ## Run this demo
 //! ```bash
-//! cd demo/counter && cargo run
+//! cargo run -p counter-demo
 //! ```
 
 mod counter_app;

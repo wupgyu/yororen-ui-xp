@@ -42,7 +42,7 @@
         <Cell>
             <Slot name="label"><Label id="lbl-toggle" text={t!(cx, "demo.actions.cell_toggle_button")} muted /></Slot>
             <ToggleButton id="tgb-1" caption={t!(cx, "demo.actions.press_me")}
-                          selected={controller.snapshot(cx).toggle_btn_selected}
+                          selected={controller.toggle_btn_selected(cx)}
                           on_toggle={controller.press_toggle_from_event} />
         </Cell>
     </Wrap>

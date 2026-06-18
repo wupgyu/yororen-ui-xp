@@ -12,7 +12,7 @@ mod view;
 
 use gpui::{
     App, AppContext, Application, InteractiveElement, IntoElement, WindowBounds, WindowOptions,
-    div, px, size,
+    px, size,
 };
 
 use yororen_ui::assets::UiAsset;
@@ -22,11 +22,61 @@ use crate::controller::Controller;
 use crate::state::{GalleryState, StateRef};
 use crate::view::GalleryApp;
 
-/// Trivial custom widget used to exercise
-/// `register_xml_component!` — the extension hook for
-/// adding tags without touching the codegen schema.
-fn render_counter_widget(id: String, _cx: &mut gpui::App) -> gpui::AnyElement {
-    div().id(id).into_any_element()
+/// A custom widget registered through
+/// `register_xml_component!`. Lives at the bottom of the
+/// footer to show how a *non-trivial* runtime component is
+/// wired in: it reads the active theme (so it visually
+/// tracks the toolbar's dark/light toggle), composes two
+/// `Div`s into a small "build info" card, and returns a
+/// single `AnyElement` (the registry contract).
+fn render_counter_widget(id: String, cx: &mut gpui::App) -> gpui::AnyElement {
+    use gpui::{Hsla, ParentElement, Styled, div, hsla, px};
+    use yororen_ui::theme::ActiveTheme;
+
+    // `surface.base` exists in every bundled theme, so the
+    // fallback below is only a safety net. The card border
+    // uses `content.primary` for the same reason (the
+    // grey-out colour matches the foreground token).
+    let bg: Hsla = cx
+        .theme()
+        .get_color("surface.base")
+        .unwrap_or_else(|| hsla(0.0, 0.0, 0.98, 1.0));
+    let border: Hsla = cx
+        .theme()
+        .get_color("content.primary")
+        .unwrap_or_else(|| hsla(0.0, 0.0, 0.5, 0.4));
+
+    // The footer is already a column of labels; this
+    // widget deliberately uses a different layout (a row
+    // with a left rule) so the card stands out without
+    // repeating the muted-label look.
+    div()
+        .id(id)
+        .flex()
+        .flex_row()
+        .items_center()
+        .gap(px(8.))
+        .p(px(6.))
+        .rounded(px(4.))
+        .bg(bg)
+        .border_1()
+        .border_color(border)
+        .child(
+            // Tiny accent dot on the left so the card
+            // reads as "branded", not "another label".
+            div()
+                .w(px(6.))
+                .h(px(6.))
+                .rounded(px(3.))
+                .bg(hsla(0.58, 0.7, 0.55, 1.0)),
+        )
+        .child(
+            div()
+                .text_xs()
+                .text_color(hsla(0.0, 0.0, 0.35, 1.0))
+                .child("v0.3.0 — yororen-ui custom widget (register_xml_component)"),
+        )
+        .into_any_element()
 }
 
 yororen_ui::register_xml_component!(CounterWidget => render_counter_widget);

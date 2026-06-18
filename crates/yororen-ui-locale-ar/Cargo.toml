@@ -10,3 +10,6 @@ repository.workspace = true
 yororen-ui-core = { package = "yororen_ui_core", path = "../yororen-ui-core", version = "0.3" }
 gpui = { package = "gpui-ce", version = "0.3" }
 serde_json = "1"
+
+[lints]
+workspace = true

@@ -26,3 +26,6 @@ gpui = { package = "gpui-ce", version = "0.3", features = ["test-support"] }
 default = ["xml"]
 brutalism = ["dep:yororen-ui-brutalism-renderer"]
 xml = ["dep:yororen-ui-xml", "dep:yororen-ui-xml-macro"]
+
+[lints]
+workspace = true

@@ -27,3 +27,6 @@ chrono = { version = "0.4", features = ["serde"] }
 # `test-support` enables `gpui::test` and `TestAppContext`, used by
 # the hooks integration tests.
 gpui = { package = "gpui-ce", version = "0.3", features = ["test-support"] }
+
+[lints]
+workspace = true

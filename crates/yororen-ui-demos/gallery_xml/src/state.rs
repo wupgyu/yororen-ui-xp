@@ -83,6 +83,13 @@ pub struct GalleryState {
     pub dropdown_state: Entity<DropdownMenuState>,
     pub split_dropdown_state: Entity<DropdownMenuState>,
     pub menu_state: Entity<MenuState>,
+    // `dropdown_menu_state` is a separate `MenuState` used for
+    // the `<Menu slot="content">` inside the dropdown demo. It
+    // carries the same items as `menu_state` but its
+    // `on_select` writes into `dropdown_demo_value` (and closes
+    // the dropdown), so a click on the dropdown's body does
+    // NOT also update the popover's `menu_demo_value`.
+    pub dropdown_menu_state: Entity<MenuState>,
     pub listbox_state: Entity<ListboxState>,
 
     // -------- Input values (bound via `@bind`) --------
@@ -182,6 +189,7 @@ impl GalleryState {
         let dropdown_state = DropdownMenuState::new(cx);
         let split_dropdown_state = DropdownMenuState::new(cx);
         let menu_state = MenuState::new(cx);
+        let dropdown_menu_state = MenuState::new(cx);
         let listbox_state = ListboxState::new(cx);
 
         select_state.update(cx, |s, _cx| {
@@ -219,6 +227,20 @@ impl GalleryState {
                 DropdownItem::Item(DropdownMenuItem::new("logout", "Log out")),
             ]);
         });
+        // Mirror the items into the dropdown's body state so
+        // both menus render the same rows without a second
+        // i18n pass. `wire_composite_state` rewires
+        // `on_select` per render to point at
+        // `dropdown_demo_value` instead of `menu_demo_value`.
+        dropdown_menu_state.update(cx, |s, _cx| {
+            use yororen_ui::headless::dropdown_menu::{DropdownItem, DropdownMenuItem};
+            s.set_items(vec![
+                DropdownItem::Item(DropdownMenuItem::new("profile", "Profile")),
+                DropdownItem::Item(DropdownMenuItem::new("settings", "Settings")),
+                DropdownItem::Separator,
+                DropdownItem::Item(DropdownMenuItem::new("logout", "Log out")),
+            ]);
+        });
         listbox_state.update(cx, |s, _cx| {
             s.set_options(vec![
                 ListboxOption::new("apple", "Apple"),
@@ -243,6 +265,7 @@ impl GalleryState {
             dropdown_state,
             split_dropdown_state,
             menu_state,
+            dropdown_menu_state,
             listbox_state,
 
             text_value: cx.new(|_| String::new()),

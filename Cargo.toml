@@ -33,5 +33,20 @@ edition = "2024"
 license = "Apache-2.0"
 repository = "https://github.com/MeowLynxSea/yororen-ui"
 
-# Demos inherit workspace lints via `[lints] workspace = true` in each demo
-# Cargo.toml. Strict clippy is enforced — fix issues instead of disabling.
+# Workspace lints — every member inherits these via
+# `[lints] workspace = true` in its `Cargo.toml`. Enforce
+# the same clippy rules across the whole workspace so
+# `cargo clippy --workspace -- -D warnings` is a single
+# source of truth. Demos are NOT exempt: a missed
+# warning in a demo will fail the same check.
+#
+# Lint keys are quoted because TOML does not allow `::`
+# in unquoted keys; the trailing `= "warn"` keeps the
+# level configurable per-crate via `[lints.<name>]`
+# in member Cargo.toml files.
+[workspace.lints]
+# TOML key is `clippy.all` (dot-separated); the actual
+# lint name uses `::` in rust source. `level = "warn"`
+# keeps the level configurable per-crate via
+# `[lints.<name>]` in member Cargo.toml files.
+clippy.all = "warn"
