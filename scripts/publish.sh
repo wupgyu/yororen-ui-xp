@@ -111,9 +111,13 @@ if [[ ${#missing[@]} -gt 0 ]]; then
 fi
 
 # Pre-flight: confirm logged in (skip for --dry-run since no upload happens).
+# Note: as of cargo 1.92 the built-in `cargo whoami` subcommand was
+# removed; the token still lives at ~/.cargo/credentials.toml after a
+# successful `cargo login`, so we just check for that file directly.
 if [[ "$DRY_RUN" -eq 0 ]]; then
-    if ! cargo whoami >/dev/null 2>&1; then
-        echo "[publish] not logged in to crates.io; run \`cargo login <token>\` first" >&2
+    cred_file="${CARGO_HOME:-$HOME/.cargo}/credentials.toml"
+    if [[ ! -f "$cred_file" ]]; then
+        echo "[publish] no credentials at $cred_file; run \`cargo login <token>\` first" >&2
         exit 1
     fi
 fi
