@@ -17,7 +17,7 @@
 
 - 实现 **完整** required renderer slots（与 default 同样覆盖面）。
 - 共享几何/阴影 helper 放 `style.rs`，避免 8 个 domain 文件复制。
-- 只依赖 core + gpui + serde_json；不要依赖 default_renderer（可替换关系，非父子）。
+- 依赖 `core + default-renderer + gpui`：复用 default renderer 的 `AnimatedPresenceElement` 等共享元素与 trait re-export，但**不得**把 `TokenButtonRenderer` 等具体视觉实现当作默认再"微调一点点"——风格应独立。
 
 ---
 

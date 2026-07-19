@@ -30,6 +30,7 @@ declare -A pkg_to_baseline=(
     [yororen_ui]="upstream/yororen_ui.api.txt"
     [yororen_ui_default_renderer]="upstream/yororen_ui_default_renderer.api.txt"
     [yororen_ui_brutalism_renderer]="upstream/yororen_ui_brutalism_renderer.api.txt"
+    [yororen_ui_xp_renderer]="upstream/yororen_ui_xp_renderer.api.txt"
 )
 
 if [ "$#" -eq 0 ] || [ "$1" = "--all" ]; then

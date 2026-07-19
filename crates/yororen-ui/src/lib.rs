@@ -33,6 +33,9 @@ pub use yororen_ui_default_renderer::renderers::button::ActionVariantKind;
 #[cfg(feature = "brutalism")]
 pub use yororen_ui_brutalism_renderer as brutalism_renderer;
 
+#[cfg(feature = "xp")]
+pub use yororen_ui_xp_renderer as xp_renderer;
+
 #[cfg(feature = "xml")]
 pub use yororen_ui_xml as xml;
 #[cfg(feature = "xml")]

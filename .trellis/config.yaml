@@ -99,6 +99,8 @@ packages:
     path: crates/yororen-ui-default-renderer
   yororen_ui_brutalism_renderer:
     path: crates/yororen-ui-brutalism-renderer
+  yororen_ui_xp_renderer:
+    path: crates/yororen-ui-xp-renderer
   yororen_ui_xml:
     path: crates/yororen-ui-xml
   yororen_ui_xml_macro:
@@ -125,4 +127,6 @@ packages:
     path: crates/yororen-ui-demos/theme_showcase
   variant-showcase-demo:
     path: crates/yororen-ui-demos/variant_showcase
+  xp-showcase-demo:
+    path: crates/yororen-ui-demos/xp_showcase
 default_package: yororen_ui

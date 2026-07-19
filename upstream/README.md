@@ -1,7 +1,7 @@
 # `upstream/` — public-API baselines
 
 This directory contains `cargo public-api` baselines for the
-4 published crates in the workspace. They are the source of
+5 published crates in the workspace. They are the source of
 truth for what the public surface of each crate looks like.
 
 ## Format
@@ -13,6 +13,7 @@ One `.api.txt` per published crate:
 | `yororen_ui_core.api.txt` | `yororen_ui_core` (`yororen-ui-core`) |
 | `yororen_ui_default_renderer.api.txt` | `yororen_ui_default_renderer` (`yororen-ui-default-renderer`) |
 | `yororen_ui_brutalism_renderer.api.txt` | `yororen_ui_brutalism_renderer` (`yororen-ui-brutalism-renderer`) |
+| `yororen_ui_xp_renderer.api.txt` | `yororen_ui_xp_renderer` (`yororen-ui-xp-renderer`) |
 | `yororen_ui.api.txt` | `yororen_ui` (`yororen-ui` meta-crate) |
 
 Each file is the `--simplified` output of `cargo public-api` —
@@ -39,17 +40,19 @@ change to the public surface. Concretely:
 ## Local baseline generation
 
 ```bash
-# All 4 published crates
+# All 5 published crates
 for pair in \
     "yororen_ui_core:yororen-ui-core" \
     "yororen_ui_default_renderer:yororen-ui-default-renderer" \
     "yororen_ui_brutalism_renderer:yororen-ui-brutalism-renderer" \
+    "yororen_ui_xp_renderer:yororen-ui-xp-renderer" \
     "yororen_ui:yororen-ui"; do
   crate="${pair%%:*}"
   case "$crate" in
     yororen_ui_core)                    fn="upstream/yororen_ui_core.api.txt" ;;
     yororen_ui_default_renderer)        fn="upstream/yororen_ui_default_renderer.api.txt" ;;
     yororen_ui_brutalism_renderer)      fn="upstream/yororen_ui_brutalism_renderer.api.txt" ;;
+    yororen_ui_xp_renderer)             fn="upstream/yororen_ui_xp_renderer.api.txt" ;;
     yororen_ui)                         fn="upstream/yororen_ui.api.txt" ;;
   esac
   cargo public-api -p "${crate}" --simplified >| "$fn"

@@ -18,10 +18,10 @@
 ```
 
 - **Headless**（[`yororen-ui-core`](https://crates.io/crates/yororen-ui-core)）—— 数据、状态、a11y、i18n、RTL、动画、资源。不做任何视觉决策。
-- **渲染器**（[`yororen-ui-default-renderer`](https://crates.io/crates/yororen-ui-default-renderer) · [`yororen-ui-brutalism-renderer`](https://crates.io/crates/yororen-ui-brutalism-renderer)）—— 负责将 props 转换为样式化的 div。55 个 trait 槽位分别由 `Token*` 或 `Brutal*` 实现；更换渲染器，整套应用的视觉就会一并切换。
+- **渲染器**（[`yororen-ui-default-renderer`](https://crates.io/crates/yororen-ui-default-renderer) · [`yororen-ui-brutalism-renderer`](https://crates.io/crates/yororen-ui-brutalism-renderer) · [`yororen-ui-xp-renderer`](https://crates.io/crates/yororen-ui-xp-renderer)）—— 负责将 props 转换为样式化的 div。55 个 trait 槽位分别由 `Token*`、`Brutal*` 或 `Xp*` 实现；更换渲染器，整套应用的视觉就会一并切换。
 - **主题** —— JSON 文件。渲染器按路径（如 `action.primary.bg`）读取；缺失的路径回退到渲染器的默认值。
 
-聚合 crate [`yororen-ui`](https://crates.io/crates/yororen-ui) 重新导出 core + 默认渲染器 + 三个内置 locale，大多数应用只需要这一个依赖。开启 `brutalism` 或 `xml` feature 即可启用备选渲染器或 XML DSL。
+聚合 crate [`yororen-ui`](https://crates.io/crates/yororen-ui) 重新导出 core + 默认渲染器 + 三个内置 locale，大多数应用只需要这一个依赖。开启 `brutalism`、`xp` 或 `xml` feature 即可启用备选渲染器或 XML DSL。
 
 ---
 
@@ -38,7 +38,7 @@
   </tr>
   <tr>
     <td><strong>三层架构</strong></td>
-    <td>headless 原语 + JSON 主题 + 可替换的可视化渲染器（默认 + brutalism）</td>
+    <td>headless 原语 + JSON 主题 + 可替换的可视化渲染器（默认 + brutalism + XP）</td>
   </tr>
   <tr>
     <td><strong>JSON 主题</strong></td>
@@ -130,6 +130,14 @@ fn render(&mut self, _w: &mut Window, cx: &mut Context<Self>) -> impl IntoElemen
 use yororen_ui::brutalism_renderer;
 
 brutalism_renderer::install(cx);   // 直角、硬阴影、等宽字体
+```
+
+### Windows XP 渲染器
+
+```rust
+use yororen_ui::xp_renderer;
+
+xp_renderer::install(cx);   // Luna 蓝渐变、绿色分段进度条、Tahoma 字体
 ```
 
 ### 自定义 JSON 主题
@@ -262,6 +270,22 @@ cargo run -p showcase-xml-demo
 
 </td>
   </tr>
+  <tr>
+    <td width="50%" valign="top">
+
+**`xp_showcase`** —— Windows XP（Luna）渲染器：渐变按钮、绿色分段进度条、斜面输入框。
+
+<p><img src="https://raw.githubusercontent.com/MeowLynxSea/yororen-ui/refs/heads/main/screenshots/xp-showcase.png" width="480" alt="Windows XP showcase 示例"></p>
+
+```
+cargo run -p xp-showcase-demo
+```
+
+</td>
+    <td width="50%" valign="top">
+
+</td>
+  </tr>
 </table>
 
 ---
@@ -284,6 +308,10 @@ cargo run -p showcase-xml-demo
   <tr>
     <td><code>yororen-ui-brutalism-renderer</code><br><sub><em>（可选，feature <code>brutalism</code>）</em></sub></td>
     <td>直角、粗黑边框、硬偏移阴影、等宽字体</td>
+  </tr>
+  <tr>
+    <td><code>yororen-ui-xp-renderer</code><br><sub><em>（可选，feature <code>xp</code>）</em></sub></td>
+    <td>Windows XP（Luna）：蓝色渐变、斜面边框、绿色分段进度条、Tahoma 字体</td>
   </tr>
   <tr>
     <td><code>yororen-ui-xml</code> + <code>yororen-ui-xml-macro</code><br><sub><em>（可选，feature <code>xml</code>，默认开启）</em></sub></td>
@@ -309,7 +337,7 @@ cargo run -p showcase-xml-demo
 - **渲染器** —— 每个组件一个 trait，读取主题并生成样式化 div。
 - **主题** —— 一个 <code>serde_json::Value</code>，可在运行时切换。
 
-55 个组件标记（<code>yororen-ui-core::renderer::markers</code>）是全局 <code>RendererRegistry</code> 的键。默认渲染器和 brutalism 渲染器各实现全部 55 个 trait 槽位。
+55 个组件标记（<code>yororen-ui-core::renderer::markers</code>）是全局 <code>RendererRegistry</code> 的键。默认渲染器、brutalism 渲染器和 XP 渲染器各实现全部 55 个 trait 槽位。
 
 自定义渲染器只需要实现 55 个 <code>XxxRenderer</code> trait——完全不需要触碰 headless 层。
 

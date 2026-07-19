@@ -18,10 +18,10 @@ theme JSON  ─▶  renderer (XxxRenderer)  ─▶  headless (XxxProps)  ─▶ 
 ```
 
 - **Headless** ([`yororen-ui-core`](https://crates.io/crates/yororen-ui-core)) — data, state, a11y, i18n, RTL, animation, assets. No visual decisions.
-- **Renderer** ([`yororen-ui-default-renderer`](https://crates.io/crates/yororen-ui-default-renderer) · [`yororen-ui-brutalism-renderer`](https://crates.io/crates/yororen-ui-brutalism-renderer)) — turns props into a styled div. 55 trait slots, filled with `Token*` or `Brutal*` impls. Swap the renderer, change the entire look.
+- **Renderer** ([`yororen-ui-default-renderer`](https://crates.io/crates/yororen-ui-default-renderer) · [`yororen-ui-brutalism-renderer`](https://crates.io/crates/yororen-ui-brutalism-renderer) · [`yororen-ui-xp-renderer`](https://crates.io/crates/yororen-ui-xp-renderer)) — turns props into a styled div. 55 trait slots, filled with `Token*`, `Brutal*`, or `Xp*` impls. Swap the renderer, change the entire look.
 - **Theme** — a JSON file. The renderer reads paths like `action.primary.bg`; missing paths fall back to renderer defaults.
 
-The meta-crate [`yororen-ui`](https://crates.io/crates/yororen-ui) re-exports core + the default renderer + three bundled locales, so most apps need a single dependency. Add the `brutalism` or `xml` feature to opt into the alternative renderer or the XML DSL.
+The meta-crate [`yororen-ui`](https://crates.io/crates/yororen-ui) re-exports core + the default renderer + three bundled locales, so most apps need a single dependency. Add the `brutalism`, `xp`, or `xml` feature to opt into an alternative renderer or the XML DSL.
 
 ---
 
@@ -38,7 +38,7 @@ The meta-crate [`yororen-ui`](https://crates.io/crates/yororen-ui) re-exports co
   </tr>
   <tr>
     <td><strong>Three-layer architecture</strong></td>
-    <td>Headless primitives + JSON themes + swappable visual renderers (default + brutalism)</td>
+    <td>Headless primitives + JSON themes + swappable visual renderers (default + brutalism + XP)</td>
   </tr>
   <tr>
     <td><strong>JSON themes</strong></td>
@@ -130,6 +130,14 @@ Every headless factory exposes both `.apply(div)` (a11y only) and `.render(cx)` 
 use yororen_ui::brutalism_renderer;
 
 brutalism_renderer::install(cx);   // sharp corners, hard shadows, monospace
+```
+
+### Windows XP renderer
+
+```rust
+use yororen_ui::xp_renderer;
+
+xp_renderer::install(cx);   // Luna blue gradients, green segmented progress, Tahoma
 ```
 
 ### Custom JSON theme
@@ -263,6 +271,22 @@ cargo run -p showcase-xml-demo
 
 </td>
   </tr>
+  <tr>
+    <td width="50%" valign="top">
+
+**`xp_showcase`** — the Windows XP (Luna) renderer: gradient buttons, green segmented progress bar, beveled inputs.
+
+<p><img src="https://raw.githubusercontent.com/MeowLynxSea/yororen-ui/refs/heads/main/screenshots/xp-showcase.png" width="480" alt="Windows XP showcase demo"></p>
+
+```
+cargo run -p xp-showcase-demo
+```
+
+</td>
+    <td width="50%" valign="top">
+
+</td>
+  </tr>
 </table>
 
 ---
@@ -285,6 +309,10 @@ cargo run -p showcase-xml-demo
   <tr>
     <td><code>yororen-ui-brutalism-renderer</code><br><sub><em>(optional, feature <code>brutalism</code>)</em></sub></td>
     <td>Sharp corners, thick black borders, hard offset shadows, monospace typography</td>
+  </tr>
+  <tr>
+    <td><code>yororen-ui-xp-renderer</code><br><sub><em>(optional, feature <code>xp</code>)</em></sub></td>
+    <td>Windows XP (Luna): blue gradients, beveled borders, green segmented progress bar, Tahoma typography</td>
   </tr>
   <tr>
     <td><code>yororen-ui-xml</code> + <code>yororen-ui-xml-macro</code><br><sub><em>(optional, feature <code>xml</code>, default-on)</em></sub></td>
@@ -310,7 +338,7 @@ theme JSON  ─▶  renderer (XxxRenderer)  ─▶  headless (XxxProps)  ─▶ 
 - **Renderer** — a per-component trait that reads the theme and produces visual divs.
 - **Theme** — a single `serde_json::Value` you can swap at runtime.
 
-The 55 component markers (<code>yororen-ui-core::renderer::markers</code>) are the keys into the global <code>RendererRegistry</code>. The default and brutalism renderers each implement all 55 trait slots.
+The 55 component markers (<code>yororen-ui-core::renderer::markers</code>) are the keys into the global <code>RendererRegistry</code>. The default, brutalism, and XP renderers each implement all 55 trait slots.
 
 A custom renderer only needs to implement the 55 <code>XxxRenderer</code> traits &mdash; it doesn't touch the headless layer.
 
