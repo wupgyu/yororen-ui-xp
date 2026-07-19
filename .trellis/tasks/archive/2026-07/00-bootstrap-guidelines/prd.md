@@ -19,24 +19,24 @@
 
 ## 当前状态（完成后更新下面复选框）
 
-- [ ] 补充 yororen_ui 的开发规范
-- [ ] 补充 yororen_ui_core 的开发规范
-- [ ] 补充 yororen_ui_default_renderer 的开发规范
-- [ ] 补充 yororen_ui_brutalism_renderer 的开发规范
-- [ ] 补充 yororen_ui_xml 的开发规范
-- [ ] 补充 yororen_ui_xml_macro 的开发规范
-- [ ] 补充 yororen_ui_locale_en 的开发规范
-- [ ] 补充 yororen_ui_locale_zh_cn 的开发规范
-- [ ] 补充 yororen_ui_locale_ar 的开发规范
-- [ ] 补充 counter-demo 的开发规范
-- [ ] 补充 showcase-xml-demo 的开发规范
-- [ ] 补充 gallery-demo 的开发规范
-- [ ] 补充 gallery-xml-demo 的开发规范
-- [ ] 补充 inputs-demo 的开发规范
-- [ ] 补充 layers-demo 的开发规范
-- [ ] 补充 theme-showcase-demo 的开发规范
-- [ ] 补充 variant-showcase-demo 的开发规范
-- [ ] 补充代码示例
+- [x] 补充 yororen_ui 的开发规范
+- [x] 补充 yororen_ui_core 的开发规范
+- [x] 补充 yororen_ui_default_renderer 的开发规范
+- [x] 补充 yororen_ui_brutalism_renderer 的开发规范
+- [x] 补充 yororen_ui_xml 的开发规范
+- [x] 补充 yororen_ui_xml_macro 的开发规范
+- [x] 补充 yororen_ui_locale_en 的开发规范
+- [x] 补充 yororen_ui_locale_zh_cn 的开发规范
+- [x] 补充 yororen_ui_locale_ar 的开发规范
+- [x] 补充 counter-demo 的开发规范
+- [x] 补充 showcase-xml-demo 的开发规范
+- [x] 补充 gallery-demo 的开发规范
+- [x] 补充 gallery-xml-demo 的开发规范
+- [x] 补充 inputs-demo 的开发规范
+- [x] 补充 layers-demo 的开发规范
+- [x] 补充 theme-showcase-demo 的开发规范
+- [x] 补充 variant-showcase-demo 的开发规范
+- [x] 补充代码示例
 
 ---
 
