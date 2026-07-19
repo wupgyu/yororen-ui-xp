@@ -4,7 +4,11 @@
 //! renderer. The code is 100% headless — the XP look comes
 //! entirely from the installed renderer + `xp-luna.json`.
 
-use gpui::{Context, IntoElement, ParentElement, Render, Styled, Window, div, px};
+use gpui::{
+    Context, Div, FontWeight, Hsla, InteractiveElement, IntoElement, ParentElement, Render,
+    Stateful, StatefulInteractiveElement, Styled, Window, WindowControlArea, div, hsla,
+    linear_color_stop, linear_gradient, px,
+};
 
 use yororen_ui::ActionVariantKind;
 use yororen_ui::headless::badge::{BadgeVariant, badge};
@@ -23,6 +27,220 @@ use yororen_ui::headless::switch::switch;
 use yororen_ui::headless::tag::tag;
 use yororen_ui::headless::text_input::text_input;
 use yororen_ui::theme::ActiveTheme;
+use yororen_ui::theme::Theme;
+
+/// One XP caption button (min / max / close). The action itself is
+/// performed natively by Windows through the `WindowControlArea`
+/// hitbox, so no `on_click` handler is needed; gpui hover/active
+/// styles still apply on top.
+///
+/// The face is a glossy vertical gradient (light top → saturated
+/// bottom) with a translucent white edge, matching the Luna
+/// caption-button look.
+fn caption_button(
+    id: &'static str,
+    glyph: &'static str,
+    area: WindowControlArea,
+    top: Hsla,
+    bottom: Hsla,
+    glyph_color: Hsla,
+) -> Stateful<Div> {
+    let hover_top = Hsla {
+        l: (top.l + 0.07).clamp(0.0, 1.0),
+        ..top
+    };
+    let hover_bottom = Hsla {
+        l: (bottom.l + 0.07).clamp(0.0, 1.0),
+        ..bottom
+    };
+    div()
+        .id(id)
+        .window_control_area(area)
+        .w(px(21.))
+        .h(px(21.))
+        .rounded(px(3.))
+        .border(px(1.))
+        .border_color(hsla(0.0, 0.0, 1.0, 0.6))
+        .bg(linear_gradient(
+            180.0,
+            linear_color_stop(top, 0.0),
+            linear_color_stop(bottom, 1.0),
+        ))
+        .flex()
+        .items_center()
+        .justify_center()
+        .text_color(glyph_color)
+        .text_size(px(14.))
+        .child(glyph)
+        .hover(move |s| {
+            s.bg(linear_gradient(
+                180.0,
+                linear_color_stop(hover_top, 0.0),
+                linear_color_stop(hover_bottom, 1.0),
+            ))
+        })
+        .active(move |s| {
+            s.bg(linear_gradient(
+                180.0,
+                linear_color_stop(bottom, 0.0),
+                linear_color_stop(top, 1.0),
+            ))
+        })
+}
+
+/// The XP Luna title bar, styled after the classic CSS recipe:
+///
+/// ```css
+/// height: 26px;
+/// border-radius: 7px 7px 0 0;
+/// background: linear-gradient(180deg, #0997ff 0%, #0053ee 8%,
+///     #0050ee 40%, #06f 88%, #0058eb 100%);
+/// padding: 0 4px 0 8px; gap: 6px;
+/// ```
+///
+/// gpui's `linear_gradient` only supports two stops, so the
+/// 5-stop vertical gradient is approximated with four stacked
+/// 2-stop bands (heights proportional to the CSS percentages).
+/// Dragging / min / max / close are native Windows behaviors via
+/// `WindowControlArea` hitboxes (the demo window uses
+/// `appears_transparent` client decorations).
+fn xp_title_bar(_theme: &Theme) -> Stateful<Div> {
+    // The five CSS gradient stops.
+    let c0: Hsla = gpui::rgb(0x0997FF).into(); // 0%
+    let c1: Hsla = gpui::rgb(0x0053EE).into(); // 8%
+    let c2: Hsla = gpui::rgb(0x0050EE).into(); // 40%
+    let c3: Hsla = gpui::rgb(0x0066FF).into(); // 88%
+    let c4: Hsla = gpui::rgb(0x0058EB).into(); // 100%
+    let title_fg: Hsla = gpui::rgb(0xFFFFFF).into();
+    // Caption-button faces: glossy light blue over the bar blue;
+    // the close button is the signature Luna orange-red.
+    let btn_top: Hsla = gpui::rgb(0x5CA8F8).into();
+    let btn_bottom: Hsla = gpui::rgb(0x1E6AE1).into();
+    let close_top: Hsla = gpui::rgb(0xF0A080).into();
+    let close_bottom: Hsla = gpui::rgb(0xD04E20).into();
+
+    // Four stacked bands ≈ the 5-stop vertical gradient
+    // (2/8/12/4 px of the 26 px bar, matching 0-8-40-88-100%).
+    let bands = div()
+        .absolute()
+        .top_0()
+        .left_0()
+        .right_0()
+        .bottom_0()
+        .flex()
+        .flex_col()
+        .child(div().h(px(2.)).w_full().bg(linear_gradient(
+            180.0,
+            linear_color_stop(c0, 0.0),
+            linear_color_stop(c1, 1.0),
+        )))
+        .child(div().h(px(8.)).w_full().bg(linear_gradient(
+            180.0,
+            linear_color_stop(c1, 0.0),
+            linear_color_stop(c2, 1.0),
+        )))
+        .child(div().h(px(12.)).w_full().bg(linear_gradient(
+            180.0,
+            linear_color_stop(c2, 0.0),
+            linear_color_stop(c3, 1.0),
+        )))
+        .child(div().h(px(4.)).w_full().bg(linear_gradient(
+            180.0,
+            linear_color_stop(c3, 0.0),
+            linear_color_stop(c4, 1.0),
+        )));
+
+    // Mini 2x2 "window panes" app icon.
+    let pane = |c: Hsla| div().w(px(7.)).h(px(7.)).bg(c);
+    let pane_row = |a: Hsla, b: Hsla| {
+        div()
+            .flex()
+            .flex_row()
+            .gap(px(1.))
+            .child(pane(a))
+            .child(pane(b))
+    };
+    let icon = div()
+        .flex()
+        .flex_col()
+        .gap(px(1.))
+        .child(pane_row(
+            hsla(0.02, 0.9, 0.55, 1.0),
+            hsla(0.28, 0.8, 0.5, 1.0),
+        ))
+        .child(pane_row(
+            hsla(0.12, 0.9, 0.55, 1.0),
+            hsla(0.6, 0.85, 0.55, 1.0),
+        ));
+
+    div()
+        .id("xp-titlebar")
+        .window_control_area(WindowControlArea::Drag)
+        .relative()
+        .w_full()
+        .h(px(26.))
+        .rounded_tl(px(7.))
+        .rounded_tr(px(7.))
+        .overflow_hidden()
+        .child(bands)
+        .child(
+            div()
+                .flex()
+                .flex_row()
+                .items_center()
+                .justify_between()
+                .w_full()
+                .h_full()
+                .pl(px(8.))
+                .pr(px(4.))
+                .child(
+                    div()
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(6.))
+                        .child(icon)
+                        .child(
+                            div()
+                                .text_color(title_fg)
+                                .text_size(px(12.))
+                                .font_weight(FontWeight::SEMIBOLD)
+                                .child("Windows XP Showcase"),
+                        ),
+                )
+                .child(
+                    div()
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(2.))
+                        .child(caption_button(
+                            "xp-cap-min",
+                            "_",
+                            WindowControlArea::Min,
+                            btn_top,
+                            btn_bottom,
+                            title_fg,
+                        ))
+                        .child(caption_button(
+                            "xp-cap-max",
+                            "□",
+                            WindowControlArea::Max,
+                            btn_top,
+                            btn_bottom,
+                            title_fg,
+                        ))
+                        .child(div().ml(px(2.)).child(caption_button(
+                            "xp-cap-close",
+                            "×",
+                            WindowControlArea::Close,
+                            close_top,
+                            close_bottom,
+                            title_fg,
+                        ))),
+                ),
+        )
+}
 
 pub struct XpApp {
     checkbox_value: bool,
@@ -237,9 +455,8 @@ impl Render for XpApp {
                     .render(cx),
             );
 
-        column("xp-root", cx)
+        let content = column("xp-root", cx)
             .w_full()
-            .h_full()
             .p(Inset::Xl)
             .gap(Spacing::Lg)
             .child(heading("hdg-title", HeadingLevel::H2, "Windows XP Showcase", cx).render(cx))
@@ -262,6 +479,15 @@ impl Render for XpApp {
             .child(inputs_row.render(cx))
             .child(badge_row.render(cx))
             .render(cx)
+            .flex_grow();
+
+        div()
+            .flex()
+            .flex_col()
+            .w_full()
+            .h_full()
             .bg(surface)
+            .child(xp_title_bar(cx.theme()))
+            .child(content)
     }
 }

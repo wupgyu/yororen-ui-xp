@@ -8,7 +8,7 @@
 //!
 //! Run with: `cargo run -p xp-showcase-demo`
 
-use gpui::{App, AppContext, Application, WindowBounds, WindowOptions, px, size};
+use gpui::{App, AppContext, Application, TitlebarOptions, WindowBounds, WindowOptions, px, size};
 
 use yororen_ui::assets::UiAsset;
 use yororen_ui::xp_renderer;
@@ -28,6 +28,14 @@ fn main() {
                 size(px(760.0), px(600.0)),
                 cx,
             ))),
+            // Hide the OS title bar — the demo draws its own XP
+            // Luna title bar (drag / min / max / close all work
+            // through `window_control_area` hitboxes).
+            titlebar: Some(TitlebarOptions {
+                title: Some("Windows XP Showcase".into()),
+                appears_transparent: true,
+                traffic_light_position: None,
+            }),
             ..Default::default()
         };
         let app_entity = cx.new(|_cx| xp_app::XpApp::new());
