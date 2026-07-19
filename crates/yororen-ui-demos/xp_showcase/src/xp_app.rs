@@ -92,7 +92,7 @@ fn caption_button(
 ///
 /// ```css
 /// height: 26px;
-/// border-radius: 7px 7px 0 0;
+/// border-radius: 7px 7px 0 0;   /* inside the 8px window frame */
 /// background: linear-gradient(180deg, #0997ff 0%, #0053ee 8%,
 ///     #0050ee 40%, #06f 88%, #0058eb 100%);
 /// padding: 0 4px 0 8px; gap: 6px;
@@ -114,10 +114,10 @@ fn xp_title_bar(_theme: &Theme) -> Stateful<Div> {
     let title_fg: Hsla = gpui::rgb(0xFFFFFF).into();
     // Caption-button faces: glossy light blue over the bar blue;
     // the close button is the signature Luna orange-red.
-    let btn_top: Hsla = gpui::rgb(0x5CA8F8).into();
-    let btn_bottom: Hsla = gpui::rgb(0x1E6AE1).into();
-    let close_top: Hsla = gpui::rgb(0xF0A080).into();
-    let close_bottom: Hsla = gpui::rgb(0xD04E20).into();
+    let btn_top: Hsla = gpui::rgb(0x3C8CFD).into();
+    let btn_bottom: Hsla = gpui::rgb(0x1565E8).into();
+    let close_top: Hsla = gpui::rgb(0xF08A6D).into();
+    let close_bottom: Hsla = gpui::rgb(0xD84A28).into();
 
     // Four stacked bands ≈ the 5-stop vertical gradient
     // (2/8/12/4 px of the 26 px bar, matching 0-8-40-88-100%).
@@ -481,13 +481,37 @@ impl Render for XpApp {
             .render(cx)
             .flex_grow();
 
+        // Window chrome per css `.xp-window`: the frame carries
+        // the 1px `#0058E6` border and 8px rounded top corners
+        // (unpainted corner pixels stay transparent so the
+        // desktop shows through); the body sits 3px inside it
+        // with its own `#A09C8C` inner border (top edge open,
+        // like `.xp-window-body`). No outer window shadow.
+        let frame_border: Hsla = gpui::rgb(0x0058E6).into();
+        let body_border: Hsla = gpui::rgb(0xA09C8C).into();
         div()
             .flex()
             .flex_col()
             .w_full()
             .h_full()
             .bg(surface)
+            .border(px(1.))
+            .border_color(frame_border)
+            .rounded_tl(px(8.))
+            .rounded_tr(px(8.))
+            .overflow_hidden()
             .child(xp_title_bar(cx.theme()))
-            .child(content)
+            .child(
+                div()
+                    .flex_grow()
+                    .flex()
+                    .flex_col()
+                    .mx(px(3.))
+                    .mb(px(3.))
+                    .border(px(1.))
+                    .border_t(px(0.))
+                    .border_color(body_border)
+                    .child(content),
+            )
     }
 }

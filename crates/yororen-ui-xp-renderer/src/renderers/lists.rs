@@ -6,8 +6,8 @@
 //! (`xp.selection.hover_bg`) and select to Luna blue
 //! (`xp.selection.bg`) with white text. The list containers
 //! (Listbox, Tree, Table, the virtual lists) are white sunken
-//! wells with a 1px bevel border; the table header wears the
-//! classic XP list-view button-face gradient.
+//! wells with a 1px `#7F9DB9` sunken border; the table header
+//! wears the classic XP list-view button-face gradient.
 
 use gpui::{
     App, Background, CursorStyle, Div, ElementId, Hsla, InteractiveElement, IntoElement,
@@ -20,7 +20,7 @@ use yororen_ui_core::theme::Theme;
 
 use crate::style::{
     XP_BORDER_WIDTH, XP_RADIUS, bevel_inner_dark, button_face, hsl_fallback, input_bg,
-    selection_bg, selection_fg, selection_hover_bg, xp_color,
+    input_border, selection_bg, selection_fg, selection_hover_bg, xp_color,
 };
 
 // =====================================================================
@@ -173,7 +173,8 @@ impl XpListboxRenderer {
         px(theme.get_number("tokens.spacing.gap_1").unwrap_or(4.0) as f32)
     }
     pub fn border_color(&self, _: &ListboxRenderState, theme: &Theme) -> Hsla {
-        xp_color(theme, "xp.bevel.inner_dark", bevel_inner_dark())
+        // Sunken-well edge, same blue-gray as the input boxes.
+        xp_color(theme, "xp.input.border", input_border())
     }
     pub fn border_width(&self, _: &ListboxRenderState, _: &Theme) -> Pixels {
         px(XP_BORDER_WIDTH)
@@ -577,7 +578,7 @@ impl XpVirtualListRenderer {
         theme.get_color("surface.sunken").unwrap_or(input_bg())
     }
     pub fn border_color(&self, _: &VirtualListRenderState, theme: &Theme) -> Hsla {
-        xp_color(theme, "xp.bevel.inner_dark", bevel_inner_dark())
+        xp_color(theme, "xp.input.border", input_border())
     }
     pub fn border_width(&self, _: &VirtualListRenderState, _: &Theme) -> Pixels {
         px(XP_BORDER_WIDTH)
@@ -676,7 +677,7 @@ impl XpUniformVirtualListRenderer {
         theme.get_color("surface.sunken").unwrap_or(input_bg())
     }
     pub fn border_color(&self, _: &UniformVirtualListRenderState, theme: &Theme) -> Hsla {
-        xp_color(theme, "xp.bevel.inner_dark", bevel_inner_dark())
+        xp_color(theme, "xp.input.border", input_border())
     }
     pub fn border_width(&self, _: &UniformVirtualListRenderState, _: &Theme) -> Pixels {
         px(XP_BORDER_WIDTH)
@@ -758,7 +759,7 @@ pub struct XpTreeRenderer;
 // Inherent helpers — *not* part of the trait surface.
 impl XpTreeRenderer {
     pub fn border_color(&self, _state: &TreeRenderState, theme: &Theme) -> Hsla {
-        xp_color(theme, "xp.bevel.inner_dark", bevel_inner_dark())
+        xp_color(theme, "xp.input.border", input_border())
     }
     pub fn border_width(&self, _state: &TreeRenderState, theme: &Theme) -> Pixels {
         px(theme

@@ -27,7 +27,7 @@
       "active_bg": "#99B4D1",
       "fg": "#000000",
       "disabled_bg": "#F4F3EE",
-      "disabled_fg": "#A1A192"
+      "disabled_fg": "#ACA899"
     },
     "primary": {
       "bg": "#0058E6",
@@ -61,25 +61,31 @@
   },
   "xp": {
     "titlebar": {
-      "from": "#0058E6",
-      "to": "#3A93FF",
+      "from": "#0997FF",
+      "mid_1": "#0053EE",
+      "mid_2": "#0050EE",
+      "mid_3": "#0066FF",
+      "to": "#0058EB",
+      "inactive_from": "#B8C4DC",
+      "inactive_to": "#98A8C0",
       "text": "#FFFFFF",
-      "height": 28
+      "height": 26
     },
     "button": {
       "face_from": "#FFFFFF",
-      "face_to": "#E3DFD0",
-      "border": "#7F7B6B",
+      "face_mid": "#ECE9D8",
+      "face_to": "#DDD8C8",
+      "border": "#003C74",
       "default_border": "#003C74",
-      "hover_ring": "#C1D2EE",
+      "hover_ring": "#FFCF31",
       "primary_from": "#3A93FF",
       "primary_to": "#0058E6"
     },
     "progress": {
       "track_bg": "#FFFFFF",
-      "track_border": "#ACA899",
-      "chunk_from": "#B5E388",
-      "chunk_to": "#6DAF1B",
+      "track_border": "#7F9DB9",
+      "chunk_from": "#68D868",
+      "chunk_to": "#189418",
       "chunk_border": "#5C9918",
       "segment_width": 10,
       "segment_gap": 2,
@@ -94,13 +100,35 @@
     "input": {
       "bg": "#FFFFFF",
       "border": "#7F9DB9",
-      "focus_border": "#0058E6"
+      "focus_border": "#316AC5"
     },
     "selection": {
       "bg": "#316AC5",
       "fg": "#FFFFFF",
-      "hover_bg": "#C1D2EE",
+      "hover_bg": "#CFE0FA",
       "hover_border": "#99B4D1"
+    },
+    "menu": {
+      "hover_bg": "#316AC5",
+      "hover_fg": "#FFFFFF"
+    },
+    "toast": {
+      "bg": "#FFFFE1",
+      "border": "#000000"
+    },
+    "window": {
+      "border_active": "#0058E6",
+      "border_inactive": "#98A8C0",
+      "body_border": "#A09C8C"
+    },
+    "caption": {
+      "from": "#3C8CFD",
+      "to": "#1565E8",
+      "close_from": "#F08A6D",
+      "close_to": "#D84A28",
+      "border": "#FFFFFF99",
+      "size": 21,
+      "radius": 3
     },
     "check": {
       "glyph": "#0058E6",
@@ -129,7 +157,7 @@
     },
     "motion": { "duration_fast": 0.1, "duration_normal": 0.2, "duration_slow": 0.3 },
     "control": {
-      "button": { "min_height": 26, "horizontal_padding": 12, "vertical_padding": 4, "radius": 3, "border_width": 1 },
+      "button": { "min_height": 23, "horizontal_padding": 14, "vertical_padding": 3, "radius": 3, "border_width": 1 },
       "icon_button": { "size": 26, "radius": 3, "border_width": 1 },
       "toggle_button": { "min_height": 26, "horizontal_padding": 10, "radius": 3, "border_width": 1 },
       "split_button": { "min_height": 26, "radius": 3, "border_width": 1 },
@@ -139,7 +167,7 @@
       "focus_ring": { "width": 1, "offset": 2, "color": "#0058E6" },
       "badge": { "min_height": 18, "horizontal_padding": 6, "vertical_padding": 1, "radius": 3, "border_width": 1, "font_size": 11, "weight": 400 },
       "tag": { "min_height": 22, "horizontal_padding": 8, "vertical_padding": 2, "radius": 3, "border_width": 1 },
-      "progress": { "height": 14, "radius": 2, "border_width": 1 },
+      "progress": { "height": 12, "radius": 2, "border_width": 1 },
       "skeleton": { "radius": 2, "border_width": 1 },
       "tooltip": { "radius": 0, "border_width": 1, "padding_x": 8, "padding_y": 4, "font_size": 11 },
       "avatar": { "size": 36, "radius": 2, "border_width": 1 },
@@ -159,8 +187,8 @@
       "popover": { "radius": 3, "border_width": 1, "padding": 8 },
       "dropdown_menu": { "radius": 3, "border_width": 1, "padding": 2 },
       "disclosure": { "radius": 0, "border_width": 1 },
-      "toast": { "radius": 3, "border_width": 1, "padding": 10 },
-      "notification": { "radius": 3, "border_width": 1, "padding": 12 },
+      "toast": { "radius": 6, "border_width": 1, "padding": 10 },
+      "notification": { "radius": 6, "border_width": 1, "padding": 12 },
       "panel": { "radius": 3, "border_width": 1, "padding": 12 },
       "card": { "radius": 3, "border_width": 1, "padding": 12 },
       "form": { "radius": 0, "border_width": 0, "padding": 12, "gap": 8 },

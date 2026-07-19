@@ -14,12 +14,19 @@ XP 专属值放 `xp.*` 前缀路径，renderer 读取时必须带 `style.rs` 常
 
 | 路径 | 值 | 消费方 |
 |------|----|--------|
-| `xp.titlebar.{from,to,text,height}` | 标题条蓝渐变 + 白字 + 28px | Modal |
-| `xp.button.{face_from,face_to,border,default_border,hover_ring,primary_from,primary_to}` | 按钮面渐变与边色 | Button 族、Slider 拇指、Badge/Tag、步进器 |
-| `xp.progress.{track_bg,track_border,chunk_from,chunk_to,chunk_border,segment_width,segment_gap,segment_radius}` | 分段进度条 | ProgressBar |
-| `xp.bevel.{outer_light,inner_light,inner_dark,outer_dark}` | Win32 斜面四色 | 凹陷井、面板、轨道 |
-| `xp.input.{bg,border,focus_border}` | 输入框白底 + 边色 | inputs 组 |
-| `xp.selection.{bg,fg,hover_bg,hover_border}` | 选中 #316AC5 / 淡蓝 hover | 菜单、列表、树、下拉 |
+| `xp.titlebar.{from,mid_1,mid_2,mid_3,to}` | 标题条 5-stop 蓝渐变(`#0997FF→#0053EE→#0050EE→#0066FF→#0058EB`,4 band 叠带) | Modal 标题栏 |
+| `xp.titlebar.{inactive_from,inactive_to}` | 失焦标题条 `#B8C4DC→#98A8C0` | Modal 标题栏 |
+| `xp.titlebar.{text,height}` | 白字 + 26px | Modal |
+| `xp.button.{face_from,face_mid,face_to}` | 按钮面 3-stop(`#FFF→#ECE9D8@45%→#DDD8C8`,双 band) | Button 族、Slider 拇指、Badge/Tag、步进器 |
+| `xp.button.{border,default_border,hover_ring,primary_from,primary_to}` | 边 `#003C74` / hover 橙环 `#FFCF31` / 主蓝渐变 | 同上 |
+| `xp.progress.{track_bg,track_border,chunk_from,chunk_to,chunk_border,segment_width,segment_gap,segment_radius}` | 分段进度条(css 绿 `#68D868→#189418`,track 边 `#7F9DB9`) | ProgressBar |
+| `xp.bevel.{outer_light,inner_light,inner_dark,outer_dark}` | Win32 斜面四色 | 凹陷井、面板、轨道、divider 蚀刻双线 |
+| `xp.input.{bg,border,focus_border}` | 输入框白底 + 边 `#7F9DB9` + focus `#316AC5`;`border` 兼作 listbox/tree/虚拟列表容器边 | inputs 组、lists 容器 |
+| `xp.selection.{bg,fg,hover_bg,hover_border}` | 选中 `#316AC5` 白字;hover `#CFE0FA` | 列表、树、下拉 |
+| `xp.menu.{hover_bg,hover_fg}` | 菜单项 hover `#316AC5` 蓝底白字 | Menu |
+| `xp.toast.{bg,border}` | 气泡黄 `#FFFFE1` + 1px 黑边 | Toast、Notification |
+| `xp.window.{border_active,border_inactive,body_border}` | 窗口边框 `#0058E6`/`#98A8C0`;body 内边框 `#A09C8C` | Modal |
+| `xp.caption.{from,to,close_from,close_to,border,size,radius}` | 标题按钮蓝渐变 `#3C8CFD→#1565E8`、close 红渐变 `#F08A6D→#D84A28`、半透明白边、21×21、radius 3 | Modal caption 按钮 |
 | `xp.check.{glyph,box_bg,box_border}` | 蓝勾 / 白盒 / 边 | Checkbox、Radio |
 
 修改上表任何路径时：先 `grep -r "<path>" crates/yororen-ui-xp-renderer/` 找全部消费方，并同步 `xp_luna_theme_parses_with_key_paths` 测试断言。

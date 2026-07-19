@@ -66,30 +66,53 @@ pub fn dialog_bg() -> Hsla {
     hsl(0xECE9D8)
 }
 
+/// Luna title-bar gradient stops (CSS `#0997FF → #0053EE →
+/// #0050EE → #0066FF → #0058EB`).
 pub fn titlebar_from() -> Hsla {
-    hsl(0x0058E6)
+    hsl(0x0997FF)
+}
+pub fn titlebar_mid_1() -> Hsla {
+    hsl(0x0053EE)
+}
+pub fn titlebar_mid_2() -> Hsla {
+    hsl(0x0050EE)
+}
+pub fn titlebar_mid_3() -> Hsla {
+    hsl(0x0066FF)
 }
 pub fn titlebar_to() -> Hsla {
-    hsl(0x3A93FF)
+    hsl(0x0058EB)
+}
+/// Inactive window title bar (`#B8C4DC → #98A8C0`).
+pub fn titlebar_inactive_from() -> Hsla {
+    hsl(0xB8C4DC)
+}
+pub fn titlebar_inactive_to() -> Hsla {
+    hsl(0x98A8C0)
 }
 
-/// Button face gradient: near-white top, cream bottom.
+/// Button face gradient stops: white top, beige middle
+/// (`#ECE9D8` at 45%), cream bottom (`#DDD8C8`).
 pub fn button_face_from() -> Hsla {
     hsl(0xFFFFFF)
 }
-pub fn button_face_to() -> Hsla {
-    hsl(0xE3DFD0)
+pub fn button_face_mid() -> Hsla {
+    hsl(0xECE9D8)
 }
-/// Neutral button edge — XP uses a soft olive-gray, not the dark
-/// blue reserved for the default (focused) button.
+pub fn button_face_to() -> Hsla {
+    hsl(0xDDD8C8)
+}
+/// Neutral button edge — the same dark blue as the default
+/// (focused) button, matching the CSS reference (`#003C74`).
 pub fn button_border() -> Hsla {
-    hsl(0x7F7B6B)
+    hsl(0x003C74)
 }
 pub fn button_default_border() -> Hsla {
     hsl(0x003C74)
 }
+/// Hover inset ring (`#FFCF31` orange).
 pub fn button_hover_ring() -> Hsla {
-    hsl(0xC1D2EE)
+    hsl(0xFFCF31)
 }
 pub fn primary_from() -> Hsla {
     hsl(0x3A93FF)
@@ -102,13 +125,13 @@ pub fn progress_track_bg() -> Hsla {
     hsl(0xFFFFFF)
 }
 pub fn progress_track_border() -> Hsla {
-    hsl(0xACA899)
+    hsl(0x7F9DB9)
 }
 pub fn progress_chunk_from() -> Hsla {
-    hsl(0xB5E388)
+    hsl(0x68D868)
 }
 pub fn progress_chunk_to() -> Hsla {
-    hsl(0x6DAF1B)
+    hsl(0x189418)
 }
 pub fn progress_chunk_border() -> Hsla {
     hsl(0x5C9918)
@@ -136,7 +159,7 @@ pub fn input_border() -> Hsla {
     hsl(0x7F9DB9)
 }
 pub fn input_focus_border() -> Hsla {
-    hsl(0x0058E6)
+    hsl(0x316AC5)
 }
 
 /// Menu / list selection & hover highlight.
@@ -146,8 +169,60 @@ pub fn selection_bg() -> Hsla {
 pub fn selection_fg() -> Hsla {
     hsl(0xFFFFFF)
 }
+/// List item hover (`#CFE0FA`, paler than selection).
 pub fn selection_hover_bg() -> Hsla {
-    hsl(0xC1D2EE)
+    hsl(0xCFE0FA)
+}
+
+/// Menu item hover: solid selection blue with white text.
+pub fn menu_hover_bg() -> Hsla {
+    hsl(0x316AC5)
+}
+pub fn menu_hover_fg() -> Hsla {
+    hsl(0xFFFFFF)
+}
+
+/// Balloon toast / notification (`#FFFFE1` + 1px black edge).
+pub fn toast_bg() -> Hsla {
+    hsl(0xFFFFE1)
+}
+pub fn toast_border() -> Hsla {
+    hsl(0x000000)
+}
+
+/// XP window frame, active (`#0058E6`) / inactive (`#98A8C0`).
+pub fn window_border_active() -> Hsla {
+    hsl(0x0058E6)
+}
+pub fn window_border_inactive() -> Hsla {
+    hsl(0x98A8C0)
+}
+/// Inner border of the window body (`#A09C8C`), drawn around
+/// the content area inside the frame.
+pub fn window_body_border() -> Hsla {
+    hsl(0xA09C8C)
+}
+
+/// Caption (title-bar) button gradients + translucent white edge.
+pub fn caption_from() -> Hsla {
+    hsl(0x3C8CFD)
+}
+pub fn caption_to() -> Hsla {
+    hsl(0x1565E8)
+}
+pub fn caption_close_from() -> Hsla {
+    hsl(0xF08A6D)
+}
+pub fn caption_close_to() -> Hsla {
+    hsl(0xD84A28)
+}
+pub fn caption_border() -> Hsla {
+    Hsla {
+        h: 0.0,
+        s: 0.0,
+        l: 1.0,
+        a: 0.6,
+    }
 }
 
 /// Checkbox / radio glyph blue.
@@ -173,20 +248,20 @@ pub fn vgrad(from: Hsla, to: Hsla) -> Background {
     )
 }
 
-/// Horizontal (left → right) two-stop gradient — the XP title-bar
-/// direction.
-pub fn hgrad(from: Hsla, to: Hsla) -> Background {
-    linear_gradient(
-        90.0,
-        linear_color_stop(from, 0.0),
-        linear_color_stop(to, 1.0),
-    )
-}
-
 /// Button face: white → cream vertical gradient.
 pub fn button_face(theme: &Theme) -> Background {
     vgrad(
         xp_color(theme, "xp.button.face_from", button_face_from()),
+        xp_color(theme, "xp.button.face_to", button_face_to()),
+    )
+}
+
+/// 3-stop button face colors (top / mid / bottom) for the banded
+/// button face; pressed state plays them in reverse.
+pub fn button_face_stops(theme: &Theme) -> (Hsla, Hsla, Hsla) {
+    (
+        xp_color(theme, "xp.button.face_from", button_face_from()),
+        xp_color(theme, "xp.button.face_mid", button_face_mid()),
         xp_color(theme, "xp.button.face_to", button_face_to()),
     )
 }
@@ -215,11 +290,39 @@ pub fn primary_face_pressed(theme: &Theme) -> Background {
     )
 }
 
-/// XP title-bar blue, horizontal left → right.
-pub fn titlebar_gradient(theme: &Theme) -> Background {
-    hgrad(
-        xp_color(theme, "xp.titlebar.from", titlebar_from()),
-        xp_color(theme, "xp.titlebar.to", titlebar_to()),
+/// Luna title-bar bands: `(height fraction, from, to)` vertical
+/// 2-stop slices approximating the 5-stop CSS gradient
+/// (`0% / 8% / 40% / 88% / 100%`). Painted as stacked divs.
+pub fn titlebar_bands(theme: &Theme) -> [(f32, Hsla, Hsla); 4] {
+    [
+        (
+            0.08,
+            xp_color(theme, "xp.titlebar.from", titlebar_from()),
+            xp_color(theme, "xp.titlebar.mid_1", titlebar_mid_1()),
+        ),
+        (
+            0.32,
+            xp_color(theme, "xp.titlebar.mid_1", titlebar_mid_1()),
+            xp_color(theme, "xp.titlebar.mid_2", titlebar_mid_2()),
+        ),
+        (
+            0.48,
+            xp_color(theme, "xp.titlebar.mid_2", titlebar_mid_2()),
+            xp_color(theme, "xp.titlebar.mid_3", titlebar_mid_3()),
+        ),
+        (
+            0.12,
+            xp_color(theme, "xp.titlebar.mid_3", titlebar_mid_3()),
+            xp_color(theme, "xp.titlebar.to", titlebar_to()),
+        ),
+    ]
+}
+
+/// Inactive title bar: plain vertical 2-stop gradient.
+pub fn titlebar_inactive_gradient(theme: &Theme) -> Background {
+    vgrad(
+        xp_color(theme, "xp.titlebar.inactive_from", titlebar_inactive_from()),
+        xp_color(theme, "xp.titlebar.inactive_to", titlebar_inactive_to()),
     )
 }
 

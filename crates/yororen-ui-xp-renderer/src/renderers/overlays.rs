@@ -1,26 +1,31 @@
 //! XP (Luna) overlay renderers: `Modal`, `Popover`,
 //! `DropdownMenu`, `Disclosure`, `Overlay`, `Menu`.
 //!
-//! The `Modal` is the signature XP window: horizontal blue
-//! gradient title bar with a white bold caption, beige
-//! (`#ECE9D8`) content area, 1px dark-blue frame, 8px rounded
-//! corners and a soft overlay shadow. Popovers, dropdowns and
-//! menus are white panels with a 1px bevel border, 3px corners
-//! and the same soft shadow; hovered rows use the pale-blue
-//! `xp.selection.hover_bg` highlight.
+//! The `Modal` is the signature XP window: vertical blue
+//! multi-stop title bar (stacked 2-stop bands) with a white bold
+//! caption and optional min / max / close caption buttons, beige
+//! (`#ECE9D8`) content area, 1px frame (active `#0058E6` /
+//! inactive `#98A8C0`), 8px rounded corners and a soft overlay
+//! shadow. Popovers, dropdowns and menus are white panels with a
+//! 1px bevel border, 3px corners and the same soft shadow;
+//! hovered menu rows flip to the solid selection blue with white
+//! text.
 
 use gpui::prelude::FluentBuilder;
 use gpui::{
     App, Background, CursorStyle, Div, ElementId, FontWeight, Hsla, InteractiveElement,
-    ParentElement, Pixels, Stateful, StatefulInteractiveElement, Styled, div, px,
+    ParentElement, Pixels, Stateful, StatefulInteractiveElement, Styled, div, px, relative,
 };
 use yororen_ui_core::animation::SlideDirection;
 use yororen_ui_core::renderer::spec::Edges;
 use yororen_ui_core::theme::Theme;
 
 use crate::style::{
-    XP_BORDER_WIDTH, XP_RADIUS, bevel_inner_dark, button_default_border, dialog_bg, hsl_fallback,
-    selection_hover_bg, shadow_vec, titlebar_gradient, xp_color, xp_number, xp_shadow_overlay,
+    XP_BORDER_WIDTH, XP_RADIUS, bevel_inner_dark, caption_border, caption_close_from,
+    caption_close_to, caption_from, caption_to, dialog_bg, hsl_fallback, lighten, menu_hover_bg,
+    menu_hover_fg, selection_hover_bg, shadow_vec, titlebar_bands, titlebar_inactive_gradient,
+    vgrad, window_body_border, window_border_active, window_border_inactive, xp_color, xp_number,
+    xp_shadow_overlay,
 };
 use yororen_ui_default_renderer::animation::{AnimatedPresenceElement, fade_in_on_mount};
 
@@ -46,9 +51,13 @@ impl XpModalRenderer {
     pub fn panel_bg(&self, _: &ModalRenderState, theme: &Theme) -> Hsla {
         theme.get_color("surface.base").unwrap_or(dialog_bg())
     }
-    /// 1px dark-blue window frame (`#003C74`).
-    pub fn panel_border(&self, _: &ModalRenderState, theme: &Theme) -> Hsla {
-        xp_color(theme, "xp.button.default_border", button_default_border())
+    /// 1px window frame: active `#0058E6`, inactive `#98A8C0`.
+    pub fn panel_border(&self, _: &ModalRenderState, theme: &Theme, active: bool) -> Hsla {
+        if active {
+            xp_color(theme, "xp.window.border_active", window_border_active())
+        } else {
+            xp_color(theme, "xp.window.border_inactive", window_border_inactive())
+        }
     }
     pub fn panel_padding(&self, _: &ModalRenderState, theme: &Theme) -> Edges<Pixels> {
         let p = theme
@@ -61,22 +70,40 @@ impl XpModalRenderer {
             .get_number("tokens.control.modal.radius")
             .unwrap_or(8.0) as f32)
     }
-    /// Luna title-bar strip height (28px).
+    /// Luna title-bar strip height (26px).
     pub fn title_bar_height(&self, _: &ModalRenderState, theme: &Theme) -> Pixels {
-        px(xp_number(theme, "xp.titlebar.height", 28.0))
+        px(xp_number(theme, "xp.titlebar.height", 26.0))
     }
     /// White caption text on the blue gradient.
     pub fn title_bar_fg(&self, _: &ModalRenderState, theme: &Theme) -> Hsla {
         xp_color(theme, "xp.titlebar.text", hsl_fallback(0xFFFFFF))
     }
-    /// Horizontal Luna blue gradient.
-    pub fn title_bar_bg(&self, _: &ModalRenderState, theme: &Theme) -> Background {
-        titlebar_gradient(theme)
+    /// Active title bar: `(fraction, from, to)` bands stacked to
+    /// approximate the 5-stop vertical Luna gradient.
+    pub fn title_bar_bands(&self, _: &ModalRenderState, theme: &Theme) -> [(f32, Hsla, Hsla); 4] {
+        titlebar_bands(theme)
+    }
+    /// Inactive title bar: plain 2-stop vertical gradient.
+    pub fn title_bar_inactive_bg(&self, _: &ModalRenderState, theme: &Theme) -> Background {
+        titlebar_inactive_gradient(theme)
     }
     pub fn title_font_size(&self, _: &ModalRenderState, theme: &Theme) -> Pixels {
         px(theme
             .get_number("tokens.control.modal.title_size")
             .unwrap_or(13.0) as f32)
+    }
+    /// Caption button faces: `(from, to, close_from, close_to)`.
+    pub fn caption_faces(&self, _: &ModalRenderState, theme: &Theme) -> (Hsla, Hsla, Hsla, Hsla) {
+        (
+            xp_color(theme, "xp.caption.from", caption_from()),
+            xp_color(theme, "xp.caption.to", caption_to()),
+            xp_color(theme, "xp.caption.close_from", caption_close_from()),
+            xp_color(theme, "xp.caption.close_to", caption_close_to()),
+        )
+    }
+    /// Inner border of the window body (`#A09C8C`).
+    pub fn body_border(&self, _: &ModalRenderState, theme: &Theme) -> Hsla {
+        xp_color(theme, "xp.window.body_border", window_body_border())
     }
 }
 
@@ -85,8 +112,9 @@ impl ModalRenderer for XpModalRenderer {
         use yororen_ui_core::theme::ActiveTheme;
         let theme = cx.theme();
         let state = ModalRenderState {};
+        let active = props.window_active;
         let panel_bg = self.panel_bg(&state, theme);
-        let panel_border = self.panel_border(&state, theme);
+        let panel_border = self.panel_border(&state, theme, active);
         let pad = self.panel_padding(&state, theme);
         let r = self.panel_border_radius(&state, theme);
 
@@ -96,6 +124,7 @@ impl ModalRenderer for XpModalRenderer {
 
         let title = props.state.read(cx).title.clone();
         let children = std::mem::take(&mut props.children);
+        let caption = props.caption.clone();
         // The XP Modal renderer paints *only* the window (frame /
         // title bar / content area / soft overlay shadow). The
         // scrim and centering are the caller's responsibility —
@@ -105,40 +134,112 @@ impl ModalRenderer for XpModalRenderer {
             .bg(panel_bg)
             .border_color(panel_border)
             .border(px(XP_BORDER_WIDTH))
-            .rounded(r)
+            // css `.xp-window`: `border-radius: 8px 8px 0 0` —
+            // only the top corners are rounded.
+            .rounded_tl(r)
+            .rounded_tr(r)
             .overflow_hidden()
             .flex()
             .flex_col()
             .w_full();
 
-        if let Some(title) = title {
-            // Luna title bar: 28px horizontal blue gradient strip
-            // with a white bold caption, clipped to the window's
+        if title.is_some() || caption.is_some() {
+            // Luna title bar: 26px strip, clipped to the window's
             // rounded top corners by the panel's overflow_hidden.
-            panel = panel.child(
+            // Active windows wear the 5-stop vertical blue
+            // gradient (4 stacked 2-stop bands), inactive ones a
+            // flat 2-stop gray-blue.
+            let mut bar = gpui::div()
+                .relative()
+                .h(self.title_bar_height(&state, theme))
+                .w_full()
+                .flex()
+                .flex_row()
+                .items_center()
+                .pl(px(8.0))
+                .pr(px(4.0))
+                .text_color(self.title_bar_fg(&state, theme))
+                .text_size(self.title_font_size(&state, theme))
+                .font_weight(FontWeight::BOLD);
+            if active {
+                bar = bar.child(
+                    gpui::div()
+                        .absolute()
+                        .top_0()
+                        .left_0()
+                        .right_0()
+                        .bottom_0()
+                        .flex()
+                        .flex_col()
+                        .children(self.title_bar_bands(&state, theme).into_iter().map(
+                            |(frac, from, to)| {
+                                gpui::div().h(relative(frac)).w_full().bg(vgrad(from, to))
+                            },
+                        )),
+                );
+            } else {
+                bar = bar.bg(self.title_bar_inactive_bg(&state, theme));
+            }
+            bar = bar.child(
                 gpui::div()
-                    .h(self.title_bar_height(&state, theme))
-                    .w_full()
-                    .bg(self.title_bar_bg(&state, theme))
-                    .flex()
-                    .flex_row()
-                    .items_center()
-                    .px(px(8.0))
-                    .text_color(self.title_bar_fg(&state, theme))
-                    .text_size(self.title_font_size(&state, theme))
-                    .font_weight(FontWeight::BOLD)
-                    .child(title),
+                    .flex_grow()
+                    .overflow_hidden()
+                    .children(title.clone()),
             );
+            if let Some(caption) = caption {
+                let (from, to, close_from, close_to) = self.caption_faces(&state, theme);
+                let mut buttons = gpui::div().flex().flex_row().gap(px(2.0));
+                if let Some(on_minimize) = caption.on_minimize {
+                    buttons = buttons.child(xp_caption_button(
+                        format!("{:?}-cap-min", props.id).into(),
+                        "_",
+                        from,
+                        to,
+                        on_minimize,
+                        theme,
+                    ));
+                }
+                if let Some(on_maximize) = caption.on_maximize {
+                    buttons = buttons.child(xp_caption_button(
+                        format!("{:?}-cap-max", props.id).into(),
+                        "□",
+                        from,
+                        to,
+                        on_maximize,
+                        theme,
+                    ));
+                }
+                if let Some(on_close) = caption.on_close {
+                    buttons = buttons.child(xp_caption_button(
+                        format!("{:?}-cap-close", props.id).into(),
+                        "×",
+                        close_from,
+                        close_to,
+                        on_close,
+                        theme,
+                    ));
+                }
+                bar = bar.child(buttons);
+            }
+            panel = panel.child(bar);
         }
 
+        // Window body: inset 3px from the frame (open at the
+        // top), wrapped in its own 1px `#A09C8C` border, like
+        // `.xp-window-body` in the CSS (`margin: 0 3px 3px;
+        // border: 1px solid #a09c8c; border-top: none`).
         let panel = panel
             .child(
                 gpui::div()
+                    .mx(px(3.0))
+                    .mb(px(3.0))
+                    .border(px(XP_BORDER_WIDTH))
+                    .border_t(px(0.0))
+                    .border_color(self.body_border(&state, theme))
                     .p(pad.top)
                     .flex()
                     .flex_col()
                     .gap_2()
-                    .w_full()
                     .children(children),
             )
             .shadow(shadow_vec(xp_shadow_overlay(theme)));
@@ -151,6 +252,43 @@ impl ModalRenderer for XpModalRenderer {
             panel,
         ))
     }
+}
+
+/// One caption (title-bar) button: a glossy gradient square with
+/// a translucent white edge. Hover lightens the gradient, active
+/// reverses it — the Luna caption look.
+fn xp_caption_button(
+    id: ElementId,
+    glyph: &'static str,
+    from: Hsla,
+    to: Hsla,
+    on_press: yororen_ui_core::headless::modal::ModalCaptionCallback,
+    theme: &Theme,
+) -> Stateful<Div> {
+    let border = xp_color(theme, "xp.caption.border", caption_border());
+    let size = px(xp_number(theme, "xp.caption.size", 21.0));
+    let radius = px(xp_number(theme, "xp.caption.radius", 3.0));
+    let fg = xp_color(theme, "xp.titlebar.text", hsl_fallback(0xFFFFFF));
+    let hover_from = lighten(from, 0.07);
+    let hover_to = lighten(to, 0.07);
+    gpui::div()
+        .id(id)
+        .w(size)
+        .h(size)
+        .rounded(radius)
+        .border(px(XP_BORDER_WIDTH))
+        .border_color(border)
+        .bg(vgrad(from, to))
+        .flex()
+        .items_center()
+        .justify_center()
+        .text_color(fg)
+        .text_size(px(13.))
+        .cursor(CursorStyle::PointingHand)
+        .child(glyph)
+        .hover(move |s| s.bg(vgrad(hover_from, hover_to)))
+        .active(move |s| s.bg(vgrad(to, from)))
+        .on_click(move |_ev, window, cx| on_press(window, cx))
 }
 
 // =====================================================================
@@ -540,15 +678,13 @@ impl XpMenuRenderer {
         px(theme.get_number("tokens.control.menu.gap").unwrap_or(0.0) as f32)
     }
     pub fn item_hover_bg(&self, _state: &MenuRenderState, theme: &Theme) -> Hsla {
-        // XP menu rows highlight with the pale-blue selection
-        // hover (`#C1D2EE`) and keep their dark text, like the
-        // Luna start-menu / context-menu hot track.
-        xp_color(theme, "xp.selection.hover_bg", selection_hover_bg())
+        // XP menu rows highlight with the solid selection blue
+        // (`#316AC5`) and flip to white text, like the classic
+        // context-menu hot track.
+        xp_color(theme, "xp.menu.hover_bg", menu_hover_bg())
     }
     pub fn item_hl_fg(&self, _state: &MenuRenderState, theme: &Theme) -> Hsla {
-        theme
-            .get_color("content.primary")
-            .unwrap_or(hsl_fallback(0x000000))
+        xp_color(theme, "xp.menu.hover_fg", menu_hover_fg())
     }
     pub fn group_label_fg(&self, _state: &MenuRenderState, theme: &Theme) -> Hsla {
         theme
@@ -603,7 +739,9 @@ impl MenuRenderer for XpMenuRenderer {
                     let row_fg = if is_highlighted {
                         item_hl_fg
                     } else {
-                        theme.get_color("content.primary").unwrap_or(item_hl_fg)
+                        theme
+                            .get_color("content.primary")
+                            .unwrap_or(hsl_fallback(0x000000))
                     };
                     let mut row: Stateful<Div> = gpui::div()
                         .id(ElementId::Name(format!("xp-menu-item-{}", i).into()))

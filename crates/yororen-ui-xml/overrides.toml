@@ -162,10 +162,13 @@ children_before_render = true
 unwrap_children = true
 
 # `Modal` consumes its children at compose time.
+# `caption` (`ModalCaption`) carries callbacks and can't be an
+# XML literal; `Custom` passes a Rust expression through verbatim.
 [[override_]]
 tag = "Modal"
 kind = "Leaf"
 children_before_render = true
+props = [["caption", "caption", "Custom"]]
 
 # `Popover` / `DropdownMenu` pass trigger/content to builder methods.
 # Note: `<Menu>` has no slots of its own; it is meant to be placed as a

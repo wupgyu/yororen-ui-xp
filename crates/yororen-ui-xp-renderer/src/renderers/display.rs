@@ -30,10 +30,10 @@ use gpui::ParentElement;
 
 use crate::style::{
     XP_BORDER_WIDTH, XP_FONT_FAMILY, XP_PROGRESS_SEGMENT_GAP, XP_PROGRESS_SEGMENT_W, XP_RADIUS,
-    bevel_inner_dark, bevel_inner_light, button_border, button_face, darken, dialog_bg,
-    hsl_fallback, input_focus_border, lighten, progress_chunk_border, progress_chunk_gradient,
-    progress_track_bg, progress_track_border, selection_bg, selection_fg, selection_hover_bg,
-    vgrad, xp_color, xp_number,
+    bevel_inner_dark, bevel_inner_light, bevel_outer_light, button_border, button_face, darken,
+    dialog_bg, hsl_fallback, input_focus_border, lighten, progress_chunk_border,
+    progress_chunk_gradient, progress_track_bg, progress_track_border, selection_bg, selection_fg,
+    selection_hover_bg, vgrad, xp_color, xp_number,
 };
 
 // =====================================================================
@@ -203,17 +203,51 @@ impl DividerRenderer for XpDividerRenderer {
         let state = DividerRenderState {
             horizontal: props.horizontal,
         };
-        let color = self.color(&state, theme);
+        let groove = self.color(&state, theme);
+        let highlight = xp_color(theme, "xp.bevel.outer_light", bevel_outer_light());
         let thickness = self.thickness(&state, theme);
-        let mut el = gpui::div().bg(color).flex_shrink_0();
+        // Etched double line: a dark groove next to a white
+        // highlight — the classic Win32 sunken separator.
+        let mut el = gpui::div().flex_shrink_0();
         if props.horizontal {
             el.style().align_self = Some(AlignSelf::Stretch);
-            el = el.w_full().h(thickness).min_h(thickness);
+            el.w_full()
+                .flex()
+                .flex_col()
+                .child(
+                    gpui::div()
+                        .w_full()
+                        .h(thickness)
+                        .min_h(thickness)
+                        .bg(groove),
+                )
+                .child(
+                    gpui::div()
+                        .w_full()
+                        .h(thickness)
+                        .min_h(thickness)
+                        .bg(highlight),
+                )
         } else {
             el.style().align_self = Some(AlignSelf::Stretch);
-            el = el.h_full().w(thickness).min_w(thickness);
+            el.h_full()
+                .flex()
+                .flex_row()
+                .child(
+                    gpui::div()
+                        .h_full()
+                        .w(thickness)
+                        .min_w(thickness)
+                        .bg(groove),
+                )
+                .child(
+                    gpui::div()
+                        .h_full()
+                        .w(thickness)
+                        .min_w(thickness)
+                        .bg(highlight),
+                )
         }
-        el
     }
 }
 
@@ -759,7 +793,7 @@ impl XpProgressBarRenderer {
     pub fn height(&self, _: &ProgressBarRenderState, theme: &Theme) -> Pixels {
         px(theme
             .get_number("tokens.control.progress.height")
-            .unwrap_or(14.0) as f32)
+            .unwrap_or(12.0) as f32)
     }
 
     pub fn border_radius(&self, _: &ProgressBarRenderState, theme: &Theme) -> Pixels {

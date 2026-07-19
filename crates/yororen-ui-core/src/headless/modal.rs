@@ -23,6 +23,53 @@ pub enum ModalCloseReason {
 pub type ModalCloseCallback =
     Arc<dyn Fn(ModalCloseReason, &mut gpui::Window, &mut App) + Send + Sync>;
 
+/// Callback for a modal caption (title-bar) button.
+pub type ModalCaptionCallback = Arc<dyn Fn(&mut gpui::Window, &mut App) + Send + Sync>;
+
+/// Optional caption-button configuration for renderers that draw
+/// window-style title bars (e.g. the XP renderer). Each `Some`
+/// entry paints the corresponding button and wires its callback;
+/// `None` hides the button. Renderers without caption support
+/// ignore this entirely.
+#[derive(Clone, Default)]
+pub struct ModalCaption {
+    pub on_minimize: Option<ModalCaptionCallback>,
+    pub on_maximize: Option<ModalCaptionCallback>,
+    pub on_close: Option<ModalCaptionCallback>,
+}
+
+impl ModalCaption {
+    pub fn new() -> Self {
+        Self::default()
+    }
+    /// Paint a minimize button wired to `f`.
+    pub fn on_minimize<F>(mut self, f: F) -> Self
+    where
+        F: 'static + Send + Sync + Fn(&mut gpui::Window, &mut App),
+    {
+        self.on_minimize = Some(Arc::new(f));
+        self
+    }
+    /// Paint a maximize / restore button wired to `f`.
+    pub fn on_maximize<F>(mut self, f: F) -> Self
+    where
+        F: 'static + Send + Sync + Fn(&mut gpui::Window, &mut App),
+    {
+        self.on_maximize = Some(Arc::new(f));
+        self
+    }
+    /// Paint a close button wired to `f`. Independent of
+    /// `ModalState::set_on_close`; callers usually mirror the same
+    /// close path in both.
+    pub fn on_close<F>(mut self, f: F) -> Self
+    where
+        F: 'static + Send + Sync + Fn(&mut gpui::Window, &mut App),
+    {
+        self.on_close = Some(Arc::new(f));
+        self
+    }
+}
+
 #[derive(Clone)]
 pub struct ModalState {
     pub open: bool,
@@ -104,6 +151,13 @@ pub struct ModalProps {
     /// Children to render inside the modal panel. The renderer
     /// consumes these when `compose` is called.
     pub children: Vec<AnyElement>,
+    /// Optional window-style caption buttons (min / max / close).
+    /// Renderers that don't draw a title bar ignore this.
+    pub caption: Option<ModalCaption>,
+    /// Whether the window paints as active (focused): renderers
+    /// with active / inactive window chrome use it to pick the
+    /// title-bar gradient and frame color. Defaults to `true`.
+    pub window_active: bool,
 }
 
 pub fn modal(id: impl Into<ElementId>, state: Entity<ModalState>) -> ModalProps {
@@ -111,6 +165,8 @@ pub fn modal(id: impl Into<ElementId>, state: Entity<ModalState>) -> ModalProps 
         id: id.into(),
         state,
         children: Vec::new(),
+        caption: None,
+        window_active: true,
     }
 }
 
@@ -126,6 +182,21 @@ impl ModalProps {
         for child in children {
             self.children.push(child.into_element().into_any_element());
         }
+        self
+    }
+
+    /// Attach window-style caption buttons (min / max / close) to
+    /// the title bar. Renderers without caption support ignore
+    /// this.
+    pub fn caption(mut self, caption: ModalCaption) -> Self {
+        self.caption = Some(caption);
+        self
+    }
+
+    /// Set whether the window paints as active (focused).
+    /// Defaults to `true`.
+    pub fn window_active(mut self, active: bool) -> Self {
+        self.window_active = active;
         self
     }
 

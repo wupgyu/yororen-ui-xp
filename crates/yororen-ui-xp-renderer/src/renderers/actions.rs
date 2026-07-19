@@ -2,14 +2,15 @@
 //! `ToggleButton`, `SplitButton`, `ButtonGroup`.
 //!
 //! The button family is the visual benchmark for the whole crate:
-//! white → cream vertical gradient face, 1px olive border, 3px
-//! radius; hover brightens toward pale blue with a blue outline;
-//! active reverses the gradient (pressed). Primary uses the Luna
-//! blue gradient with white text.
+//! white → beige → cream three-stop gradient face (two stacked
+//! 2-stop bands), 1px dark-blue border, 3px radius; hover keeps
+//! the face and adds an orange inset ring; active reverses the
+//! gradient (pressed). Primary uses the Luna blue gradient with
+//! white text.
 
 use gpui::{
     App, Background, CursorStyle, Div, ElementId, FocusHandle, Hsla, InteractiveElement,
-    ParentElement, Pixels, Stateful, StatefulInteractiveElement, Styled, div, px,
+    ParentElement, Pixels, Stateful, StatefulInteractiveElement, Styled, div, px, relative,
 };
 use yororen_ui_core::animation::SlideDirection;
 use yororen_ui_core::headless::button::ButtonProps;
@@ -25,8 +26,8 @@ use yororen_ui_default_renderer::animation::AnimatedPresenceElement;
 
 use crate::style::{
     self, XP_BORDER_WIDTH, XP_RADIUS, bevel_inner_dark, bevel_outer_dark, button_border,
-    button_default_border, button_face, button_face_pressed, button_hover_ring, darken,
-    input_focus_border, lighten, primary_face, primary_face_pressed, selection_hover_bg,
+    button_default_border, button_face, button_face_pressed, button_face_stops, button_hover_ring,
+    darken, input_focus_border, lighten, primary_face, primary_face_pressed, selection_hover_bg,
     shadow_vec, vgrad, xp_color, xp_shadow_overlay,
 };
 
@@ -59,7 +60,9 @@ fn face_bg(variant: ActionVariantKind, theme: &Theme) -> Background {
     }
 }
 
-/// Hover face: brightened gradient.
+/// Hover face: brightened gradient (orange-tinted for neutral,
+/// like the XP toolbar hot-track glow; the plain `Button` keeps
+/// its face unchanged on hover and shows the inset ring instead).
 fn face_hover_bg(variant: ActionVariantKind, theme: &Theme) -> Background {
     match variant {
         ActionVariantKind::Neutral => vgrad(
@@ -249,10 +252,10 @@ impl XpButtonRenderer {
     pub fn padding(&self, _: &ButtonRenderState, theme: &Theme) -> Edges<Pixels> {
         let h = theme
             .get_number("tokens.control.button.horizontal_padding")
-            .unwrap_or(12.0) as f32;
+            .unwrap_or(14.0) as f32;
         let v = theme
             .get_number("tokens.control.button.vertical_padding")
-            .unwrap_or(4.0) as f32;
+            .unwrap_or(3.0) as f32;
         Edges::symmetric(px(h), px(v))
     }
 
@@ -263,7 +266,7 @@ impl XpButtonRenderer {
     pub fn min_height(&self, _: &ButtonRenderState, theme: &Theme) -> Pixels {
         px(theme
             .get_number("tokens.control.button.min_height")
-            .unwrap_or(26.0) as f32)
+            .unwrap_or(23.0) as f32)
     }
 }
 
@@ -290,10 +293,12 @@ impl ButtonRenderer for XpButtonRenderer {
 
         let mut el: Stateful<Div> = div()
             .id(props.id.clone())
-            .bg(bg)
+            .group("xp-btn")
+            .relative()
             .text_color(fg)
             .min_h(min_h)
             .rounded(radius)
+            .overflow_hidden()
             .px(padding.left)
             .py(padding.top)
             .gap(px(icon_gap))
@@ -304,6 +309,87 @@ impl ButtonRenderer for XpButtonRenderer {
 
         if let Some(b) = border {
             el = el.border(b.width).border_color(b.color);
+        }
+
+        if state.disabled {
+            // Flat disabled face; no hover ring / gradient play.
+            el = el.bg(bg);
+        } else if state.custom_style.is_some() {
+            // Caller-owned visuals keep the legacy hover/active
+            // behavior (no bands, no inset ring).
+            el = el
+                .bg(bg)
+                .hover(move |s| s.bg(hover_bg).border_color(hover_border))
+                .active(move |s| s.bg(active_bg));
+        } else {
+            match state.variant {
+                ActionVariantKind::Neutral => {
+                    // CSS face: `#FFF → #ECE9D8 (45%) → #DDD8C8`.
+                    // gpui gradients have only two stops, so the
+                    // 3-stop face is two stacked 2-stop bands;
+                    // `active` flips them to the reversed gradient
+                    // (`#DDD8C8 → #ECE9D8 55% → #FFF`) through the
+                    // group style. (Group styles require the
+                    // stateful flavor, hence the per-band ids.)
+                    let (top, mid, bottom) = button_face_stops(theme);
+                    el = el.child(
+                        div()
+                            .absolute()
+                            .top_0()
+                            .left_0()
+                            .right_0()
+                            .bottom_0()
+                            .flex()
+                            .flex_col()
+                            .child(
+                                div()
+                                    .id(format!("{:?}-face-top", props.id))
+                                    .h(relative(0.45))
+                                    .w_full()
+                                    .bg(vgrad(top, mid))
+                                    .group_active("xp-btn", move |s| {
+                                        s.h(relative(0.55)).bg(vgrad(bottom, mid))
+                                    }),
+                            )
+                            .child(
+                                div()
+                                    .id(format!("{:?}-face-bottom", props.id))
+                                    .flex_grow()
+                                    .w_full()
+                                    .bg(vgrad(mid, bottom))
+                                    .group_active("xp-btn", move |s| s.bg(vgrad(mid, top))),
+                            ),
+                    );
+                }
+                ActionVariantKind::Primary | ActionVariantKind::Danger => {
+                    el = el
+                        .bg(bg)
+                        .hover(move |s| s.bg(hover_bg))
+                        .active(move |s| s.bg(active_bg));
+                }
+            }
+            // Orange inset ring on hover (the CSS `box-shadow:
+            // inset 0 0 0 1px #FFCF31`): a 1px frame painted just
+            // inside the button border; the face stays unchanged.
+            let ring = xp_color(theme, "xp.button.hover_ring", button_hover_ring());
+            let ring_radius = if radius > px(1.) {
+                radius - px(1.)
+            } else {
+                px(0.)
+            };
+            el = el.child(
+                div()
+                    .id(format!("{:?}-hover-ring", props.id))
+                    .absolute()
+                    .top(px(1.))
+                    .left(px(1.))
+                    .right(px(1.))
+                    .bottom(px(1.))
+                    .rounded(ring_radius)
+                    .border(px(XP_BORDER_WIDTH))
+                    .border_color(gpui::transparent_black())
+                    .group_hover("xp-btn", move |s| s.border_color(ring)),
+            );
         }
 
         if let Some(source) = props.icon.clone() {
@@ -321,13 +407,11 @@ impl ButtonRenderer for XpButtonRenderer {
             el = el.child(caption);
         }
 
-        el.hover(|s| s.bg(hover_bg).border_color(hover_border))
-            .active(|s| s.bg(active_bg))
-            .cursor(if props.disabled {
-                CursorStyle::OperationNotAllowed
-            } else {
-                CursorStyle::PointingHand
-            })
+        el.cursor(if props.disabled {
+            CursorStyle::OperationNotAllowed
+        } else {
+            CursorStyle::PointingHand
+        })
     }
 }
 
