@@ -1,51 +1,22 @@
-# Error Handling
-
-> How errors are handled in this project.
+# 错误处理 — yororen_ui_xml
 
 ---
 
-## Overview
+## XmlError
 
-<!--
-Document your project's error handling conventions here.
+```text
+XmlErrorKind:
+  ParseError | UnknownTag | UnknownAttribute | InvalidExpression | Unsupported
+```
 
-Questions to answer:
-- What error types do you define?
-- How are errors propagated?
-- How are errors logged?
-- How are errors returned to clients?
--->
-
-(To be filled by the team)
+- 带可选 `offset`（字节偏移）→ macro 侧渲染 `line:col` + snippet。
+- include 的外部 XML 可用 `rendered` 保留自己的位置信息。
+- `render()` / `render_with(LocationTracker)` 供宏转 `compile_error!`。
 
 ---
 
-## Error Types
+## 规则
 
-<!-- Custom error classes/types -->
-
-(To be filled by the team)
-
----
-
-## Error Handling Patterns
-
-<!-- Try-catch patterns, error propagation -->
-
-(To be filled by the team)
-
----
-
-## API Error Responses
-
-<!-- Standard error response format -->
-
-(To be filled by the team)
-
----
-
-## Common Mistakes
-
-<!-- Error handling mistakes your team has made -->
-
-(To be filled by the team)
+1. 库侧收集结构化错误，**不**在库内直接依赖 `proc_macro::Diagnostic`。
+2. 工具二进制对非致命问题 `eprintln!("warning: ...")`。
+3. 这是 **compile-time only** 栈；不要设计运行时 XML 解析错误 API 给 app 热路径。

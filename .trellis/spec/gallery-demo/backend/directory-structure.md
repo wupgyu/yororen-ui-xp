@@ -1,54 +1,40 @@
-# Directory Structure
+# 目录结构 — gallery-demo
 
-> How backend code is organized in this project.
+## 目的
 
----
+组件画廊（纯 Rust headless API）：全组件展示、主题/渲染器/语言切换、notification host。
 
-## Overview
-
-<!--
-Document your project's backend directory structure here.
-
-Questions to answer:
-- How are modules/packages organized?
-- Where does business logic live?
-- Where are API endpoints defined?
-- How are utilities and helpers organized?
--->
-
-(To be filled by the team)
-
----
-
-## Directory Layout
+## 布局
 
 ```
-<!-- Replace with your actual structure -->
-src/
-├── ...
-└── ...
+crates/yororen-ui-demos/gallery_demo/
+├── Cargo.toml
+├── translations/{en,zh-CN,ar}.json
+└── src/
+    ├── main.rs
+    ├── gallery_app.rs
+    ├── state.rs              # 纯值字段 + Entity 复合状态
+    ├── i18n.rs
+    ├── theme_switcher.rs     # DarkMode / RendererKind
+    ├── notifications_host.rs
+    └── sections/             # 按组件分区
 ```
 
----
 
-## Module Organization
+## 状态拆分
 
-<!-- How should new features/modules be organized? -->
+- 简单控件：纯值字段 + on_change。
+- 复合控件（modal/popover/select/...）：`Entity<XxxState>`，在 `GalleryApp::new` 铸造。
+- 从 `Context<Self>` 取 `App`：`&mut **cx`（DerefMut 到 App）。
 
-(To be filled by the team)
+## 必须演示的横切能力
 
----
+- `notification_host` 挂在窗口根。
+- locale 切换 en / zh-CN / ar。
+- default vs brutalism renderer 切换（若启用）。
 
-## Naming Conventions
 
-<!-- File and folder naming rules -->
+## 真实示例文件
 
-(To be filled by the team)
-
----
-
-## Examples
-
-<!-- Link to well-organized modules as examples -->
-
-(To be filled by the team)
+- `crates/yororen-ui-demos/gallery_demo/src/state.rs`
+- `crates/yororen-ui-demos/gallery_demo/src/main.rs`

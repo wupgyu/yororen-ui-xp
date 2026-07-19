@@ -1,54 +1,31 @@
-# Directory Structure
+# 目录结构 — layers-demo
 
-> How backend code is organized in this project.
+## 目的
 
----
+分层架构教学：自定义视觉（如 Material ripple）如何组合 headless button。
 
-## Overview
-
-<!--
-Document your project's backend directory structure here.
-
-Questions to answer:
-- How are modules/packages organized?
-- Where does business logic live?
-- Where are API endpoints defined?
-- How are utilities and helpers organized?
--->
-
-(To be filled by the team)
-
----
-
-## Directory Layout
+## 布局
 
 ```
-<!-- Replace with your actual structure -->
-src/
-├── ...
-└── ...
+crates/yororen-ui-demos/layers_demo/
+├── Cargo.toml
+└── src/
+    ├── main.rs
+    ├── layers_app.rs
+    └── material_button.rs   # 自定义 Element + headless apply
 ```
 
----
 
-## Module Organization
+## 关键教学点
 
-<!-- How should new features/modules be organized? -->
+- headless `button(...).apply(div)` 只接线交互；视觉完全自定义。
+- 可用 `window.use_keyed_state` 保存动画状态（ripple）。
+- 这是“第三种用法”：不是 Token renderer，也不是纯 XML，而是 app 自绘。
 
-(To be filled by the team)
+参考：`material_button.rs` 顶部模块文档（ripple 三阶段：mousedown → prepaint → paint）。
 
----
 
-## Naming Conventions
+## 真实示例文件
 
-<!-- File and folder naming rules -->
-
-(To be filled by the team)
-
----
-
-## Examples
-
-<!-- Link to well-organized modules as examples -->
-
-(To be filled by the team)
+- `crates/yororen-ui-demos/layers_demo/src/material_button.rs`
+- `crates/yororen-ui-demos/layers_demo/src/layers_app.rs`

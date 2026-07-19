@@ -1,51 +1,41 @@
-# Quality Guidelines
+# 质量规范 — default_renderer
 
-> Code quality standards for backend development.
-
----
-
-## Overview
-
-<!--
-Document your project's quality standards here.
-
-Questions to answer:
-- What patterns are forbidden?
-- What linting rules do you enforce?
-- What are your testing requirements?
-- What code review standards apply?
--->
-
-(To be filled by the team)
+> 在工作区通用质量要求之上，约束 Token 渲染器写法。
 
 ---
 
-## Forbidden Patterns
+## 必需模式
 
-<!-- Patterns that should never be used and why -->
-
-(To be filled by the team)
-
----
-
-## Required Patterns
-
-<!-- Patterns that must always be used -->
-
-(To be filled by the team)
+1. **路径字符串稳定**：组件文档写明读取哪些 theme path；新增 path 时同步更新 bundled JSON。
+2. **缺失 path 必须有默认值**（`unwrap_or` / `or_else` 链），禁止热路径 `unwrap`。
+3. **Trait 表面保持最小**：如 `ButtonRenderer` 主要是 `compose`；调色板 helper 做 inherent method 供复用与单测。
+4. **不在 renderer 里实现业务状态机**；只消费 `XxxProps` / `XxxRenderState`。
+5. **注册完整**：`register_default_renderers` 覆盖全部 required slots。
 
 ---
 
-## Testing Requirements
+## 禁用模式
 
-<!-- What level of testing is expected -->
-
-(To be filled by the team)
+| 禁用 | 原因 |
+|------|------|
+| hardcode 品牌色而不读 theme | 无法 JSON 换肤 |
+| 把 layout 语义组件做成 renderer trait | layout 故意无 renderer |
+| 依赖 brutalism 或 xml crate | default renderer 必须可独立使用 |
+| 跳过 `cargo clippy --workspace -- -D warnings` | workspace 强制 |
 
 ---
 
-## Code Review Checklist
+## 测试
 
-<!-- What reviewers should check -->
+- 对 inherent palette helper 做单元测试（path → 颜色/尺寸）。
+- 视觉回归通过 demos + PR 截图。
 
-(To be filled by the team)
+---
+
+## 工作区检查
+
+```bash
+cargo test -p yororen_ui_default_renderer
+cargo clippy --workspace -- -D warnings
+cargo fmt --all -- --check
+```

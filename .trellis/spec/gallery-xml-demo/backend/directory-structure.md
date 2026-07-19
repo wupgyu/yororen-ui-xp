@@ -1,54 +1,34 @@
-# Directory Structure
+# 目录结构 — gallery-xml-demo
 
-> How backend code is organized in this project.
+## 目的
 
----
+组件画廊的 XML 版本：与 gallery_demo 对等能力，验证 xml! 覆盖面。
 
-## Overview
-
-<!--
-Document your project's backend directory structure here.
-
-Questions to answer:
-- How are modules/packages organized?
-- Where does business logic live?
-- Where are API endpoints defined?
-- How are utilities and helpers organized?
--->
-
-(To be filled by the team)
-
----
-
-## Directory Layout
+## 布局
 
 ```
-<!-- Replace with your actual structure -->
-src/
-├── ...
-└── ...
+crates/yororen-ui-demos/gallery_xml/
+├── Cargo.toml
+├── translations/
+└── src/
+    ├── main.rs
+    ├── controller.rs
+    ├── state.rs
+    ├── view.rs
+    ├── i18n.rs / theme_switcher.rs / notifications_host.rs
+    ├── yororen-ui-xml-components.toml
+    └── ui/
 ```
 
----
 
-## Module Organization
+## 与 gallery_demo 对齐
 
-<!-- How should new features/modules be organized? -->
+- 状态模型、主题/语言切换、notification host 行为应对等。
+- 自定义 XML 标签用旁路 `yororen-ui-xml-components.toml`。
+- 变更组件 API 后同时修 Rust gallery 与 XML gallery，避免双轨漂移。
 
-(To be filled by the team)
 
----
+## 真实示例文件
 
-## Naming Conventions
-
-<!-- File and folder naming rules -->
-
-(To be filled by the team)
-
----
-
-## Examples
-
-<!-- Link to well-organized modules as examples -->
-
-(To be filled by the team)
+- `crates/yororen-ui-demos/gallery_xml/src/main.rs`
+- `crates/yororen-ui-demos/gallery_xml/src/yororen-ui-xml-components.toml`

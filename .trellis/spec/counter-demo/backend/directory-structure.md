@@ -1,54 +1,42 @@
-# Directory Structure
+# 目录结构 — counter-demo
 
-> How backend code is organized in this project.
+## 目的
 
----
+最小应用：Entity 状态、按钮 on_click、layout 原语、renderer/locale install。
 
-## Overview
-
-<!--
-Document your project's backend directory structure here.
-
-Questions to answer:
-- How are modules/packages organized?
-- Where does business logic live?
-- Where are API endpoints defined?
-- How are utilities and helpers organized?
--->
-
-(To be filled by the team)
-
----
-
-## Directory Layout
+## 布局
 
 ```
-<!-- Replace with your actual structure -->
-src/
-├── ...
-└── ...
+crates/yororen-ui-demos/counter/
+├── Cargo.toml          # publish = false
+└── src/
+    ├── main.rs         # Application + install + open_window
+    ├── state.rs        # CounterState global + Entity
+    └── counter_app.rs  # Render impl
 ```
 
----
 
-## Module Organization
+## 标准启动顺序（所有 demo 共用骨架）
 
-<!-- How should new features/modules be organized? -->
+```rust
+let app = Application::new().with_assets(UiAsset);
+app.run(|cx: &mut App| {
+    renderer::install(cx, cx.window_appearance());
+    locale_en::install(cx);
+    // set_global state...
+    cx.open_window(options, |_, cx| cx.new(|_cx| AppView));
+});
+```
 
-(To be filled by the team)
+## UI 写法
 
----
+- 使用 `headless::layout::{center, column, row}` + `Spacing` / `Inset`。
+- 交互：`button(id, cx).on_click(...).render(cx).child(...)`。
+- 状态更新：`entity.update(cx, |s, cx| { ...; cx.notify(); })`。
 
-## Naming Conventions
 
-<!-- File and folder naming rules -->
+## 真实示例文件
 
-(To be filled by the team)
-
----
-
-## Examples
-
-<!-- Link to well-organized modules as examples -->
-
-(To be filled by the team)
+- `crates/yororen-ui-demos/counter/src/main.rs`
+- `crates/yororen-ui-demos/counter/src/counter_app.rs`
+- `crates/yororen-ui-demos/counter/src/state.rs`

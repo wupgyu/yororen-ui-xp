@@ -1,51 +1,6 @@
-# Error Handling
+# 错误处理 — yororen_ui_xml_macro
 
-> How errors are handled in this project.
-
----
-
-## Overview
-
-<!--
-Document your project's error handling conventions here.
-
-Questions to answer:
-- What error types do you define?
-- How are errors propagated?
-- How are errors logged?
-- How are errors returned to clients?
--->
-
-(To be filled by the team)
-
----
-
-## Error Types
-
-<!-- Custom error classes/types -->
-
-(To be filled by the team)
-
----
-
-## Error Handling Patterns
-
-<!-- Try-catch patterns, error propagation -->
-
-(To be filled by the team)
-
----
-
-## API Error Responses
-
-<!-- Standard error response format -->
-
-(To be filled by the team)
-
----
-
-## Common Mistakes
-
-<!-- Error handling mistakes your team has made -->
-
-(To be filled by the team)
+- 参数解析失败 → `syn::Error`
+- 用户 schema 读/解析失败 → `syn::Error`（带路径）
+- XML/codegen 错误 → 底层 `XmlError` 转为编译诊断
+- meta-crate 在 **未启用 xml feature** 时提供 stub 宏，直接 `compile_error!` 提示开启 feature

@@ -1,12 +1,12 @@
-# 后端开发规范
+# yororen_ui（meta-crate）后端规范
 
-> 本项目后端开发的最佳实践与约定。
+> 门面 crate：再导出 core + default renderer + 内置 locales，并可选 brutalism / xml。
 
 ---
 
 ## 概览
 
-这个目录用于存放后端开发规范。请结合项目现状，把每个文件补充为你们团队真实使用的约定。
+应用通常只依赖 `yororen_ui` 一个包。本目录规范描述 **meta-crate 本身** 的职责边界与再导出约定。
 
 ---
 
@@ -14,24 +14,11 @@
 
 | 规范 | 说明 | 状态 |
 |------|------|------|
-| [目录结构](./directory-structure.md) | 模块组织与文件布局 | 待补充 |
-| [数据库规范](./database-guidelines.md) | ORM 模式、查询方式、迁移约定 | 待补充 |
-| [错误处理](./error-handling.md) | 错误类型与处理策略 | 待补充 |
-| [质量规范](./quality-guidelines.md) | 代码标准与禁用模式 | 待补充 |
-| [日志规范](./logging-guidelines.md) | 结构化日志与日志级别 | 待补充 |
-
----
-
-## 如何补充这些规范
-
-对于每个规范文件：
-
-1. 记录项目里**实际存在的约定**，而不是理想状态。
-2. 引用来自代码库的**真实代码示例**。
-3. 写明团队明确避免的**禁用模式**及原因。
-4. 补充团队曾踩过的**常见错误**。
-
-目标是帮助 AI 助手和新团队成员理解这个项目**实际上是如何运作的**。
+| [目录结构](./directory-structure.md) | 模块组织与再导出布局 | 已补充 |
+| [数据/资源](./database-guidelines.md) | 无 DB；主题/语言资源入口 | 已补充 |
+| [错误处理](./error-handling.md) | feature 关闭时的编译期错误 | 已补充 |
+| [质量规范](./quality-guidelines.md) | 再导出与 feature 边界 | 已补充 |
+| [日志规范](./logging-guidelines.md) | 门面层日志策略 | 已补充 |
 
 ---
 

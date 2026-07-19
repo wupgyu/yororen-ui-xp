@@ -1,51 +1,5 @@
-# Error Handling
+# 错误处理 — demo
 
-> How errors are handled in this project.
-
----
-
-## Overview
-
-<!--
-Document your project's error handling conventions here.
-
-Questions to answer:
-- What error types do you define?
-- How are errors propagated?
-- How are errors logged?
-- How are errors returned to clients?
--->
-
-(To be filled by the team)
-
----
-
-## Error Types
-
-<!-- Custom error classes/types -->
-
-(To be filled by the team)
-
----
-
-## Error Handling Patterns
-
-<!-- Try-catch patterns, error propagation -->
-
-(To be filled by the team)
-
----
-
-## API Error Responses
-
-<!-- Standard error response format -->
-
-(To be filled by the team)
-
----
-
-## Common Mistakes
-
-<!-- Error handling mistakes your team has made -->
-
-(To be filled by the team)
+- Demo 安装路径与生产应用相同：bundled theme/locale 使用 `expect`/`install` 辅助函数。
+- 交互错误用 UI 状态展示（disabled、校验文案、notification），不要 `unwrap` 用户输入。
+- 教学 demo（layers）里对内部不变量可用 `expect`，但需在注释说明前提。

@@ -1,54 +1,25 @@
-# Directory Structure
+# 目录结构 — theme-showcase-demo
 
-> How backend code is organized in this project.
+## 目的
 
----
+主题 JSON 展示 / 切换：如何加载本地 themes 并 install_with。
 
-## Overview
-
-<!--
-Document your project's backend directory structure here.
-
-Questions to answer:
-- How are modules/packages organized?
-- Where does business logic live?
-- Where are API endpoints defined?
-- How are utilities and helpers organized?
--->
-
-(To be filled by the team)
-
----
-
-## Directory Layout
+## 布局
 
 ```
-<!-- Replace with your actual structure -->
-src/
-├── ...
-└── ...
+crates/yororen-ui-demos/theme_showcase/
+├── Cargo.toml
+├── themes/*.json
+└── src/
+    ├── main.rs
+    └── theme_app.rs
 ```
 
----
 
-## Module Organization
+- 演示 `Theme::from_json` + `renderer::install_with`。
+- 主题文件可放在 demo 自己的 `themes/`，不必改库内 bundled 文件。
 
-<!-- How should new features/modules be organized? -->
 
-(To be filled by the team)
+## 真实示例文件
 
----
-
-## Naming Conventions
-
-<!-- File and folder naming rules -->
-
-(To be filled by the team)
-
----
-
-## Examples
-
-<!-- Link to well-organized modules as examples -->
-
-(To be filled by the team)
+- `crates/yororen-ui-demos/theme_showcase/src/theme_app.rs`

@@ -1,51 +1,6 @@
-# Quality Guidelines
+# 质量规范 — yororen_ui_xml_macro
 
-> Code quality standards for backend development.
-
----
-
-## Overview
-
-<!--
-Document your project's quality standards here.
-
-Questions to answer:
-- What patterns are forbidden?
-- What linting rules do you enforce?
-- What are your testing requirements?
-- What code review standards apply?
--->
-
-(To be filled by the team)
-
----
-
-## Forbidden Patterns
-
-<!-- Patterns that should never be used and why -->
-
-(To be filled by the team)
-
----
-
-## Required Patterns
-
-<!-- Patterns that must always be used -->
-
-(To be filled by the team)
-
----
-
-## Testing Requirements
-
-<!-- What level of testing is expected -->
-
-(To be filled by the team)
-
----
-
-## Code Review Checklist
-
-<!-- What reviewers should check -->
-
-(To be filled by the team)
+- `#![forbid(unsafe_code)]`
+- 保持 **thin wrapper**：逻辑回归 `yororen-ui-xml` 便于单测
+- 发布顺序：`yororen_ui_xml` 先于 `yororen_ui_xml_macro`（见 `scripts/publish.sh`）
+- 变更宏语法属于破坏性变更

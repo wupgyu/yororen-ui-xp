@@ -1,51 +1,18 @@
-# Database Guidelines
+# 数据/资源 — yororen_ui_xml
 
-> Database patterns and conventions for this project.
-
----
-
-## Overview
-
-<!--
-Document your project's database conventions here.
-
-Questions to answer:
-- What ORM/query library do you use?
-- How are migrations managed?
-- What are the naming conventions for tables/columns?
-- How do you handle transactions?
--->
-
-(To be filled by the team)
+> 无数据库。唯一“生成数据”是 schema 产物。
 
 ---
 
-## Query Patterns
+## schema_generated.rs
 
-<!-- How should queries be written? Batch operations? -->
+- 由 `cargo run -p yororen_ui_xml --bin gen-schema` 生成。
+- **必须提交到 git**；CI 用 `--check` 确保与 headless API 同步：
+  ```bash
+  cargo run -p yororen_ui_xml --bin gen-schema -- --check
+  ```
+- 修改 headless 公共 builder API 后务必重跑生成。
 
-(To be filled by the team)
+## overrides.toml
 
----
-
-## Migrations
-
-<!-- How to create and run migrations -->
-
-(To be filled by the team)
-
----
-
-## Naming Conventions
-
-<!-- Table names, column names, index names -->
-
-(To be filled by the team)
-
----
-
-## Common Mistakes
-
-<!-- Database-related mistakes your team has made -->
-
-(To be filled by the team)
+- 用于 schema 生成覆盖/特例，不要手改 generated 文件来“修一下”。

@@ -1,54 +1,18 @@
-# Directory Structure
-
-> How backend code is organized in this project.
-
----
-
-## Overview
-
-<!--
-Document your project's backend directory structure here.
-
-Questions to answer:
-- How are modules/packages organized?
-- Where does business logic live?
-- Where are API endpoints defined?
-- How are utilities and helpers organized?
--->
-
-(To be filled by the team)
-
----
-
-## Directory Layout
+# 目录结构 — yororen_ui_xml_macro
 
 ```
-<!-- Replace with your actual structure -->
-src/
-├── ...
-└── ...
+crates/yororen-ui-xml-macro/
+├── Cargo.toml
+└── src/lib.rs    # xml! / xml_file! / bind 等；forbid(unsafe_code)
 ```
 
 ---
 
-## Module Organization
+## 职责
 
-<!-- How should new features/modules be organized? -->
+- 解析可选 preamble：`cx = expr,` / `window = expr,`
+- 读取调用点旁 `yororen-ui-xml-components.toml`
+- 将路径 **绝对化** 后再 `include_str!`（避免相对路径双重拼接）
+- 调用 `yororen_ui_xml` 完成真实工作
 
-(To be filled by the team)
-
----
-
-## Naming Conventions
-
-<!-- File and folder naming rules -->
-
-(To be filled by the team)
-
----
-
-## Examples
-
-<!-- Link to well-organized modules as examples -->
-
-(To be filled by the team)
+**不要**在本 crate 复制 parser/codegen 逻辑。

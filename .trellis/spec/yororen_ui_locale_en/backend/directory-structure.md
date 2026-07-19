@@ -1,54 +1,24 @@
-# Directory Structure
-
-> How backend code is organized in this project.
-
----
-
-## Overview
-
-<!--
-Document your project's backend directory structure here.
-
-Questions to answer:
-- How are modules/packages organized?
-- Where does business logic live?
-- Where are API endpoints defined?
-- How are utilities and helpers organized?
--->
-
-(To be filled by the team)
-
----
-
-## Directory Layout
+# 目录结构 — yororen_ui_locale_en
 
 ```
-<!-- Replace with your actual structure -->
-src/
-├── ...
-└── ...
+crates/yororen-ui-locale-en/
+├── Cargo.toml
+├── translations/en.json
+└── src/lib.rs          # translation_map() + install(cx)
 ```
 
 ---
 
-## Module Organization
+## API 形态（各 locale crate 一致）
 
-<!-- How should new features/modules be organized? -->
+```rust
+pub const LOCALE_TAG: &str = "en";
+pub fn translation_map() -> TranslationMap { /* 解析 bundled JSON */ }
+pub fn install(cx: &mut gpui::App) {
+    // Locale::new(LOCALE_TAG).expect(...)
+    // I18n::with_locale + load_translations + cx.set_global
+}
+```
 
-(To be filled by the team)
-
----
-
-## Naming Conventions
-
-<!-- File and folder naming rules -->
-
-(To be filled by the team)
-
----
-
-## Examples
-
-<!-- Link to well-organized modules as examples -->
-
-(To be filled by the team)
+- LOCALE_TAG = "en"
+- 应用侧：`yororen_ui::locale_en::install(cx)` 或 meta `locale` 辅助模块。

@@ -1,51 +1,36 @@
-# Quality Guidelines
-
-> Code quality standards for backend development.
+# 质量规范 — brutalism_renderer
 
 ---
 
-## Overview
+## 与 default 的差异（必须保持）
 
-<!--
-Document your project's quality standards here.
-
-Questions to answer:
-- What patterns are forbidden?
-- What linting rules do you enforce?
-- What are your testing requirements?
-- What code review standards apply?
--->
-
-(To be filled by the team)
+| 点 | default (Token*) | brutalism (Brutal*) |
+|----|------------------|---------------------|
+| 边框 | 常 `None` | 粗边框 |
+| 阴影 | 常 `None` | 硬偏移阴影（如 4px Y） |
+| 文件组织 | 每组件一文件 | domain 分组 |
+| 启用方式 | 默认可用 | optional feature |
 
 ---
 
-## Forbidden Patterns
+## 必需
 
-<!-- Patterns that should never be used and why -->
-
-(To be filled by the team)
-
----
-
-## Required Patterns
-
-<!-- Patterns that must always be used -->
-
-(To be filled by the team)
+- 实现 **完整** required renderer slots（与 default 同样覆盖面）。
+- 共享几何/阴影 helper 放 `style.rs`，避免 8 个 domain 文件复制。
+- 只依赖 core + gpui + serde_json；不要依赖 default_renderer（可替换关系，非父子）。
 
 ---
 
-## Testing Requirements
+## 禁用
 
-<!-- What level of testing is expected -->
-
-(To be filled by the team)
+- 在 brutalism 中调用 `TokenButtonRenderer` 作为默认再“微调一点点”——风格应独立，必要时可共享 path 约定但不要纠缠实现。
+- 只实现部分组件就宣称可 `install`。
 
 ---
 
-## Code Review Checklist
+## 检查
 
-<!-- What reviewers should check -->
-
-(To be filled by the team)
+```bash
+cargo test -p yororen_ui_brutalism_renderer
+cargo check -p yororen_ui --features brutalism
+```

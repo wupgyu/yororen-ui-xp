@@ -1,54 +1,39 @@
-# Directory Structure
-
-> How backend code is organized in this project.
+# 目录结构 — yororen_ui_default_renderer
 
 ---
 
-## Overview
-
-<!--
-Document your project's backend directory structure here.
-
-Questions to answer:
-- How are modules/packages organized?
-- Where does business logic live?
-- Where are API endpoints defined?
-- How are utilities and helpers organized?
--->
-
-(To be filled by the team)
-
----
-
-## Directory Layout
+## 布局
 
 ```
-<!-- Replace with your actual structure -->
-src/
-├── ...
-└── ...
+crates/yororen-ui-default-renderer/
+├── Cargo.toml
+├── themes/
+│   ├── system-light.json
+│   └── system-dark.json
+└── src/
+    ├── lib.rs              # 再导出 renderers + themes helpers
+    ├── themes.rs           # system_for / install / install_with
+    └── renderers/
+        ├── mod.rs
+        ├── button.rs       # TokenButtonRenderer（参考实现）
+        ├── registry.rs     # register_default_renderers / token_based
+        └── ...             # 每个组件一个 Token* 实现
 ```
 
 ---
 
-## Module Organization
+## 规则
 
-<!-- How should new features/modules be organized? -->
-
-(To be filled by the team)
-
----
-
-## Naming Conventions
-
-<!-- File and folder naming rules -->
-
-(To be filled by the team)
+1. **一个组件一个文件**，命名与 core headless 对齐。
+2. Trait 定义在 **core**（`yororen_ui_core::renderer::*`）；本 crate 提供 `TokenXxxRenderer` 默认实现并 re-export。
+3. 颜色读 `action.<variant>.*`；几何读 `tokens.control.<component>.*` 或共享 `tokens.radii.*` / `tokens.spacing.*`。
+4. 安装入口：`install(cx, appearance)` 或 `install_with(cx, theme)`。
+5. 依赖：仅 `yororen-ui-core` + `gpui-ce` + `serde_json`。
 
 ---
 
-## Examples
+## 示例
 
-<!-- Link to well-organized modules as examples -->
-
-(To be filled by the team)
+- `crates/yororen-ui-default-renderer/src/renderers/button.rs`
+- `crates/yororen-ui-default-renderer/src/themes.rs`
+- 主题文件：`crates/yororen-ui-default-renderer/themes/system-light.json`

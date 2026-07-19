@@ -1,51 +1,31 @@
-# Quality Guidelines
-
-> Code quality standards for backend development.
+# 质量规范 — yororen_ui_xml
 
 ---
 
-## Overview
+## 硬性约束
 
-<!--
-Document your project's quality standards here.
-
-Questions to answer:
-- What patterns are forbidden?
-- What linting rules do you enforce?
-- What are your testing requirements?
-- What code review standards apply?
--->
-
-(To be filled by the team)
+- `#![forbid(unsafe_code)]`
+- schema 与 CI 同步（`.github/workflows/schema.yml`）
+- 修改 codegen 时补充 `codegen/tests.rs` 或 crate 测试
+- fuzz：`fuzz/fuzz_targets/`（如 `normalise_bool_attrs`）
 
 ---
 
-## Forbidden Patterns
+## 必需工作流
 
-<!-- Patterns that should never be used and why -->
-
-(To be filled by the team)
-
----
-
-## Required Patterns
-
-<!-- Patterns that must always be used -->
-
-(To be filled by the team)
+```bash
+# API 变更后
+cargo run -p yororen_ui_xml --bin gen-schema
+cargo test -p yororen_ui_xml
+cargo check --workspace --no-default-features
+```
 
 ---
 
-## Testing Requirements
+## 禁用
 
-<!-- What level of testing is expected -->
-
-(To be filled by the team)
-
----
-
-## Code Review Checklist
-
-<!-- What reviewers should check -->
-
-(To be filled by the team)
+| 禁用 | 原因 |
+|------|------|
+| 手改 `schema_generated.rs` | 下次 gen 覆盖；应用 overrides / 生成器 |
+| 在 codegen 静默吞掉未知标签 | 应 UnknownTag 编译失败 |
+| 把业务逻辑塞进 XML 运行时 | 设计目标是零运行时 |

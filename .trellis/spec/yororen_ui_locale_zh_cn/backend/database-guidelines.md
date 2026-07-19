@@ -1,51 +1,5 @@
-# Database Guidelines
+# 数据/资源 — yororen_ui_locale_zh_cn
 
-> Database patterns and conventions for this project.
-
----
-
-## Overview
-
-<!--
-Document your project's database conventions here.
-
-Questions to answer:
-- What ORM/query library do you use?
-- How are migrations managed?
-- What are the naming conventions for tables/columns?
-- How do you handle transactions?
--->
-
-(To be filled by the team)
-
----
-
-## Query Patterns
-
-<!-- How should queries be written? Batch operations? -->
-
-(To be filled by the team)
-
----
-
-## Migrations
-
-<!-- How to create and run migrations -->
-
-(To be filled by the team)
-
----
-
-## Naming Conventions
-
-<!-- Table names, column names, index names -->
-
-(To be filled by the team)
-
----
-
-## Common Mistakes
-
-<!-- Database-related mistakes your team has made -->
-
-(To be filled by the team)
+- 唯一数据：`translations/zh-CN.json`（嵌套 key，支持 plural `one`/`other` 等 CLDR 形态）。
+- 无数据库。
+- 应用可在 install 后叠加自己的翻译（见 `yororen_ui::locale`）。

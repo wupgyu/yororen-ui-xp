@@ -1,54 +1,24 @@
-# Directory Structure
+# 目录结构 — inputs-demo
 
-> How backend code is organized in this project.
+## 目的
 
----
+输入类控件专题：text/password/number/search/keybinding 等。
 
-## Overview
-
-<!--
-Document your project's backend directory structure here.
-
-Questions to answer:
-- How are modules/packages organized?
-- Where does business logic live?
-- Where are API endpoints defined?
-- How are utilities and helpers organized?
--->
-
-(To be filled by the team)
-
----
-
-## Directory Layout
+## 布局
 
 ```
-<!-- Replace with your actual structure -->
-src/
-├── ...
-└── ...
+crates/yororen-ui-demos/inputs_demo/
+├── Cargo.toml
+└── src/
+    ├── main.rs
+    └── inputs_app.rs
 ```
 
----
 
-## Module Organization
+- 聚焦输入状态、disabled、校验展示应可交互演示。
+- 使用官方 headless 输入 props，不要复制私有 text_input_element 实现。
 
-<!-- How should new features/modules be organized? -->
 
-(To be filled by the team)
+## 真实示例文件
 
----
-
-## Naming Conventions
-
-<!-- File and folder naming rules -->
-
-(To be filled by the team)
-
----
-
-## Examples
-
-<!-- Link to well-organized modules as examples -->
-
-(To be filled by the team)
+- `crates/yororen-ui-demos/inputs_demo/src/inputs_app.rs`

@@ -1,54 +1,24 @@
-# Directory Structure
+# 目录结构 — variant-showcase-demo
 
-> How backend code is organized in this project.
+## 目的
 
----
+ActionVariant / 自定义 VariantStyle 注册与展示。
 
-## Overview
-
-<!--
-Document your project's backend directory structure here.
-
-Questions to answer:
-- How are modules/packages organized?
-- Where does business logic live?
-- Where are API endpoints defined?
-- How are utilities and helpers organized?
--->
-
-(To be filled by the team)
-
----
-
-## Directory Layout
+## 布局
 
 ```
-<!-- Replace with your actual structure -->
-src/
-├── ...
-└── ...
+crates/yororen-ui-demos/variant_showcase/
+├── Cargo.toml
+└── src/
+    ├── main.rs
+    └── variant_app.rs
 ```
 
----
 
-## Module Organization
+- 使用 core 的 `VariantRegistry` / `TokenVariantStyle` / `ActionVariantKind`。
+- 自定义 variant 时颜色走 registry，几何仍可读 theme tokens。
 
-<!-- How should new features/modules be organized? -->
 
-(To be filled by the team)
+## 真实示例文件
 
----
-
-## Naming Conventions
-
-<!-- File and folder naming rules -->
-
-(To be filled by the team)
-
----
-
-## Examples
-
-<!-- Link to well-organized modules as examples -->
-
-(To be filled by the team)
+- `crates/yororen-ui-demos/variant_showcase/src/variant_app.rs`
