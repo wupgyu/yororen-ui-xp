@@ -47,3 +47,37 @@
 ### Next Steps
 
 - None - task complete
+
+
+## Session 2: XP demo 标题条修正
+
+**Date**: 2026-07-19
+**Task**: XP demo 标题条修正
+**Package**: yororen_ui
+**Branch**: `main`
+
+### Summary
+
+验收反馈：demo 窗口系统标题栏不是 XP 风格。按用户提供的 CSS 配方自绘 XP Luna 标题条：26px、纵向 5 段蓝渐变（gpui 2 色标限制用 4 条分层带近似）、上圆角 7px、窗格图标、光泽 caption 按钮（蓝 min/max、橙红 close）；TitlebarOptions.appears_transparent 隐藏系统标题栏，window_control_area 命中区由 Windows 原生执行拖拽/最小化/最大化/关闭。screenshots/xp-showcase.png 与 demo spec 已同步。提交 8a3c7f6（误裹用户参考文件 xp_css/xp.css，用户确认保持现状）。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `8a3c7f6` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
