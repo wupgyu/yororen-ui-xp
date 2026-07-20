@@ -12,6 +12,7 @@ Source apps live under `crates/yororen-ui-demos/`:
 - `theme-showcase.png` ← `crates/yororen-ui-demos/theme_showcase`
 - `xp-showcase.png` ← `crates/yororen-ui-demos/xp_showcase`
 - `xp-my-computer.png` ← `crates/yororen-ui-demos/xp_my_computer`
+- `xp-notepad.png` ← `crates/yororen-ui-demos/xp_notepad`
 - `accelerator-{1,2,3,4}.png` ← Yororen Accelerator (external project)
 
 To regenerate, run each demo and capture a screenshot into this folder with

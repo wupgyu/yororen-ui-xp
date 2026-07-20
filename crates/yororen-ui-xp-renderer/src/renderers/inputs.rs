@@ -269,8 +269,13 @@ impl TextAreaRenderer for XpTextAreaRenderer {
         let max_length = props.max_length;
         let on_change = props.on_change.clone();
 
+        let initial_value = props.initial_value.clone();
         let state = window.use_keyed_state(props.id.clone(), cx, |_window, cx| {
-            TextInputState::new(&mut *cx)
+            let mut s = TextInputState::new(&mut *cx);
+            if let Some(v) = initial_value.clone() {
+                s.value = v;
+            }
+            s
         });
         state.update(cx, |s, _cx| {
             s.placeholder = SharedString::from(placeholder_str);
@@ -341,6 +346,8 @@ impl TextAreaRenderer for XpTextAreaRenderer {
 
         let base: Stateful<Div> = div()
             .id(props.id.clone())
+            .w_full()
+            .h_full()
             .bg(bg)
             .border(border_w)
             .border_color(border_color)

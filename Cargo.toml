@@ -28,6 +28,7 @@ members = [
     "crates/yororen-ui-demos/variant_showcase",
     "crates/yororen-ui-demos/xp_showcase",
     "crates/yororen-ui-demos/xp_my_computer",
+    "crates/yororen-ui-demos/xp_notepad",
 ]
 
 [workspace.package]

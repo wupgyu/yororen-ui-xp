@@ -24,6 +24,10 @@ pub struct TextAreaProps {
     pub custom_border: Option<Hsla>,
     pub custom_focus_border: Option<Hsla>,
     pub custom_text_color: Option<Hsla>,
+    /// One-shot initial value applied when the renderer mints the
+    /// keyed `TextInputState`. Later edits live in that entity;
+    /// to reset at runtime, bump `id` so a fresh state is minted.
+    pub initial_value: Option<String>,
 }
 
 pub fn text_area(id: impl Into<gpui::ElementId>) -> TextAreaProps {
@@ -40,6 +44,7 @@ pub fn text_area(id: impl Into<gpui::ElementId>) -> TextAreaProps {
         custom_border: None,
         custom_focus_border: None,
         custom_text_color: None,
+        initial_value: None,
     }
 }
 
@@ -54,6 +59,13 @@ impl TextAreaProps {
     }
     pub fn max_length(mut self, v: usize) -> Self {
         self.max_length = Some(v);
+        self
+    }
+    /// One-shot initial value. The renderer reads this when minting
+    /// `TextInputState` so the area starts with the supplied text.
+    /// To clear or replace at runtime, change `id` (remount).
+    pub fn value(mut self, v: impl Into<String>) -> Self {
+        self.initial_value = Some(v.into());
         self
     }
     pub fn on_change<F>(mut self, f: F) -> Self

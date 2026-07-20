@@ -284,6 +284,14 @@ cargo run -p xp-showcase-demo
 </td>
     <td width="50%" valign="top">
 
+**`xp_notepad`** —— 记事本：`XpAppWindow` + File/Edit/Format/View/Help 菜单栏 + 可编辑多行文本区。
+
+<p><img src="https://raw.githubusercontent.com/wupgyu/yororen-ui-xp/refs/heads/main/screenshots/xp-notepad.png" width="480" alt="Windows XP Notepad demo"></p>
+
+```
+cargo run -p xp-notepad-demo
+```
+
 </td>
   </tr>
 </table>

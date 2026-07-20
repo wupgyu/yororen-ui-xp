@@ -285,6 +285,14 @@ cargo run -p xp-showcase-demo
 </td>
     <td width="50%" valign="top">
 
+**`xp_notepad`** — Windows XP Notepad: `XpAppWindow` + File/Edit/Format/View/Help menu bar + multi-line text area.
+
+<p><img src="https://raw.githubusercontent.com/wupgyu/yororen-ui-xp/refs/heads/main/screenshots/xp-notepad.png" width="480" alt="Windows XP Notepad demo"></p>
+
+```
+cargo run -p xp-notepad-demo
+```
+
 </td>
   </tr>
 </table>
