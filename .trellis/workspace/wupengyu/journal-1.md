@@ -115,3 +115,39 @@
 ### Next Steps
 
 - None - task complete
+
+
+## Session 4: XP My Computer demo：边框修复与全窗铬框架化
+
+**Date**: 2026-07-20
+**Task**: XP My Computer demo：边框修复与全窗铬框架化
+**Package**: yororen_ui
+**Branch**: `feature/xp-my-computer-demo`
+
+### Summary
+
+任务 07-20-xp-my-computer-demo 收尾。边框修复：经像素采样定位四处偏差——Modal 全窗路径 panel 米色误充窗框（改涂 xp.window.border_active 蓝框，三边恢复 Luna 框）、菜单/功能/地址栏误用 navy border.default（换 xp.explorer.toolbar_border #0000001A 蚀刻线）、分组标题全宽灰线（换 xp.explorer.group_rule_from #70BFFF 起 300px 蓝→白渐变短尺）、内容区顶边灰线按 xp_react 去除。框架化：全窗铬沉淀为 XpAppWindow 脚手架（xp-renderer window.rs：window_options/new/render 三步调用，caption 接线 OS 窗口控制），demo 重构后渲染与基线像素级一致。spec：xp-renderer 全窗铬契约/目录结构/token 表、guides 代码示例、core 纯增量约定。验收：check/clippy(-D warnings)/fmt/test 全绿，xp-showcase 回归正常，基线 screenshots/xp-my-computer.png 交付（PrintWindow 法，GDI 抓不到 GPUI 硬件合成窗口）。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `28afdad` | (see git log) |
+| `70fa340` | (see git log) |
+| `ba35d5a` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
