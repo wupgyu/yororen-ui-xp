@@ -151,3 +151,37 @@
 ### Next Steps
 
 - None - task complete
+
+
+## Session 5: XP Notepad demo
+
+**Date**: 2026-07-20
+**Task**: XP Notepad demo
+**Package**: yororen_ui
+**Branch**: `feature/xp-notepad-demo`
+
+### Summary
+
+新增 xp-notepad-demo：XpAppWindow + 五项菜单 + 可编辑 text_area；TextArea 补 value() 初值；交付 screenshots/xp-notepad.png；验收通过后归档。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a8112c6` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

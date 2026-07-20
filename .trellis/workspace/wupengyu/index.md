@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 4
+- **Total Sessions**: 5
 - **Last Active**: 2026-07-20
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~153 | Active |
+| `journal-1.md` | ~187 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 5 | 2026-07-20 | XP Notepad demo | `a8112c6` | `feature/xp-notepad-demo` |
 | 4 | 2026-07-20 | XP My Computer demo：边框修复与全窗铬框架化 | `28afdad`, `70fa340`, `ba35d5a` | `feature/xp-my-computer-demo` |
 | 3 | 2026-07-20 | 精调 Windows XP 渲染器样式 | `2a4d3df` | `feature/xp-style-refinement` |
 | 2 | 2026-07-19 | XP demo 标题条修正 | `8a3c7f6` | `main` |
