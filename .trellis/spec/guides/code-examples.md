@@ -25,6 +25,28 @@ fn main() {
 
 ---
 
+## XP 全窗应用铬（Luna 标题条 + 三边蓝框）
+
+**文件**：`crates/yororen-ui-demos/xp_my_computer/src/main.rs`、`crates/yororen-ui-xp-renderer/src/window.rs`
+
+```rust
+app.run(|cx: &mut App| {
+    xp_renderer::install(cx);
+    // 透明 OS 标题栏 + 不透明客户区；标题/尺寸在此指定
+    let options = XpAppWindow::window_options(cx, "My Computer", size(px(800.0), px(560.0)));
+    let app_entity = cx.new(app::MyComputerApp::new);
+    let _ = cx.open_window(options, |_, _cx| app_entity);
+});
+
+// app 实体：new() 里建脚手架，render() 里只给标题图标和 body
+let chrome = XpAppWindow::new(cx, "My Computer");          // 常开 ModalState
+self.chrome.render(Some(title_icon), body, cx)             // 蓝框 + 标题条 + caption + 拖拽区
+```
+
+窗口铬全部来自框架（`XpModalRenderer` 全窗路径），应用不要手写标题栏 / caption 按钮 / `WindowControlArea`。
+
+---
+
 ## Headless + layout + render
 
 **文件**：`crates/yororen-ui-demos/counter/src/counter_app.rs`

@@ -26,6 +26,7 @@ XP 专属值放 `xp.*` 前缀路径，renderer 读取时必须带 `style.rs` 常
 | `xp.menu.{hover_bg,hover_fg}` | 菜单项 hover `#316AC5` 蓝底白字 | Menu |
 | `xp.toast.{bg,border}` | 气泡黄 `#FFFFE1` + 1px 黑边 | Toast、Notification |
 | `xp.window.{border_active,border_inactive,body_border}` | 窗口边框 `#0058E6`/`#98A8C0`;body 内边框 `#A09C8C` | Modal |
+| `xp.explorer.{toolbar_bg,toolbar_border,address_border,task_pane_bg_from,task_pane_bg_to,task_card_header_*,task_card_body_*,task_card_title,content_bg,link,group_header,group_rule_from}` | Explorer 场景:工具栏米底 + 蚀刻线 `#0000001A`、任务面板蓝渐变、任务卡三段渐变、分组标题 `#0C327D` + `#70BFFF` 渐变短尺 | XP Modal 全窗铬、ExplorerTaskCard、demo 直读 |
 | `xp.caption.{from,to,close_from,close_to,border,size,radius}` | 标题按钮蓝渐变 `#3C8CFD→#1565E8`、close 红渐变 `#F08A6D→#D84A28`、半透明白边、21×21、radius 3 | Modal caption 按钮 |
 | `xp.check.{glyph,box_bg,box_border}` | 蓝勾 / 白盒 / 边 | Checkbox、Radio |
 

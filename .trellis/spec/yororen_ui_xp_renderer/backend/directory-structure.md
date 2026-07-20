@@ -12,6 +12,7 @@ crates/yororen-ui-xp-renderer/
 └── src/
     ├── lib.rs                # install / install_with_default_theme / install_with / register_xp_renderers + 测试
     ├── style.rs              # Luna 调色板、渐变/斜面/阴影 helper
+    ├── window.rs             # XpAppWindow 全窗应用铬脚手架（Luna 标题条 + 三边蓝框 + caption 接线 + 拖拽区）
     └── renderers/
         ├── mod.rs
         ├── actions.rs        # 5:  Button, IconButton, ToggleButton, SplitButton, ButtonGroup
@@ -40,6 +41,14 @@ xp_renderer::install_with(cx, theme);
 xp_renderer::register_xp_renderers(cx);
 ```
 
+全窗应用铬（Explorer 风格窗口）用脚手架，不要手写：
+
+```rust
+let options = XpAppWindow::window_options(cx, "My Computer", size(px(800.0), px(560.0)));
+// app 实体里：let chrome = XpAppWindow::new(cx, "My Computer");
+// render 里：self.chrome.render(Some(title_icon), body, cx)
+```
+
 Meta-crate 需 `features = ["xp"]` 才能 `use yororen_ui::xp_renderer`。
 
 ---
@@ -48,4 +57,5 @@ Meta-crate 需 `features = ["xp"]` 才能 `use yororen_ui::xp_renderer`。
 
 - `crates/yororen-ui-xp-renderer/src/lib.rs`（55 条注册 + `registers_all_55_renderers` 测试）
 - `crates/yororen-ui-xp-renderer/src/style.rs`（共享视觉 helper）
+- `crates/yororen-ui-xp-renderer/src/window.rs`（`XpAppWindow` 全窗铬脚手架；demo 用法见 `xp_my_computer`）
 - `crates/yororen-ui-demos/xp_showcase/src/xp_app.rs`（视觉验收 demo）

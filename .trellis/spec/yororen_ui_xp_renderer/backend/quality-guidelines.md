@@ -27,6 +27,22 @@
 
 ---
 
+## 全窗铬（Full-window chrome）契约
+
+XP 风格的完整应用窗口（Explorer 形态）必须满足以下不变量；入口是 `window.rs` 的 `XpAppWindow` 脚手架，底层走 `XpModalRenderer` 全窗路径（`ModalProps.body_padded = false`）。
+
+- **三边蓝框**：全窗路径的 panel 涂窗框色（`xp.window.border_active` `#0058E6` / inactive `#98A8C0`），不是 dialog 米色。1px 外边框 + 3px body 内缩带（panel padding）连成 Luna 窗框，位于左 / 右 / 底三边；顶边是 26px 标题条。
+- **body 内边框**：`xp.window.body_border` `#A09C8C` 1px，顶边开口（`border-top: 0`，对应 css `.xp-window-body`）。
+- **dialog 路径**（`body_padded = true`，默认）保持米色 panel + theme padding + 软阴影，不受全窗规则影响。
+- **gutter 规则**：host 根元素涂窗框色，DPI 圆整产生的 1–2px 缝读作窗框而非灰/米色。OS 标题栏透明（`TitlebarOptions.appears_transparent`）+ 客户区不透明（`WindowBackgroundAppearance::Opaque`）。
+- **caption / 拖拽**：min / max / close 由脚手架接线到真实 OS 窗口控制（`minimize_window` / `zoom_window` / `remove_window`）；拖拽区 = 标题条高度减去 caption 按钮带（3 × `xp.caption.size` + 8px）。
+- **工具栏分隔线**：菜单栏 / 功能栏 / 地址栏底边用 `xp.explorer.toolbar_border`（`#0000001A` 蚀刻细线）；**不要**用 `border.default`（`#003C74` 深藏青是按钮等控件的描边色）。
+- 应用侧禁止手写标题栏 / caption 按钮 / `WindowControlArea`——这些都由脚手架提供；对话窗仍走普通 `modal()` builder。
+
+**截图验收**：GDI / PIL `ImageGrab` 抓不到 GPUI 硬件合成窗口（得到壁纸），须用 Win32 `PrintWindow(PW_RENDERFULLCONTENT)` 离屏渲染捕获。
+
+---
+
 ## gpui 绘制约束（换肤必备事实）
 
 - **一个 div 只有单一 `border_color`**（`Style.border_color: Option<Hsla>`，逐边只有宽度）。Win32 斜面（bevel）只能用两种手段：

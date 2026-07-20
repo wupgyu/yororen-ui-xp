@@ -91,3 +91,4 @@ cargo check --workspace --no-default-features
 - `Context<T>` 通过 `DerefMut<Target = App>` 拿到 `&mut App`（gallery state 注释中的 v0.3 模式）。
 - 状态复合组件用 `Entity<XxxState>`，简单 props 用纯值字段。
 - 图标资源走 `assets` + `UiAsset` / `rust-embed`，locale **不再** 嵌在 core（独立 locale crate）。
+- headless props 只做**纯增量**扩展（可选字段 + 默认值保旧行为）。例：`ModalProps` 的窗口铬字段 `caption` / `title_leading` / `window_active` / `body_padded` 均为可选增量，不画标题栏的 renderer 直接忽略。
