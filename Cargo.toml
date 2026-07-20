@@ -27,6 +27,7 @@ members = [
     "crates/yororen-ui-demos/theme_showcase",
     "crates/yororen-ui-demos/variant_showcase",
     "crates/yororen-ui-demos/xp_showcase",
+    "crates/yororen-ui-demos/xp_my_computer",
 ]
 
 [workspace.package]
@@ -57,3 +58,4 @@ categories = ["gui", "accessibility"]
 # keeps the level configurable per-crate via
 # `[lints.<name>]` in member Cargo.toml files.
 clippy.all = "warn"
+
