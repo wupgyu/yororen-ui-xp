@@ -3,7 +3,7 @@
 //!
 //! Source of truth: `yororen-ui-core/src/headless/*.rs`
 //! plus `yororen-ui-xml/overrides.toml`.
-//! Last regenerated with: 67 entries (28 from overrides), 5 skipped.
+//! Last regenerated with: 67 entries (29 from overrides), 5 skipped.
 //!
 //! Skipped files (need manual schema entry or a schema
 //! extension — see `gen_schema.rs` notes):
@@ -120,6 +120,9 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             needs_window: false,
             props: &[PropDef { name: "interactive", setter: "interactive", value: PropValue::Bool },
             PropDef { name: "has_custom_bg", setter: "has_custom_bg", value: PropValue::Bool },
+            PropDef { name: "title", setter: "title", value: PropValue::String },
+            PropDef { name: "header_trailing", setter: "header_trailing", value: PropValue::Custom },
+            PropDef { name: "appearance", setter: "appearance", value: PropValue::Custom },
             ],
             events: &[],
             supports_text_child: false,
@@ -616,7 +619,9 @@ pub static BUILTINS_GENERATED: &[ComponentDef] = &[
             needs_app: false,
             needs_window: false,
             props: &[PropDef { name: "caption", setter: "caption", value: PropValue::Custom },
+            PropDef { name: "title_leading", setter: "title_leading", value: PropValue::Custom },
             PropDef { name: "window_active", setter: "window_active", value: PropValue::Bool },
+            PropDef { name: "body_padded", setter: "body_padded", value: PropValue::Bool },
             ],
             events: &[],
             supports_text_child: true,

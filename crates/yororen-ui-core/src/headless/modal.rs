@@ -154,10 +154,18 @@ pub struct ModalProps {
     /// Optional window-style caption buttons (min / max / close).
     /// Renderers that don't draw a title bar ignore this.
     pub caption: Option<ModalCaption>,
+    /// Optional leading element in the title bar (e.g. a 16x16
+    /// window icon). Renderers without a title bar ignore this.
+    pub title_leading: Option<AnyElement>,
     /// Whether the window paints as active (focused): renderers
     /// with active / inactive window chrome use it to pick the
     /// title-bar gradient and frame color. Defaults to `true`.
     pub window_active: bool,
+    /// When `true` (default), the XP modal body uses theme padding
+    /// and a small child gap — correct for dialog-style modals.
+    /// Set `false` for full-window chrome (Explorer) where menus /
+    /// toolbars must sit flush against the body border.
+    pub body_padded: bool,
 }
 
 pub fn modal(id: impl Into<ElementId>, state: Entity<ModalState>) -> ModalProps {
@@ -166,7 +174,9 @@ pub fn modal(id: impl Into<ElementId>, state: Entity<ModalState>) -> ModalProps 
         state,
         children: Vec::new(),
         caption: None,
+        title_leading: None,
         window_active: true,
+        body_padded: true,
     }
 }
 
@@ -193,10 +203,24 @@ impl ModalProps {
         self
     }
 
+    /// Optional leading content in the title bar (icon, etc.).
+    /// Renderers without a title bar ignore this.
+    pub fn title_leading(mut self, el: impl IntoElement) -> Self {
+        self.title_leading = Some(el.into_element().into_any_element());
+        self
+    }
+
     /// Set whether the window paints as active (focused).
     /// Defaults to `true`.
     pub fn window_active(mut self, active: bool) -> Self {
         self.window_active = active;
+        self
+    }
+
+    /// Control body padding / inter-child gap. Defaults to `true`
+    /// (dialog padding). Pass `false` for flush Explorer-style chrome.
+    pub fn body_padded(mut self, padded: bool) -> Self {
+        self.body_padded = padded;
         self
     }
 

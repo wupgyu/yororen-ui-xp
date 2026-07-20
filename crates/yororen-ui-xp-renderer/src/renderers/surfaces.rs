@@ -8,15 +8,15 @@
 //! shadows overlays.
 
 use gpui::{
-    App, AppContext, Context, CursorStyle, Div, Hsla, InteractiveElement, IntoElement,
+    App, AppContext, Context, CursorStyle, Div, FontWeight, Hsla, InteractiveElement, IntoElement,
     ParentElement, Pixels, Render, StatefulInteractiveElement, Styled, Window, div, px,
 };
 use yororen_ui_core::renderer::spec::Edges;
 use yororen_ui_core::theme::{ActiveTheme, Theme};
 
 use crate::style::{
-    self, XP_BORDER_WIDTH, XP_RADIUS, bevel_inner_dark, bevel_outer_light, dialog_bg, tooltip_bg,
-    xp_color,
+    self, XP_BORDER_WIDTH, XP_RADIUS, bevel_inner_dark, bevel_outer_light, dialog_bg, hgrad,
+    hsl_fallback, tooltip_bg, xp_color,
 };
 
 // =====================================================================
@@ -436,30 +436,129 @@ impl XpCardRenderer {
 }
 
 impl CardRenderer for XpCardRenderer {
-    fn compose(&self, props: &yororen_ui_core::headless::card::CardProps, cx: &App) -> Div {
+    fn compose(&self, props: &mut yororen_ui_core::headless::card::CardProps, cx: &App) -> Div {
+        use yororen_ui_core::headless::card::CardAppearance;
         use yororen_ui_core::theme::ActiveTheme;
         let theme = cx.theme();
         let state = CardRenderState {
-            has_custom_bg: false,
+            has_custom_bg: props.has_custom_bg,
         };
-        let bg = self.bg(&state, theme);
-        let border = self.border(&state, theme);
-        let pad = self.padding(&state, theme);
-        let r = self.border_radius(&state, theme);
-        div()
-            .flex()
-            .flex_col()
-            .gap(px(8.))
-            .bg(bg)
-            .border(px(XP_BORDER_WIDTH))
-            .border_color(border)
-            .p(pad.top)
-            .rounded(r)
-            .cursor(if props.interactive {
-                CursorStyle::PointingHand
-            } else {
-                CursorStyle::Arrow
-            })
+        let title = props.title.clone();
+        let trailing = props.header_trailing.take();
+        let interactive = props.interactive;
+
+        match props.appearance {
+            CardAppearance::ExplorerTask => {
+                let header_from = xp_color(
+                    theme,
+                    "xp.explorer.task_card_header_from",
+                    hsl_fallback(0xF0F0FF),
+                );
+                let header_to = xp_color(
+                    theme,
+                    "xp.explorer.task_card_header_to",
+                    hsl_fallback(0xA8BCFF),
+                );
+                let body_from = xp_color(
+                    theme,
+                    "xp.explorer.task_card_body_from",
+                    hsl_fallback(0xB4C8FB),
+                );
+                let body_mid = xp_color(
+                    theme,
+                    "xp.explorer.task_card_body_mid",
+                    hsl_fallback(0xA4B9FB),
+                );
+                let body_to = xp_color(
+                    theme,
+                    "xp.explorer.task_card_body_to",
+                    hsl_fallback(0xB4C8FB),
+                );
+                let title_fg =
+                    xp_color(theme, "xp.explorer.task_card_title", hsl_fallback(0x0C327D));
+
+                let mut header = gpui::div()
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .h(px(23.))
+                    .pl(px(11.))
+                    .pr(px(2.))
+                    .bg(hgrad(header_from, header_to));
+                if let Some(t) = title {
+                    header = header.child(
+                        gpui::div()
+                            .flex_1()
+                            .font_weight(FontWeight::BOLD)
+                            .text_color(title_fg)
+                            .text_size(px(11.))
+                            .child(t),
+                    );
+                }
+                if let Some(tr) = trailing {
+                    header = header.child(tr);
+                }
+
+                // Body rows are caller-supplied children chained after
+                // `.render(cx)`. Outer paint uses the body gradient so
+                // content sits on the classic Explorer task-card fill.
+                let _ = body_mid;
+                gpui::div()
+                    .flex()
+                    .flex_col()
+                    .w_full()
+                    .overflow_hidden()
+                    .rounded_tl(px(3.))
+                    .rounded_tr(px(3.))
+                    .bg(hgrad(body_from, body_to))
+                    .child(header)
+                    .cursor(if interactive {
+                        CursorStyle::PointingHand
+                    } else {
+                        CursorStyle::Arrow
+                    })
+            }
+            CardAppearance::Default => {
+                let bg = self.bg(&state, theme);
+                let border = self.border(&state, theme);
+                let pad = self.padding(&state, theme);
+                let r = self.border_radius(&state, theme);
+                let mut el = div()
+                    .flex()
+                    .flex_col()
+                    .gap(px(8.))
+                    .bg(bg)
+                    .border(px(XP_BORDER_WIDTH))
+                    .border_color(border)
+                    .p(pad.top)
+                    .rounded(r)
+                    .cursor(if interactive {
+                        CursorStyle::PointingHand
+                    } else {
+                        CursorStyle::Arrow
+                    });
+                if title.is_some() || trailing.is_some() {
+                    let mut header = div().flex().flex_row().items_center().gap(px(6.));
+                    if let Some(t) = title {
+                        header = header.child(
+                            div()
+                                .flex_1()
+                                .text_color(
+                                    theme
+                                        .get_color("content.primary")
+                                        .unwrap_or(hsl_fallback(0x000000)),
+                                )
+                                .child(t),
+                        );
+                    }
+                    if let Some(tr) = trailing {
+                        header = header.child(tr);
+                    }
+                    el = el.child(header);
+                }
+                el
+            }
+        }
     }
 }
 
@@ -478,17 +577,11 @@ use yororen_ui_core::headless::image::{ImageProps, ImageSource};
 pub struct XpImageRenderer;
 
 // Inherent helpers — *not* part of the trait surface.
-impl XpImageRenderer {
-    pub fn border(&self, _state: &ImageRenderState, theme: &Theme) -> Hsla {
-        xp_color(theme, "xp.bevel.inner_dark", bevel_inner_dark())
-    }
-}
-
 impl ImageRenderer for XpImageRenderer {
-    fn compose(&self, props: &ImageProps, cx: &App) -> Stateful<Div> {
-        let theme = cx.theme();
-        let state = ImageRenderState {};
-        let bd = self.border(&state, theme);
+    fn compose(&self, props: &ImageProps, _cx: &App) -> Stateful<Div> {
+        // Icons and bitmaps in XP Explorer are painted without a
+        // bevel frame. Callers that need a framed image should wrap
+        // the element themselves.
         let img = match &props.source {
             ImageSource::Resource(path) => gpui::img(path.to_string()),
             ImageSource::Handle(handle) => {
@@ -497,9 +590,6 @@ impl ImageRenderer for XpImageRenderer {
         };
         gpui::div()
             .id(props.id.clone())
-            .border(px(XP_BORDER_WIDTH))
-            .border_color(bd)
-            .rounded(px(XP_RADIUS))
             .overflow_hidden()
             .child(img.size_full())
     }

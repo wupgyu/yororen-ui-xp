@@ -248,6 +248,15 @@ pub fn vgrad(from: Hsla, to: Hsla) -> Background {
     )
 }
 
+/// Horizontal 2-stop gradient (left → right).
+pub fn hgrad(from: Hsla, to: Hsla) -> Background {
+    linear_gradient(
+        90.0,
+        linear_color_stop(from, 0.0),
+        linear_color_stop(to, 1.0),
+    )
+}
+
 /// Button face: white → cream vertical gradient.
 pub fn button_face(theme: &Theme) -> Background {
     vgrad(

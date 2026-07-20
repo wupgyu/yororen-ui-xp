@@ -386,7 +386,7 @@ impl BrutalCardRenderer {
 }
 
 impl CardRenderer for BrutalCardRenderer {
-    fn compose(&self, props: &yororen_ui_core::headless::card::CardProps, cx: &App) -> Div {
+    fn compose(&self, props: &mut yororen_ui_core::headless::card::CardProps, cx: &App) -> Div {
         use yororen_ui_core::theme::ActiveTheme;
         let theme = cx.theme();
         let state = CardRenderState {

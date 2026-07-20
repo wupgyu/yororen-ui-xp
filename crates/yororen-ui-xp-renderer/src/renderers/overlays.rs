@@ -130,8 +130,17 @@ impl ModalRenderer for XpModalRenderer {
         // scrim and centering are the caller's responsibility —
         // same contract as `TokenModalRenderer` in the default
         // renderer.
+        // Full-window chrome (Explorer) must fill the host window;
+        // dialog-style modals size to their content.
+        let body_padded = props.body_padded;
+        // Full-window chrome paints the panel itself in the frame
+        // color so the 3px body inset below reads as the Luna window
+        // frame (active blue / inactive gray-blue) instead of the
+        // beige dialog surface. Dialog-style modals keep the beige
+        // panel from the xp.css recipe.
+        let panel_surface = if body_padded { panel_bg } else { panel_border };
         let mut panel = gpui::div()
-            .bg(panel_bg)
+            .bg(panel_surface)
             .border_color(panel_border)
             .border(px(XP_BORDER_WIDTH))
             // css `.xp-window`: `border-radius: 8px 8px 0 0` —
@@ -142,6 +151,18 @@ impl ModalRenderer for XpModalRenderer {
             .flex()
             .flex_col()
             .w_full();
+        if !body_padded {
+            // 3px frame inset (css `.xp-window-body` margins) as panel
+            // padding so the blue frame fill is continuous to the host
+            // edge and only the *inner* body is inset.
+            panel = panel
+                .h_full()
+                .min_h_0()
+                .flex_1()
+                .pt(px(0.0))
+                .px(px(3.0))
+                .pb(px(3.0));
+        }
 
         if title.is_some() || caption.is_some() {
             // Luna title bar: 26px strip, clipped to the window's
@@ -162,23 +183,39 @@ impl ModalRenderer for XpModalRenderer {
                 .text_size(self.title_font_size(&state, theme))
                 .font_weight(FontWeight::BOLD);
             if active {
-                bar = bar.child(
-                    gpui::div()
-                        .absolute()
-                        .top_0()
-                        .left_0()
-                        .right_0()
-                        .bottom_0()
-                        .flex()
-                        .flex_col()
-                        .children(self.title_bar_bands(&state, theme).into_iter().map(
-                            |(frac, from, to)| {
-                                gpui::div().h(relative(frac)).w_full().bg(vgrad(from, to))
-                            },
-                        )),
-                );
+                // Solid underpaint first so flex-band rounding can never
+                // leak the beige panel bg as a 1px "white" hairline.
+                let underpaint = xp_color(theme, "xp.titlebar.mid_2", hsl_fallback(0x0050EE));
+                let bands = self.title_bar_bands(&state, theme);
+                let mut bands_layer = gpui::div()
+                    .absolute()
+                    .top_0()
+                    .left_0()
+                    .right_0()
+                    .bottom_0()
+                    .bg(underpaint)
+                    .flex()
+                    .flex_col();
+                for (frac, from, to) in bands {
+                    // Overlap each band by 1px equivalent via slight
+                    // flex growth; solid underpaint covers residual gaps.
+                    bands_layer = bands_layer
+                        .child(gpui::div().h(relative(frac)).w_full().bg(vgrad(from, to)));
+                }
+                bar = bar.child(bands_layer);
             } else {
                 bar = bar.bg(self.title_bar_inactive_bg(&state, theme));
+            }
+            let title_leading = props.title_leading.take();
+            if let Some(leading) = title_leading {
+                bar = bar.child(
+                    gpui::div()
+                        .mr(px(4.0))
+                        .flex()
+                        .items_center()
+                        .justify_center()
+                        .child(leading),
+                );
             }
             bar = bar.child(
                 gpui::div()
@@ -228,29 +265,60 @@ impl ModalRenderer for XpModalRenderer {
         // top), wrapped in its own 1px `#A09C8C` border, like
         // `.xp-window-body` in the CSS (`margin: 0 3px 3px;
         // border: 1px solid #a09c8c; border-top: none`).
-        let panel = panel
-            .child(
-                gpui::div()
-                    .mx(px(3.0))
-                    .mb(px(3.0))
-                    .border(px(XP_BORDER_WIDTH))
-                    .border_t(px(0.0))
-                    .border_color(self.body_border(&state, theme))
-                    .p(pad.top)
-                    .flex()
-                    .flex_col()
-                    .gap_2()
-                    .children(children),
-            )
-            .shadow(shadow_vec(xp_shadow_overlay(theme)));
+        //
+        // Dialog-style modals keep theme padding + gap + soft shadow.
+        // Full-window chrome (Explorer) sets `body_padded = false`:
+        // no dialog padding/gap, fill remaining height, no overlay
+        // shadow (shadow would read as a transparent gutter under
+        // the window when the panel is the host root).
+        let mut body = gpui::div()
+            .border(px(XP_BORDER_WIDTH))
+            .border_t(px(0.0))
+            .border_color(self.body_border(&state, theme))
+            .flex()
+            .flex_col()
+            .children(children);
+        if body_padded {
+            // Dialog: classic 3px body inset via margin + content padding.
+            body = body.mx(px(3.0)).mb(px(3.0)).p(pad.top).gap_2();
+        } else {
+            // Full-window: use panel padding for the 3px inset instead of
+            // body margin. Margins can leave a 1–2px host-colored gutter
+            // against the OS client edge on some DPI layouts.
+            body = body
+                .p(px(0.0))
+                .gap(px(0.0))
+                .flex_1()
+                .w_full()
+                .min_h_0()
+                .overflow_hidden();
+        }
+        let mut panel = panel.child(body);
+        if body_padded {
+            panel = panel.shadow(shadow_vec(xp_shadow_overlay(theme)));
+            // Dialog-style: keep enter animation.
+            return div().child(AnimatedPresenceElement::new(
+                props.state.clone(),
+                props.id.clone(),
+                SlideDirection::Down,
+                px(theme.get_number("motion.slide_distance").unwrap_or(10.0) as f32),
+                panel,
+            ));
+        }
 
-        div().child(AnimatedPresenceElement::new(
-            props.state.clone(),
-            props.id.clone(),
-            SlideDirection::Down,
-            px(theme.get_number("motion.slide_distance").unwrap_or(10.0) as f32),
-            panel,
-        ))
+        // Full-window chrome: paint the frame as the root surface.
+        // Skipping AnimatedPresence avoids an extra layout wrapper that
+        // can leave a 1–2px host gutter on some sides. `ModalProps::render`
+        // applies the element id via `.apply()`, so this stays a plain `Div`.
+        div()
+            .absolute()
+            .top_0()
+            .left_0()
+            .right_0()
+            .bottom_0()
+            .w_full()
+            .h_full()
+            .child(panel.w_full().h_full())
     }
 }
 

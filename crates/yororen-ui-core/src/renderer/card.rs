@@ -16,5 +16,5 @@ pub struct CardRenderState {
 }
 
 pub trait CardRenderer: Any + Send + Sync {
-    fn compose(&self, props: &CardProps, cx: &App) -> Div;
+    fn compose(&self, props: &mut CardProps, cx: &App) -> Div;
 }

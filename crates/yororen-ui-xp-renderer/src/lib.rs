@@ -12,6 +12,8 @@
 //! ```ignore
 //! use yororen_ui_xp_renderer as xp;
 //! xp::install(cx);
+//! // Full-window app chrome (Luna title bar + three-side blue frame):
+//! let options = xp::XpAppWindow::window_options(cx, "My App", size(px(800.), px(600.)));
 //! ```
 
 // The crate is built up across several commits; until every
@@ -22,6 +24,9 @@
 mod style;
 
 pub mod renderers;
+pub mod window;
+
+pub use window::XpAppWindow;
 
 use std::sync::Arc;
 
@@ -353,6 +358,14 @@ mod tests {
             "xp.caption.close_from",
             "xp.caption.border",
             "xp.check.glyph",
+            "xp.explorer.task_pane_bg_from",
+            "xp.explorer.task_card_header_from",
+            "xp.explorer.task_card_body_from",
+            "xp.explorer.task_card_title",
+            "xp.explorer.content_bg",
+            "xp.explorer.link",
+            "xp.explorer.toolbar_border",
+            "xp.explorer.group_rule_from",
         ] {
             assert!(theme.get_color(path).is_some(), "missing color {path}");
         }

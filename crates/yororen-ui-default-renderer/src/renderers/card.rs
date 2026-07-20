@@ -2,7 +2,7 @@
 
 use std::sync::Arc;
 
-use gpui::{App, CursorStyle, Div, Hsla, Pixels, Styled, div};
+use gpui::{App, CursorStyle, Div, Hsla, ParentElement, Pixels, Styled, div};
 
 use yororen_ui_core::headless::card::CardProps;
 use yororen_ui_core::renderer::spec::Edges;
@@ -40,7 +40,7 @@ impl TokenCardRenderer {
 }
 
 impl CardRenderer for TokenCardRenderer {
-    fn compose(&self, props: &CardProps, cx: &App) -> Div {
+    fn compose(&self, props: &mut CardProps, cx: &App) -> Div {
         use yororen_ui_core::theme::ActiveTheme;
         let theme = cx.theme();
         let state = CardRenderState {
@@ -51,7 +51,9 @@ impl CardRenderer for TokenCardRenderer {
         let pad = self.padding(&state, theme);
         let r = self.border_radius(&state, theme);
         let gap = self.gap(&state, theme);
-        div()
+        let title = props.title.clone();
+        let trailing = props.header_trailing.take();
+        let mut el = div()
             .flex()
             .flex_col()
             .gap(gap)
@@ -64,7 +66,23 @@ impl CardRenderer for TokenCardRenderer {
                 CursorStyle::PointingHand
             } else {
                 CursorStyle::Arrow
-            })
+            });
+        if title.is_some() || trailing.is_some() {
+            let mut header = div().flex().flex_row().items_center().gap_2();
+            if let Some(t) = title {
+                header = header.child(
+                    div()
+                        .flex_1()
+                        .text_color(theme.get_color("content.primary").unwrap_or_default())
+                        .child(t),
+                );
+            }
+            if let Some(tr) = trailing {
+                header = header.child(tr);
+            }
+            el = el.child(header);
+        }
+        el
     }
 }
 

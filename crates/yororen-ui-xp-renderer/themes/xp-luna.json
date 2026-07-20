@@ -134,6 +134,23 @@
       "glyph": "#0058E6",
       "box_bg": "#FFFFFF",
       "box_border": "#7F9DB9"
+    },
+    "explorer": {
+      "toolbar_bg": "#ECE9D8",
+      "toolbar_border": "#0000001A",
+      "address_border": "#7A7AFF99",
+      "task_pane_bg_from": "#748AFF",
+      "task_pane_bg_to": "#4057D3",
+      "task_card_header_from": "#F0F0FF",
+      "task_card_header_to": "#A8BCFF",
+      "task_card_body_from": "#B4C8FB",
+      "task_card_body_mid": "#A4B9FB",
+      "task_card_body_to": "#B4C8FB",
+      "task_card_title": "#0C327D",
+      "content_bg": "#F1F1F1",
+      "link": "#0066CC",
+      "group_header": "#0C327D",
+      "group_rule_from": "#70BFFF"
     }
   },
   "tokens": {
